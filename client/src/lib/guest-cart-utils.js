@@ -42,7 +42,7 @@ export const addToGuestCart = async (productVariantId, quantity = 1) => {
             const customObj = productVariantId;
             const vId = customObj.variantId || customObj.productVariantId || customObj.variants?.[0]?.id || customObj.id || `item_${Date.now()}`;
             const itemPrice = parseFloat(customObj.salePrice || customObj.price || customObj.variants?.[0]?.salePrice || customObj.variants?.[0]?.price || 0);
-            
+
             newItem = {
                 id: customObj.id || `item_${Date.now()}_${Math.random().toString(36).substr(2, 4)}`,
                 cartItemType: customObj.cartItemType || (customObj.isBundle ? "BUNDLE" : "STANDARD"),
@@ -66,8 +66,8 @@ export const addToGuestCart = async (productVariantId, quantity = 1) => {
                 customDetails: customObj.customDetails || null
             };
         } else {
-            const apiBase = process.env.NEXT_PUBLIC_API_URL || (process.env.NODE_ENV === "development" ? "http://localhost:4004/api" : "https://api.mwpsupplements.com/api");
-            
+            const apiBase = process.env.NEXT_PUBLIC_API_URL || (process.env.NODE_ENV === "development" ? "http://localhost:4000/api" : "https://api.mwpsupplements.com/api");
+
             let response = await fetch(
                 `${apiBase}/public/products/variants/${productVariantId}`,
                 { credentials: "include" }
@@ -240,7 +240,7 @@ export const mergeGuestCartWithUserCart = async () => {
         const mergePromises = guestItemsToMerge.map(async (guestItem) => {
             try {
                 const quantity = Math.max(1, parseInt(guestItem.quantity) || 1);
-                const apiBase = process.env.NEXT_PUBLIC_API_URL || (process.env.NODE_ENV === "development" ? "http://localhost:4004/api" : "https://api.mwpsupplements.com/api");
+                const apiBase = process.env.NEXT_PUBLIC_API_URL || (process.env.NODE_ENV === "development" ? "http://localhost:4000/api" : "https://api.mwpsupplements.com/api");
 
                 let endpoint = `${apiBase}/cart/add`;
                 let payload = {

@@ -5,7 +5,7 @@ import dotenv from "dotenv";
 // Load environment variables
 dotenv.config();
 
-const port = process.env.PORT || 3007; // Set the port from environment variables or default to 7002
+const port = process.env.PORT || 3000; // Set the port from environment variables or default to 3000
 const dev = process.env.NODE_ENV !== "production"; // Check if we are in development mode
 const app = next({ dev });
 const handle = app.getRequestHandler(); // Get the default request handler for Next.js

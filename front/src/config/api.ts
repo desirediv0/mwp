@@ -2,4 +2,4 @@
 export const API_URL =
   import.meta.env.MODE === "production"
     ? "https://api.mwpsupplements.com/api"
-    : "http://localhost:4004/api";
+    : "http://localhost:4000/api";

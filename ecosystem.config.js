@@ -6,7 +6,7 @@ module.exports = {
       script: 'npm',
       args: 'start',
       env: {
-        PORT: 3007,
+        PORT: 3000,
         NODE_ENV: 'production'
       },
       error_file: "/root/.pm2/logs/mwp-client-error.log",
@@ -20,7 +20,7 @@ module.exports = {
       script: 'npm',
       args: 'run preview',
       env: {
-        PORT: 4178,
+        PORT: 4173,
         NODE_ENV: 'production',
         HOST: '0.0.0.0'
       },
@@ -35,7 +35,7 @@ module.exports = {
       script: 'npm',
       args: 'start',
       env: {
-        PORT: 4008,
+        PORT: 4000,
         NODE_ENV: 'production'
       },
       error_file: "/root/.pm2/logs/mwp-server-error.log",

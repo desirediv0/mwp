@@ -5,7 +5,7 @@ import { toast } from "sonner";
 const DEBUG_API = true;
 
 // Create axios instance with baseURL
-const baseURL = import.meta.env.VITE_API_URL || (import.meta.env.MODE === "development" ? "http://localhost:4004" : "https://api.mwpsupplements.com");
+const baseURL = import.meta.env.VITE_API_URL || (import.meta.env.MODE === "development" ? "http://localhost:4000" : "https://api.mwpsupplements.com");
 
 const api = axios.create({
   baseURL: baseURL,
