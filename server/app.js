@@ -27,7 +27,11 @@ import couponRoutes from "./routes/coupon.routes.js";
 import contentRoutes from "./routes/content.routes.js";
 import faqRoutes from "./routes/faq.routes.js";
 import ingredientRoutes from "./routes/ingredient.routes.js";
-import adminIngredientRoutes from "./routes/admin.ingredient.routes.js";
+import adminIngredientRoutes, {
+  productIngredientAdminRouter,
+} from "./routes/admin.ingredient.routes.js";
+import certificateRoutes from "./routes/certificate.routes.js";
+import adminCertificateRoutes from "./routes/admin.certificate.routes.js";
 import adminBrandRoutes from "./routes/admin.brand.routes.js";
 import adminBannerRoutes from "./routes/admin.banner.routes.js";
 import adminProductSectionRoutes from "./routes/admin.product-section.routes.js";
@@ -166,6 +170,9 @@ app.use("/api/content", contentRoutes);
 app.use("/api/faqs", faqRoutes);
 app.use("/api/ingredients", ingredientRoutes);
 app.use("/api/admin/ingredients", adminIngredientRoutes);
+app.use("/api/admin/product-ingredients", productIngredientAdminRouter);
+app.use("/api/certificates", certificateRoutes);
+app.use("/api/admin/certificates", adminCertificateRoutes);
 app.use("/api/admin", adminBrandRoutes);
 app.use("/api/admin", adminBannerRoutes);
 app.use("/api/admin", adminProductSectionRoutes);

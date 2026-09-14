@@ -38,8 +38,7 @@ const TARGETS = [
 
 const OUT = path.resolve("qr-codes");
 const CLIENT_PUBLIC = path.resolve("..", "client", "public", "qr");
-const ADMIN_PUBLIC = path.resolve("..", "front", "public", "qr");
-const DESTS = [OUT, CLIENT_PUBLIC, ADMIN_PUBLIC];
+const DESTS = [OUT, CLIENT_PUBLIC];
 DESTS.forEach((d) => fs.mkdirSync(d, { recursive: true }));
 
 const qrOpts = {

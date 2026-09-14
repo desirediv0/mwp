@@ -300,6 +300,7 @@ model Product {
   fragranceQuizRuleProducts FragranceQuizRuleProduct[]
   notes             ProductNote[]
   ingredients       ProductIngredient[]
+  ingredientItems   ProductIngredientItem[]
 }
 
 model ProductNote {
@@ -878,6 +879,45 @@ model ProductIngredient {
 
   @@unique([productId, ingredientId])
   @@index([productId, displayOrder])
+}
+
+// Standalone per-product ingredients (name, type, image, description).
+// Not shared across products — each product defines its own list.
+// Public page /ingredients/[productId] lists them under the product,
+// and that URL never changes so its printed QR code stays valid forever.
+model ProductIngredientItem {
+  id             String   @id @default(uuid())
+  productId      String
+  name           String
+  scientificName String?  // botanical/scientific name, e.g. "Withania Somnifera"
+  type           String?  // e.g. "Powder", "Extract", "Capsule Fill" — free text
+  keyBenefit     String?  // short scannable tag, e.g. "Boosts Energy"
+  source         String?  // origin/sourcing, e.g. "India — Ashwagandha root"
+  image          String?  // raw/natural form image, stored via S3/Spaces
+  description    String   @db.Text
+  displayOrder   Int      @default(0)
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+  product        Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  @@index([productId, displayOrder])
+}
+
+// Certification / compliance documents (GMP, FSSAI, lab reports, etc).
+// Shown together on one permanent public page (/certificates) so a single
+// QR code printed on packaging keeps working forever, no matter how many
+// certificates are added, edited, or removed later.
+model Certificate {
+  id           String   @id @default(uuid())
+  title        String
+  fileUrl      String   // image or PDF, stored via the same S3/Spaces uploader as other admin assets
+  fileType     String   // "image" | "pdf"
+  displayOrder Int      @default(0)
+  isActive     Boolean  @default(true)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  @@index([isActive, displayOrder])
 }
 
 enum UserRole {

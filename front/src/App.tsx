@@ -36,8 +36,8 @@ import BrandsPage from "./pages/BrandsPage";
 import ProductSectionsPage from "./pages/ProductSections";
 import CheckoutRecommendationsPage from "./pages/CheckoutRecommendationsPage";
 import BannersPage from "./pages/BannersPage";
-import IngredientsPage from "./pages/IngredientsPage";
-import QRCodesPage from "./pages/QRCodesPage";
+import CertificatesPage from "./pages/CertificatesPage";
+import ProductIngredientsPage from "./pages/ProductIngredientsPage";
 import VideoReelsPage from "./pages/VideoReelsPage";
 import BundleCampaignsPage from "./pages/BundleCampaignsPage";
 import BundleCampaignCreatePage from "./pages/BundleCampaignCreatePage";
@@ -808,19 +808,19 @@ const App = () => {
             />
 
             <Route
-              path="ingredients"
+              path="certificates"
               element={
                 <ProtectedRoute resource={Resource.PRODUCTS} action={Action.READ}>
-                  <IngredientsPage />
+                  <CertificatesPage />
                 </ProtectedRoute>
               }
             />
 
             <Route
-              path="qr-codes"
+              path="ingredients"
               element={
                 <ProtectedRoute resource={Resource.PRODUCTS} action={Action.READ}>
-                  <QRCodesPage />
+                  <ProductIngredientsPage />
                 </ProtectedRoute>
               }
             />

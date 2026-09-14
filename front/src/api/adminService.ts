@@ -1549,9 +1549,79 @@ export const ingredients = {
     return api.put(`/api/admin/ingredients/${id}`, fd, { headers: { "Content-Type": "multipart/form-data" } });
   },
   remove: (id: string) => api.delete(`/api/admin/ingredients/${id}`),
-  // product <-> ingredient links
+  // master-library <-> product links (unused by current admin UI)
   getForProduct: (productId: string) =>
-    api.get(`/api/admin/ingredients/product/${productId}`),
+    api.get(`/api/admin/ingredients/library-links/${productId}`),
   setForProduct: (productId: string, ingredientIds: string[]) =>
-    api.put(`/api/admin/ingredients/product/${productId}`, { ingredientIds }),
+    api.put(`/api/admin/ingredients/library-links/${productId}`, { ingredientIds }),
+};
+
+// Standalone per-product ingredients (name/type/image/description).
+// The public page these feed is permanent: /ingredients/product/<productId>
+interface ProductIngredientData {
+  name: string;
+  scientificName?: string;
+  type?: string;
+  keyBenefit?: string;
+  source?: string;
+  description: string;
+  displayOrder?: number;
+  image?: File | null;
+}
+
+export const productIngredients = {
+  getForProduct: (productId: string) =>
+    api.get(`/api/admin/product-ingredients/product/${productId}`),
+  create: (productId: string, data: ProductIngredientData) => {
+    const fd = new FormData();
+    fd.append("name", data.name);
+    if (data.scientificName) fd.append("scientificName", data.scientificName);
+    if (data.type) fd.append("type", data.type);
+    if (data.keyBenefit) fd.append("keyBenefit", data.keyBenefit);
+    if (data.source) fd.append("source", data.source);
+    fd.append("description", data.description);
+    if (data.displayOrder !== undefined) fd.append("displayOrder", String(data.displayOrder));
+    if (data.image) fd.append("image", data.image);
+    return api.post(`/api/admin/product-ingredients/product/${productId}`, fd, {
+      headers: { "Content-Type": "multipart/form-data" },
+    });
+  },
+  update: (itemId: string, data: Partial<ProductIngredientData>) => {
+    const fd = new FormData();
+    if (data.name !== undefined) fd.append("name", data.name);
+    if (data.scientificName !== undefined) fd.append("scientificName", data.scientificName);
+    if (data.type !== undefined) fd.append("type", data.type);
+    if (data.keyBenefit !== undefined) fd.append("keyBenefit", data.keyBenefit);
+    if (data.source !== undefined) fd.append("source", data.source);
+    if (data.description !== undefined) fd.append("description", data.description);
+    if (data.displayOrder !== undefined) fd.append("displayOrder", String(data.displayOrder));
+    if (data.image) fd.append("image", data.image);
+    return api.put(`/api/admin/product-ingredients/item/${itemId}`, fd, {
+      headers: { "Content-Type": "multipart/form-data" },
+    });
+  },
+  remove: (itemId: string) => api.delete(`/api/admin/product-ingredients/item/${itemId}`),
+  reorder: (productId: string, order: { id: string; displayOrder: number }[]) =>
+    api.put(`/api/admin/product-ingredients/product/${productId}/reorder`, { order }),
+};
+
+export const certificates = {
+  list: () => api.get("/api/admin/certificates"),
+  create: (data: { title: string; displayOrder?: number; isActive?: boolean; file: File }) => {
+    const fd = new FormData();
+    fd.append("title", data.title);
+    if (data.displayOrder !== undefined) fd.append("displayOrder", String(data.displayOrder));
+    if (data.isActive !== undefined) fd.append("isActive", String(data.isActive));
+    fd.append("file", data.file);
+    return api.post("/api/admin/certificates", fd, { headers: { "Content-Type": "multipart/form-data" } });
+  },
+  update: (id: string, data: { title?: string; displayOrder?: number; isActive?: boolean; file?: File | null }) => {
+    const fd = new FormData();
+    if (data.title !== undefined) fd.append("title", data.title);
+    if (data.displayOrder !== undefined) fd.append("displayOrder", String(data.displayOrder));
+    if (data.isActive !== undefined) fd.append("isActive", String(data.isActive));
+    if (data.file) fd.append("file", data.file);
+    return api.put(`/api/admin/certificates/${id}`, fd, { headers: { "Content-Type": "multipart/form-data" } });
+  },
+  remove: (id: string) => api.delete(`/api/admin/certificates/${id}`),
 };

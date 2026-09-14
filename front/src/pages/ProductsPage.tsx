@@ -14,7 +14,6 @@ import {
   subCategories,
   moq,
   videoReels,
-  ingredients as ingredientsApi,
 } from "@/api/adminService";
 import api from "@/api/api";
 import { Button } from "@/components/ui/button";
@@ -290,34 +289,6 @@ export function ProductForm({
     fetchShiprocketSettings();
   }, []);
 
-  // Load the master ingredient list once, and (in edit mode) the product's links
-  useEffect(() => {
-    ingredientsApi
-      .list()
-      .then((r: any) =>
-        setAllIngredients(
-          (r.data?.data?.ingredients || []).map((i: any) => ({
-            id: i.id,
-            name: i.name,
-            benefit: i.benefit,
-            image: i.image || null,
-          }))
-        )
-      )
-      .catch(() => {});
-  }, []);
-
-  useEffect(() => {
-    if (mode === "edit" && productId) {
-      ingredientsApi
-        .getForProduct(productId)
-        .then((r: any) =>
-          setSelectedIngredientIds((r.data?.data?.ingredients || []).map((i: any) => i.id))
-        )
-        .catch(() => {});
-    }
-  }, [mode, productId]);
-
   // Jodit Editor reference and local state
   const editorRef = useRef<any>(null);
   const [editorContent, setEditorContent] = useState<string>("");
@@ -338,13 +309,6 @@ export function ProductForm({
     servingSize: "",
     whenToTake: "",
   });
-
-  // Ingredients linked to this product (for its box-QR page)
-  const [allIngredients, setAllIngredients] = useState<
-    { id: string; name: string; benefit: string; image: string | null }[]
-  >([]);
-  const [selectedIngredientIds, setSelectedIngredientIds] = useState<string[]>([]);
-  const [ingredientSearch, setIngredientSearch] = useState("");
 
   // Memoize editor config to prevent re-renders when other state changes
   const editorConfig = useMemo(
@@ -1446,16 +1410,6 @@ export function ProductForm({
         }
       } else {
         response = await products.updateProduct(productId!, formData as any);
-      }
-
-      // Sync ingredient links (product box QR page)
-      if (response.data.success && savedProductId) {
-        try {
-          await ingredientsApi.setForProduct(savedProductId, selectedIngredientIds);
-        } catch (e) {
-          console.error("Failed to save product ingredients:", e);
-          toast.error("Product saved, but ingredient links failed");
-        }
       }
 
       if (response.data.success) {
@@ -2685,138 +2639,6 @@ export function ProductForm({
               />
             </div>
 
-            {/* Quick Compare fields (shown on the /compare page) */}
-            <div className="mt-6 rounded-lg border border-dashed p-4 bg-white">
-              <h3 className="text-sm font-semibold text-gray-800 mb-1">Quick Compare</h3>
-              <p className="text-xs text-gray-500 mb-4">
-                Short plain-language fields used on the customer Product Comparison page.
-              </p>
-              <div className="grid gap-4 md:grid-cols-2">
-                <div>
-                  <Label className="text-xs">Best For</Label>
-                  <Input
-                    value={sectionContents.bestFor}
-                    onChange={(e) => setSectionContents((p) => ({ ...p, bestFor: e.target.value }))}
-                    placeholder="e.g. Strength & gym performance"
-                  />
-                </div>
-                <div>
-                  <Label className="text-xs">Form (Capsule / Tablet / Powder)</Label>
-                  <Input
-                    value={sectionContents.dosageForm}
-                    onChange={(e) => setSectionContents((p) => ({ ...p, dosageForm: e.target.value }))}
-                    placeholder="e.g. Capsule"
-                  />
-                </div>
-                <div>
-                  <Label className="text-xs">Serving Size</Label>
-                  <Input
-                    value={sectionContents.servingSize}
-                    onChange={(e) => setSectionContents((p) => ({ ...p, servingSize: e.target.value }))}
-                    placeholder="e.g. 2 capsules"
-                  />
-                </div>
-                <div>
-                  <Label className="text-xs">When To Take</Label>
-                  <Input
-                    value={sectionContents.whenToTake}
-                    onChange={(e) => setSectionContents((p) => ({ ...p, whenToTake: e.target.value }))}
-                    placeholder="e.g. Morning with food"
-                  />
-                </div>
-                <div className="md:col-span-2">
-                  <Label className="text-xs">Main Benefits (one line)</Label>
-                  <Input
-                    value={sectionContents.mainBenefits}
-                    onChange={(e) => setSectionContents((p) => ({ ...p, mainBenefits: e.target.value }))}
-                    placeholder="e.g. Supports testosterone, stamina and recovery"
-                  />
-                </div>
-              </div>
-            </div>
-
-            {/* Ingredients in this product — shown on the box-QR page */}
-            <div className="mt-6 rounded-lg border p-4 bg-white">
-              <h3 className="text-sm font-semibold text-gray-800 mb-1">
-                Ingredients in this product
-              </h3>
-              <p className="text-xs text-gray-500 mb-3">
-                Tick every ingredient this product contains. These appear (name + image + benefit)
-                on the product page that its box QR code links to.{" "}
-                <a href="/ingredients" target="_blank" className="text-primary underline">
-                  Manage the ingredient library →
-                </a>
-              </p>
-              <Input
-                value={ingredientSearch}
-                onChange={(e) => setIngredientSearch(e.target.value)}
-                placeholder="Filter ingredients…"
-                className="mb-3 h-9"
-              />
-              <div className="flex items-center justify-between mb-2 text-xs text-gray-500">
-                <span>{selectedIngredientIds.length} selected</span>
-                {selectedIngredientIds.length > 0 && (
-                  <button
-                    type="button"
-                    className="text-primary underline"
-                    onClick={() => setSelectedIngredientIds([])}
-                  >
-                    Clear all
-                  </button>
-                )}
-              </div>
-              <div className="max-h-72 overflow-y-auto rounded-md border divide-y">
-                {allIngredients.length === 0 ? (
-                  <p className="p-4 text-sm text-gray-400">
-                    No ingredients yet. Add them in the Ingredients section first.
-                  </p>
-                ) : (
-                  allIngredients
-                    .filter((i) =>
-                      i.name.toLowerCase().includes(ingredientSearch.trim().toLowerCase())
-                    )
-                    .map((i) => {
-                      const checked = selectedIngredientIds.includes(i.id);
-                      return (
-                        <label
-                          key={i.id}
-                          className="flex items-center gap-3 p-2.5 cursor-pointer hover:bg-gray-50"
-                        >
-                          <input
-                            type="checkbox"
-                            checked={checked}
-                            onChange={() =>
-                              setSelectedIngredientIds((prev) =>
-                                prev.includes(i.id)
-                                  ? prev.filter((x) => x !== i.id)
-                                  : [...prev, i.id]
-                              )
-                            }
-                            className="h-4 w-4 accent-primary"
-                          />
-                          {i.image ? (
-                            <img
-                              src={i.image}
-                              alt=""
-                              className="w-8 h-8 rounded object-cover border shrink-0"
-                            />
-                          ) : (
-                            <span className="w-8 h-8 rounded bg-gray-100 shrink-0" />
-                          )}
-                          <span className="min-w-0">
-                            <span className="block text-[13px] font-medium text-gray-800 truncate">
-                              {i.name}
-                            </span>
-                            <span className="block text-[11px] text-gray-500 truncate">
-                              {i.benefit}
-                            </span>
-                          </span>
-                        </label>
-                      );
-                    })
-                )}
-              </div>
-            </div>
           </div>
 
           {/* Product Videos Section */}

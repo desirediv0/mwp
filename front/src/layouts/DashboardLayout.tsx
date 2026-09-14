@@ -27,8 +27,8 @@ import {
   Truck,
   Video,
   Sparkles,
+  BadgeCheck,
   FlaskConical,
-  QrCode,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { SafeRender } from "@/components/SafeRender";
@@ -405,19 +405,19 @@ export default function DashboardLayout() {
                 )}
               />
 
+              {/* Certificates - Single Item */}
+              <NavItem
+                href="/certificates"
+                icon={<BadgeCheck className="h-[1.125rem] w-[1.125rem]" />}
+                title="Certificates"
+                hasPermission={hasPermissionFor(admin, Resource.PRODUCTS, Action.READ)}
+              />
+
               {/* Ingredients - Single Item */}
               <NavItem
                 href="/ingredients"
                 icon={<FlaskConical className="h-[1.125rem] w-[1.125rem]" />}
                 title="Ingredients"
-                hasPermission={hasPermissionFor(admin, Resource.PRODUCTS, Action.READ)}
-              />
-
-              {/* QR Codes - Single Item */}
-              <NavItem
-                href="/qr-codes"
-                icon={<QrCode className="h-[1.125rem] w-[1.125rem]" />}
-                title="QR Codes"
                 hasPermission={hasPermissionFor(admin, Resource.PRODUCTS, Action.READ)}
               />
 
@@ -861,20 +861,20 @@ export default function DashboardLayout() {
                 )}
               />
 
+              {/* Certificates - Single Item */}
+              <NavItem
+                href="/certificates"
+                icon={<BadgeCheck className="h-[1.125rem] w-[1.125rem]" />}
+                title="Certificates"
+                onClick={toggleMobileMenu}
+                hasPermission={hasPermissionFor(admin, Resource.PRODUCTS, Action.READ)}
+              />
+
               {/* Ingredients - Single Item */}
               <NavItem
                 href="/ingredients"
                 icon={<FlaskConical className="h-[1.125rem] w-[1.125rem]" />}
                 title="Ingredients"
-                onClick={toggleMobileMenu}
-                hasPermission={hasPermissionFor(admin, Resource.PRODUCTS, Action.READ)}
-              />
-
-              {/* QR Codes - Single Item */}
-              <NavItem
-                href="/qr-codes"
-                icon={<QrCode className="h-[1.125rem] w-[1.125rem]" />}
-                title="QR Codes"
                 onClick={toggleMobileMenu}
                 hasPermission={hasPermissionFor(admin, Resource.PRODUCTS, Action.READ)}
               />
