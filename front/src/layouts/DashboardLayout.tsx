@@ -417,7 +417,7 @@ export default function DashboardLayout() {
               <NavItem
                 href="/ingredients"
                 icon={<FlaskConical className="h-[1.125rem] w-[1.125rem]" />}
-                title="Ingredients"
+                title="QR"
                 hasPermission={hasPermissionFor(admin, Resource.PRODUCTS, Action.READ)}
               />
 
@@ -874,7 +874,7 @@ export default function DashboardLayout() {
               <NavItem
                 href="/ingredients"
                 icon={<FlaskConical className="h-[1.125rem] w-[1.125rem]" />}
-                title="Ingredients"
+                title="QR"
                 onClick={toggleMobileMenu}
                 hasPermission={hasPermissionFor(admin, Resource.PRODUCTS, Action.READ)}
               />
