@@ -219,7 +219,7 @@ export const ProductCard = ({ product, viewMode = "grid" }) => {
   if (isList) {
     return (
       <div
-        className="group relative flex flex-row bg-white rounded-2xl border border-gray-200 overflow-hidden transition-all duration-300 hover:border-red-300 hover:shadow-[0_12px_40px_-12px_rgba(0,0,0,0.12)]"
+        className="group relative flex flex-row bg-white border border-gray-200 overflow-hidden transition-all duration-300 hover:border-gray-400 hover:shadow-[0_12px_40px_-12px_rgba(0,0,0,0.12)]"
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
       >
@@ -236,7 +236,7 @@ export const ProductCard = ({ product, viewMode = "grid" }) => {
             sizes="180px"
           />
           {discountPercent > 0 && (
-            <span className="absolute top-3 left-3 bg-red-600 text-white text-[11px] font-extrabold px-2 py-1 rounded-md">
+            <span className="absolute top-3 left-3 bg-gray-900 text-white text-[11px] font-extrabold px-2 py-1">
               −{discountPercent}%
             </span>
           )}
@@ -244,10 +244,10 @@ export const ProductCard = ({ product, viewMode = "grid" }) => {
         <div className="flex flex-col flex-1 p-5 justify-between min-w-0">
           <div>
             {categoryName && (
-              <span className="text-[10px] uppercase tracking-[0.18em] text-red-600 font-bold">{categoryName}</span>
+              <span className="text-[10px] uppercase tracking-[0.18em] text-gray-900 font-bold">{categoryName}</span>
             )}
             <Link href={`/products/${product.slug}`}>
-              <h3 className="text-[15px] font-bold text-gray-900 mt-1 mb-1.5 line-clamp-1 hover:text-red-600 transition-colors">
+              <h3 className="text-[15px] font-bold text-gray-900 mt-1 mb-1.5 line-clamp-1 hover:text-gray-900 transition-colors">
                 {product.name}
               </h3>
             </Link>
@@ -265,7 +265,7 @@ export const ProductCard = ({ product, viewMode = "grid" }) => {
                 {originalPrice && <span className="text-[13px] text-gray-400 line-through">{formatCurrency(originalPrice)}</span>}
               </div>
             ) : (
-              <button onClick={() => openAuthModal && openAuthModal()} className="text-[12px] text-red-600 font-semibold hover:underline">
+              <button onClick={() => openAuthModal && openAuthModal()} className="text-[12px] text-gray-900 font-semibold hover:underline">
                 Login for Price
               </button>
             )}
@@ -273,7 +273,7 @@ export const ProductCard = ({ product, viewMode = "grid" }) => {
           <button
             onClick={handleAddToCart}
             disabled={!showPrice || isAddingToCart || isOutOfStock}
-            className="mt-4 self-start inline-flex items-center gap-2 py-2.5 px-5 rounded-lg text-[11px] uppercase tracking-[0.12em] font-bold transition-all bg-red-600 text-white hover:bg-red-700 disabled:opacity-50 disabled:cursor-not-allowed shadow-sm shadow-red-600/20"
+            className="mt-4 self-start inline-flex items-center gap-2 py-2.5 px-5 text-[11px] uppercase tracking-[0.12em] font-bold transition-all bg-gray-900 text-white hover:bg-gray-800 disabled:opacity-50 disabled:cursor-not-allowed shadow-sm shadow-black/20"
           >
             {isAddingToCart ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : addedToCart ? <><Check className="w-3.5 h-3.5" /> Added</> : isOutOfStock ? "Out of Stock" : <><ShoppingBag className="w-3.5 h-3.5" /> Add to Cart</>}
           </button>
@@ -285,7 +285,7 @@ export const ProductCard = ({ product, viewMode = "grid" }) => {
   /* ── GRID MODE ── */
   return (
     <div
-      className="group relative flex flex-col h-full bg-white rounded-2xl border border-gray-200 overflow-hidden transition-all duration-300 hover:border-red-300 hover:shadow-[0_16px_44px_-16px_rgba(0,0,0,0.16)]"
+      className="group relative flex flex-col h-full bg-white border border-gray-200 overflow-hidden transition-all duration-300 hover:border-gray-400 hover:shadow-[0_16px_44px_-16px_rgba(0,0,0,0.16)]"
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
@@ -304,12 +304,12 @@ export const ProductCard = ({ product, viewMode = "grid" }) => {
         {/* Badges (top-left) */}
         <div className="absolute top-3 left-3 z-20 flex flex-col gap-1.5 pointer-events-none">
           {discountPercent > 0 && (
-            <span className="bg-red-600 text-white text-[11px] font-extrabold px-2 py-1 rounded-md shadow-sm">
+            <span className="bg-gray-900 text-white text-[11px] font-extrabold px-2 py-1 shadow-sm">
               −{discountPercent}%
             </span>
           )}
           {showFlashSaleBadge && (
-            <span className="bg-amber-400 text-gray-900 text-[10px] font-extrabold uppercase tracking-wider px-2 py-1 rounded-md">
+            <span className="bg-amber-400 text-gray-900 text-[10px] font-extrabold uppercase tracking-wider px-2 py-1">
               Flash Sale
             </span>
           )}
@@ -321,8 +321,8 @@ export const ProductCard = ({ product, viewMode = "grid" }) => {
             onClick={handleAddToWishlist}
             disabled={isAddingToWishlist[product.id]}
             className={cn(
-              "w-9 h-9 flex items-center justify-center rounded-full bg-white/95 backdrop-blur-sm shadow-sm border border-gray-100 transition-all duration-300",
-              inWishlist ? "text-red-600" : "text-gray-400 hover:text-red-600"
+              "w-9 h-9 flex items-center justify-center bg-white/95 backdrop-blur-sm shadow-sm border border-gray-100 transition-all duration-300",
+              inWishlist ? "text-gray-900" : "text-gray-400 hover:text-gray-900"
             )}
             aria-label="Add to wishlist"
           >
@@ -333,8 +333,8 @@ export const ProductCard = ({ product, viewMode = "grid" }) => {
           <button
             onClick={(e) => { e.preventDefault(); e.stopPropagation(); toggleCompare(product); }}
             className={cn(
-              "w-9 h-9 flex items-center justify-center rounded-full bg-white/95 backdrop-blur-sm shadow-sm border border-gray-100 transition-all duration-300",
-              isInCompare(product.id) ? "text-red-600 bg-red-50" : "text-gray-400 hover:text-red-600"
+              "w-9 h-9 flex items-center justify-center bg-white/95 backdrop-blur-sm shadow-sm border border-gray-100 transition-all duration-300",
+              isInCompare(product.id) ? "text-gray-900 bg-gray-100" : "text-gray-400 hover:text-gray-900"
             )}
             aria-label="Compare product"
             title={isInCompare(product.id) ? "Remove from compare" : "Add to compare"}
@@ -346,7 +346,7 @@ export const ProductCard = ({ product, viewMode = "grid" }) => {
         {/* Out of stock overlay */}
         {isOutOfStock && (
           <div className="absolute inset-0 z-10 bg-white/70 backdrop-blur-[2px] flex items-center justify-center">
-            <span className="text-[11px] uppercase tracking-[0.18em] font-bold text-gray-900 bg-white px-4 py-2 rounded-lg border border-gray-200">
+            <span className="text-[11px] uppercase tracking-[0.18em] font-bold text-gray-900 bg-white px-4 py-2 border border-gray-200">
               Sold Out
             </span>
           </div>
@@ -357,7 +357,7 @@ export const ProductCard = ({ product, viewMode = "grid" }) => {
           <button
             onClick={handleAddToCart}
             disabled={!showPrice || isAddingToCart || isOutOfStock}
-            className="w-full flex items-center justify-center gap-2 py-2.5 rounded-lg bg-red-600 text-white text-[11px] uppercase tracking-[0.12em] font-bold hover:bg-red-700 disabled:opacity-50 disabled:cursor-not-allowed shadow-lg shadow-red-900/20 transition-colors"
+            className="w-full flex items-center justify-center gap-2 py-2.5 bg-gray-900 text-white text-[11px] uppercase tracking-[0.12em] font-bold hover:bg-gray-800 disabled:opacity-50 disabled:cursor-not-allowed shadow-lg shadow-black/20 transition-colors"
           >
             {isAddingToCart
               ? <Loader2 className="w-3.5 h-3.5 animate-spin" />
@@ -373,13 +373,13 @@ export const ProductCard = ({ product, viewMode = "grid" }) => {
       {/* Info */}
       <div className="flex flex-col flex-1 p-4">
         {categoryName && (
-          <span className="text-[10px] uppercase tracking-[0.18em] text-red-600 font-bold mb-1.5 line-clamp-1">
+          <span className="text-[10px] uppercase tracking-[0.18em] text-gray-900 font-bold mb-1.5 line-clamp-1">
             {categoryName}
           </span>
         )}
 
         <Link href={`/products/${product.slug}`} className="block">
-          <h3 className="text-[14px] font-bold text-gray-900 leading-snug line-clamp-2 min-h-[2.5em] group-hover:text-red-600 transition-colors">
+          <h3 className="text-[14px] font-bold text-gray-900 leading-snug line-clamp-2 min-h-[2.5em] group-hover:text-gray-900 transition-colors">
             {product.name}
           </h3>
         </Link>
@@ -406,7 +406,7 @@ export const ProductCard = ({ product, viewMode = "grid" }) => {
               )}
             </div>
           ) : (
-            <button onClick={() => openAuthModal && openAuthModal()} className="text-[12px] uppercase tracking-[0.1em] text-red-600 font-bold hover:underline">
+            <button onClick={() => openAuthModal && openAuthModal()} className="text-[12px] uppercase tracking-[0.1em] text-gray-900 font-bold hover:underline">
               Login for Price
             </button>
           )}
@@ -414,7 +414,7 @@ export const ProductCard = ({ product, viewMode = "grid" }) => {
           {/* Quick view (desktop hover) */}
           <Link
             href={`/products/${product.slug}`}
-            className="hidden sm:flex items-center justify-center w-8 h-8 rounded-lg border border-gray-200 text-gray-400 hover:border-red-300 hover:text-red-600 transition-colors shrink-0"
+            className="hidden sm:flex items-center justify-center w-8 h-8 border border-gray-200 text-gray-400 hover:border-gray-400 hover:text-gray-900 transition-colors shrink-0"
             aria-label="View product"
           >
             <Eye className="h-4 w-4" />

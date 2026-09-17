@@ -63,7 +63,7 @@ const productCategories = [
     slug: "fruits",
     description: "Hand-picked seasonal fruits, ripened naturally without chemicals.",
     icon: Heart,
-    color: "bg-red-500"
+    color: "bg-gray-500"
   },
 ];
 

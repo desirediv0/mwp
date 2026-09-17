@@ -13,7 +13,7 @@ function CategoryCard({ category }) {
   const count = category._count?.products || 0;
   return (
     <Link href={`/category/${category.slug}`} className="group block">
-      <div className="relative overflow-hidden rounded-2xl bg-gray-100 aspect-[4/3] border border-gray-200 transition-all duration-300 group-hover:border-red-300 group-hover:shadow-[0_16px_40px_-16px_rgba(0,0,0,0.18)]">
+      <div className="relative overflow-hidden bg-gray-100 aspect-[4/3] border border-gray-200 transition-all duration-300 group-hover:border-gray-400 group-hover:shadow-[0_16px_40px_-16px_rgba(0,0,0,0.18)]">
         {category.image ? (
           <Image
             src={category.image}
@@ -42,7 +42,7 @@ function CategoryCard({ category }) {
                 {count > 0 ? `${count} ${count === 1 ? "product" : "products"}` : "Explore"}
               </p>
             </div>
-            <span className="shrink-0 w-8 h-8 rounded-full bg-white/15 backdrop-blur-sm border border-white/25 flex items-center justify-center text-white opacity-0 translate-y-1 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-300">
+            <span className="shrink-0 w-8 h-8 bg-white/15 backdrop-blur-sm border border-white/25 flex items-center justify-center text-white opacity-0 translate-y-1 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-300">
               <IconArrowUpRight className="h-4 w-4" stroke={2} />
             </span>
           </div>
@@ -56,7 +56,7 @@ function SkeletonGrid() {
   return (
     <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-5">
       {[...Array(8)].map((_, i) => (
-        <div key={i} className="animate-pulse rounded-2xl bg-gray-100 aspect-[4/3]" />
+        <div key={i} className="animate-pulse bg-gray-100 aspect-[4/3]" />
       ))}
     </div>
   );
@@ -99,13 +99,13 @@ export default function CategoryGrid() {
           <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4 mb-10 md:mb-12">
             <div>
               <div className="flex items-center gap-3 mb-3">
-                <span className="h-px w-8 bg-red-500/50" />
-                <span className="text-[10px] uppercase tracking-[0.3em] text-red-600 font-bold">
+                <span className="h-px w-8 bg-gray-900/50" />
+                <span className="text-[10px] uppercase tracking-[0.3em] text-gray-900 font-bold">
                   Performance Targets
                 </span>
               </div>
               <h2 className="text-3xl sm:text-4xl md:text-[42px] font-extrabold text-gray-900 tracking-tight leading-tight">
-                Shop by <span className="text-red-600">Category</span>
+                Shop by <span className="text-gray-900">Category</span>
               </h2>
               <p className="text-[15px] text-gray-500 mt-3 font-light max-w-lg leading-relaxed">
                 Targeted nutritional protocols for strength, hormone balance, endurance, and daily wellness.
@@ -113,7 +113,7 @@ export default function CategoryGrid() {
             </div>
             <Link
               href="/categories"
-              className="shrink-0 inline-flex items-center gap-2 text-[12px] uppercase tracking-[0.14em] font-bold text-gray-900 hover:text-red-600 transition-colors"
+              className="shrink-0 inline-flex items-center gap-2 text-[12px] uppercase tracking-[0.14em] font-bold text-gray-900 hover:text-gray-900 transition-colors"
             >
               View All Categories
               <IconArrowRight className="h-4 w-4" stroke={2} />
@@ -133,9 +133,9 @@ export default function CategoryGrid() {
               {hasMore && (
                 <Link
                   href="/categories"
-                  className="group flex flex-col items-center justify-center rounded-2xl border-2 border-dashed border-gray-200 aspect-[4/3] text-center px-4 hover:border-red-300 hover:bg-red-50/40 transition-colors"
+                  className="group flex flex-col items-center justify-center border-2 border-dashed border-gray-200 aspect-[4/3] text-center px-4 hover:border-gray-400 hover:bg-gray-50/40 transition-colors"
                 >
-                  <span className="w-10 h-10 rounded-full bg-red-600 text-white flex items-center justify-center mb-3 group-hover:scale-110 transition-transform">
+                  <span className="w-10 h-10 bg-gray-900 text-white flex items-center justify-center mb-3 group-hover:scale-110 transition-transform">
                     <IconArrowRight className="h-5 w-5" stroke={2} />
                   </span>
                   <span className="text-[13px] font-bold text-gray-900">

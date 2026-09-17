@@ -40,14 +40,14 @@ export default function HomeFaqSection() {
         <Reveal>
           <div className="text-center mb-12">
             <div className="flex items-center justify-center gap-3 mb-4">
-              <span className="h-px w-8 bg-red-500/40" />
-              <span className="text-[10px] uppercase tracking-[0.3em] text-red-500 font-bold">
+              <span className="h-px w-8 bg-neutral-500/40" />
+              <span className="text-[10px] uppercase tracking-[0.3em] text-neutral-900 font-bold">
                 Got Questions?
               </span>
-              <span className="h-px w-8 bg-red-500/40" />
+              <span className="h-px w-8 bg-neutral-500/40" />
             </div>
             <h2 className="font-display text-3xl sm:text-4xl md:text-[44px] text-noir tracking-tight leading-tight font-extrabold">
-              Frequently Asked <em className="italic text-red-500">Questions</em>
+              Frequently Asked <em className="italic text-neutral-900">Questions</em>
             </h2>
             <p className="text-[15px] text-stone mt-4 font-light">
               Everything you need to know about MWP dosage, safety, ingredient science, and stacks.
@@ -60,15 +60,15 @@ export default function HomeFaqSection() {
             const isOpen = openIdx === idx;
             return (
               <Reveal key={idx} delay={0.04 * idx}>
-                <div className="rounded-xl border border-gray-100 bg-[#fafafa] overflow-hidden">
+                <div className="border border-gray-100 bg-[#fafafa] overflow-hidden">
                   <button
                     onClick={() => setOpenIdx(isOpen ? -1 : idx)}
-                    className="w-full p-5 text-left flex items-center justify-between gap-4 font-semibold text-sm sm:text-base text-noir hover:text-red-600 transition-colors"
+                    className="w-full p-5 text-left flex items-center justify-between gap-4 font-semibold text-sm sm:text-base text-noir hover:text-neutral-900 transition-colors"
                   >
                     <span>{faq.q}</span>
                     <IconChevronDown
                       className={`h-5 w-5 text-stone shrink-0 transition-transform duration-200 ${
-                        isOpen ? "rotate-180 text-red-500" : ""
+                        isOpen ? "rotate-180 text-neutral-900" : ""
                       }`}
                     />
                   </button>

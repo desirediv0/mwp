@@ -16,13 +16,13 @@ import {
 
 // Skeleton loader
 const ProductSkeleton = () => (
-  <div className="bg-white rounded-xl overflow-hidden animate-pulse border border-gray-100">
+  <div className="bg-white overflow-hidden animate-pulse border border-gray-100">
     <div className="h-48 w-full bg-gradient-to-br from-gray-100 to-gray-200"></div>
     <div className="p-4">
-      <div className="h-3 w-16 bg-gray-200 rounded-full mx-auto mb-2"></div>
-      <div className="h-4 w-full bg-gray-100 rounded mb-2"></div>
-      <div className="h-4 w-3/4 mx-auto bg-gray-100 rounded mb-3"></div>
-      <div className="h-6 w-20 bg-gray-200 rounded-full mx-auto"></div>
+      <div className="h-3 w-16 bg-gray-200 mx-auto mb-2"></div>
+      <div className="h-4 w-full bg-gray-100 mb-2"></div>
+      <div className="h-4 w-3/4 mx-auto bg-gray-100 mb-3"></div>
+      <div className="h-6 w-20 bg-gray-200 mx-auto"></div>
     </div>
   </div>
 );
@@ -77,8 +77,8 @@ export const FeaturedProducts = () => {
       <section className="py-10 md:py-14 bg-white">
         <div className="max-w-7xl mx-auto px-4">
           <div className="text-center mb-8">
-            <div className="inline-flex items-center gap-2.5 mb-4"><span className="h-px w-8 bg-red-500/40" /><span className="text-[10px] uppercase tracking-[0.3em] text-red-600 font-bold">Bestsellers</span><span className="h-px w-8 bg-red-500/40" /></div>
-          <h2 className="text-3xl sm:text-4xl md:text-5xl font-extrabold tracking-tight text-gray-900">Featured <span className="text-red-600">Products</span></h2>
+            <div className="inline-flex items-center gap-2.5 mb-4"><span className="h-px w-8 bg-neutral-500/40" /><span className="text-[10px] uppercase tracking-[0.3em] text-neutral-900 font-bold">Bestsellers</span><span className="h-px w-8 bg-neutral-500/40" /></div>
+          <h2 className="text-3xl sm:text-4xl md:text-5xl font-extrabold tracking-tight text-gray-900">Featured <span className="text-neutral-900">Products</span></h2>
             <p className="text-[15px] text-gray-500 mt-3.5 font-light max-w-xl mx-auto">Handpicked bestsellers our athletes keep coming back to</p>
           </div>
           <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
@@ -100,8 +100,8 @@ export const FeaturedProducts = () => {
       <div className="max-w-7xl mx-auto px-4">
         {/* Header */}
         <div className="text-center mb-8">
-          <div className="inline-flex items-center gap-2.5 mb-4"><span className="h-px w-8 bg-red-500/40" /><span className="text-[10px] uppercase tracking-[0.3em] text-red-600 font-bold">Bestsellers</span><span className="h-px w-8 bg-red-500/40" /></div>
-          <h2 className="text-3xl sm:text-4xl md:text-5xl font-extrabold tracking-tight text-gray-900">Featured <span className="text-red-600">Products</span></h2>
+          <div className="inline-flex items-center gap-2.5 mb-4"><span className="h-px w-8 bg-neutral-500/40" /><span className="text-[10px] uppercase tracking-[0.3em] text-neutral-900 font-bold">Bestsellers</span><span className="h-px w-8 bg-neutral-500/40" /></div>
+          <h2 className="text-3xl sm:text-4xl md:text-5xl font-extrabold tracking-tight text-gray-900">Featured <span className="text-neutral-900">Products</span></h2>
           <p className="text-[15px] text-gray-500 mt-3.5 font-light max-w-xl mx-auto">Handpicked bestsellers our athletes keep coming back to</p>
         </div>
 
@@ -138,7 +138,7 @@ export const FeaturedProducts = () => {
             <Button
               variant="outline"
               size="lg"
-              className="font-medium border-primary text-primary hover:bg-primary hover:text-white group rounded-full px-8"
+              className="font-medium border-primary text-primary hover:bg-primary hover:text-white group px-8"
             >
               View All Products
               <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform duration-300" />

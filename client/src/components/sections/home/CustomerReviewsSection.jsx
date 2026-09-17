@@ -80,14 +80,14 @@ export default function CustomerReviewsSection() {
         <Reveal>
           <div className="text-center max-w-2xl mx-auto mb-12">
             <div className="flex items-center justify-center gap-3 mb-4">
-              <span className="h-px w-8 bg-red-500/40" />
-              <span className="text-[10px] uppercase tracking-[0.3em] text-red-500 font-bold">
+              <span className="h-px w-8 bg-neutral-500/40" />
+              <span className="text-[10px] uppercase tracking-[0.3em] text-neutral-900 font-bold">
                 Trusted By Athletes
               </span>
-              <span className="h-px w-8 bg-red-500/40" />
+              <span className="h-px w-8 bg-neutral-500/40" />
             </div>
             <h2 className="font-display text-3xl sm:text-4xl md:text-[44px] text-noir tracking-tight leading-tight font-extrabold">
-              What The <em className="italic text-red-500">Community</em> Says
+              What The <em className="italic text-neutral-900">Community</em> Says
             </h2>
           </div>
         </Reveal>
@@ -100,9 +100,9 @@ export default function CustomerReviewsSection() {
               return (
                 <div
                   key={s.label}
-                  className="rounded-2xl border border-gray-100 bg-[#fafafa] p-5 md:p-6 text-center"
+                  className=" border border-gray-100 bg-[#fafafa] p-5 md:p-6 text-center"
                 >
-                  <Icon className="h-5 w-5 text-red-600 mx-auto mb-2.5" />
+                  <Icon className="h-5 w-5 text-neutral-900 mx-auto mb-2.5" />
                   <div className="text-2xl md:text-3xl font-extrabold text-noir tracking-tight">
                     {s.value}
                   </div>
@@ -120,9 +120,9 @@ export default function CustomerReviewsSection() {
           <div className="relative max-w-3xl mx-auto">
             <div
               ref={trackRef}
-              className="rounded-3xl border border-gray-100 bg-[#fafafa] p-7 md:p-10 text-center"
+              className=" border border-gray-100 bg-[#fafafa] p-7 md:p-10 text-center"
             >
-              <Quote className="h-8 w-8 text-red-200 mx-auto mb-5" />
+              <Quote className="h-8 w-8 text-gray-200 mx-auto mb-5" />
               <div className="flex items-center justify-center gap-1 mb-5">
                 {[...Array(5)].map((_, i) => (
                   <Star
@@ -148,7 +148,7 @@ export default function CustomerReviewsSection() {
                 <span className="text-[12px] text-stone">
                   {t.role} &bull; {t.city}
                 </span>
-                <span className="mt-2 inline-block text-[10px] uppercase tracking-[0.15em] font-bold text-red-600 bg-red-50 px-2.5 py-1 rounded">
+                <span className="mt-2 inline-block text-[10px] uppercase tracking-[0.15em] font-bold text-neutral-900 bg-neutral-50 px-2.5 py-1">
                   {t.product}
                 </span>
               </div>
@@ -158,14 +158,14 @@ export default function CustomerReviewsSection() {
             <button
               onClick={goPrev}
               aria-label="Previous review"
-              className="absolute left-0 md:-left-5 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-white border border-gray-200 shadow-sm flex items-center justify-center text-noir/60 hover:text-noir hover:border-red-300 transition-colors"
+              className="absolute left-0 md:-left-5 top-1/2 -translate-y-1/2 w-10 h-10 bg-white border border-gray-200 shadow-sm flex items-center justify-center text-noir/60 hover:text-noir hover:border-neutral-300 transition-colors"
             >
               <ChevronLeft className="h-5 w-5" />
             </button>
             <button
               onClick={goNext}
               aria-label="Next review"
-              className="absolute right-0 md:-right-5 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-white border border-gray-200 shadow-sm flex items-center justify-center text-noir/60 hover:text-noir hover:border-red-300 transition-colors"
+              className="absolute right-0 md:-right-5 top-1/2 -translate-y-1/2 w-10 h-10 bg-white border border-gray-200 shadow-sm flex items-center justify-center text-noir/60 hover:text-noir hover:border-neutral-300 transition-colors"
             >
               <ChevronRight className="h-5 w-5" />
             </button>
@@ -176,8 +176,8 @@ export default function CustomerReviewsSection() {
                   key={i}
                   onClick={() => setIndex(i)}
                   aria-label={`Go to review ${i + 1}`}
-                  className={`transition-all duration-300 rounded-full ${
-                    i === index ? "w-7 h-2 bg-red-500" : "w-2 h-2 bg-gray-300 hover:bg-gray-400"
+                  className={`transition-all duration-300 ${
+                    i === index ? "w-7 h-2 bg-neutral-900" : "w-2 h-2 bg-gray-300 hover:bg-gray-400"
                   }`}
                 />
               ))}

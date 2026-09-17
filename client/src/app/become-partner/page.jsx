@@ -419,7 +419,7 @@ export default function BecomePartnerPage() {
 
                 {/* Error */}
                 {error && (
-                  <div className="mb-6 bg-red-50 border-l-4 border-red-500 text-red-700 px-5 py-4 rounded-xl text-sm font-medium">
+                  <div className="mb-6 bg-neutral-50 border-l-4 border-neutral-900 text-neutral-700 px-5 py-4 text-sm font-medium">
                     {error}
                   </div>
                 )}

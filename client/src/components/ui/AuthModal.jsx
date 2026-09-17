@@ -130,7 +130,7 @@ function ModalLoginForm({ onSwitch, onSuccess, login }) {
         <div className={`p-3 border text-xs font-medium rounded animate-in fade-in duration-200 ${
           errorMsg.toLowerCase().includes("verify")
             ? "bg-amber-50 border-amber-300 text-amber-900"
-            : "bg-red-50 border-red-200 text-red-700 flex items-center justify-between"
+            : "bg-neutral-50 border-neutral-200 text-neutral-700 flex items-center justify-between"
         }`}>
           <div>
             <p>{errorMsg}</p>
@@ -145,7 +145,7 @@ function ModalLoginForm({ onSwitch, onSuccess, login }) {
             )}
           </div>
           {!errorMsg.toLowerCase().includes("verify") && (
-            <button type="button" onClick={() => setErrorMsg("")} className="text-red-500 hover:text-red-800 text-sm font-bold ml-2">
+            <button type="button" onClick={() => setErrorMsg("")} className="text-neutral-900 hover:text-neutral-800 text-sm font-bold ml-2">
               &times;
             </button>
           )}
@@ -305,9 +305,9 @@ function ModalRegisterForm({ onSwitch, onSuccess, register }) {
   return (
     <form onSubmit={handleSubmit} className="space-y-3">
       {errorMsg && (
-        <div className="p-3 bg-red-50 border border-red-200 text-red-700 text-xs font-medium rounded flex items-center justify-between animate-in fade-in duration-200">
+        <div className="p-3 bg-neutral-50 border border-neutral-200 text-neutral-700 text-xs font-medium rounded flex items-center justify-between animate-in fade-in duration-200">
           <span>{errorMsg}</span>
-          <button type="button" onClick={() => setErrorMsg("")} className="text-red-500 hover:text-red-800 text-sm font-bold ml-2">
+          <button type="button" onClick={() => setErrorMsg("")} className="text-neutral-900 hover:text-neutral-800 text-sm font-bold ml-2">
             &times;
           </button>
         </div>

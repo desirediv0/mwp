@@ -50,14 +50,14 @@ export default function QualityPromiseSection() {
         <Reveal>
           <div className="text-center max-w-2xl mx-auto mb-12 md:mb-16">
             <div className="flex items-center justify-center gap-3 mb-4">
-              <span className="h-px w-8 bg-red-500/40" />
-              <span className="text-[10px] uppercase tracking-[0.3em] text-red-500 font-bold">
+              <span className="h-px w-8 bg-neutral-500/40" />
+              <span className="text-[10px] uppercase tracking-[0.3em] text-neutral-900 font-bold">
                 The MWP Standard
               </span>
-              <span className="h-px w-8 bg-red-500/40" />
+              <span className="h-px w-8 bg-neutral-500/40" />
             </div>
             <h2 className="font-display text-3xl sm:text-4xl md:text-[44px] text-noir tracking-tight leading-tight font-extrabold">
-              The MWP <em className="italic text-red-500">Promise</em>
+              The MWP <em className="italic text-neutral-900">Promise</em>
             </h2>
             <p className="text-[15px] md:text-base text-stone mt-4 font-light leading-relaxed">
               Clinical-grade formulation standards behind every tub, bottle, and sachet we ship.
@@ -70,9 +70,9 @@ export default function QualityPromiseSection() {
             const Icon = p.icon;
             return (
               <Reveal key={p.title} delay={0.05 * i}>
-                <div className="h-full rounded-2xl border border-gray-100 bg-[#fafafa] hover:bg-white hover:border-red-200 hover:shadow-[0_8px_30px_rgba(0,0,0,0.06)] transition-all duration-300 p-6 md:p-7">
-                  <div className="w-12 h-12 rounded-xl bg-red-50 flex items-center justify-center mb-5">
-                    <Icon className="h-6 w-6 text-red-600" stroke={1.75} />
+                <div className="h-full border border-gray-100 bg-[#fafafa] hover:bg-white hover:border-neutral-200 hover:shadow-[0_8px_30px_rgba(0,0,0,0.06)] transition-all duration-300 p-6 md:p-7">
+                  <div className="w-12 h-12 bg-neutral-50 flex items-center justify-center mb-5">
+                    <Icon className="h-6 w-6 text-neutral-900" stroke={1.75} />
                   </div>
                   <h3 className="text-base md:text-lg font-bold text-noir mb-2 tracking-tight">
                     {p.title}

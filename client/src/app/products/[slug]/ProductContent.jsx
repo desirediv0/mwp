@@ -332,7 +332,7 @@ export default function ProductContent({ slug }) {
       return (
         <div className="flex items-baseline gap-4 flex-wrap">
           <span className="text-4xl md:text-[2.8rem] font-extrabold text-gray-900">{formatCurrency(sp)}</span>
-          {hasDiff && <><span className="text-lg line-through font-light" style={{ color: "#666666" }}>{formatCurrency(mrp)}</span><span className="px-2.5 py-1 text-[10px] uppercase tracking-[0.15em] font-extrabold rounded-md bg-red-600 text-white">{disc}% Off</span></>}
+          {hasDiff && <><span className="text-lg line-through font-light" style={{ color: "#666666" }}>{formatCurrency(mrp)}</span><span className="px-2.5 py-1 text-[10px] uppercase tracking-[0.15em] font-extrabold rounded-md bg-neutral-900 text-white">{disc}% Off</span></>}
         </div>
       );
     }
@@ -344,7 +344,7 @@ export default function ProductContent({ slug }) {
     return (
       <div className="flex items-baseline gap-4 flex-wrap">
         <span className="text-4xl md:text-[2.8rem] font-extrabold text-gray-900">{formatCurrency(cp)}</span>
-        {op && <><span className="text-lg line-through font-light" style={{ color: "#666666" }}>{formatCurrency(op)}</span><span className="px-2.5 py-1 text-[10px] uppercase tracking-[0.15em] font-extrabold rounded-md bg-red-600 text-white">{disc}% Off</span></>}
+        {op && <><span className="text-lg line-through font-light" style={{ color: "#666666" }}>{formatCurrency(op)}</span><span className="px-2.5 py-1 text-[10px] uppercase tracking-[0.15em] font-extrabold rounded-md bg-neutral-900 text-white">{disc}% Off</span></>}
       </div>
     );
   };
@@ -396,10 +396,10 @@ export default function ProductContent({ slug }) {
       {/* Breadcrumb */}
       <div className="max-w-7xl mx-auto px-5 md:px-8 lg:px-10 pt-7 pb-2">
         <nav className="flex items-center gap-2 text-[10px] uppercase tracking-[0.2em] flex-wrap" style={{ color: "#666666" }}>
-          <Link href="/" className="hover:text-red-600 transition-colors">Home</Link>
+          <Link href="/" className="hover:text-neutral-900 transition-colors">Home</Link>
           <span style={{ color: "#dc2626" }}>·</span>
-          <Link href="/products" className="hover:text-red-600 transition-colors">Shop</Link>
-          {product.category && <><span style={{ color: "#dc2626" }}>·</span><Link href={`/category/${product.category.slug}`} className="hover:text-red-600 transition-colors">{product.category.name}</Link></>}
+          <Link href="/products" className="hover:text-neutral-900 transition-colors">Shop</Link>
+          {product.category && <><span style={{ color: "#dc2626" }}>·</span><Link href={`/category/${product.category.slug}`} className="hover:text-neutral-900 transition-colors">{product.category.name}</Link></>}
           <span style={{ color: "#dc2626" }}>·</span>
           <span className="font-medium truncate max-w-[200px]" style={{ color: "#111111" }}>{product.name}</span>
         </nav>
@@ -516,7 +516,7 @@ export default function ProductContent({ slug }) {
               {product.gender && (
                 <Link
                   href={`/products?gender=${product.gender}`}
-                  className="mt-1.5 inline-flex items-center px-3 py-1.5 text-[10px] font-bold uppercase tracking-[0.2em] rounded-md bg-red-600 text-white hover:bg-red-700 transition-colors"
+                  className="mt-1.5 inline-flex items-center px-3 py-1.5 text-[10px] font-bold uppercase tracking-[0.2em] rounded-md bg-neutral-900 text-white hover:bg-red-700 transition-colors"
                 >
                   {product.gender}
                 </Link>
@@ -587,7 +587,7 @@ export default function ProductContent({ slug }) {
                         onClick={() => handleAttributeChange(attr.id, v.id)}
                         className={`min-w-[52px] px-5 py-2.5 text-[12.5px] font-bold rounded-lg border-2 transition-all ${
                           selId === v.id
-                            ? "border-red-600 bg-red-600 text-white shadow-md shadow-red-600/20"
+                            ? "border-red-600 bg-neutral-900 text-white shadow-md shadow-neutral-900/20"
                             : "border-gray-200 text-gray-700 hover:border-red-300"
                         }`}
                       >
@@ -618,7 +618,7 @@ export default function ProductContent({ slug }) {
                 </button>
               </div>
               <button onClick={handleAddToCart} disabled={isAddingToCart || outOfStock}
-                className="flex-1 h-14 rounded-xl text-[12px] font-bold uppercase tracking-[0.15em] flex items-center justify-center gap-2.5 transition-all disabled:opacity-40 bg-gradient-to-r from-red-600 to-red-700 text-white hover:from-red-500 hover:to-red-600 shadow-lg shadow-red-600/25 active:scale-[0.99]">
+                className="flex-1 h-14 rounded-xl text-[12px] font-bold uppercase tracking-[0.15em] flex items-center justify-center gap-2.5 transition-all disabled:opacity-40 bg-gradient-to-r from-neutral-900 to-neutral-800 text-white hover:from-neutral-800 hover:to-neutral-700 shadow-lg shadow-neutral-900/25 active:scale-[0.99]">
                 {isAddingToCart ? <div className="h-5 w-5 border-2 border-current border-t-transparent rounded-full animate-spin" /> : outOfStock ? "Sold Out" : <><IconBolt className="h-4 w-4" stroke={2} /> Add to Cart</>}
               </button>
             </div>
@@ -630,8 +630,8 @@ export default function ProductContent({ slug }) {
                 disabled={isAddingToWishlist}
                 className={`flex-1 h-12 rounded-xl border text-[11px] font-bold uppercase tracking-[0.12em] flex items-center justify-center gap-2 transition-colors ${
                   isInWishlist
-                    ? "border-red-300 bg-red-50 text-red-600"
-                    : "border-gray-200 text-gray-600 hover:border-red-300 hover:text-red-600"
+                    ? "border-neutral-300 bg-neutral-50 text-neutral-900"
+                    : "border-gray-200 text-gray-600 hover:border-red-300 hover:text-neutral-900"
                 }`}
               >
                 <IconHeart className="h-4 w-4" stroke={2} fill={isInWishlist ? "currentColor" : "none"} />
@@ -641,8 +641,8 @@ export default function ProductContent({ slug }) {
                 onClick={() => toggleCompare(product)}
                 className={`flex-1 h-12 rounded-xl border text-[11px] font-bold uppercase tracking-[0.12em] flex items-center justify-center gap-2 transition-colors ${
                   isInCompare(product?.id)
-                    ? "border-red-300 bg-red-50 text-red-600"
-                    : "border-gray-200 text-gray-600 hover:border-red-300 hover:text-red-600"
+                    ? "border-neutral-300 bg-neutral-50 text-neutral-900"
+                    : "border-gray-200 text-gray-600 hover:border-red-300 hover:text-neutral-900"
                 }`}
               >
                 <IconGitCompare className="h-4 w-4" stroke={2} />
@@ -674,7 +674,7 @@ export default function ProductContent({ slug }) {
                   <span className="w-24 text-[9px] font-semibold uppercase tracking-[0.2em]" style={{ color: "#666666" }}>Category</span>
                   <Link
                     href={`/category/${product.category.slug}`}
-                    className="tracking-wide text-gray-900 hover:text-red-600 transition-colors font-medium hover:underline underline-offset-4"
+                    className="tracking-wide text-gray-900 hover:text-neutral-900 transition-colors font-medium hover:underline underline-offset-4"
                   >
                     {product.category.name}
                   </Link>
@@ -685,7 +685,7 @@ export default function ProductContent({ slug }) {
                   <span className="w-24 text-[9px] font-semibold uppercase tracking-[0.2em]" style={{ color: "#666666" }}>Brand</span>
                   <Link
                     href={`/brand/${product.brand.slug}`}
-                    className="tracking-wide text-gray-900 hover:text-red-600 transition-colors font-medium hover:underline underline-offset-4"
+                    className="tracking-wide text-gray-900 hover:text-neutral-900 transition-colors font-medium hover:underline underline-offset-4"
                   >
                     {product.brand.name}
                   </Link>
@@ -822,7 +822,7 @@ export default function ProductContent({ slug }) {
                     <div className="mb-6">
                       <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4 py-2">
                         {product.notes.map((note) => (
-                          <div key={note.id || note.title} className="flex flex-col items-center p-3 rounded-xl border border-gray-200/60 bg-gray-50/40 hover:border-red-500/50 transition-all text-center group">
+                          <div key={note.id || note.title} className="flex flex-col items-center p-3 rounded-xl border border-gray-200/60 bg-gray-50/40 hover:border-neutral-500/50 transition-all text-center group">
                             <div className="relative w-16 h-16 sm:w-20 sm:h-20 overflow-hidden mb-2 rounded-xl shadow-sm">
                               <Image
                                 src={getImageUrl(note.image)}
@@ -982,7 +982,7 @@ export default function ProductContent({ slug }) {
               <span className="text-[10px] uppercase tracking-[0.25em] font-medium block mb-3" style={{ color: "#dc2626" }}>Keep Exploring</span>
               <h2 className="text-3xl md:text-4xl tracking-tight" style={{ color: "#111111" }}>You May Also <em className="italic" style={{ color: "#dc2626" }}>Like</em></h2>
             </div>
-            <Link href="/products" className="text-[11px] uppercase tracking-[0.15em] font-medium shrink-0 hover:text-red-600 transition-colors" style={{ color: "#111111" }}>View All →</Link>
+            <Link href="/products" className="text-[11px] uppercase tracking-[0.15em] font-medium shrink-0 hover:text-neutral-900 transition-colors" style={{ color: "#111111" }}>View All →</Link>
           </div>
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5">
             {relatedProducts.map((p) => <ProductCard key={p.id} product={p} />)}
@@ -1009,7 +1009,7 @@ export default function ProductContent({ slug }) {
               <button
                 onClick={() => toggleCompare(product)}
                 className={`h-12 w-12 rounded-xl border flex items-center justify-center transition-colors ${
-                  isInCompare(product?.id) ? "border-red-300 bg-red-50 text-red-600" : "border-gray-200 text-gray-500 hover:border-red-300 hover:text-red-600"
+                  isInCompare(product?.id) ? "border-neutral-300 bg-neutral-50 text-neutral-900" : "border-gray-200 text-gray-500 hover:border-red-300 hover:text-neutral-900"
                 }`}
                 aria-label="Compare"
                 title={isInCompare(product?.id) ? "In compare" : "Add to compare"}
@@ -1019,7 +1019,7 @@ export default function ProductContent({ slug }) {
               <button
                 onClick={handleWishlist}
                 className={`h-12 w-12 rounded-xl border flex items-center justify-center transition-colors ${
-                  isInWishlist ? "border-red-300 bg-red-50 text-red-600" : "border-gray-200 text-gray-500 hover:border-red-300 hover:text-red-600"
+                  isInWishlist ? "border-neutral-300 bg-neutral-50 text-neutral-900" : "border-gray-200 text-gray-500 hover:border-red-300 hover:text-neutral-900"
                 }`}
                 aria-label="Wishlist"
               >
@@ -1028,7 +1028,7 @@ export default function ProductContent({ slug }) {
               <button
                 onClick={handleAddToCart}
                 disabled={isAddingToCart || outOfStock}
-                className="px-5 sm:px-8 h-12 rounded-xl text-[11px] font-bold uppercase tracking-[0.15em] flex items-center justify-center gap-2 bg-gradient-to-r from-red-600 to-red-700 text-white hover:from-red-500 hover:to-red-600 shadow-lg shadow-red-600/20 disabled:opacity-40 transition-all"
+                className="px-5 sm:px-8 h-12 rounded-xl text-[11px] font-bold uppercase tracking-[0.15em] flex items-center justify-center gap-2 bg-gradient-to-r from-neutral-900 to-neutral-800 text-white hover:from-neutral-800 hover:to-neutral-700 shadow-lg shadow-neutral-900/20 disabled:opacity-40 transition-all"
               >
                 {isAddingToCart ? "Adding…" : outOfStock ? "Sold Out" : <><IconBolt className="h-4 w-4" stroke={2} /> Add to Cart</>}
               </button>

@@ -50,9 +50,9 @@ function SkeletonLoader({ heightStyle }) {
       <div className="absolute inset-0 flex items-center justify-center">
         <div className="text-center space-y-6 px-6">
           <div className="h-px w-16 bg-white/10 mx-auto" />
-          <div className="h-8 w-56 bg-white/5 rounded mx-auto" />
-          <div className="h-4 w-72 bg-white/5 rounded mx-auto" />
-          <div className="h-10 w-40 bg-white/5 rounded mx-auto mt-4" />
+          <div className="h-8 w-56 bg-white/5 mx-auto" />
+          <div className="h-4 w-72 bg-white/5 mx-auto" />
+          <div className="h-10 w-40 bg-white/5 mx-auto mt-4" />
         </div>
       </div>
     </div>
@@ -247,7 +247,7 @@ export default function MwpHeroSection() {
                 exit="exit"
                 className="flex items-center gap-2 sm:gap-3 mb-4 md:mb-7"
               >
-                <span className="block h-px w-6 sm:w-10 bg-red-500" />
+                <span className="block h-px w-6 sm:w-10 bg-neutral-900" />
                 <span className="text-[9px] sm:text-[10px] md:text-[11px] uppercase tracking-[0.25em] sm:tracking-[0.3em] text-white/70 font-semibold">
                   MWP Supplements &bull; Men | Women | Power
                 </span>
@@ -289,7 +289,7 @@ export default function MwpHeroSection() {
               >
                 <button
                   onClick={() => router.push(current.link || "/products")}
-                  className="inline-flex items-center justify-center gap-1.5 sm:gap-2 px-4 sm:px-7 py-1.5 sm:py-2 bg-gradient-to-r from-red-600 to-red-700 text-white text-[10px] sm:text-[12px] font-bold tracking-[0.08em] uppercase rounded-[4px] sm:rounded-[6px] hover:from-red-500 hover:to-red-600 shadow-lg shadow-red-600/30 transition-all duration-300 active:scale-[0.98]"
+                  className="inline-flex items-center justify-center gap-1.5 sm:gap-2 px-4 sm:px-7 py-1.5 sm:py-2 bg-gradient-to-r from-neutral-900 to-neutral-800 text-white text-[10px] sm:text-[12px] font-bold tracking-[0.08em] uppercase  hover:from-neutral-800 hover:to-neutral-700 shadow-lg shadow-neutral-900/30 transition-all duration-300 active:scale-[0.98]"
                   style={{ height: isMobile ? "34px" : "48px" }}
                 >
                   Shop Now
@@ -297,7 +297,7 @@ export default function MwpHeroSection() {
                 </button>
                 <Link
                   href="/categories"
-                  className="inline-flex items-center justify-center gap-1.5 sm:gap-2 px-4 sm:px-7 py-1.5 sm:py-2 border border-white/25 text-white text-[10px] sm:text-[12px] font-semibold tracking-[0.08em] uppercase rounded-[4px] sm:rounded-[6px] hover:bg-white/10 transition-all duration-300 active:scale-[0.98]"
+                  className="inline-flex items-center justify-center gap-1.5 sm:gap-2 px-4 sm:px-7 py-1.5 sm:py-2 border border-white/25 text-white text-[10px] sm:text-[12px] font-semibold tracking-[0.08em] uppercase  hover:bg-white/10 transition-all duration-300 active:scale-[0.98]"
                   style={{ height: isMobile ? "34px" : "48px" }}
                 >
                   Collections
@@ -313,14 +313,14 @@ export default function MwpHeroSection() {
         <>
           <button
             onClick={prev}
-            className="absolute left-3 sm:left-4 md:left-8 top-1/2 -translate-y-1/2 z-30 w-9 h-9 sm:w-12 sm:h-12 flex items-center justify-center rounded-full bg-black/30 backdrop-blur-sm border border-white/10 text-white/60 hover:text-white hover:bg-black/50 transition-all duration-300"
+            className="absolute left-3 sm:left-4 md:left-8 top-1/2 -translate-y-1/2 z-30 w-9 h-9 sm:w-12 sm:h-12 flex items-center justify-center bg-black/30 backdrop-blur-sm border border-white/10 text-white/60 hover:text-white hover:bg-black/50 transition-all duration-300"
             aria-label="Previous banner"
           >
             <IconChevronLeft className="h-4 w-4 sm:h-6 sm:w-6" stroke={1.5} />
           </button>
           <button
             onClick={next}
-            className="absolute right-3 sm:right-4 md:right-8 top-1/2 -translate-y-1/2 z-30 w-9 h-9 sm:w-12 sm:h-12 flex items-center justify-center rounded-full bg-black/30 backdrop-blur-sm border border-white/10 text-white/60 hover:text-white hover:bg-black/50 transition-all duration-300"
+            className="absolute right-3 sm:right-4 md:right-8 top-1/2 -translate-y-1/2 z-30 w-9 h-9 sm:w-12 sm:h-12 flex items-center justify-center bg-black/30 backdrop-blur-sm border border-white/10 text-white/60 hover:text-white hover:bg-black/50 transition-all duration-300"
             aria-label="Next banner"
           >
             <IconChevronRight className="h-4 w-4 sm:h-6 sm:w-6" stroke={1.5} />
@@ -332,9 +332,9 @@ export default function MwpHeroSection() {
                 key={i}
                 onClick={() => goTo(i)}
                 aria-label={`Go to slide ${i + 1}`}
-                className={`transition-all duration-300 rounded-full ${
+                className={`transition-all duration-300 ${
                   i === currentIndex
-                    ? "w-8 h-2 bg-red-500"
+                    ? "w-8 h-2 bg-neutral-900"
                     : "w-2 h-2 bg-white/30 hover:bg-white/50"
                 }`}
               />

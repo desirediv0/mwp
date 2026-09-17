@@ -38,12 +38,12 @@ export default function PerformanceClubCta() {
     <section className="py-16 md:py-20 bg-white border-t border-gray-100">
       <div className="max-w-4xl mx-auto px-5 md:px-8 lg:px-10 text-center">
         <Reveal>
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-red-50 border border-red-100 text-red-600 text-[10px] font-bold uppercase tracking-[0.15em] mb-4">
+          <div className="inline-flex items-center gap-2 px-3 py-1 bg-neutral-50 border border-neutral-100 text-neutral-900 text-[10px] font-bold uppercase tracking-[0.15em] mb-4">
             MWP VIP Community
           </div>
           <h2 className="font-display text-3xl sm:text-4xl md:text-[46px] text-noir tracking-tight leading-tight font-extrabold">
             Join The MWP{" "}
-            <em className="italic text-red-500">Performance Club</em>
+            <em className="italic text-neutral-900">Performance Club</em>
           </h2>
           <p className="mt-4 text-sm sm:text-base text-stone max-w-xl mx-auto font-light leading-relaxed">
             Get 10% off your first supplement stack, priority access to fresh batches, and
@@ -53,7 +53,7 @@ export default function PerformanceClubCta() {
 
         <Reveal delay={0.08}>
           {submitted ? (
-            <div className="mt-8 p-4 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-700 text-sm font-semibold inline-flex items-center gap-2">
+            <div className="mt-8 p-4 bg-emerald-50 border border-emerald-200 text-emerald-700 text-sm font-semibold inline-flex items-center gap-2">
               <IconCheck className="h-5 w-5" />
               <span>You&apos;re in! Check your inbox for your 10% welcome coupon.</span>
             </div>
@@ -70,13 +70,13 @@ export default function PerformanceClubCta() {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="Enter your email address"
-                  className="w-full pl-10 pr-4 py-3.5 rounded-lg bg-white border border-gray-200 focus:border-red-500 text-noir placeholder-stone text-sm outline-none transition-colors"
+                  className="w-full pl-10 pr-4 py-3.5 bg-white border border-gray-200 focus:border-neutral-900 text-noir placeholder-stone text-sm outline-none transition-colors"
                 />
               </div>
               <button
                 type="submit"
                 disabled={loading}
-                className="py-3.5 px-6 rounded-lg bg-gradient-to-r from-red-600 to-red-700 hover:from-red-500 hover:to-red-600 disabled:opacity-60 text-white text-xs font-bold uppercase tracking-wider shadow-lg shadow-red-600/25 transition-all flex items-center justify-center gap-2 shrink-0"
+                className="py-3.5 px-6 bg-gradient-to-r from-neutral-900 to-neutral-800 hover:from-neutral-800 hover:to-neutral-700 disabled:opacity-60 text-white text-xs font-bold uppercase tracking-wider shadow-lg shadow-neutral-900/25 transition-all flex items-center justify-center gap-2 shrink-0"
               >
                 <span>{loading ? "Joining..." : "Get 10% Off"}</span>
                 <IconArrowRight className="h-4 w-4" />
@@ -87,15 +87,15 @@ export default function PerformanceClubCta() {
 
         <div className="mt-6 flex flex-wrap justify-center gap-6 text-xs text-stone">
           <span className="flex items-center gap-1.5">
-            <IconCheck className="h-4 w-4 text-red-500" />
+            <IconCheck className="h-4 w-4 text-neutral-900" />
             Instant Discount Code
           </span>
           <span className="flex items-center gap-1.5">
-            <IconCheck className="h-4 w-4 text-red-500" />
+            <IconCheck className="h-4 w-4 text-neutral-900" />
             Exclusive Stack Discounts
           </span>
           <span className="flex items-center gap-1.5">
-            <IconCheck className="h-4 w-4 text-red-500" />
+            <IconCheck className="h-4 w-4 text-neutral-900" />
             Unsubscribe Anytime
           </span>
         </div>

@@ -56,8 +56,8 @@ const SECTION_METADATA = {
 };
 
 const ProductSkeleton = () => (
-  <div className="bg-white overflow-hidden animate-pulse rounded-2xl border border-gray-100">
-    <div className="aspect-[4/5] w-full bg-gray-100 rounded-t-2xl" />
+  <div className="bg-white overflow-hidden animate-pulse border border-gray-100">
+    <div className="aspect-[4/5] w-full bg-gray-100" />
     <div className="pt-4 pb-5 px-4 space-y-2.5">
       <div className="h-2.5 w-16 bg-gray-100 rounded" />
       <div className="h-3.5 w-3/4 bg-gray-100 rounded" />
@@ -128,7 +128,7 @@ function ProductCarousel({ products, isLoading }) {
         <button
           onClick={() => api?.scrollPrev()}
           aria-label="Previous products"
-          className="absolute left-0 top-[40%] -translate-y-1/2 -translate-x-2 md:-translate-x-4 w-10 h-10 md:w-12 md:h-12 bg-neutral-900 border border-white/20 text-white flex items-center justify-center hover:bg-red-600 hover:border-red-600 transition-all duration-300 opacity-0 group-hover/carousel:opacity-100 z-10 rounded-xl shadow-lg"
+          className="absolute left-0 top-[40%] -translate-y-1/2 -translate-x-2 md:-translate-x-4 w-10 h-10 md:w-12 md:h-12 bg-neutral-900 border border-white/20 text-white flex items-center justify-center hover:bg-neutral-900 hover:border-neutral-900 transition-all duration-300 opacity-0 group-hover/carousel:opacity-100 z-10 shadow-lg"
         >
           <IconArrowLeft className="h-4 w-4 md:h-5 md:w-5" stroke={2} />
         </button>
@@ -137,7 +137,7 @@ function ProductCarousel({ products, isLoading }) {
         <button
           onClick={() => api?.scrollNext()}
           aria-label="Next products"
-          className="absolute right-0 top-[40%] -translate-y-1/2 translate-x-2 md:translate-x-4 w-10 h-10 md:w-12 md:h-12 bg-neutral-900 border border-white/20 text-white flex items-center justify-center hover:bg-red-600 hover:border-red-600 transition-all duration-300 opacity-0 group-hover/carousel:opacity-100 z-10 rounded-xl shadow-lg"
+          className="absolute right-0 top-[40%] -translate-y-1/2 translate-x-2 md:translate-x-4 w-10 h-10 md:w-12 md:h-12 bg-neutral-900 border border-white/20 text-white flex items-center justify-center hover:bg-neutral-900 hover:border-neutral-900 transition-all duration-300 opacity-0 group-hover/carousel:opacity-100 z-10 shadow-lg"
         >
           <IconArrowRight className="h-4 w-4 md:h-5 md:w-5" stroke={2} />
         </button>
@@ -239,15 +239,15 @@ export default function HomePageContent() {
             {/* Centered 2-color heading */}
             <div className="text-center mb-10 md:mb-12">
               <div className="inline-flex items-center gap-2.5 mb-4">
-                <span className="h-px w-8 bg-red-500/40" />
-                <span className="text-[10px] uppercase tracking-[0.3em] text-red-600 font-bold">
+                <span className="h-px w-8 bg-neutral-500/40" />
+                <span className="text-[10px] uppercase tracking-[0.3em] text-neutral-900 font-bold">
                   {banner.tag}
                 </span>
-                <span className="h-px w-8 bg-red-500/40" />
+                <span className="h-px w-8 bg-neutral-500/40" />
               </div>
               <h2 className="text-3xl sm:text-4xl md:text-5xl font-extrabold tracking-tight leading-tight text-gray-900">
                 {banner.title}{" "}
-                {banner.subtitle && <span className="text-red-600">{banner.subtitle}</span>}
+                {banner.subtitle && <span className="text-neutral-900">{banner.subtitle}</span>}
               </h2>
               {banner.dateText && (
                 <p className="text-[15px] text-gray-500 mt-3.5 font-light max-w-xl mx-auto leading-relaxed">
@@ -261,7 +261,7 @@ export default function HomePageContent() {
             <div className="text-center mt-9">
               <Link
                 href={banner.linkUrl}
-                className="inline-flex items-center gap-2 px-7 py-3 rounded-full border-2 border-gray-900 text-gray-900 text-[12px] uppercase tracking-[0.12em] font-bold hover:bg-gray-900 hover:text-white transition-colors group/link"
+                className="inline-flex items-center gap-2 px-7 py-3 border-2 border-gray-900 text-gray-900 text-[12px] uppercase tracking-[0.12em] font-bold hover:bg-gray-900 hover:text-white transition-colors group/link"
               >
                 View All
                 <IconArrowRight

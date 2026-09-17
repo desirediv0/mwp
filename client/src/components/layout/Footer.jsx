@@ -69,7 +69,7 @@ export const Footer = () => {
         <div className="max-w-7xl mx-auto px-5 md:px-8 lg:px-10 grid grid-cols-2 md:grid-cols-4 divide-x divide-white/[0.06]">
           {TRUST.map(({ icon: Icon, label }) => (
             <div key={label} className="flex items-center justify-center gap-2.5 py-5 px-3 text-center">
-              <Icon className="h-5 w-5 text-red-500 shrink-0" stroke={1.75} />
+              <Icon className="h-5 w-5 text-white shrink-0" stroke={1.75} />
               <span className="text-[11px] sm:text-[12px] font-bold uppercase tracking-wider text-neutral-300">
                 {label}
               </span>
@@ -83,14 +83,14 @@ export const Footer = () => {
         <div className="max-w-7xl mx-auto px-5 md:px-8 lg:px-10 py-10 flex flex-col lg:flex-row lg:items-center gap-6 lg:gap-10">
           <div className="flex-1">
             <h3 className="text-xl sm:text-2xl font-extrabold tracking-tight">
-              Join the <span className="text-red-500">MWP Performance Club</span>
+              Join the <span className="text-white">MWP Performance Club</span>
             </h3>
             <p className="text-[13px] text-neutral-400 mt-1.5">
               Get 10% off your first order plus training & nutrition protocols.
             </p>
           </div>
           {subscribed ? (
-            <div className="inline-flex items-center gap-2 rounded-xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-sm font-semibold px-4 py-3">
+            <div className="inline-flex items-center gap-2 bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-sm font-semibold px-4 py-3">
               <IconShieldCheck className="h-5 w-5" /> You&apos;re in — check your inbox.
             </div>
           ) : (
@@ -103,12 +103,12 @@ export const Footer = () => {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="Enter your email"
-                  className="w-full h-12 pl-10 pr-4 rounded-xl bg-white/[0.06] border border-white/12 text-[13px] text-white placeholder:text-neutral-500 focus:outline-none focus:border-red-500/50 focus:ring-4 focus:ring-red-600/10 transition-all"
+                  className="w-full h-12 pl-10 pr-4 bg-white/[0.06] border border-white/12 text-[13px] text-white placeholder:text-neutral-500 focus:outline-none focus:border-white/30 focus:ring-4 focus:ring-white/10 transition-all"
                 />
               </div>
               <button
                 type="submit"
-                className="shrink-0 h-12 px-5 rounded-xl bg-red-600 hover:bg-red-500 text-white text-[12px] font-bold uppercase tracking-wider inline-flex items-center gap-2 transition-colors"
+                className="shrink-0 h-12 px-5 bg-neutral-800 hover:bg-neutral-700 text-white text-[12px] font-bold uppercase tracking-wider inline-flex items-center gap-2 transition-colors"
               >
                 Subscribe <IconArrowRight className="h-4 w-4" />
               </button>
@@ -141,7 +141,7 @@ export const Footer = () => {
                   target="_blank"
                   rel="noopener noreferrer"
                   aria-label={label}
-                  className="w-10 h-10 rounded-xl bg-white/[0.05] border border-white/10 flex items-center justify-center text-neutral-300 hover:text-white hover:bg-red-600 hover:border-red-600 transition-all"
+                  className="w-10 h-10 bg-white/[0.05] border border-white/10 flex items-center justify-center text-neutral-300 hover:text-white hover:bg-white hover:border-white/20 transition-all"
                 >
                   <Icon className="h-4 w-4" stroke={2} />
                 </a>
@@ -178,20 +178,20 @@ export const Footer = () => {
         {/* Contact row */}
         <div className="mt-12 pt-8 border-t border-white/[0.06] grid grid-cols-1 sm:grid-cols-3 gap-6 text-[13px]">
           <a href="tel:+917678336268" className="flex items-center gap-3 text-neutral-300 hover:text-white transition-colors">
-            <span className="w-9 h-9 rounded-lg bg-white/[0.05] border border-white/10 flex items-center justify-center shrink-0">
-              <IconPhone className="h-4 w-4 text-red-500" stroke={2} />
+            <span className="w-9 h-9 bg-white/[0.05] border border-white/10 flex items-center justify-center shrink-0">
+              <IconPhone className="h-4 w-4 text-white" stroke={2} />
             </span>
             <span className="font-semibold">+91 76783 36268</span>
           </a>
           <a href="mailto:support@mwpsupplements.com" className="flex items-center gap-3 text-neutral-300 hover:text-white transition-colors">
-            <span className="w-9 h-9 rounded-lg bg-white/[0.05] border border-white/10 flex items-center justify-center shrink-0">
-              <IconMail className="h-4 w-4 text-red-500" stroke={2} />
+            <span className="w-9 h-9 bg-white/[0.05] border border-white/10 flex items-center justify-center shrink-0">
+              <IconMail className="h-4 w-4 text-white" stroke={2} />
             </span>
             <span className="font-semibold break-all">support@mwpsupplements.com</span>
           </a>
           <div className="flex items-center gap-3 text-neutral-400">
-            <span className="w-9 h-9 rounded-lg bg-white/[0.05] border border-white/10 flex items-center justify-center shrink-0">
-              <IconMapPin className="h-4 w-4 text-red-500" stroke={2} />
+            <span className="w-9 h-9 bg-white/[0.05] border border-white/10 flex items-center justify-center shrink-0">
+              <IconMapPin className="h-4 w-4 text-white" stroke={2} />
             </span>
             <span>Pan-India Priority Express Shipping</span>
           </div>
@@ -213,7 +213,7 @@ export const Footer = () => {
             ].map((item) => (
               <div
                 key={item.name}
-                className="px-2 py-1 bg-white rounded-md border border-white/20 flex items-center justify-center h-7 min-w-[40px]"
+                className="px-2 py-1 bg-white border border-white/20 flex items-center justify-center h-7 min-w-[40px]"
                 title={item.name}
               >
                 <img src={item.src} alt={item.name} className="h-4 w-auto object-contain max-w-[30px]" />
@@ -230,7 +230,7 @@ function FooterCol({ title, children }) {
   return (
     <div>
       <h4 className="text-[11px] uppercase tracking-[0.22em] font-extrabold text-white mb-5 flex items-center gap-2">
-        <span className="w-1.5 h-3.5 bg-red-500 rounded-sm" />
+        <span className="w-1.5 h-3.5 bg-white " />
         {title}
       </h4>
       <ul className="space-y-3">{children}</ul>
@@ -245,7 +245,7 @@ function FooterLink({ href, children, highlighted }) {
         href={href}
         className={
           highlighted
-            ? "inline-flex text-[13px] font-bold px-2.5 py-1.5 rounded-lg bg-red-600/15 border border-red-500/30 text-red-400 hover:bg-red-600 hover:text-white transition-all"
+            ? "inline-flex text-[13px] font-bold px-2.5 py-1.5 bg-white/15 border border-white/15 text-neutral-300 hover:bg-white hover:text-white transition-all"
             : "text-[13px] text-neutral-400 hover:text-white hover:translate-x-1 transition-all duration-200 inline-block"
         }
       >

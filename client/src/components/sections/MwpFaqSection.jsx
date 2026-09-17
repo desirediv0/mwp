@@ -37,7 +37,7 @@ export default function MwpFaqSection() {
     <section className="py-20 bg-[#09090b] text-white">
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-12">
-          <span className="text-xs uppercase tracking-widest font-bold text-red-500">
+          <span className="text-xs uppercase tracking-widest font-bold text-neutral-900">
             Got Questions?
           </span>
           <h2 className="text-3xl sm:text-4xl font-extrabold uppercase tracking-tight mt-2">
@@ -54,16 +54,16 @@ export default function MwpFaqSection() {
             return (
               <div
                 key={idx}
-                className="rounded-xl border border-white/10 bg-white/[0.02] overflow-hidden transition-colors"
+                className=" border border-white/10 bg-white/[0.02] overflow-hidden transition-colors"
               >
                 <button
                   onClick={() => setOpenIdx(isOpen ? -1 : idx)}
-                  className="w-full p-5 text-left flex items-center justify-between gap-4 font-semibold text-sm sm:text-base hover:text-red-400 transition-colors"
+                  className="w-full p-5 text-left flex items-center justify-between gap-4 font-semibold text-sm sm:text-base hover:text-neutral-400 transition-colors"
                 >
                   <span>{faq.q}</span>
                   <IconChevronDown
                     className={`h-5 w-5 text-slate-400 shrink-0 transition-transform duration-200 ${
-                      isOpen ? "rotate-180 text-red-500" : ""
+                      isOpen ? "rotate-180 text-neutral-900" : ""
                     }`}
                   />
                 </button>

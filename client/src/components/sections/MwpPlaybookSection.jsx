@@ -9,7 +9,7 @@ export const MWP_PLAYBOOK_PRODUCTS = [
     name: "ULTRA PRO",
     category: "Men's Performance",
     badge: "Best Seller",
-    badgeColor: "bg-red-500/20 text-red-400 border-red-500/30",
+    badgeColor: "bg-neutral-500/20 text-neutral-400 border-neutral-500/30",
     tagline: "Natural Testosterone, Stamina & Male Vitality Booster",
     actives: ["Tongkat Ali (Standardized)", "PrimaVie® Shilajit", "KSM-66® Ashwagandha", "Testofen® Fenugreek", "Boron + Zinc"],
     servings: "60 Veg Capsules",
@@ -17,8 +17,8 @@ export const MWP_PLAYBOOK_PRODUCTS = [
     mrp: 3499,
     slug: "ultra-pro-mens-performance",
     icon: IconFlame,
-    accentBorder: "hover:border-red-500/50",
-    glow: "group-hover:shadow-[0_0_30px_rgba(239,68,68,0.25)]",
+    accentBorder: "hover:border-neutral-500/50",
+    glow: "group-hover:shadow-[0_0_30px_rgba(23,23,23,0.25)]",
   },
   {
     id: "power-max",
@@ -108,11 +108,11 @@ export default function MwpPlaybookSection() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <div className="text-center max-w-3xl mx-auto mb-16">
-          <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-red-600/10 border border-red-500/30 text-xs font-bold uppercase tracking-wider text-red-400 mb-4">
+          <div className="inline-flex items-center gap-2 px-3.5 py-1 bg-neutral-600/10 border border-neutral-500/30 text-xs font-bold uppercase tracking-wider text-neutral-400 mb-4">
             CLINICAL PERFORMANCE LINE-UP
           </div>
           <h2 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold uppercase tracking-tight">
-            THE MWP <span className="bg-gradient-to-r from-red-500 via-rose-400 to-red-600 bg-clip-text text-transparent">FLAGSHIP FORMULATIONS</span>
+            THE MWP <span className="bg-gradient-to-r from-neutral-600 via-neutral-400 to-neutral-600 bg-clip-text text-transparent">FLAGSHIP FORMULATIONS</span>
           </h2>
           <p className="mt-4 text-base text-slate-300">
             Formulated with clinically validated doses, pure standardized botanicals, and zero banned substances. Built for athletes who demand real physiological power.
@@ -126,7 +126,7 @@ export default function MwpPlaybookSection() {
             return (
               <div
                 key={prod.id}
-                className={`group relative rounded-2xl bg-gradient-to-b from-[#141418] to-[#0c0c0e] border border-white/10 p-6 sm:p-7 flex flex-col justify-between transition-all duration-300 hover:-translate-y-1 ${prod.accentBorder} ${prod.glow}`}
+                className={`group relative bg-gradient-to-b from-[#141418] to-[#0c0c0e] border border-white/10 p-6 sm:p-7 flex flex-col justify-between transition-all duration-300 hover:-translate-y-1 ${prod.accentBorder} ${prod.glow}`}
               >
                 {/* Top Row: Category + Badge */}
                 <div>
@@ -134,18 +134,18 @@ export default function MwpPlaybookSection() {
                     <span className="text-xs uppercase tracking-wider font-semibold text-slate-400">
                       {prod.category}
                     </span>
-                    <span className={`text-[11px] font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-full border ${prod.badgeColor}`}>
+                    <span className={`text-[11px] font-bold uppercase tracking-wider px-2.5 py-0.5 border ${prod.badgeColor}`}>
                       {prod.badge}
                     </span>
                   </div>
 
                   {/* Icon & Title */}
                   <div className="flex items-start gap-3 mb-2">
-                    <div className="p-2.5 rounded-xl bg-white/[0.06] border border-white/10 text-white shrink-0 group-hover:scale-110 transition-transform duration-300">
-                      <Icon className="h-6 w-6 text-red-500" stroke={2} />
+                    <div className="p-2.5 bg-white/[0.06] border border-white/10 text-white shrink-0 group-hover:scale-110 transition-transform duration-300">
+                      <Icon className="h-6 w-6 text-neutral-900" stroke={2} />
                     </div>
                     <div>
-                      <h3 className="text-2xl font-black tracking-tight text-white uppercase group-hover:text-red-400 transition-colors">
+                      <h3 className="text-2xl font-black tracking-tight text-white uppercase group-hover:text-neutral-400 transition-colors">
                         {prod.name}
                       </h3>
                       <p className="text-xs text-slate-400 font-medium mt-0.5">
@@ -167,7 +167,7 @@ export default function MwpPlaybookSection() {
                     <ul className="space-y-1.5">
                       {prod.actives.map((act, i) => (
                         <li key={i} className="text-xs text-slate-300 flex items-center gap-2">
-                          <span className="w-1.5 h-1.5 rounded-full bg-red-500 shrink-0" />
+                          <span className="w-1.5 h-1.5 bg-neutral-900 shrink-0" />
                           <span>{act}</span>
                         </li>
                       ))}
@@ -190,13 +190,13 @@ export default function MwpPlaybookSection() {
                   <div className="grid grid-cols-2 gap-2">
                     <Link
                       href={`/products`}
-                      className="w-full py-2.5 px-3 rounded-lg bg-white/[0.08] hover:bg-white/15 text-white text-xs font-bold uppercase tracking-wider text-center transition-colors border border-white/10"
+                      className="w-full py-2.5 px-3 bg-white/[0.08] hover:bg-white/15 text-white text-xs font-bold uppercase tracking-wider text-center transition-colors border border-white/10"
                     >
                       Learn More
                     </Link>
                     <Link
                       href={`/products`}
-                      className="w-full py-2.5 px-3 rounded-lg bg-gradient-to-r from-red-600 to-red-700 hover:from-red-500 hover:to-red-600 text-white text-xs font-bold uppercase tracking-wider text-center transition-all flex items-center justify-center gap-1.5 shadow-md shadow-red-600/30"
+                      className="w-full py-2.5 px-3 bg-gradient-to-r from-neutral-900 to-neutral-800 hover:from-neutral-800 hover:to-neutral-700 text-white text-xs font-bold uppercase tracking-wider text-center transition-all flex items-center justify-center gap-1.5 shadow-md shadow-neutral-900/30"
                     >
                       <IconShoppingCart className="h-3.5 w-3.5" />
                       Buy Now
@@ -209,7 +209,7 @@ export default function MwpPlaybookSection() {
         </div>
 
         {/* Playbook Golden Keywords Bottom Banner */}
-        <div className="mt-16 rounded-2xl bg-gradient-to-r from-neutral-950 via-[#141418] to-neutral-950 border border-white/10 p-8 text-center">
+        <div className="mt-16 bg-gradient-to-r from-neutral-950 via-[#141418] to-neutral-950 border border-white/10 p-8 text-center">
           <h4 className="text-lg font-bold uppercase tracking-wide text-white">
             TARGETED PHYSIOLOGICAL PERFORMANCE PROTOCOLS
           </h4>
@@ -218,7 +218,7 @@ export default function MwpPlaybookSection() {
           </p>
           <div className="mt-5 flex flex-wrap justify-center gap-2 max-w-4xl mx-auto">
             {["Testosterone Booster", "Male Vitality", "Pre Workout", "Nitric Oxide", "Blood Flow", "Muscle Pump", "Women's Libido", "Hormone Balance", "Adaptogens", "Immune Support"].map((kw, i) => (
-              <span key={i} className="text-[11px] font-medium px-3 py-1 rounded-full bg-white/[0.04] border border-white/10 text-slate-300">
+              <span key={i} className="text-[11px] font-medium px-3 py-1 bg-white/[0.04] border border-white/10 text-slate-300">
                 #{kw}
               </span>
             ))}

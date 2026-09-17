@@ -70,8 +70,8 @@ export default function AddressForm({ onSuccess, onCancel, existingAddress = nul
     const renderField = (name, label, placeholder, props = {}) => (
         <div className={props.className || ""}>
             <Label htmlFor={name}>{label}*</Label>
-            <Input id={name} name={name} value={formData[name]} onChange={handleChange} className={errors[name] ? "border-red-500" : ""} placeholder={placeholder} {...props} />
-            {errors[name] && <p className="text-red-500 text-sm mt-1">{errors[name]}</p>}
+            <Input id={name} name={name} value={formData[name]} onChange={handleChange} className={errors[name] ? "border-neutral-900" : ""} placeholder={placeholder} {...props} />
+            {errors[name] && <p className="text-neutral-900 text-sm mt-1">{errors[name]}</p>}
         </div>
     );
 
@@ -83,7 +83,7 @@ export default function AddressForm({ onSuccess, onCancel, existingAddress = nul
                     <button onClick={onCancel} className="text-gray-500 hover:text-gray-700"><XCircle className="h-5 w-5" /></button>
                 </div>
             )}
-            {errors.general && <div className="mb-4 p-3 bg-red-50 text-red-600 text-sm rounded-md">{errors.general}</div>}
+            {errors.general && <div className="mb-4 p-3 bg-neutral-50 text-neutral-900 text-sm rounded-md">{errors.general}</div>}
             <form onSubmit={handleSubmit} className="space-y-4">
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                     {renderField("name", "Full Name", "Enter your full name", { className: "sm:col-span-2 lg:col-span-3" })}

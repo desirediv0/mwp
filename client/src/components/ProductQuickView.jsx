@@ -166,7 +166,7 @@ export default function ProductQuickView({ product, open, onOpenChange }) {
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="p-0 border-0 rounded-2xl shadow-2xl overflow-hidden w-[95vw] max-w-[700px] max-h-[92vh]">
+      <DialogContent className=" p-0 border-0  shadow-2xl overflow-hidden w-[95vw] max-w-[700px] max-h-[92vh]">
         <DialogHeader className="sr-only">
           <DialogTitle>{product.name}</DialogTitle>
         </DialogHeader>
@@ -174,7 +174,7 @@ export default function ProductQuickView({ product, open, onOpenChange }) {
         {/* Close btn */}
         <button
           onClick={() => onOpenChange(false)}
-          className="absolute top-3 right-3 z-50 w-7 h-7 rounded-full bg-white/90 hover:bg-gray-100 border border-gray-200 flex items-center justify-center text-gray-500 transition-colors shadow-sm"
+          className="absolute top-3 right-3 z-50 w-7 h-7  bg-white/90 hover:bg-gray-100 border border-gray-200 flex items-center justify-center text-gray-500 transition-colors shadow-sm"
         >
           <X className="h-3.5 w-3.5" />
         </button>
@@ -186,12 +186,12 @@ export default function ProductQuickView({ product, open, onOpenChange }) {
             <div className="relative" style={{ aspectRatio: "1 / 1" }}>
               {/* Badge */}
               {hasFlashSale && (
-                <span className="absolute top-3 left-3 z-10 flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px]   bg-orange-500 text-white shadow-sm">
+                <span className="absolute top-3 left-3 z-10 flex items-center gap-1 px-2.5 py-1  text-[10px]   bg-orange-500 text-white shadow-sm">
                   <Zap className="h-2.5 w-2.5" /> FLASH SALE
                 </span>
               )}
               {!hasFlashSale && discountPct > 0 && (
-                <span className="absolute top-3 left-3 z-10 px-2.5 py-1 rounded-full text-[10px]   bg-red-500 text-white shadow-sm">
+                <span className="absolute top-3 left-3 z-10 px-2.5 py-1  text-[10px]   bg-neutral-900 text-white shadow-sm">
                   -{discountPct}% OFF
                 </span>
               )}
@@ -212,7 +212,7 @@ export default function ProductQuickView({ product, open, onOpenChange }) {
                   <button
                     key={idx}
                     onClick={() => setActiveImageIdx(idx)}
-                    className={`relative w-11 h-11 rounded-lg flex-shrink-0 overflow-hidden border-2 transition-all duration-150 ${idx === activeImageIdx ? "border-primary shadow-sm" : "border-transparent hover:border-gray-300"
+                    className={`relative w-11 h-11  flex-shrink-0 overflow-hidden border-2 transition-all duration-150 ${idx === activeImageIdx ? "border-primary shadow-sm" : "border-transparent hover:border-gray-300"
                       }`}
                   >
                     <Image src={src} alt="" fill className="object-cover" sizes="44px" />
@@ -250,7 +250,7 @@ export default function ProductQuickView({ product, open, onOpenChange }) {
                   <span className="text-sm text-gray-400 line-through">{formatCurrency(showOriginal)}</span>
                 )}
                 {discountPct > 0 && (
-                  <span className="text-[10px]   bg-red-50 text-red-500 px-1.5 py-0.5 rounded-md">-{discountPct}%</span>
+                  <span className="text-[10px]   bg-neutral-50 text-neutral-900 px-1.5 py-0.5 ">-{discountPct}%</span>
                 )}
               </div>
             </div>
@@ -284,7 +284,7 @@ export default function ProductQuickView({ product, open, onOpenChange }) {
                           key={flavor.id}
                           onClick={() => available && handleFlavorSelect(flavor.id)}
                           disabled={!available}
-                          className={`px-3 py-1.5 rounded-lg text-xs font-medium border transition-all duration-150 ${active
+                          className={`px-3 py-1.5  text-xs font-medium border transition-all duration-150 ${active
                               ? "border-primary bg-blue-50 text-primary shadow-sm"
                               : available
                                 ? "border-gray-200 text-gray-700 hover:border-gray-400 hover:bg-gray-50"
@@ -325,7 +325,7 @@ export default function ProductQuickView({ product, open, onOpenChange }) {
                           key={weight.id}
                           onClick={() => available && handleWeightSelect(weight.id)}
                           disabled={!available}
-                          className={`px-3 py-1.5 rounded-lg text-xs font-medium border transition-all duration-150 ${active
+                          className={`px-3 py-1.5  text-xs font-medium border transition-all duration-150 ${active
                               ? "border-primary bg-blue-50 text-primary shadow-sm"
                               : available
                                 ? "border-gray-200 text-gray-700 hover:border-gray-400 hover:bg-gray-50"
@@ -343,13 +343,13 @@ export default function ProductQuickView({ product, open, onOpenChange }) {
               {/* Stock */}
               <div>
                 {inStock ? (
-                  <span className="inline-flex items-center gap-1.5 text-xs font-medium text-green-700 bg-green-50 px-2.5 py-1.5 rounded-lg border border-green-100">
-                    <span className="w-1.5 h-1.5 rounded-full bg-green-500 flex-shrink-0 animate-pulse" />
+                  <span className="inline-flex items-center gap-1.5 text-xs font-medium text-green-700 bg-green-50 px-2.5 py-1.5  border border-green-100">
+                    <span className="w-1.5 h-1.5  bg-green-500 flex-shrink-0 animate-pulse" />
                     {stock !== null ? `In Stock · ${stock} left` : "In Stock"}
                   </span>
                 ) : (
-                  <span className="inline-flex items-center gap-1.5 text-xs font-medium text-red-600 bg-red-50 px-2.5 py-1.5 rounded-lg border border-red-100">
-                    <span className="w-1.5 h-1.5 rounded-full bg-red-500 flex-shrink-0" />
+                  <span className="inline-flex items-center gap-1.5 text-xs font-medium text-neutral-900 bg-neutral-50 px-2.5 py-1.5  border border-neutral-100">
+                    <span className="w-1.5 h-1.5  bg-neutral-900 flex-shrink-0" />
                     Out of Stock
                   </span>
                 )}
@@ -369,7 +369,7 @@ export default function ProductQuickView({ product, open, onOpenChange }) {
               {/* Quantity */}
               <div className="flex items-center gap-3">
                 <span className="text-[10px] font-semibold text-gray-400 uppercase tracking-widest">Qty</span>
-                <div className="flex items-center border border-gray-200 rounded-xl overflow-hidden">
+                <div className="flex items-center border border-gray-200  overflow-hidden">
                   <button onClick={() => changeQty(-1)} disabled={quantity <= 1}
                     className="w-8 h-8 flex items-center justify-center text-gray-500 hover:bg-gray-50 disabled:opacity-40 transition-colors">
                     <Minus className="h-3 w-3" />
@@ -392,19 +392,19 @@ export default function ProductQuickView({ product, open, onOpenChange }) {
                 <Button
                   onClick={handleAddToCart}
                   disabled={cartLoading || addSuccess || !inStock || !activeVariant}
-                  className={`flex-1 h-11 rounded-xl font-semibold text-sm gap-2 transition-all ${addSuccess ? "bg-green-600 hover:bg-green-600" : ""}`}
+                  className={`flex-1 h-11  font-semibold text-sm gap-2 transition-all ${addSuccess ? "bg-green-600 hover:bg-green-600" : ""}`}
                 >
                   {addSuccess ? (
                     <><CheckCircle className="h-4 w-4" /> Added!</>
                   ) : cartLoading ? (
-                    <><div className="h-4 w-4 border-2 border-white/60 border-t-white rounded-full animate-spin" /> Adding...</>
+                    <><div className="h-4 w-4 border-2 border-white/60 border-t-white  animate-spin" /> Adding...</>
                   ) : (
                     <><ShoppingCart className="h-4 w-4" /> Add to Cart</>
                   )}
                 </Button>
 
                 <Link href={`/products/${product.slug}`} onClick={() => onOpenChange(false)} className="flex-shrink-0">
-                  <Button variant="outline" className="h-11 px-4 rounded-xl text-xs font-medium border-gray-200 hover:border-gray-300 text-gray-700">
+                  <Button variant="outline" className="h-11 px-4  text-xs font-medium border-gray-200 hover:border-gray-300 text-gray-700">
                     Full Details
                   </Button>
                 </Link>

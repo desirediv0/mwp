@@ -40,7 +40,7 @@ export default function MwpQualitySection() {
     <section className="py-20 bg-[#0c0c0e] text-white border-y border-white/[0.08] relative">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center max-w-2xl mx-auto mb-14">
-          <span className="text-xs uppercase tracking-widest font-bold text-red-500">
+          <span className="text-xs uppercase tracking-widest font-bold text-neutral-900">
             The MWP Standard
           </span>
           <h2 className="text-3xl sm:text-4xl font-extrabold tracking-tight uppercase mt-2">
@@ -57,9 +57,9 @@ export default function MwpQualitySection() {
             return (
               <div
                 key={idx}
-                className="p-6 rounded-xl bg-white/[0.03] border border-white/[0.08] hover:border-red-500/40 transition-colors duration-200"
+                className="p-6 bg-white/[0.03] border border-white/[0.08] hover:border-neutral-500/40 transition-colors duration-200"
               >
-                <div className="w-12 h-12 rounded-lg bg-red-600/10 border border-red-500/20 flex items-center justify-center text-red-500 mb-4">
+                <div className="w-12 h-12 bg-neutral-600/10 border border-neutral-500/20 flex items-center justify-center text-neutral-900 mb-4">
                   <Icon className="h-6 w-6" stroke={2} />
                 </div>
                 <h3 className="text-lg font-bold uppercase tracking-tight text-white mb-2">

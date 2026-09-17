@@ -138,7 +138,7 @@ export default function HeroSection() {
         <div className="flex flex-col items-center gap-6">
           <span className="font-display text-2xl tracking-[0.3em] text-white font-extrabold uppercase">MWP SUPPLEMENTS</span>
           <span className="block h-px w-32 overflow-hidden bg-white/10 relative">
-            <span className="absolute inset-y-0 left-0 w-1/3 bg-red-500 animate-marquee-x" />
+            <span className="absolute inset-y-0 left-0 w-1/3 bg-neutral-900 animate-marquee-x" />
           </span>
         </div>
       </div>
