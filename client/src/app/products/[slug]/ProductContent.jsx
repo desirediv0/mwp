@@ -353,7 +353,7 @@ export default function ProductContent({ slug }) {
     <div className="min-h-screen flex flex-col items-center justify-center gap-6 bg-white">
       <span className="italic text-2xl" style={{ color: "rgba(17,17,17,0.3)" }}>MWP SUPPLEMENTS</span>
       <span className="block h-px w-32 overflow-hidden relative" style={{ backgroundColor: "#EAEAEA" }}>
-        <span className="absolute inset-y-0 left-0 w-1/3 bg-red-600 animate-marquee-x" />
+        <span className="absolute inset-y-0 left-0 w-1/3 bg-neutral-900 animate-marquee-x" />
       </span>
     </div>
   );
@@ -516,7 +516,7 @@ export default function ProductContent({ slug }) {
               {product.gender && (
                 <Link
                   href={`/products?gender=${product.gender}`}
-                  className="mt-1.5 inline-flex items-center px-3 py-1.5 text-[10px] font-bold uppercase tracking-[0.2em] rounded-md bg-neutral-900 text-white hover:bg-red-700 transition-colors"
+                  className="mt-1.5 inline-flex items-center px-3 py-1.5 text-[10px] font-bold uppercase tracking-[0.2em] rounded-md bg-neutral-900 text-white hover:bg-neutral-800 transition-colors"
                 >
                   {product.gender}
                 </Link>
@@ -1093,7 +1093,7 @@ export default function ProductContent({ slug }) {
             {images.length > 1 && (
               <button
                 onClick={() => setActiveThumb((prev) => (prev > 0 ? prev - 1 : images.length - 1))}
-                className="absolute left-3 top-1/2 -translate-y-1/2 z-20 p-3 rounded-full bg-black/60 hover:bg-red-700 hover:text-gray-900 text-white backdrop-blur-md transition-all"
+                className="absolute left-3 top-1/2 -translate-y-1/2 z-20 p-3 rounded-full bg-black/60 hover:bg-neutral-800 hover:text-gray-900 text-white backdrop-blur-md transition-all"
                 aria-label="Previous Image"
               >
                 <IconChevronLeft className="w-6 h-6" />
@@ -1120,7 +1120,7 @@ export default function ProductContent({ slug }) {
             {images.length > 1 && (
               <button
                 onClick={() => setActiveThumb((prev) => (prev < images.length - 1 ? prev + 1 : 0))}
-                className="absolute right-3 top-1/2 -translate-y-1/2 z-20 p-3 rounded-full bg-black/60 hover:bg-red-700 hover:text-gray-900 text-white backdrop-blur-md transition-all"
+                className="absolute right-3 top-1/2 -translate-y-1/2 z-20 p-3 rounded-full bg-black/60 hover:bg-neutral-800 hover:text-gray-900 text-white backdrop-blur-md transition-all"
                 aria-label="Next Image"
               >
                 <IconChevronRight className="w-6 h-6" />
