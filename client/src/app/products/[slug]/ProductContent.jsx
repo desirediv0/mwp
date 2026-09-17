@@ -588,7 +588,7 @@ export default function ProductContent({ slug }) {
                         className={`min-w-[52px] px-5 py-2.5 text-[12.5px] font-bold rounded-lg border-2 transition-all ${
                           selId === v.id
                             ? "border-red-600 bg-neutral-900 text-white shadow-md shadow-neutral-900/20"
-                            : "border-gray-200 text-gray-700 hover:border-red-300"
+                            : "border-gray-200 text-gray-700 hover:border-neutral-300"
                         }`}
                       >
                         {v.value}
@@ -631,7 +631,7 @@ export default function ProductContent({ slug }) {
                 className={`flex-1 h-12 rounded-xl border text-[11px] font-bold uppercase tracking-[0.12em] flex items-center justify-center gap-2 transition-colors ${
                   isInWishlist
                     ? "border-neutral-300 bg-neutral-50 text-neutral-900"
-                    : "border-gray-200 text-gray-600 hover:border-red-300 hover:text-neutral-900"
+                    : "border-gray-200 text-gray-600 hover:border-neutral-300 hover:text-neutral-900"
                 }`}
               >
                 <IconHeart className="h-4 w-4" stroke={2} fill={isInWishlist ? "currentColor" : "none"} />
@@ -642,7 +642,7 @@ export default function ProductContent({ slug }) {
                 className={`flex-1 h-12 rounded-xl border text-[11px] font-bold uppercase tracking-[0.12em] flex items-center justify-center gap-2 transition-colors ${
                   isInCompare(product?.id)
                     ? "border-neutral-300 bg-neutral-50 text-neutral-900"
-                    : "border-gray-200 text-gray-600 hover:border-red-300 hover:text-neutral-900"
+                    : "border-gray-200 text-gray-600 hover:border-neutral-300 hover:text-neutral-900"
                 }`}
               >
                 <IconGitCompare className="h-4 w-4" stroke={2} />
@@ -887,7 +887,7 @@ export default function ProductContent({ slug }) {
                 </div>
                 <Link
                   href="/ingredients"
-                  className="mt-4 inline-flex items-center gap-1.5 text-[11px] uppercase tracking-[0.15em] font-bold text-red-600 hover:text-red-700"
+                  className="mt-4 inline-flex items-center gap-1.5 text-[11px] uppercase tracking-[0.15em] font-bold text-red-600 hover:text-neutral-700"
                 >
                   See all MWP ingredients
                   <IconChevronRight className="h-3.5 w-3.5" stroke={2} />
@@ -1009,7 +1009,7 @@ export default function ProductContent({ slug }) {
               <button
                 onClick={() => toggleCompare(product)}
                 className={`h-12 w-12 rounded-xl border flex items-center justify-center transition-colors ${
-                  isInCompare(product?.id) ? "border-neutral-300 bg-neutral-50 text-neutral-900" : "border-gray-200 text-gray-500 hover:border-red-300 hover:text-neutral-900"
+                  isInCompare(product?.id) ? "border-neutral-300 bg-neutral-50 text-neutral-900" : "border-gray-200 text-gray-500 hover:border-neutral-300 hover:text-neutral-900"
                 }`}
                 aria-label="Compare"
                 title={isInCompare(product?.id) ? "In compare" : "Add to compare"}
@@ -1019,7 +1019,7 @@ export default function ProductContent({ slug }) {
               <button
                 onClick={handleWishlist}
                 className={`h-12 w-12 rounded-xl border flex items-center justify-center transition-colors ${
-                  isInWishlist ? "border-neutral-300 bg-neutral-50 text-neutral-900" : "border-gray-200 text-gray-500 hover:border-red-300 hover:text-neutral-900"
+                  isInWishlist ? "border-neutral-300 bg-neutral-50 text-neutral-900" : "border-gray-200 text-gray-500 hover:border-neutral-300 hover:text-neutral-900"
                 }`}
                 aria-label="Wishlist"
               >
