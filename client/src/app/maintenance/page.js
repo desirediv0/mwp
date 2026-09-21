@@ -1,4 +1,4 @@
-import { IconClock, IconMail, IconBrandInstagram, IconBrandWhatsapp } from "@tabler/icons-react";
+import { IconClock } from "@tabler/icons-react";
 
 export const metadata = {
   title: "Coming Soon | MWP Supplements",
@@ -64,37 +64,6 @@ export default function MaintenancePage() {
         {/* Progress shimmer bar */}
         <div className="mt-10 w-52 h-[2px] rounded-full bg-white/10 overflow-hidden">
           <div className="h-full w-1/3 rounded-full bg-gradient-to-r from-transparent via-white to-transparent animate-[shimmer_2.2s_ease-in-out_infinite]" />
-        </div>
-
-        {/* CTA row */}
-        <div className="mt-10 flex flex-wrap items-center justify-center gap-3">
-          <a
-            href="mailto:support@mwpsupplements.com"
-            className="inline-flex items-center gap-2 px-6 py-3 rounded-full border border-white/15 text-white/70 hover:text-white hover:border-white/30 hover:bg-white/[0.06] text-[11px] font-semibold uppercase tracking-[0.15em] transition-all duration-300"
-          >
-            <IconMail className="h-4 w-4" /> Contact Us
-          </a>
-          <a
-            href="https://wa.me/917678336268"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-flex items-center gap-2 px-6 py-3 rounded-full border border-white/15 text-white/70 hover:text-white hover:border-white/30 hover:bg-white/[0.06] text-[11px] font-semibold uppercase tracking-[0.15em] transition-all duration-300"
-          >
-            <IconBrandWhatsapp className="h-4 w-4" /> WhatsApp
-          </a>
-        </div>
-
-        {/* Social row */}
-        <div className="mt-8 flex items-center gap-4">
-          <a
-            href="https://instagram.com"
-            target="_blank"
-            rel="noopener noreferrer"
-            aria-label="Instagram"
-            className="w-9 h-9 rounded-full border border-white/10 flex items-center justify-center text-white/40 hover:text-white hover:border-white/30 transition-colors"
-          >
-            <IconBrandInstagram className="h-4 w-4" />
-          </a>
         </div>
 
         {/* Footer note */}
