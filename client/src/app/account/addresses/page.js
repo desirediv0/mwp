@@ -56,7 +56,7 @@ export default function AddressesPage() {
   if (loading && addresses.length === 0) {
     return (
       <div className="flex justify-center py-16">
-        <IconLoader2 className="h-6 w-6 animate-spin text-red-600" stroke={1.5} />
+        <IconLoader2 className="h-6 w-6 animate-spin text-neutral-800" stroke={1.5} />
       </div>
     );
   }
@@ -69,7 +69,7 @@ export default function AddressesPage() {
         <h2 className="text-xl text-gray-900 tracking-tight">My Addresses</h2>
         {!showAddForm && !editingAddress && (
           <button onClick={() => setShowAddForm(true)}
-            className="inline-flex items-center gap-2 px-5 h-10 bg-gray-900 text-white text-[11px] uppercase tracking-[0.15em] font-medium hover:bg-red-700 transition-all duration-500">
+            className="inline-flex items-center gap-2 px-5 h-10 bg-gray-900 text-white text-[11px] uppercase tracking-[0.15em] font-medium hover:bg-neutral-900 transition-all duration-500">
             <IconPlus className="h-3.5 w-3.5" stroke={1.5} /> Add New
           </button>
         )}
@@ -98,7 +98,7 @@ export default function AddressesPage() {
           <h3 className="text-xl text-gray-900 mb-2">No Addresses Yet</h3>
           <p className="text-[13px] text-gray-500 font-light mb-6">Add a shipping address for your orders</p>
           <button onClick={() => setShowAddForm(true)}
-            className="inline-flex items-center gap-2 px-6 h-12 bg-gray-900 text-white text-[11px] uppercase tracking-[0.15em] font-medium hover:bg-red-700 transition-all duration-500">
+            className="inline-flex items-center gap-2 px-6 h-12 bg-gray-900 text-white text-[11px] uppercase tracking-[0.15em] font-medium hover:bg-neutral-900 transition-all duration-500">
             <IconPlus className="h-4 w-4" stroke={1.5} /> Add Address
           </button>
         </div>
@@ -110,7 +110,7 @@ export default function AddressesPage() {
           {addresses.map((address) => (
             <div key={address.id} className="bg-white border border-gray-200 p-5 relative">
               {address.isDefault && (
-                <span className="absolute top-4 right-4 text-[9px] uppercase tracking-[0.2em] text-red-600 font-medium bg-red-600/10 px-2 py-0.5 flex items-center gap-1">
+                <span className="absolute top-4 right-4 text-[9px] uppercase tracking-[0.2em] text-neutral-800 font-medium bg-neutral-900/10 px-2 py-0.5 flex items-center gap-1">
                   <IconCheck className="h-2.5 w-2.5" stroke={2} /> Default
                 </span>
               )}
@@ -133,7 +133,7 @@ export default function AddressesPage() {
                   <IconEdit className="h-3 w-3" stroke={1.5} /> Edit
                 </button>
                 <button onClick={() => handleDeleteAddress(address.id)} disabled={deletingId === address.id}
-                  className="inline-flex items-center gap-1.5 px-3 h-8 border border-gray-200 text-[10px] uppercase tracking-[0.15em] text-gray-500 hover:border-red-500 hover:text-red-500 transition-all duration-300 disabled:opacity-50">
+                  className="inline-flex items-center gap-1.5 px-3 h-8 border border-gray-200 text-[10px] uppercase tracking-[0.15em] text-gray-500 hover:border-neutral-900 hover:text-neutral-600 transition-all duration-300 disabled:opacity-50">
                   {deletingId === address.id ? <IconLoader2 className="h-3 w-3 animate-spin" stroke={1.5} /> : <IconTrash className="h-3 w-3" stroke={1.5} />} Delete
                 </button>
               </div>

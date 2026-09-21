@@ -20,7 +20,7 @@ const statusStyles = {
   PROCESSING: "bg-blue-50 text-blue-800 border-blue-200",
   SHIPPED: "bg-indigo-50 text-indigo-700 border-indigo-200",
   DELIVERED: "bg-green-50 text-green-700 border-green-200",
-  CANCELLED: "bg-red-50 text-red-700 border-red-200",
+  CANCELLED: "bg-neutral-100 text-neutral-900 border-neutral-200",
   REFUNDED: "bg-purple-50 text-purple-700 border-purple-200",
 };
 
@@ -61,7 +61,7 @@ export default function OrdersPage() {
       <h2 className="text-xl text-gray-900 tracking-tight">My Orders</h2>
 
       {error && (
-        <div className="px-5 py-4 bg-red-50 border border-red-200 text-red-700 text-[13px] font-light">{error}</div>
+        <div className="px-5 py-4 bg-neutral-100 border border-neutral-200 text-neutral-900 text-[13px] font-light">{error}</div>
       )}
 
       {/* Recent Order Highlight */}
@@ -69,7 +69,7 @@ export default function OrdersPage() {
         <div className="bg-gray-900 p-6 md:p-8">
           <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
             <div>
-              <span className="text-[9px] uppercase tracking-[0.3em] text-red-600/70 block mb-2">Latest Order</span>
+              <span className="text-[9px] uppercase tracking-[0.3em] text-neutral-800/70 block mb-2">Latest Order</span>
               <p className="text-xl text-white tracking-tight">#{orders[0].orderNumber}</p>
               <p className="text-[12px] text-white/40 font-light mt-1">
                 {formatDate(orders[0].date)} &middot; {orders[0].items.length} {orders[0].items.length === 1 ? "item" : "items"} &middot; {formatCurrency(orders[0].total)}
@@ -79,7 +79,7 @@ export default function OrdersPage() {
               </span>
             </div>
             <button onClick={() => router.push(`/account/orders/${orders[0].id}`)}
-              className="px-6 h-10 bg-red-600 text-gray-900 text-[11px] uppercase tracking-[0.15em] font-medium flex items-center gap-2 hover:bg-gray-50 transition-all duration-500">
+              className="px-6 h-10 bg-neutral-900 text-gray-900 text-[11px] uppercase tracking-[0.15em] font-medium flex items-center gap-2 hover:bg-gray-50 transition-all duration-500">
               <IconEye className="h-3.5 w-3.5" stroke={1.5} /> View Details
             </button>
           </div>
@@ -89,7 +89,7 @@ export default function OrdersPage() {
       {/* Loading */}
       {loadingOrders ? (
         <div className="bg-white border border-gray-200 p-12 flex justify-center">
-          <IconLoader2 className="h-6 w-6 animate-spin text-red-600" stroke={1.5} />
+          <IconLoader2 className="h-6 w-6 animate-spin text-neutral-800" stroke={1.5} />
         </div>
       ) : orders.length === 0 ? (
         /* Empty State */
@@ -98,7 +98,7 @@ export default function OrdersPage() {
           <h3 className="text-xl text-gray-900 mb-2">No Orders Yet</h3>
           <p className="text-[13px] text-gray-500 font-light mb-6">Start shopping to see your orders here</p>
           <Link href="/products"
-            className="inline-flex items-center gap-2 px-6 h-12 bg-gray-900 text-white text-[11px] uppercase tracking-[0.15em] font-medium hover:bg-red-700 transition-all duration-500">
+            className="inline-flex items-center gap-2 px-6 h-12 bg-gray-900 text-white text-[11px] uppercase tracking-[0.15em] font-medium hover:bg-neutral-900 transition-all duration-500">
             Browse Collection <IconArrowRight className="h-4 w-4" stroke={1.5} />
           </Link>
         </div>
@@ -136,7 +136,7 @@ export default function OrdersPage() {
                     </td>
                     <td className="px-6 py-4 text-right">
                       <Link href={`/account/orders/${order.id}`} onClick={(e) => e.stopPropagation()}
-                        className="text-[11px] uppercase tracking-[0.15em] text-gray-500 hover:text-red-600 transition-colors font-medium">
+                        className="text-[11px] uppercase tracking-[0.15em] text-gray-500 hover:text-neutral-800 transition-colors font-medium">
                         View
                       </Link>
                     </td>

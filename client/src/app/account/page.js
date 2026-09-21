@@ -97,7 +97,7 @@ export default function AccountPage() {
           {/* Message */}
           {message.text && (
             <div className={`px-5 py-4 flex items-center gap-3 text-[13px] font-light ${
-              message.type === "success" ? "bg-green-50 text-green-700 border border-green-200" : "bg-red-50 text-red-700 border border-red-200"
+              message.type === "success" ? "bg-green-50 text-green-700 border border-green-200" : "bg-neutral-100 text-neutral-900 border border-neutral-200"
             }`}>
               {message.type === "success" ? <IconCheck className="h-4 w-4 flex-shrink-0" stroke={2} /> : <IconX className="h-4 w-4 flex-shrink-0" stroke={2} />}
               {message.text}
@@ -123,14 +123,14 @@ export default function AccountPage() {
                       <label className="block text-[10px] uppercase tracking-[0.2em] text-gray-500 font-medium mb-2">Full Name</label>
                       <input
                         name="name" type="text" value={formData.name} onChange={handleChange}
-                        className="w-full h-12 px-4 bg-gray-50 border border-gray-200 text-gray-900 text-[13px] font-light focus:outline-none focus:border-red-500 focus:ring-4 focus:ring-red-600/10 transition-all duration-500"
+                        className="w-full h-12 px-4 bg-gray-50 border border-gray-200 text-gray-900 text-[13px] font-light focus:outline-none focus:border-neutral-900 focus:ring-4 focus:ring-neutral-900/10 transition-all duration-500"
                       />
                     </div>
                     <div>
                       <label className="block text-[10px] uppercase tracking-[0.2em] text-gray-500 font-medium mb-2">Phone</label>
                       <input
                         name="phone" type="tel" value={formData.phone} onChange={handleChange}
-                        className="w-full h-12 px-4 bg-gray-50 border border-gray-200 text-gray-900 text-[13px] font-light focus:outline-none focus:border-red-500 focus:ring-4 focus:ring-red-600/10 transition-all duration-500"
+                        className="w-full h-12 px-4 bg-gray-50 border border-gray-200 text-gray-900 text-[13px] font-light focus:outline-none focus:border-neutral-900 focus:ring-4 focus:ring-neutral-900/10 transition-all duration-500"
                       />
                     </div>
                   </div>
@@ -140,7 +140,7 @@ export default function AccountPage() {
                       Cancel
                     </button>
                     <button type="submit" disabled={isSubmitting}
-                      className="px-6 h-10 bg-gray-900 text-white text-[11px] uppercase tracking-[0.15em] font-medium flex items-center gap-2 hover:bg-red-700 disabled:opacity-50 transition-all duration-500">
+                      className="px-6 h-10 bg-gray-900 text-white text-[11px] uppercase tracking-[0.15em] font-medium flex items-center gap-2 hover:bg-neutral-900 disabled:opacity-50 transition-all duration-500">
                       {isSubmitting ? <IconLoader2 className="h-3.5 w-3.5 animate-spin" stroke={1.5} /> : null}
                       Save Changes
                     </button>
@@ -192,7 +192,7 @@ export default function AccountPage() {
                     <div key={address.id} className="flex items-start justify-between p-4 bg-gray-50 border border-gray-200">
                       <div>
                         {address.isDefault && (
-                          <span className="text-[9px] uppercase tracking-[0.2em] text-red-600 font-medium bg-red-600/10 px-2 py-0.5 mb-2 inline-block">Default</span>
+                          <span className="text-[9px] uppercase tracking-[0.2em] text-neutral-800 font-medium bg-neutral-900/10 px-2 py-0.5 mb-2 inline-block">Default</span>
                         )}
                         <p className="text-[13px] text-gray-900 font-medium">{address.name || user?.name}</p>
                         <p className="text-[12px] text-gray-500 font-light mt-0.5">{address.street}, {address.city}, {address.state} {address.postalCode}</p>
@@ -207,7 +207,7 @@ export default function AccountPage() {
                 <div className="text-center py-8 bg-gray-50 border border-gray-200">
                   <IconMapPin className="h-6 w-6 text-gray-500 mx-auto mb-3" stroke={1.5} />
                   <p className="text-[13px] text-gray-500 font-light mb-4">No addresses added yet</p>
-                  <Link href="/account/addresses" className="inline-flex items-center gap-2 text-[11px] uppercase tracking-[0.15em] text-gray-900 hover:text-red-600 transition-colors font-medium">
+                  <Link href="/account/addresses" className="inline-flex items-center gap-2 text-[11px] uppercase tracking-[0.15em] text-gray-900 hover:text-neutral-800 transition-colors font-medium">
                     Add Address <IconArrowRight className="h-3 w-3" stroke={1.5} />
                   </Link>
                 </div>
@@ -219,7 +219,7 @@ export default function AccountPage() {
           <div className="bg-white border border-gray-200">
             <div className="px-6 py-5 border-b border-gray-200">
               <div className="flex items-center gap-2">
-                <IconUsers className="h-4 w-4 text-red-600" stroke={1.5} />
+                <IconUsers className="h-4 w-4 text-neutral-800" stroke={1.5} />
                 <h2 className="text-lg text-gray-900 tracking-tight">Referral Program</h2>
               </div>
               <p className="text-[12px] text-gray-500 font-light mt-1">Share your code with friends and earn rewards</p>
@@ -227,7 +227,7 @@ export default function AccountPage() {
             <div className="p-6">
               {isLoadingReferral ? (
                 <div className="flex justify-center py-8">
-                  <IconLoader2 className="h-6 w-6 animate-spin text-red-600" stroke={1.5} />
+                  <IconLoader2 className="h-6 w-6 animate-spin text-neutral-800" stroke={1.5} />
                 </div>
               ) : (
                 <>
@@ -237,7 +237,7 @@ export default function AccountPage() {
                       <input value={referralCode} readOnly
                         className="flex-1 h-12 px-4 bg-white border border-gray-200 text-gray-900 text-[14px] tracking-wider focus:outline-none" />
                       <button onClick={() => { navigator.clipboard.writeText(referralCode); setCopied(true); setTimeout(() => setCopied(false), 2000); }}
-                        className="h-12 px-5 bg-gray-900 text-white text-[11px] uppercase tracking-[0.15em] font-medium flex items-center gap-2 hover:bg-red-700 transition-all duration-500">
+                        className="h-12 px-5 bg-gray-900 text-white text-[11px] uppercase tracking-[0.15em] font-medium flex items-center gap-2 hover:bg-neutral-900 transition-all duration-500">
                         {copied ? <><IconCheck className="h-3.5 w-3.5" stroke={1.5} /> Copied</> : <><IconCopy className="h-3.5 w-3.5" stroke={1.5} /> Copy</>}
                       </button>
                     </div>
@@ -248,8 +248,8 @@ export default function AccountPage() {
                       {[
                         { label: "Total Referrals", value: referralStats.totalReferrals || 0, color: "text-gray-900" },
                         { label: "Completed", value: referralStats.completedReferrals || 0, color: "text-green-600" },
-                        { label: "Pending", value: referralStats.pendingReferrals || 0, color: "text-red-600" },
-                        { label: "Earnings", value: `₹${parseFloat(referralStats.totalEarnings || 0).toFixed(0)}`, color: "text-red-600" },
+                        { label: "Pending", value: referralStats.pendingReferrals || 0, color: "text-neutral-800" },
+                        { label: "Earnings", value: `₹${parseFloat(referralStats.totalEarnings || 0).toFixed(0)}`, color: "text-neutral-800" },
                       ].map((stat) => (
                         <div key={stat.label} className="p-4 bg-gray-50 border border-gray-200 text-center">
                           <p className={`text-2xl ${stat.color}`}>{stat.value}</p>
@@ -270,7 +270,7 @@ export default function AccountPage() {
             </div>
             <div className="p-6">
               <Link href="/account/change-password"
-                className="inline-flex items-center gap-2 px-6 h-12 border border-gray-200 text-gray-900 text-[11px] uppercase tracking-[0.15em] font-medium hover:border-red-500 hover:text-red-600 transition-all duration-500">
+                className="inline-flex items-center gap-2 px-6 h-12 border border-gray-200 text-gray-900 text-[11px] uppercase tracking-[0.15em] font-medium hover:border-neutral-900 hover:text-neutral-800 transition-all duration-500">
                 <IconLock className="h-4 w-4" stroke={1.5} /> Change Password
               </Link>
             </div>

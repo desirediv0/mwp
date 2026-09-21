@@ -373,7 +373,7 @@ export default function CheckoutPage() {
                     </div>
                     <div className="flex justify-center gap-3">
                         <Link href="/account/orders">
-                            <button className="bg-red-600 text-white text-[11px] uppercase tracking-[0.15em] font-bold px-6 py-3 rounded-xl hover:bg-red-700 transition-all">
+                            <button className="bg-neutral-900 text-white text-[11px] uppercase tracking-[0.15em] font-bold px-6 py-3 rounded-xl hover:bg-neutral-900 transition-all">
                                 My Orders
                             </button>
                         </Link>
@@ -415,7 +415,7 @@ export default function CheckoutPage() {
                 </div>
 
                 {error && (
-                    <div className="mb-6 p-4 bg-red-50/50 border border-red-100 rounded-lg flex items-start gap-3 text-xs text-red-600">
+                    <div className="mb-6 p-4 bg-neutral-100/50 border border-neutral-200 rounded-lg flex items-start gap-3 text-xs text-neutral-800">
                         <AlertCircle className="flex-shrink-0 mt-0.5 h-4 w-4" />
                         <div>
                             <p className="font-medium uppercase tracking-wider text-[10px]">Payment Error</p>
@@ -487,7 +487,7 @@ export default function CheckoutPage() {
                                                 </div>
                                                 <div className="flex items-center gap-2 pt-2 border-t border-black/5">
                                                     <div className={`w-3.5 h-3.5 rounded-full border flex items-center justify-center ${selected ? "border-black" : "border-black/20"}`}>
-                                                        {selected && <div className="w-1.5 h-1.5 rounded-full bg-red-600" />}
+                                                        {selected && <div className="w-1.5 h-1.5 rounded-full bg-neutral-900" />}
                                                     </div>
                                                     <span className="text-[10px] text-black/40 font-medium">Ship here</span>
                                                 </div>
@@ -515,7 +515,7 @@ export default function CheckoutPage() {
                                     >
                                         <div className="flex items-center gap-3 mb-2">
                                             <div className={`w-3.5 h-3.5 rounded-full border flex items-center justify-center ${paymentMethod === "RAZORPAY" ? "border-black" : "border-black/20"}`}>
-                                                {paymentMethod === "RAZORPAY" && <div className="w-1.5 h-1.5 rounded-full bg-red-600" />}
+                                                {paymentMethod === "RAZORPAY" && <div className="w-1.5 h-1.5 rounded-full bg-neutral-900" />}
                                             </div>
                                             <CreditCard className="h-4 w-4 text-black/40" strokeWidth={1.5} />
                                         </div>
@@ -534,7 +534,7 @@ export default function CheckoutPage() {
                                     >
                                         <div className="flex items-center gap-3 mb-2">
                                             <div className={`w-3.5 h-3.5 rounded-full border flex items-center justify-center ${paymentMethod === "CASH" ? "border-black" : "border-black/20"}`}>
-                                                {paymentMethod === "CASH" && <div className="w-1.5 h-1.5 rounded-full bg-red-600" />}
+                                                {paymentMethod === "CASH" && <div className="w-1.5 h-1.5 rounded-full bg-neutral-900" />}
                                             </div>
                                             <Wallet className="h-4 w-4 text-black/40" strokeWidth={1.5} />
                                         </div>
@@ -575,7 +575,7 @@ export default function CheckoutPage() {
                                             <div className="relative w-10 h-12 bg-black/[0.02] border border-black/5 rounded-md overflow-hidden flex-shrink-0">
                                                 <Image src={getImageUrl(img)} alt="" fill className="object-cover" />
                                                 {isBundle && (
-                                                    <div className="absolute top-0 left-0 bg-red-600 text-white text-[5px] font-bold px-1 py-0.5 rounded-br-sm">
+                                                    <div className="absolute top-0 left-0 bg-neutral-900 text-white text-[5px] font-bold px-1 py-0.5 rounded-br-sm">
                                                         BUNDLE
                                                     </div>
                                                 )}
@@ -650,7 +650,7 @@ export default function CheckoutPage() {
                             <button
                                 onClick={handleCheckout}
                                 disabled={processing || !selectedAddressId}
-                                className="w-full bg-gradient-to-r from-red-600 to-red-700 text-white text-[12px] uppercase tracking-[0.15em] font-bold py-4 rounded-xl hover:from-red-500 hover:to-red-600 shadow-lg shadow-red-600/25 transition-all disabled:opacity-40 active:scale-[0.99]"
+                                className="w-full bg-gradient-to-r from-neutral-900 to-neutral-800 text-white text-[12px] uppercase tracking-[0.15em] font-bold py-4 rounded-xl hover:from-neutral-800 hover:to-neutral-900 shadow-lg shadow-neutral-900/25 transition-all disabled:opacity-40 active:scale-[0.99]"
                             >
                                 {processing ? "Processing…" : `Pay ${formatCurrency(totals.total)}`}
                             </button>

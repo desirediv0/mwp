@@ -31,7 +31,7 @@ const getPasswordStrength = (password) => {
 };
 
 const strengthLabels = ["", "Weak", "Fair", "Good", "Strong"];
-const strengthColors = ["", "text-red-500", "text-orange-500", "text-red-600", "text-green-600"];
+const strengthColors = ["", "text-neutral-600", "text-orange-500", "text-neutral-800", "text-green-600"];
 
 /* ─── Auth Form ─────────────────────────────────────────── */
 function AuthForm() {
@@ -80,26 +80,26 @@ function AuthForm() {
 
           {/* Center text */}
           <div className="max-w-md">
-            <div className="inline-flex items-center gap-2 mb-6 px-3.5 py-2 rounded-full border border-red-500/25 bg-red-600/10 backdrop-blur-sm">
-              <span className="w-1.5 h-1.5 rounded-full bg-red-500 animate-pulse" />
-              <span className="text-[10px] uppercase tracking-[0.28em] text-red-400 font-bold">
+            <div className="inline-flex items-center gap-2 mb-6 px-3.5 py-2 rounded-full border border-white/15 bg-white/5 backdrop-blur-sm">
+              <span className="w-1.5 h-1.5 rounded-full bg-white/70 animate-pulse" />
+              <span className="text-[10px] uppercase tracking-[0.28em] text-white/70 font-bold">
                 Men &bull; Women &bull; Power
               </span>
             </div>
             <h1 className="font-extrabold text-4xl xl:text-[3.25rem] text-white tracking-tight mb-5 leading-[1.05] uppercase">
               Fuel Your
               <br />
-              <span className="text-red-500">Next Personal Best</span>
+              <span className="text-white/70">Next Personal Best</span>
             </h1>
-            <span className="block h-1 w-16 rounded-full bg-gradient-to-r from-red-500 to-transparent mb-6" />
+            <span className="block h-1 w-16 rounded-full bg-gradient-to-r from-white/50 to-transparent mb-6" />
             <p className="text-white/70 text-[15px] font-normal leading-relaxed max-w-sm">
               Create your MWP account for faster checkout, order tracking, exclusive
               stack discounts, and evidence-based training protocols.
             </p>
             <div className="mt-8 flex flex-wrap gap-x-6 gap-y-2.5 text-[12px] font-semibold text-white/60">
-              <span className="inline-flex items-center gap-1.5"><IconCheck className="h-4 w-4 text-red-500" /> 3rd-party lab tested</span>
-              <span className="inline-flex items-center gap-1.5"><IconCheck className="h-4 w-4 text-red-500" /> GMP &amp; FSSAI certified</span>
-              <span className="inline-flex items-center gap-1.5"><IconCheck className="h-4 w-4 text-red-500" /> Free shipping ₹999+</span>
+              <span className="inline-flex items-center gap-1.5"><IconCheck className="h-4 w-4 text-white/70" /> 3rd-party lab tested</span>
+              <span className="inline-flex items-center gap-1.5"><IconCheck className="h-4 w-4 text-white/70" /> GMP &amp; FSSAI certified</span>
+              <span className="inline-flex items-center gap-1.5"><IconCheck className="h-4 w-4 text-white/70" /> Free shipping ₹999+</span>
             </div>
           </div>
 
@@ -162,9 +162,9 @@ function AuthForm() {
           {/* Terms */}
           <p className="text-center text-[11px] text-gray-500 mt-8 font-light">
             By continuing, you agree to our{" "}
-            <Link href="/terms" className="text-gray-900 hover:text-red-600 transition-colors underline underline-offset-2">Terms</Link>
+            <Link href="/terms" className="text-gray-900 hover:text-neutral-800 transition-colors underline underline-offset-2">Terms</Link>
             {" "}&{" "}
-            <Link href="/privacy-policy" className="text-gray-900 hover:text-red-600 transition-colors underline underline-offset-2">Privacy Policy</Link>
+            <Link href="/privacy-policy" className="text-gray-900 hover:text-neutral-800 transition-colors underline underline-offset-2">Privacy Policy</Link>
           </p>
         </div>
       </div>
@@ -228,21 +228,21 @@ function LoginForm({ onSwitch, redirect }) {
         <div className={`p-3.5 border text-xs font-medium rounded animate-in fade-in duration-200 ${
           errorMsg.toLowerCase().includes("verify")
             ? "bg-amber-50 border-amber-300 text-amber-900"
-            : "bg-red-50 border-red-200 text-red-700 flex items-center justify-between"
+            : "bg-neutral-100 border-neutral-200 text-neutral-900 flex items-center justify-between"
         }`}>
           <div>
             <p>{errorMsg}</p>
             {errorMsg.toLowerCase().includes("verify") && (
               <Link
                 href={`/verify-otp?email=${encodeURIComponent(email)}`}
-                className="inline-block mt-2.5 px-4 py-2 bg-red-600 text-white text-[10px] uppercase tracking-wider font-semibold hover:bg-red-700 transition-colors shadow-sm"
+                className="inline-block mt-2.5 px-4 py-2 bg-neutral-900 text-white text-[10px] uppercase tracking-wider font-semibold hover:bg-neutral-900 transition-colors shadow-sm"
               >
                 Enter OTP to Verify Account &rarr;
               </Link>
             )}
           </div>
           {!errorMsg.toLowerCase().includes("verify") && (
-            <button type="button" onClick={() => setErrorMsg("")} className="text-red-500 hover:text-red-800 text-sm font-bold ml-2">
+            <button type="button" onClick={() => setErrorMsg("")} className="text-neutral-600 hover:text-neutral-900 text-sm font-bold ml-2">
               &times;
             </button>
           )}
@@ -260,7 +260,7 @@ function LoginForm({ onSwitch, redirect }) {
             onChange={(e) => setEmail(e.target.value)}
             required
             placeholder="you@example.com"
-            className="w-full h-13 pl-12 pr-4 bg-gray-50 border border-gray-200 rounded-xl text-gray-900 text-[13.5px] placeholder:text-gray-400 focus:outline-none focus:border-red-500 focus:ring-4 focus:ring-red-600/10 transition-all duration-500"
+            className="w-full h-14 pl-12 pr-4 bg-gray-50 border border-gray-200 rounded-xl text-gray-900 text-[13.5px] placeholder:text-gray-400 focus:outline-none focus:border-neutral-800 focus:ring-4 focus:ring-neutral-900/10 transition-all duration-500"
           />
         </div>
       </div>
@@ -269,7 +269,7 @@ function LoginForm({ onSwitch, redirect }) {
       <div>
         <div className="flex items-center justify-between mb-2">
           <label className="text-[10px] uppercase tracking-[0.2em] text-gray-500 font-medium">Password</label>
-          <Link href="/forgot-password" className="text-[11px] text-gray-500 hover:text-red-600 transition-colors font-light">
+          <Link href="/forgot-password" className="text-[11px] text-gray-500 hover:text-neutral-800 transition-colors font-light">
             Forgot password?
           </Link>
         </div>
@@ -281,7 +281,7 @@ function LoginForm({ onSwitch, redirect }) {
             onChange={(e) => setPassword(e.target.value)}
             required
             placeholder="Enter your password"
-            className="w-full h-13 pl-12 pr-12 bg-gray-50 border border-gray-200 rounded-xl text-gray-900 text-[13.5px] placeholder:text-gray-400 focus:outline-none focus:border-red-500 focus:ring-4 focus:ring-red-600/10 transition-all duration-500"
+            className="w-full h-14 pl-12 pr-12 bg-gray-50 border border-gray-200 rounded-xl text-gray-900 text-[13.5px] placeholder:text-gray-400 focus:outline-none focus:border-neutral-800 focus:ring-4 focus:ring-neutral-900/10 transition-all duration-500"
           />
           <button
             type="button"
@@ -297,7 +297,7 @@ function LoginForm({ onSwitch, redirect }) {
       <button
         type="submit"
         disabled={isSubmitting}
-        className="w-full h-13 rounded-xl bg-red-600 text-white text-[12px] uppercase tracking-[0.15em] font-bold shadow-lg shadow-red-600/20 flex items-center justify-center gap-2.5 hover:bg-red-700 disabled:opacity-50 transition-all duration-500"
+        className="w-full h-14 rounded-xl bg-neutral-900 text-white text-[12px] uppercase tracking-[0.15em] font-bold shadow-lg shadow-neutral-900/20 flex items-center justify-center gap-2.5 hover:bg-neutral-900 disabled:opacity-50 transition-all duration-500"
       >
         {isSubmitting ? (
           <IconLoader2 className="h-4 w-4 animate-spin" stroke={1.5} />
@@ -312,7 +312,7 @@ function LoginForm({ onSwitch, redirect }) {
       {/* Switch */}
       <p className="text-center text-[13px] text-gray-500 font-light pt-2">
         Don&apos;t have an account?{" "}
-        <button type="button" onClick={onSwitch} className="text-gray-900 font-medium hover:text-red-600 transition-colors">
+        <button type="button" onClick={onSwitch} className="text-gray-900 font-medium hover:text-neutral-800 transition-colors">
           Create one
         </button>
       </p>
@@ -411,9 +411,9 @@ function RegisterForm({ onSwitch, redirect }) {
       </div>
 
       {errorMsg && (
-        <div className="p-3 bg-red-50 border border-red-200 text-red-700 text-xs font-medium rounded flex items-center justify-between animate-in fade-in duration-200">
+        <div className="p-3 bg-neutral-100 border border-neutral-200 text-neutral-900 text-xs font-medium rounded flex items-center justify-between animate-in fade-in duration-200">
           <span>{errorMsg}</span>
-          <button type="button" onClick={() => setErrorMsg("")} className="text-red-500 hover:text-red-800 text-sm font-bold ml-2">
+          <button type="button" onClick={() => setErrorMsg("")} className="text-neutral-600 hover:text-neutral-900 text-sm font-bold ml-2">
             &times;
           </button>
         </div>
@@ -431,7 +431,7 @@ function RegisterForm({ onSwitch, redirect }) {
               onChange={handleChange}
               required
               placeholder={placeholder}
-              className="w-full h-13 pl-12 pr-4 bg-gray-50 border border-gray-200 rounded-xl text-gray-900 text-[13.5px] placeholder:text-gray-400 focus:outline-none focus:border-red-500 focus:ring-4 focus:ring-red-600/10 transition-all duration-500"
+              className="w-full h-14 pl-12 pr-4 bg-gray-50 border border-gray-200 rounded-xl text-gray-900 text-[13.5px] placeholder:text-gray-400 focus:outline-none focus:border-neutral-800 focus:ring-4 focus:ring-neutral-900/10 transition-all duration-500"
             />
           </div>
         </div>
@@ -449,7 +449,7 @@ function RegisterForm({ onSwitch, redirect }) {
             onChange={handleChange}
             required
             placeholder="Min 8 characters"
-            className="w-full h-13 pl-12 pr-12 bg-gray-50 border border-gray-200 rounded-xl text-gray-900 text-[13.5px] placeholder:text-gray-400 focus:outline-none focus:border-red-500 focus:ring-4 focus:ring-red-600/10 transition-all duration-500"
+            className="w-full h-14 pl-12 pr-12 bg-gray-50 border border-gray-200 rounded-xl text-gray-900 text-[13.5px] placeholder:text-gray-400 focus:outline-none focus:border-neutral-800 focus:ring-4 focus:ring-neutral-900/10 transition-all duration-500"
           />
           <button
             type="button"
@@ -468,9 +468,9 @@ function RegisterForm({ onSwitch, redirect }) {
                   key={i}
                   className={`h-1 flex-1 transition-all duration-500 ${
                     i <= passwordStrength
-                      ? passwordStrength <= 1 ? "bg-red-500"
+                      ? passwordStrength <= 1 ? "bg-neutral-800"
                         : passwordStrength === 2 ? "bg-orange-500"
-                        : passwordStrength === 3 ? "bg-red-600"
+                        : passwordStrength === 3 ? "bg-neutral-900"
                         : "bg-green-600"
                       : "bg-gray-200"
                   }`}
@@ -496,14 +496,14 @@ function RegisterForm({ onSwitch, redirect }) {
             onChange={handleChange}
             required
             placeholder="Confirm your password"
-            className="w-full h-13 pl-12 pr-12 bg-gray-50 border border-gray-200 rounded-xl text-gray-900 text-[13.5px] placeholder:text-gray-400 focus:outline-none focus:border-red-500 focus:ring-4 focus:ring-red-600/10 transition-all duration-500"
+            className="w-full h-14 pl-12 pr-12 bg-gray-50 border border-gray-200 rounded-xl text-gray-900 text-[13.5px] placeholder:text-gray-400 focus:outline-none focus:border-neutral-800 focus:ring-4 focus:ring-neutral-900/10 transition-all duration-500"
           />
           {formData.confirmPassword && (
             <span className="absolute right-4 top-1/2 -translate-y-1/2">
               {formData.password === formData.confirmPassword ? (
                 <IconCheck className="h-4 w-4 text-green-600" stroke={2} />
               ) : (
-                <IconX className="h-4 w-4 text-red-500" stroke={2} />
+                <IconX className="h-4 w-4 text-neutral-600" stroke={2} />
               )}
             </span>
           )}
@@ -514,7 +514,7 @@ function RegisterForm({ onSwitch, redirect }) {
       <button
         type="submit"
         disabled={isSubmitting}
-        className="w-full h-13 rounded-xl bg-red-600 text-white text-[12px] uppercase tracking-[0.15em] font-bold shadow-lg shadow-red-600/20 flex items-center justify-center gap-2.5 hover:bg-red-700 disabled:opacity-50 transition-all duration-500"
+        className="w-full h-14 rounded-xl bg-neutral-900 text-white text-[12px] uppercase tracking-[0.15em] font-bold shadow-lg shadow-neutral-900/20 flex items-center justify-center gap-2.5 hover:bg-neutral-900 disabled:opacity-50 transition-all duration-500"
       >
         {isSubmitting ? (
           <IconLoader2 className="h-4 w-4 animate-spin" stroke={1.5} />
@@ -529,7 +529,7 @@ function RegisterForm({ onSwitch, redirect }) {
       {/* Switch */}
       <p className="text-center text-[13px] text-gray-500 font-light pt-2">
         Already have an account?{" "}
-        <button type="button" onClick={onSwitch} className="text-gray-900 font-medium hover:text-red-600 transition-colors">
+        <button type="button" onClick={onSwitch} className="text-gray-900 font-medium hover:text-neutral-800 transition-colors">
           Sign In
         </button>
       </p>
@@ -542,7 +542,7 @@ export default function AuthPage() {
   return (
     <Suspense fallback={
       <div className="min-h-screen flex items-center justify-center bg-white">
-        <IconLoader2 className="h-6 w-6 animate-spin text-red-600" stroke={1.5} />
+        <IconLoader2 className="h-6 w-6 animate-spin text-neutral-800" stroke={1.5} />
       </div>
     }>
       <AuthForm />

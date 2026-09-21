@@ -19,6 +19,8 @@
     "seed:demo": "node -r dotenv/config scripts/seedDemoCatalog.js",
     "seed:ingredients": "node -r dotenv/config scripts/seedIngredients.js",
     "seed:verifications": "node -r dotenv/config scripts/seedVerifications.js",
+    "seed:mwp-verifications": "node -r dotenv/config scripts/seedMwpVerifications.js",
+    "seed:mwp-core": "node -r dotenv/config scripts/seedMwpCoreProducts.js",
     "qr": "node -r dotenv/config scripts/generateQRCodes.js",
     "seed:bulk-check": "node -r dotenv/config scripts/seedBulkProductCheck.js",
     "seed:bulk-demo": "node -r dotenv/config scripts/seedBulkDemoProducts.js",

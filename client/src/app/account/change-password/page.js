@@ -67,7 +67,7 @@ export default function ChangePasswordPage() {
                     <h1 className="text-3xl  ">Change Password</h1>
                 </div>
                 <div className="max-w-md mx-auto bg-white rounded-lg shadow p-6">
-                    {message.text && <div className={`mb-6 p-3 rounded ${message.type === "success" ? "bg-green-50 text-green-800 border border-green-200" : "bg-red-50 text-red-800 border border-red-200"}`}>{message.text}</div>}
+                    {message.text && <div className={`mb-6 p-3 rounded ${message.type === "success" ? "bg-green-50 text-green-800 border border-green-200" : "bg-neutral-100 text-neutral-900 border border-neutral-200"}`}>{message.text}</div>}
                     <form onSubmit={handleSubmit} className="space-y-6">
                         <PasswordInput name="currentPassword" label="Current Password" field="current" />
                         <PasswordInput name="newPassword" label="New Password" field="new" />

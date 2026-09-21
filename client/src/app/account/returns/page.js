@@ -41,7 +41,7 @@ export default function ReturnsPage() {
     }, [isAuthenticated, page, statusFilter]);
 
     const getStatusColor = (status) => {
-        const statusColors = { PENDING: "bg-yellow-100 text-yellow-800", APPROVED: "bg-green-100 text-green-800", REJECTED: "bg-red-100 text-red-800", PROCESSING: "bg-blue-100 text-blue-800", COMPLETED: "bg-purple-100 text-purple-800" };
+        const statusColors = { PENDING: "bg-yellow-100 text-yellow-800", APPROVED: "bg-green-100 text-green-800", REJECTED: "bg-red-100 text-neutral-900", PROCESSING: "bg-blue-100 text-blue-800", COMPLETED: "bg-purple-100 text-purple-800" };
         return statusColors[status] || "bg-gray-100 text-gray-800";
     };
 
@@ -57,7 +57,7 @@ export default function ReturnsPage() {
             <ClientOnly>
                 <div>
                     <h1 className="text-3xl   mb-8">My Return Requests</h1>
-                    {error && <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded mb-6">{error}</div>}
+                    {error && <div className="bg-neutral-100 border border-neutral-200 text-neutral-900 px-4 py-3 rounded mb-6">{error}</div>}
 
                     <div className="mb-6 flex gap-4">
                         <select className="px-4 py-2 border rounded-md" value={statusFilter} onChange={(e) => { setStatusFilter(e.target.value); router.push(`/account/returns?page=1`); }}>

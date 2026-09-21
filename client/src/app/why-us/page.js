@@ -86,16 +86,16 @@ export default function WhyUsPage() {
         <img
           src="/why-us-hero.jpg"
           alt=""
-          className="absolute inset-0 w-full h-full object-cover"
+          className="absolute inset-0 w-full h-full object-cover grayscale contrast-125"
         />
         <div className="absolute inset-0 bg-gradient-to-t from-[#0A0A0A] via-black/60 to-black/40" />
         <div className="relative z-10 max-w-5xl mx-auto px-6 py-24 md:py-36 text-center">
-          <div className="inline-flex items-center gap-2 px-3.5 py-2 rounded-full bg-red-600/15 border border-red-500/30 text-red-400 text-[10px] font-bold tracking-[0.28em] uppercase mb-6 backdrop-blur-sm">
+          <div className="inline-flex items-center gap-2 px-3.5 py-2 rounded-full bg-neutral-900/15 border border-neutral-800/30 text-neutral-500 text-[10px] font-bold tracking-[0.28em] uppercase mb-6 backdrop-blur-sm">
             Men • Women • Power
           </div>
           <h1 className="text-4xl md:text-6xl font-extrabold tracking-tight mb-6 leading-[1.1]">
             Engineered For Pure Human{" "}
-            <span className="text-red-500">Performance</span>
+            <span className="text-white/40">Performance</span>
           </h1>
           <p className="text-white/70 text-base md:text-lg max-w-2xl mx-auto leading-relaxed">
             The sports nutrition industry is filled with under-dosed blends and marketing illusions.
@@ -123,10 +123,10 @@ export default function WhyUsPage() {
               return (
                 <div
                   key={i}
-                  className="bg-[#fafafa] rounded-2xl p-7 border border-gray-100 hover:border-red-300 hover:shadow-lg transition-all duration-300 group shadow-xl"
+                  className="bg-[#fafafa] rounded-2xl p-7 border border-gray-100 hover:border-neutral-300 hover:shadow-lg transition-all duration-300 group shadow-xl"
                 >
-                  <div className="w-12 h-12 rounded-xl bg-red-50 border border-red-100 flex items-center justify-center mb-5 group-hover:bg-red-100 transition-colors">
-                    <Icon className="h-6 w-6 text-red-500" />
+                  <div className="w-12 h-12 rounded-xl bg-neutral-100 border border-neutral-200 flex items-center justify-center mb-5 group-hover:bg-neutral-100 transition-colors">
+                    <Icon className="h-6 w-6 text-neutral-600" />
                   </div>
                   <h3 className="text-lg font-bold text-gray-900 mb-2">
                     {pillar.title}
@@ -158,7 +158,7 @@ export default function WhyUsPage() {
               <thead className="bg-gray-50 border-b border-gray-100 text-xs uppercase tracking-wider text-gray-500">
                 <tr>
                   <th className="p-4">Benchmark</th>
-                  <th className="p-4 text-red-500 font-bold">MWP SUPPLEMENTS</th>
+                  <th className="p-4 text-neutral-600 font-bold">MWP SUPPLEMENTS</th>
                   <th className="p-4 text-gray-500">Industry Standard</th>
                 </tr>
               </thead>
@@ -166,8 +166,8 @@ export default function WhyUsPage() {
                 {COMPARISON.map((row, idx) => (
                   <tr key={idx} className="hover:bg-gray-50 transition-colors">
                     <td className="p-4 font-medium text-gray-900">{row.feature}</td>
-                    <td className="p-4 text-red-400 font-bold flex items-center gap-1.5">
-                      <CheckCircle2 className="w-4 h-4 text-red-500 shrink-0" />
+                    <td className="p-4 text-neutral-500 font-bold flex items-center gap-1.5">
+                      <CheckCircle2 className="w-4 h-4 text-neutral-600 shrink-0" />
                       {row.mwp}
                     </td>
                     <td className="p-4 text-gray-500">{row.standard}</td>
@@ -209,7 +209,7 @@ export default function WhyUsPage() {
                 </div>
 
                 <div className="flex items-center gap-3 border-t border-gray-100 pt-4 mt-auto">
-                  <div className="w-10 h-10 rounded-full flex items-center justify-center text-xs font-extrabold bg-red-50 text-red-600 border border-red-100">
+                  <div className="w-10 h-10 rounded-full flex items-center justify-center text-xs font-extrabold bg-neutral-100 text-neutral-800 border border-neutral-200">
                     {review.name.charAt(0)}
                   </div>
                   <div>
@@ -235,7 +235,7 @@ export default function WhyUsPage() {
           <div className="flex flex-col sm:flex-row gap-4 justify-center pt-2">
             <Link
               href="/products"
-              className="inline-flex items-center justify-center gap-2 px-8 py-4 text-xs font-bold uppercase tracking-widest text-white bg-red-600 hover:bg-red-500 transition-all rounded-xl shadow-lg shadow-red-900/30"
+              className="inline-flex items-center justify-center gap-2 px-8 py-4 text-xs font-bold uppercase tracking-widest text-white bg-neutral-900 hover:bg-neutral-800 transition-all rounded-xl shadow-lg shadow-neutral-900/30"
             >
               Shop All 6 MWP Formulas <ArrowRight className="h-4 w-4" />
             </Link>

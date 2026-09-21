@@ -38,7 +38,7 @@ function FilterSection({ title, isOpen, onToggle, children }) {
         onClick={onToggle}
         className="flex items-center justify-between w-full text-left group"
       >
-        <span className="text-[10px] uppercase tracking-[0.25em] font-medium group-hover:text-red-600 transition-colors text-gray-900">
+        <span className="text-[10px] uppercase tracking-[0.25em] font-medium group-hover:text-neutral-800 transition-colors text-gray-900">
           {title}
         </span>
         <span
@@ -268,7 +268,7 @@ function ProductsContent() {
       {/* Search */}
       <div className="pb-5" style={{ borderBottom: "1px solid #EAEAEA" }}>
         <div className="relative">
-          <IconSearch className="absolute left-0 top-1/2 -translate-y-1/2 h-4 w-4" style={{ color: "#dc2626" }} stroke={1.5} />
+          <IconSearch className="absolute left-0 top-1/2 -translate-y-1/2 h-4 w-4" style={{ color: "#111111" }} stroke={1.5} />
           <input
             type="text"
             placeholder="Search supplements & formulas..."
@@ -293,7 +293,7 @@ function ProductsContent() {
                 onClick={() => handleFilterChange("category", filters.category === cat.slug ? "" : cat.slug)}
                 className="text-[12px] tracking-wide flex items-center justify-between w-full py-2.5 px-3 transition-all duration-300"
                 style={{
-                  color: filters.category === cat.slug ? "#dc2626" : "#666666",
+                  color: filters.category === cat.slug ? "#111111" : "#666666",
                   backgroundColor: filters.category === cat.slug ? "rgba(184,151,106,0.06)" : "transparent",
                   borderRadius: "6px",
                 }}
@@ -326,8 +326,8 @@ function ProductsContent() {
                 onClick={() => handleFilterChange("gender", active ? "" : value)}
                 className="px-4 py-2 text-[11px] tracking-[0.08em] transition-all duration-300 font-light"
                 style={{
-                  border: active ? "1px solid #dc2626" : "1px solid #EAEAEA",
-                  backgroundColor: active ? "#dc2626" : "transparent",
+                  border: active ? "1px solid #111111" : "1px solid #EAEAEA",
+                  backgroundColor: active ? "#111111" : "transparent",
                   color: active ? "#fff" : "#666666",
                   borderRadius: "6px",
                 }}
@@ -352,7 +352,7 @@ function ProductsContent() {
               max={priceCap}
               value={priceRange.min}
               onChange={(e) => setPriceRange({ ...priceRange, min: Math.max(0, parseInt(e.target.value) || 0) })}
-              className="w-full h-10 px-3 rounded-lg border border-gray-200 text-[13px] font-semibold text-gray-800 focus:outline-none focus:border-red-500 focus:ring-4 focus:ring-red-600/10"
+              className="w-full h-10 px-3 rounded-lg border border-gray-200 text-[13px] font-semibold text-gray-800 focus:outline-none focus:border-neutral-900 focus:ring-4 focus:ring-neutral-900/10"
               placeholder="Min"
             />
             <span className="text-gray-400 text-sm">—</span>
@@ -362,7 +362,7 @@ function ProductsContent() {
               max={priceCap}
               value={priceRange.max}
               onChange={(e) => setPriceRange({ ...priceRange, max: parseInt(e.target.value) || priceCap })}
-              className="w-full h-10 px-3 rounded-lg border border-gray-200 text-[13px] font-semibold text-gray-800 focus:outline-none focus:border-red-500 focus:ring-4 focus:ring-red-600/10"
+              className="w-full h-10 px-3 rounded-lg border border-gray-200 text-[13px] font-semibold text-gray-800 focus:outline-none focus:border-neutral-900 focus:ring-4 focus:ring-neutral-900/10"
               placeholder="Max"
             />
           </div>
@@ -373,7 +373,7 @@ function ProductsContent() {
             step="50"
             value={priceRange.max}
             onChange={(e) => setPriceRange({ ...priceRange, max: parseInt(e.target.value) })}
-            className="w-full cursor-pointer accent-red-600"
+            className="w-full cursor-pointer accent-neutral-900"
             style={{ height: "3px" }}
           />
           <div className="flex items-center justify-between gap-3">
@@ -385,7 +385,7 @@ function ProductsContent() {
                 handleFilterChange("minPrice", priceRange.min > 0 ? String(priceRange.min) : "");
                 handleFilterChange("maxPrice", priceRange.max < priceCap ? String(priceRange.max) : "");
               }}
-              className="px-5 py-2 rounded-lg bg-red-600 text-white text-[11px] uppercase tracking-[0.12em] font-bold hover:bg-red-700 transition-colors"
+              className="px-5 py-2 rounded-lg bg-neutral-900 text-white text-[11px] uppercase tracking-[0.12em] font-bold hover:bg-neutral-900 transition-colors"
             >
               Apply
             </button>
@@ -410,7 +410,7 @@ function ProductsContent() {
                   style={{
                     backgroundColor: c.hexCode || "#fff",
                     borderRadius: "50%",
-                    border: active ? "2px solid #dc2626" : "1px solid #EAEAEA",
+                    border: active ? "2px solid #111111" : "1px solid #EAEAEA",
                     transform: active ? "scale(1.1)" : "scale(1)",
                     boxShadow: active ? "0 0 0 3px rgba(184,151,106,0.15)" : "none",
                   }}
@@ -438,8 +438,8 @@ function ProductsContent() {
                   onClick={() => handleAttrChange("Size", s.id)}
                   className="min-w-[44px] px-3 py-2 text-[11px] tracking-[0.08em] transition-all duration-300 font-light"
                   style={{
-                    border: active ? "1px solid #dc2626" : "1px solid #EAEAEA",
-                    backgroundColor: active ? "#dc2626" : "transparent",
+                    border: active ? "1px solid #111111" : "1px solid #EAEAEA",
+                    backgroundColor: active ? "#111111" : "transparent",
                     color: active ? "#fff" : "#666666",
                     borderRadius: "6px",
                   }}
@@ -463,15 +463,15 @@ function ProductsContent() {
           <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-6">
             <div>
               <div className="flex items-center gap-2 text-[10px] uppercase tracking-[0.25em] mb-5 text-gray-500">
-                <Link href="/" className="hover:text-red-600 transition-colors">Home</Link>
-                <span style={{ color: "#dc2626" }}>·</span>
+                <Link href="/" className="hover:text-neutral-800 transition-colors">Home</Link>
+                <span style={{ color: "#111111" }}>·</span>
                 <span className="text-gray-900">Shop</span>
               </div>
               <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-[52px] tracking-tight leading-[1.08] text-gray-900">
                 {filters.search ? (
-                  <>Results for <em className="italic" style={{ color: "#dc2626" }}>&ldquo;{filters.search}&rdquo;</em></>
+                  <>Results for <em className="italic" style={{ color: "#111111" }}>&ldquo;{filters.search}&rdquo;</em></>
                 ) : (
-                  <>MWP Performance <em className="italic" style={{ color: "#EF4444" }}>Formulas</em></>
+                  <>MWP Performance <em className="italic" style={{ color: "#111111" }}>Formulas</em></>
                 )}
               </h1>
               {pagination.total > 0 && (
@@ -493,7 +493,7 @@ function ProductsContent() {
                 uppercase: true,
                 letterSpacing: "0.2em",
                 fontWeight: 500,
-                color: "#dc2626",
+                color: "#111111",
               }}
             >
               <IconAdjustments className="h-4 w-4" stroke={1.5} />
@@ -501,7 +501,7 @@ function ProductsContent() {
               {activeCount > 0 && (
                 <span
                   className="w-5 h-5 flex items-center justify-center text-[10px] font-bold"
-                  style={{ backgroundColor: "#dc2626", color: "#fff", borderRadius: "50%" }}
+                  style={{ backgroundColor: "#111111", color: "#fff", borderRadius: "50%" }}
                 >
                   {activeCount}
                 </span>
@@ -517,7 +517,7 @@ function ProductsContent() {
           {/* Desktop Sidebar */}
           <aside className="hidden lg:block lg:col-span-3">
             <div className="sticky top-28">
-              <div className="flex items-center justify-between mb-6 pb-4" style={{ borderBottom: "2px solid #dc2626" }}>
+              <div className="flex items-center justify-between mb-6 pb-4" style={{ borderBottom: "2px solid #111111" }}>
                 <h3 className="text-[10px] uppercase tracking-[0.3em] font-medium text-gray-900">
                   Refine
                 </h3>
@@ -525,7 +525,7 @@ function ProductsContent() {
                   <button
                     onClick={clearFilters}
                     className="text-[9px] uppercase tracking-[0.15em] font-medium hover:underline transition-colors"
-                    style={{ color: "#dc2626" }}
+                    style={{ color: "#111111" }}
                   >
                     Clear All
                   </button>
@@ -551,8 +551,8 @@ function ProductsContent() {
                   onClick={() => handleFilterChange("productType", filters.productType === type ? "" : type)}
                   className="px-5 py-2.5 text-[10px] uppercase tracking-[0.18em] font-medium transition-all duration-300"
                   style={{
-                    border: filters.productType === type ? "1px solid #dc2626" : "1px solid #EAEAEA",
-                    backgroundColor: filters.productType === type ? "#dc2626" : "transparent",
+                    border: filters.productType === type ? "1px solid #111111" : "1px solid #EAEAEA",
+                    backgroundColor: filters.productType === type ? "#111111" : "transparent",
                     color: filters.productType === type ? "#fff" : "#666666",
                     borderRadius: "8px",
                   }}
@@ -594,7 +594,7 @@ function ProductsContent() {
                       onClick={() => { setViewMode("grid"); setViewCols(c); }}
                       className="w-9 h-9 flex items-center justify-center text-[11px] font-medium transition-all"
                       style={{
-                        backgroundColor: viewMode === "grid" && viewCols === c ? "#dc2626" : "transparent",
+                        backgroundColor: viewMode === "grid" && viewCols === c ? "#111111" : "transparent",
                         color: viewMode === "grid" && viewCols === c ? "#fff" : "#666666",
                       }}
                       aria-label={`${c} columns`}
@@ -612,7 +612,7 @@ function ProductsContent() {
                     padding: "10px 14px",
                     border: "1px solid #EAEAEA",
                     borderRadius: "6px",
-                    color: "#dc2626",
+                    color: "#111111",
                   }}
                 >
                   <option value="default">Latest</option>
@@ -637,7 +637,7 @@ function ProductsContent() {
                 <button
                   onClick={clearFilters}
                   className="inline-flex items-center gap-2 px-7 py-3.5 text-[11px] uppercase tracking-[0.15em] font-medium transition-colors duration-300"
-                  style={{ backgroundColor: "#dc2626", color: "#fff", borderRadius: "8px" }}
+                  style={{ backgroundColor: "#111111", color: "#fff", borderRadius: "8px" }}
                 >
                   Reset Filters
                 </button>
@@ -662,7 +662,7 @@ function ProductsContent() {
                     borderRadius: "8px",
                     color: "#666666",
                   }}
-                  onMouseEnter={(e) => { if (!e.currentTarget.disabled) { e.currentTarget.style.borderColor = "#dc2626"; e.currentTarget.style.color = "#dc2626"; } }}
+                  onMouseEnter={(e) => { if (!e.currentTarget.disabled) { e.currentTarget.style.borderColor = "#111111"; e.currentTarget.style.color = "#111111"; } }}
                   onMouseLeave={(e) => { e.currentTarget.style.borderColor = "#EAEAEA"; e.currentTarget.style.color = "#666666"; }}
                   aria-label="Previous page"
                 >
@@ -681,7 +681,7 @@ function ProductsContent() {
                       className="w-11 h-11 text-[12px] font-medium flex items-center justify-center transition-all duration-300"
                       style={{
                         border: p === pagination.page ? "none" : "1px solid #EAEAEA",
-                        backgroundColor: p === pagination.page ? "#dc2626" : "transparent",
+                        backgroundColor: p === pagination.page ? "#111111" : "transparent",
                         color: p === pagination.page ? "#fff" : "#666666",
                         borderRadius: "8px",
                       }}
@@ -699,7 +699,7 @@ function ProductsContent() {
                     borderRadius: "8px",
                     color: "#666666",
                   }}
-                  onMouseEnter={(e) => { if (!e.currentTarget.disabled) { e.currentTarget.style.borderColor = "#dc2626"; e.currentTarget.style.color = "#dc2626"; } }}
+                  onMouseEnter={(e) => { if (!e.currentTarget.disabled) { e.currentTarget.style.borderColor = "#111111"; e.currentTarget.style.color = "#111111"; } }}
                   onMouseLeave={(e) => { e.currentTarget.style.borderColor = "#EAEAEA"; e.currentTarget.style.color = "#666666"; }}
                   aria-label="Next page"
                 >
@@ -743,7 +743,7 @@ function ProductsContent() {
                 className="w-full text-[11px] uppercase tracking-[0.2em] font-medium transition-colors duration-300"
                 style={{
                   height: "52px",
-                  backgroundColor: "#dc2626",
+                  backgroundColor: "#111111",
                   color: "#fff",
                   borderRadius: "8px",
                 }}

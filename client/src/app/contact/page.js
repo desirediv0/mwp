@@ -59,11 +59,11 @@ function FAQItem({ item }) {
         onClick={() => setOpen(!open)}
         className="w-full flex items-center justify-between py-6 text-left group"
       >
-        <span className="text-[16px] text-gray-900 tracking-tight pr-4 group-hover:text-red-600 transition-colors duration-300">
+        <span className="text-[16px] text-gray-900 tracking-tight pr-4 group-hover:text-neutral-800 transition-colors duration-300">
           {item.question}
         </span>
         <IconChevronDown
-          className={`h-5 w-5 text-gray-500 flex-shrink-0 transition-transform duration-300 ${open ? "rotate-180 text-red-600" : ""
+          className={`h-5 w-5 text-gray-500 flex-shrink-0 transition-transform duration-300 ${open ? "rotate-180 text-neutral-800" : ""
             }`}
           stroke={1.5}
         />
@@ -135,12 +135,12 @@ export default function ContactPage() {
         <div className="absolute inset-0 flex items-end">
           <div className="max-w-7xl mx-auto px-5 pb-16 md:pb-24 w-full">
             <Reveal>
-              <span className="text-[10px] uppercase tracking-[0.3em] text-red-400 font-bold block mb-4">Get in Touch</span>
+              <span className="text-[10px] uppercase tracking-[0.3em] text-neutral-500 font-bold block mb-4">Get in Touch</span>
               <h1 className="text-4xl sm:text-5xl md:text-6xl text-white mb-5 tracking-tight">
                 Contact{" "}
-                <span className="text-red-500 font-black">MWP SUPPLEMENTS</span>
+                <span className="text-white/15 font-black">MWP SUPPLEMENTS</span>
               </h1>
-              <span className="block h-px w-16 bg-red-500 mb-5" />
+              <span className="block h-px w-16 bg-neutral-800 mb-5" />
               <p className="text-white/70 max-w-lg text-sm md:text-base font-normal leading-relaxed">
                 Whether you need advice on supplement stacking, ingredients, or order tracking — our athlete support team is here to assist.
               </p>
@@ -156,10 +156,10 @@ export default function ContactPage() {
           <Reveal delay={0}>
             <a
               href="mailto:support@mwpsupplements.com"
-              className="group flex flex-col items-center text-center p-7 bg-white border border-gray-200 hover:border-red-500/40 transition-all duration-500 h-full"
+              className="group flex flex-col items-center text-center p-7 bg-white border border-gray-200 hover:border-neutral-800/40 transition-all duration-500 h-full"
             >
-              <div className="w-12 h-12 flex items-center justify-center mb-4 border border-gray-200 bg-gray-50 group-hover:border-red-500/30 transition-colors duration-300">
-                <IconMail className="h-5 w-5 text-red-500" stroke={1.5} />
+              <div className="w-12 h-12 flex items-center justify-center mb-4 border border-gray-200 bg-gray-50 group-hover:border-neutral-800/30 transition-colors duration-300">
+                <IconMail className="h-5 w-5 text-neutral-600" stroke={1.5} />
               </div>
               <h4 className="text-[10px] uppercase tracking-[0.2em] text-gray-500 font-semibold mb-2">
                 Support Email
@@ -176,10 +176,10 @@ export default function ContactPage() {
               href="https://wa.me/917678336268"
               target="_blank"
               rel="noopener noreferrer"
-              className="group flex flex-col items-center text-center p-7 bg-white border border-gray-200 hover:border-red-300 transition-all duration-500 h-full"
+              className="group flex flex-col items-center text-center p-7 bg-white border border-gray-200 hover:border-neutral-300 transition-all duration-500 h-full"
             >
-              <div className="w-12 h-12 flex items-center justify-center mb-4 border border-gray-200 bg-gray-50 group-hover:border-red-300 transition-colors duration-300">
-                <IconBrandWhatsapp className="h-5 w-5 text-red-600" stroke={1.5} />
+              <div className="w-12 h-12 flex items-center justify-center mb-4 border border-gray-200 bg-gray-50 group-hover:border-neutral-300 transition-colors duration-300">
+                <IconBrandWhatsapp className="h-5 w-5 text-neutral-800" stroke={1.5} />
               </div>
               <h4 className="text-[10px] uppercase tracking-[0.2em] text-gray-500 font-medium mb-2">
                 WhatsApp
@@ -187,7 +187,7 @@ export default function ContactPage() {
               <p className="text-[13px] text-gray-900 font-medium">
                 +91 76783 36268
               </p>
-              <span className="mt-3 inline-flex items-center gap-1.5 text-[10px] uppercase tracking-[0.15em] text-red-600 font-medium group-hover:gap-2.5 transition-all duration-300">
+              <span className="mt-3 inline-flex items-center gap-1.5 text-[10px] uppercase tracking-[0.15em] text-neutral-800 font-medium group-hover:gap-2.5 transition-all duration-300">
                 Chat Now
                 <IconArrowUpRight className="h-3 w-3" stroke={1.5} />
               </span>
@@ -198,10 +198,10 @@ export default function ContactPage() {
           <Reveal delay={0.12}>
             <a
               href="tel:+917678336268"
-              className="group flex flex-col items-center text-center p-7 bg-white border border-gray-200 hover:border-red-300 transition-all duration-500 h-full"
+              className="group flex flex-col items-center text-center p-7 bg-white border border-gray-200 hover:border-neutral-300 transition-all duration-500 h-full"
             >
-              <div className="w-12 h-12 flex items-center justify-center mb-4 border border-gray-200 bg-gray-50 group-hover:border-red-300 transition-colors duration-300">
-                <IconPhone className="h-5 w-5 text-red-600" stroke={1.5} />
+              <div className="w-12 h-12 flex items-center justify-center mb-4 border border-gray-200 bg-gray-50 group-hover:border-neutral-300 transition-colors duration-300">
+                <IconPhone className="h-5 w-5 text-neutral-800" stroke={1.5} />
               </div>
               <h4 className="text-[10px] uppercase tracking-[0.2em] text-gray-500 font-medium mb-2">
                 Private Concierge
@@ -220,7 +220,7 @@ export default function ContactPage() {
             <div className="group flex flex-col p-7 bg-white border border-gray-200 h-full">
               <div className="flex items-center gap-3 mb-4">
                 <div className="w-12 h-12 flex items-center justify-center border border-gray-200 bg-gray-50 shrink-0">
-                  <IconMapPin className="h-5 w-5 text-red-600" stroke={1.5} />
+                  <IconMapPin className="h-5 w-5 text-neutral-800" stroke={1.5} />
                 </div>
                 <div className="text-left">
                   <h4 className="text-[10px] uppercase tracking-[0.2em] text-gray-500 font-medium">
@@ -244,10 +244,10 @@ export default function ContactPage() {
             {/* Form */}
             <div className="lg:col-span-7">
               <Reveal>
-                <span className="text-[10px] uppercase tracking-[0.3em] text-red-600 font-bold block mb-5">Send a Message</span>
+                <span className="text-[10px] uppercase tracking-[0.3em] text-neutral-800 font-bold block mb-5">Send a Message</span>
                 <h2 className="text-3xl sm:text-4xl text-gray-900 tracking-tight mb-3">
                   WeWe&apos;d Love to{" "}apos;d Love to{" "}
-                  <em className="italic text-red-500">Hear</em> From You
+                  <em className="italic text-neutral-600">Hear</em> From You
                 </h2>
                 <p className="text-gray-500 text-[14px] font-light mb-10 tracking-wide">
                   Our concierge team responds within 24 hours. For urgent
@@ -269,7 +269,7 @@ export default function ContactPage() {
                         onChange={handleInputChange}
                         required
                         placeholder="Your full name"
-                        className="w-full h-12 px-4 py-3 border border-gray-200 bg-white text-gray-900 text-[14px] rounded-lg placeholder:text-gray-400 focus:outline-none focus:border-red-500 focus:ring-4 focus:ring-red-600/10 transition-all duration-300 shadow-sm"
+                        className="w-full h-12 px-4 py-3 border border-gray-200 bg-white text-gray-900 text-[14px] rounded-lg placeholder:text-gray-400 focus:outline-none focus:border-neutral-800 focus:ring-4 focus:ring-neutral-900/10 transition-all duration-300 shadow-sm"
                       />
                     </div>
                     <div>
@@ -283,7 +283,7 @@ export default function ContactPage() {
                         onChange={handleInputChange}
                         required
                         placeholder="+91 00000 00000"
-                        className="w-full h-12 px-4 py-3 border border-gray-200 bg-white text-gray-900 text-[14px] rounded-lg placeholder:text-gray-400 focus:outline-none focus:border-red-500 focus:ring-4 focus:ring-red-600/10 transition-all duration-300 shadow-sm"
+                        className="w-full h-12 px-4 py-3 border border-gray-200 bg-white text-gray-900 text-[14px] rounded-lg placeholder:text-gray-400 focus:outline-none focus:border-neutral-800 focus:ring-4 focus:ring-neutral-900/10 transition-all duration-300 shadow-sm"
                       />
                     </div>
                   </div>
@@ -299,7 +299,7 @@ export default function ContactPage() {
                       onChange={handleInputChange}
                       required
                       placeholder="you@example.com"
-                      className="w-full h-12 px-4 py-3 border border-gray-200 bg-white text-gray-900 text-[14px] rounded-lg placeholder:text-gray-400 focus:outline-none focus:border-red-500 focus:ring-4 focus:ring-red-600/10 transition-all duration-300 shadow-sm"
+                      className="w-full h-12 px-4 py-3 border border-gray-200 bg-white text-gray-900 text-[14px] rounded-lg placeholder:text-gray-400 focus:outline-none focus:border-neutral-800 focus:ring-4 focus:ring-neutral-900/10 transition-all duration-300 shadow-sm"
                     />
                   </div>
 
@@ -312,7 +312,7 @@ export default function ContactPage() {
                         name="subject"
                         value={formData.subject}
                         onChange={handleInputChange}
-                        className="w-full h-12 px-4 py-3 border border-gray-200 bg-white text-gray-900 text-[14px] rounded-lg appearance-none focus:outline-none focus:border-red-500 focus:ring-4 focus:ring-red-600/10 transition-all duration-300 shadow-sm cursor-pointer"
+                        className="w-full h-12 px-4 py-3 border border-gray-200 bg-white text-gray-900 text-[14px] rounded-lg appearance-none focus:outline-none focus:border-neutral-800 focus:ring-4 focus:ring-neutral-900/10 transition-all duration-300 shadow-sm cursor-pointer"
                       >
                         <option>General Inquiry</option>
                         <option>Order Status</option>
@@ -336,14 +336,14 @@ export default function ContactPage() {
                       required
                       rows={5}
                       placeholder="Tell us how we can help..."
-                      className="w-full px-4 py-3.5 border border-gray-200 bg-white text-gray-900 text-[14px] rounded-lg resize-none placeholder:text-gray-400 focus:outline-none focus:border-red-500 focus:ring-4 focus:ring-red-600/10 transition-all duration-300 shadow-sm"
+                      className="w-full px-4 py-3.5 border border-gray-200 bg-white text-gray-900 text-[14px] rounded-lg resize-none placeholder:text-gray-400 focus:outline-none focus:border-neutral-800 focus:ring-4 focus:ring-neutral-900/10 transition-all duration-300 shadow-sm"
                     />
                   </div>
 
                   <button
                     type="submit"
                     disabled={formLoading}
-                    className="inline-flex items-center justify-center gap-2.5 px-10 py-4 rounded-xl bg-gradient-to-r from-red-600 to-red-700 text-white text-[12px] uppercase font-bold tracking-[0.12em] hover:from-red-500 hover:to-red-600 shadow-lg shadow-red-600/25 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="inline-flex items-center justify-center gap-2.5 px-10 py-4 rounded-xl bg-gradient-to-r from-neutral-900 to-neutral-800 text-white text-[12px] uppercase font-bold tracking-[0.12em] hover:from-neutral-800 hover:to-neutral-800 shadow-lg shadow-neutral-900/25 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
                     style={{ borderRadius: "var(--radius)" }}
                   >
                     {formLoading ? (
@@ -362,9 +362,9 @@ export default function ContactPage() {
             {/* Support hours / channels */}
             <div className="lg:col-span-5">
               <Reveal delay={0.15}>
-                <span className="text-[10px] uppercase tracking-[0.3em] text-red-600 font-bold block mb-4">Support</span>
+                <span className="text-[10px] uppercase tracking-[0.3em] text-neutral-800 font-bold block mb-4">Support</span>
                 <h2 className="text-3xl sm:text-4xl font-extrabold text-gray-900 tracking-tight mb-3">
-                  We&apos;re Here To <em className="italic text-red-600">Help</em>
+                  We&apos;re Here To <em className="italic text-neutral-800">Help</em>
                 </h2>
                 <p className="text-gray-500 text-[14px] mb-8 leading-relaxed">
                   Questions about dosage, stacking, ingredients, or your order? Our athlete
@@ -379,8 +379,8 @@ export default function ContactPage() {
                     { icon: IconBuildingStore, label: "Dispatch", value: "GMP & FSSAI compliant facility · Pan-India express" },
                   ].map(({ icon: Icon, label, value }) => (
                     <div key={label} className="flex items-start gap-3.5 p-5">
-                      <span className="w-9 h-9 rounded-lg bg-red-50 flex items-center justify-center shrink-0">
-                        <Icon className="h-4 w-4 text-red-600" stroke={2} />
+                      <span className="w-9 h-9 rounded-lg bg-neutral-100 flex items-center justify-center shrink-0">
+                        <Icon className="h-4 w-4 text-neutral-800" stroke={2} />
                       </span>
                       <div>
                         <p className="text-[10px] uppercase tracking-wider font-bold text-gray-400">{label}</p>
@@ -410,10 +410,10 @@ export default function ContactPage() {
         <div className="max-w-3xl mx-auto">
           <Reveal>
             <div className="text-center mb-14">
-              <span className="text-[10px] uppercase tracking-[0.3em] text-red-600 font-bold block mb-5">Questions</span>
+              <span className="text-[10px] uppercase tracking-[0.3em] text-neutral-800 font-bold block mb-5">Questions</span>
               <h2 className="text-3xl sm:text-4xl text-gray-900 tracking-tight">
                 Frequently{" "}
-                <em className="italic text-red-500">Asked</em>
+                <em className="italic text-neutral-600">Asked</em>
               </h2>
             </div>
           </Reveal>
@@ -430,15 +430,15 @@ export default function ContactPage() {
 
       {/* ── CTA Banner ────────────────────────────────── */}
       <section className="relative overflow-hidden bg-[#0A0A0A] text-white">
-        <img src="/why-us-hero.jpg" alt="" className="absolute inset-0 w-full h-full object-cover opacity-40" />
+        <img src="/why-us-hero.jpg" alt="" className="absolute inset-0 w-full h-full object-cover opacity-40 grayscale contrast-125" />
         <div className="absolute inset-0 bg-gradient-to-t from-[#0A0A0A] via-black/70 to-black/50" />
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[280px] bg-red-600/25 blur-[130px] rounded-full pointer-events-none" />
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[280px] bg-neutral-900/25 blur-[130px] rounded-full pointer-events-none" />
         <div className="relative z-10 max-w-4xl mx-auto px-5 py-20 md:py-28 text-center">
-          <span className="inline-flex items-center gap-2 px-3.5 py-2 rounded-full bg-red-600/15 border border-red-500/30 text-red-400 text-[10px] font-bold uppercase tracking-[0.25em] mb-5">
+          <span className="inline-flex items-center gap-2 px-3.5 py-2 rounded-full bg-neutral-900/15 border border-neutral-800/30 text-neutral-500 text-[10px] font-bold uppercase tracking-[0.25em] mb-5">
             Still Have Questions?
           </span>
           <h2 className="text-3xl sm:text-4xl md:text-5xl font-extrabold text-white mb-6 tracking-tight leading-[1.1]">
-            Talk To Our <span className="text-red-500">Support Team</span>
+            Talk To Our <span className="text-neutral-600">Support Team</span>
           </h2>
           <p className="text-white/60 text-[14px] sm:text-base max-w-xl mx-auto mb-8">
             Product advice, order help, or bulk enquiries — we respond within 24 hours.
@@ -446,7 +446,7 @@ export default function ContactPage() {
           <div className="flex flex-col sm:flex-row gap-3 justify-center">
             <Link
               href="/products"
-              className="inline-flex items-center justify-center gap-2 px-8 py-4 rounded-xl bg-gradient-to-r from-red-600 to-red-700 text-white text-[12px] uppercase font-bold tracking-[0.12em] hover:from-red-500 hover:to-red-600 shadow-lg shadow-red-600/25 transition-all"
+              className="inline-flex items-center justify-center gap-2 px-8 py-4 rounded-xl bg-gradient-to-r from-neutral-900 to-neutral-800 text-white text-[12px] uppercase font-bold tracking-[0.12em] hover:from-neutral-800 hover:to-neutral-800 shadow-lg shadow-neutral-900/25 transition-all"
             >
               Shop All Products <IconArrowRight className="h-4 w-4" stroke={2} />
             </Link>

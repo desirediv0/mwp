@@ -35,14 +35,14 @@ const statusStyles = {
   PROCESSING: "bg-blue-50 text-blue-800 border-blue-200",
   SHIPPED: "bg-indigo-50 text-indigo-700 border-indigo-200",
   DELIVERED: "bg-green-50 text-green-700 border-green-200",
-  CANCELLED: "bg-red-50 text-red-700 border-red-200",
+  CANCELLED: "bg-neutral-100 text-neutral-900 border-neutral-200",
   REFUNDED: "bg-purple-50 text-purple-700 border-purple-200",
 };
 
 const paymentStatusColors = {
   PENDING: "text-blue-600",
   SUCCESS: "text-green-600",
-  FAILED: "text-red-600",
+  FAILED: "text-neutral-800",
   REFUNDED: "text-purple-600",
 };
 
@@ -162,7 +162,7 @@ export default function OrderDetailPage() {
           </span>
           {order.status !== "CANCELLED" && order.status !== "DELIVERED" && order.status !== "SHIPPED" && (
             <button onClick={handleCancelOrder} disabled={cancelling}
-              className="inline-flex items-center gap-2 px-4 h-10 border border-red-300 text-red-600 text-[11px] uppercase tracking-[0.15em] font-medium hover:bg-red-50 transition-all duration-300 disabled:opacity-50">
+              className="inline-flex items-center gap-2 px-4 h-10 border border-neutral-300 text-neutral-800 text-[11px] uppercase tracking-[0.15em] font-medium hover:bg-neutral-100 transition-all duration-300 disabled:opacity-50">
               {cancelling ? <IconLoader2 className="h-3.5 w-3.5 animate-spin" stroke={1.5} /> : <IconX className="h-3.5 w-3.5" stroke={1.5} />}
               Cancel
             </button>

@@ -77,7 +77,7 @@ const CartItem = React.memo(
         const sku = item.variant?.sku;
 
         return (
-            <div className={`p-4 sm:p-6 transition-all duration-200 border-b border-black/5 last:border-0 ${!item.isValid ? "bg-red-50/50" : "hover:bg-black/[0.01]"}`}>
+            <div className={`p-4 sm:p-6 transition-all duration-200 border-b border-black/5 last:border-0 ${!item.isValid ? "bg-neutral-100/50" : "hover:bg-black/[0.01]"}`}>
                 <div className="flex gap-4 sm:gap-5">
                     {/* Image */}
                     <Link href={productSlug} className="flex-shrink-0">
@@ -90,13 +90,13 @@ const CartItem = React.memo(
                                 sizes="120px"
                             />
                             {isBundle && (
-                                <div className="absolute top-1.5 left-1.5 bg-red-600 text-white text-[7px] font-bold uppercase tracking-[0.15em] px-2 py-0.5 rounded-sm flex items-center gap-1">
+                                <div className="absolute top-1.5 left-1.5 bg-neutral-900 text-white text-[7px] font-bold uppercase tracking-[0.15em] px-2 py-0.5 rounded-sm flex items-center gap-1">
                                     <Gift className="h-2.5 w-2.5" />
                                     BUNDLE
                                 </div>
                             )}
                             {item.isCustom && (
-                                <div className="absolute top-1.5 left-1.5 bg-red-600 text-white text-[7px] font-bold uppercase tracking-[0.15em] px-2 py-0.5 rounded-sm flex items-center gap-1">
+                                <div className="absolute top-1.5 left-1.5 bg-neutral-900 text-white text-[7px] font-bold uppercase tracking-[0.15em] px-2 py-0.5 rounded-sm flex items-center gap-1">
                                     <Package className="h-2.5 w-2.5" />
                                     BESPOKE
                                 </div>
@@ -115,7 +115,7 @@ const CartItem = React.memo(
 
                             {/* Custom Bespoke Perfume Details */}
                             {item.isCustom && item.customDetails && (
-                                <div className="mt-2 space-y-1 p-2.5 bg-red-50 border border-red-100 rounded-lg text-[11px] text-red-700">
+                                <div className="mt-2 space-y-1 p-2.5 bg-neutral-100 border border-neutral-200 rounded-lg text-[11px] text-neutral-900">
                                     <div className="flex items-center gap-1 font-bold uppercase text-[9px] tracking-wider text-[#7E52BC]">
                                         ✨ Bespoke Formula Specification
                                     </div>
@@ -147,7 +147,7 @@ const CartItem = React.memo(
                             )}
 
                             {isBundle && item.isValid === false && item.validationMessage && (
-                                <div className="mt-1.5 inline-flex items-center gap-1 text-[10px] font-medium text-red-600 bg-red-50 px-2 py-0.5 rounded-sm">
+                                <div className="mt-1.5 inline-flex items-center gap-1 text-[10px] font-medium text-neutral-800 bg-neutral-100 px-2 py-0.5 rounded-sm">
                                     <AlertCircle className="h-3 w-3" />
                                     {item.validationMessage}
                                 </div>
@@ -286,7 +286,7 @@ const CartItem = React.memo(
                         {/* Remove */}
                         <button
                             onClick={() => onRemove(item.id)}
-                            className="text-black/20 hover:text-red-500 p-2 rounded-md hover:bg-red-50 transition-all disabled:opacity-30 ml-2"
+                            className="text-black/20 hover:text-neutral-600 p-2 rounded-md hover:bg-neutral-100 transition-all disabled:opacity-30 ml-2"
                             aria-label="Remove item"
                             disabled={isLoading}
                         >
@@ -303,7 +303,7 @@ const CartItem = React.memo(
                 <div className="flex sm:hidden justify-end mt-2">
                     <button
                         onClick={() => onRemove(item.id)}
-                        className="text-[10px] text-black/30 hover:text-red-500 font-medium uppercase tracking-wider flex items-center gap-1 transition-colors"
+                        className="text-[10px] text-black/30 hover:text-neutral-600 font-medium uppercase tracking-wider flex items-center gap-1 transition-colors"
                         disabled={isLoading}
                     >
                         <Trash2 className="h-3 w-3" />
@@ -457,7 +457,7 @@ export default function CartPage() {
                         Discover our curated collection of luxury fragrances and accessories.
                     </p>
                     <Link href="/products">
-                        <button className="bg-red-600 text-white text-[11px] uppercase tracking-[0.15em] font-bold px-8 py-3.5 rounded-xl hover:bg-red-700 shadow-lg shadow-red-600/20 transition-all">
+                        <button className="bg-neutral-900 text-white text-[11px] uppercase tracking-[0.15em] font-bold px-8 py-3.5 rounded-xl hover:bg-neutral-900 shadow-lg shadow-neutral-900/20 transition-all">
                             Browse Collection
                         </button>
                     </Link>
@@ -485,7 +485,7 @@ export default function CartPage() {
                         </div>
                         <button
                             onClick={handleClearCart}
-                            className="text-[10px] text-black/30 hover:text-red-500 uppercase tracking-widest font-medium transition-colors flex items-center gap-1.5"
+                            className="text-[10px] text-black/30 hover:text-neutral-600 uppercase tracking-widest font-medium transition-colors flex items-center gap-1.5"
                             disabled={loading}
                         >
                             <Trash2 className="h-3 w-3" />
@@ -501,7 +501,7 @@ export default function CartPage() {
                             <p className="text-xs text-black/60 font-medium">Sign in to save your cart and access express checkout</p>
                         </div>
                         <Link href="/auth?redirect=cart">
-                            <button className="bg-red-600 text-white text-[11px] uppercase tracking-[0.15em] font-bold px-5 py-2.5 rounded-xl hover:bg-red-700 transition-all whitespace-nowrap">
+                            <button className="bg-neutral-900 text-white text-[11px] uppercase tracking-[0.15em] font-bold px-5 py-2.5 rounded-xl hover:bg-neutral-900 transition-all whitespace-nowrap">
                                 Sign In
                             </button>
                         </Link>
@@ -562,7 +562,7 @@ export default function CartPage() {
                                             </div>
                                             <button
                                                 onClick={handleRemoveCoupon}
-                                                className="text-green-600 hover:text-red-500 p-1 rounded transition-colors"
+                                                className="text-green-600 hover:text-neutral-600 p-1 rounded transition-colors"
                                                 disabled={couponLoading}
                                             >
                                                 <X className="h-3.5 w-3.5" />
@@ -581,13 +581,13 @@ export default function CartPage() {
                                                 <button
                                                     type="submit"
                                                     disabled={couponLoading}
-                                                    className="bg-red-600 text-white text-[11px] uppercase tracking-wider font-bold px-4 py-2.5 rounded-lg hover:bg-red-700 transition-all disabled:opacity-40"
+                                                    className="bg-neutral-900 text-white text-[11px] uppercase tracking-wider font-bold px-4 py-2.5 rounded-lg hover:bg-neutral-900 transition-all disabled:opacity-40"
                                                 >
                                                     {couponLoading ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : "Apply"}
                                                 </button>
                                             </form>
                                             {couponError && (
-                                                <div className="mt-2 flex items-start gap-1.5 text-red-500 text-[10px] font-medium">
+                                                <div className="mt-2 flex items-start gap-1.5 text-neutral-600 text-[10px] font-medium">
                                                     <AlertCircle className="h-3 w-3 flex-shrink-0 mt-0.5" />
                                                     <p>{couponError}</p>
                                                 </div>
@@ -643,7 +643,7 @@ export default function CartPage() {
 
                             {/* Checkout */}
                             <button
-                                className="w-full bg-gradient-to-r from-red-600 to-red-700 text-white text-[12px] uppercase tracking-[0.15em] font-bold py-4 rounded-xl hover:from-red-500 hover:to-red-600 shadow-lg shadow-red-600/25 transition-all active:scale-[0.99]"
+                                className="w-full bg-gradient-to-r from-neutral-900 to-neutral-800 text-white text-[12px] uppercase tracking-[0.15em] font-bold py-4 rounded-xl hover:from-neutral-800 hover:to-neutral-900 shadow-lg shadow-neutral-900/25 transition-all active:scale-[0.99]"
                                 onClick={handleCheckout}
                             >
                                 {!isAuthenticated && hidePricesForGuests ? (

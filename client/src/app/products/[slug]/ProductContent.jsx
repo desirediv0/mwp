@@ -308,7 +308,7 @@ export default function ProductContent({ slug }) {
       return (
         <div>
           <p className="text-2xl" style={{ color: "#666666" }}>Sign in to view price</p>
-          <Link href={`/auth?redirect=/products/${slug}`} className="mt-2 inline-block text-[11px] uppercase tracking-[0.18em] font-medium hover:underline" style={{ color: "#dc2626" }}>Sign in →</Link>
+          <Link href={`/auth?redirect=/products/${slug}`} className="mt-2 inline-block text-[11px] uppercase tracking-[0.18em] font-medium hover:underline" style={{ color: "#111111" }}>Sign in →</Link>
         </div>
       );
     if (product?.flashSale?.isActive) {
@@ -318,7 +318,7 @@ export default function ProductContent({ slug }) {
         <div className="flex items-baseline gap-4 flex-wrap">
           <span className="text-4xl md:text-[2.8rem] font-extrabold text-gray-900">{formatCurrency(fp)}</span>
           <span className="text-lg line-through font-light" style={{ color: "#666666" }}>{formatCurrency(rp)}</span>
-          <span className="px-3 py-1.5 text-[9px] uppercase tracking-[0.18em] font-bold" style={{ backgroundColor: "#dc2626", color: "#fff", borderRadius: "4px" }}>−{product.flashSale.discountPercentage}% Flash</span>
+          <span className="px-3 py-1.5 text-[9px] uppercase tracking-[0.18em] font-bold" style={{ backgroundColor: "#111111", color: "#fff", borderRadius: "4px" }}>−{product.flashSale.discountPercentage}% Flash</span>
         </div>
       );
     }
@@ -397,10 +397,10 @@ export default function ProductContent({ slug }) {
       <div className="max-w-7xl mx-auto px-5 md:px-8 lg:px-10 pt-7 pb-2">
         <nav className="flex items-center gap-2 text-[10px] uppercase tracking-[0.2em] flex-wrap" style={{ color: "#666666" }}>
           <Link href="/" className="hover:text-neutral-900 transition-colors">Home</Link>
-          <span style={{ color: "#dc2626" }}>·</span>
+          <span style={{ color: "#111111" }}>·</span>
           <Link href="/products" className="hover:text-neutral-900 transition-colors">Shop</Link>
-          {product.category && <><span style={{ color: "#dc2626" }}>·</span><Link href={`/category/${product.category.slug}`} className="hover:text-neutral-900 transition-colors">{product.category.name}</Link></>}
-          <span style={{ color: "#dc2626" }}>·</span>
+          {product.category && <><span style={{ color: "#111111" }}>·</span><Link href={`/category/${product.category.slug}`} className="hover:text-neutral-900 transition-colors">{product.category.name}</Link></>}
+          <span style={{ color: "#111111" }}>·</span>
           <span className="font-medium truncate max-w-[200px]" style={{ color: "#111111" }}>{product.name}</span>
         </nav>
       </div>
@@ -421,7 +421,7 @@ export default function ProductContent({ slug }) {
                     className="relative flex-shrink-0 w-[72px] h-[92px] overflow-hidden transition-all duration-300"
                     style={{
                       borderRadius: "8px",
-                      border: activeThumb === idx ? "2px solid #dc2626" : "1px solid #EAEAEA",
+                      border: activeThumb === idx ? "2px solid #111111" : "1px solid #EAEAEA",
                       opacity: activeThumb === idx ? 1 : 0.7,
                     }}
                   >
@@ -462,14 +462,14 @@ export default function ProductContent({ slug }) {
 
               {/* Hover Zoom Hint */}
               <div className="absolute bottom-4 right-4 z-20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none bg-gray-900/80 backdrop-blur-md text-white text-[9px] tracking-widest uppercase px-3 py-1.5 rounded-full flex items-center gap-1.5 shadow-lg border border-white/10">
-                <IconZoomIn className="h-3.5 w-3.5 text-red-600" />
+                <IconZoomIn className="h-3.5 w-3.5 text-neutral-800" />
                 <span>Click to Expand</span>
               </div>
 
               {/* Badges */}
               <div className="absolute top-5 left-5 z-20 flex flex-col gap-2 pointer-events-none">
                 {product.flashSale?.isActive && (
-                  <span className="px-4 py-2 text-[9px] font-bold uppercase tracking-[0.2em] flex items-center gap-1.5" style={{ backgroundColor: "#dc2626", color: "#fff", borderRadius: "4px" }}>
+                  <span className="px-4 py-2 text-[9px] font-bold uppercase tracking-[0.2em] flex items-center gap-1.5" style={{ backgroundColor: "#111111", color: "#fff", borderRadius: "4px" }}>
                     <IconBolt className="h-3 w-3" stroke={2} /> Flash Sale
                   </span>
                 )}
@@ -485,7 +485,7 @@ export default function ProductContent({ slug }) {
                 className="absolute top-5 right-5 z-20 w-11 h-11 rounded-full bg-white/95 shadow-md backdrop-blur-md flex items-center justify-center transition-all duration-300 hover:scale-110 active:scale-95"
                 aria-label="Wishlist"
               >
-                <IconHeart className={`h-5 w-5 transition-colors ${isInWishlist ? "text-red-600" : "text-gray-400 hover:text-red-500"}`} stroke={1.8} fill={isInWishlist ? "currentColor" : "none"} />
+                <IconHeart className={`h-5 w-5 transition-colors ${isInWishlist ? "text-neutral-800" : "text-gray-400 hover:text-neutral-600"}`} stroke={1.8} fill={isInWishlist ? "currentColor" : "none"} />
               </button>
 
               {/* Image count */}
@@ -502,12 +502,12 @@ export default function ProductContent({ slug }) {
 
             {/* Brand */}
             {product.brand && (
-              <span className="text-[10px] uppercase tracking-[0.25em] font-medium mb-4" style={{ color: "#dc2626" }}>{product.brand.name}</span>
+              <span className="text-[10px] uppercase tracking-[0.25em] font-medium mb-4" style={{ color: "#111111" }}>{product.brand.name}</span>
             )}
 
             {/* Category eyebrow + Title */}
             {product.category?.name && (
-              <span className="text-[10px] uppercase tracking-[0.25em] font-bold text-red-600 mb-2.5">
+              <span className="text-[10px] uppercase tracking-[0.25em] font-bold text-neutral-800 mb-2.5">
                 {product.category.name}
               </span>
             )}
@@ -526,7 +526,7 @@ export default function ProductContent({ slug }) {
             {/* Rating — hidden for now, see SHOW_REVIEWS */}
             {SHOW_REVIEWS && (
               <div className="flex items-center gap-2.5 mb-6">
-                <div className="flex gap-0.5">{[1, 2, 3, 4, 5].map(i => <IconStar key={i} className="h-3.5 w-3.5" style={{ color: "#dc2626" }} fill="#dc2626" stroke={0} />)}</div>
+                <div className="flex gap-0.5">{[1, 2, 3, 4, 5].map(i => <IconStar key={i} className="h-3.5 w-3.5" style={{ color: "#111111" }} fill="#111111" stroke={0} />)}</div>
                 <span className="text-[11px] tracking-[0.12em] uppercase" style={{ color: "#666666" }}>({product.reviewCount || 0} reviews)</span>
               </div>
             )}
@@ -564,7 +564,7 @@ export default function ProductContent({ slug }) {
 
             {/* Promise */}
             <div className="mb-7 flex items-center gap-4 p-4" style={{ border: "1px solid rgba(239,68,68,0.3)", backgroundColor: "#FAFAFA", borderRadius: "8px" }}>
-              <IconShieldCheck className="h-5 w-5 flex-shrink-0 text-red-500" stroke={1.5} />
+              <IconShieldCheck className="h-5 w-5 flex-shrink-0 text-neutral-600" stroke={1.5} />
               <p className="text-[12px] leading-relaxed tracking-wide" style={{ color: "rgba(17,17,17,0.7)" }}>
                 <strong className="font-semibold text-neutral-900">MWP Performance Guarantee</strong> — 100% authentic clinical nutrition, GMP certified &amp; third-party lab verified.
               </p>
@@ -587,7 +587,7 @@ export default function ProductContent({ slug }) {
                         onClick={() => handleAttributeChange(attr.id, v.id)}
                         className={`min-w-[52px] px-5 py-2.5 text-[12.5px] font-bold rounded-lg border-2 transition-all ${
                           selId === v.id
-                            ? "border-red-600 bg-neutral-900 text-white shadow-md shadow-neutral-900/20"
+                            ? "border-neutral-900 bg-neutral-900 text-white shadow-md shadow-neutral-900/20"
                             : "border-gray-200 text-gray-700 hover:border-neutral-300"
                         }`}
                       >
@@ -653,7 +653,7 @@ export default function ProductContent({ slug }) {
             {/* Delivery */}
             <div className="mb-7">
               <div className="flex items-center gap-3 p-4" style={{ border: "1px solid #EAEAEA", borderRadius: "8px" }}>
-                <IconTruck className="h-5 w-5 flex-shrink-0" style={{ color: "#dc2626" }} stroke={1.5} />
+                <IconTruck className="h-5 w-5 flex-shrink-0" style={{ color: "#111111" }} stroke={1.5} />
                 <div>
                   <p className="text-[9px] font-semibold uppercase tracking-[0.18em]" style={{ color: "#111111" }}>Delivery</p>
                   <p className="text-[10px] mt-0.5 font-light" style={{ color: "#666666" }}>5–7 business days</p>
@@ -696,7 +696,7 @@ export default function ProductContent({ slug }) {
             {/* Share */}
             <div className="flex items-center gap-4 mt-6 pt-6" style={{ borderTop: "1px solid #EAEAEA" }}>
               <span className="flex items-center gap-2 text-[10px] uppercase tracking-[0.2em] font-medium" style={{ color: "#666666" }}>
-                <IconShare className="h-4 w-4 text-red-600" stroke={1.5} /> Share
+                <IconShare className="h-4 w-4 text-neutral-800" stroke={1.5} /> Share
               </span>
               <div className="flex items-center gap-2">
                 <button
@@ -747,19 +747,19 @@ export default function ProductContent({ slug }) {
         <div className="max-w-7xl mx-auto px-5 md:px-8 lg:px-10 mb-16">
           <div className="p-6 md:p-10" style={{ border: "1px solid #EAEAEA", borderRadius: "8px", backgroundColor: "#FAFAFA" }}>
             <div className="mb-8">
-              <span className="text-[10px] uppercase tracking-[0.25em] font-medium block mb-2" style={{ color: "#dc2626" }}>Complete the Look</span>
-              <h3 className="text-2xl md:text-3xl" style={{ color: "#111111" }}>Frequently Bought <em className="italic" style={{ color: "#dc2626" }}>Together</em></h3>
+              <span className="text-[10px] uppercase tracking-[0.25em] font-medium block mb-2" style={{ color: "#111111" }}>Complete the Look</span>
+              <h3 className="text-2xl md:text-3xl" style={{ color: "#111111" }}>Frequently Bought <em className="italic" style={{ color: "#111111" }}>Together</em></h3>
             </div>
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
               <div className="lg:col-span-8 space-y-2">
                 {bundleItems.map((item) => (
                   <div key={item.id} className="flex items-center gap-4 p-3 bg-white transition-colors" style={{ border: "1px solid #EAEAEA", borderRadius: "8px" }}>
-                    <input type="checkbox" checked={!!bundleSelected[item.id]} disabled={item.isMain} onChange={(e) => setBundleSelected({ ...bundleSelected, [item.id]: e.target.checked })} className="w-4 h-4 cursor-pointer disabled:opacity-50" style={{ accentColor: "#dc2626" }} />
+                    <input type="checkbox" checked={!!bundleSelected[item.id]} disabled={item.isMain} onChange={(e) => setBundleSelected({ ...bundleSelected, [item.id]: e.target.checked })} className="w-4 h-4 cursor-pointer disabled:opacity-50" style={{ accentColor: "#111111" }} />
                     <div className="relative w-14 h-16 overflow-hidden flex-shrink-0" style={{ borderRadius: "6px" }}>
                       <Image src={getImageUrl(item.image)} alt="" fill className="object-cover" sizes="56px" />
                     </div>
                     <div className="flex-1 min-w-0">
-                      <p className="text-[13px] truncate tracking-wide" style={{ color: "#111111" }}>{item.isMain && <span className="text-[9px] uppercase tracking-[0.18em] mr-2" style={{ color: "#dc2626" }}>This piece</span>}{item.name}</p>
+                      <p className="text-[13px] truncate tracking-wide" style={{ color: "#111111" }}>{item.isMain && <span className="text-[9px] uppercase tracking-[0.18em] mr-2" style={{ color: "#111111" }}>This piece</span>}{item.name}</p>
                     </div>
                     <span className="text-[13px] font-semibold" style={{ color: "#111111" }}>{formatCurrency(item.price)}</span>
                   </div>
@@ -767,8 +767,8 @@ export default function ProductContent({ slug }) {
               </div>
               <div className="lg:col-span-4 p-8 text-center" style={{ backgroundColor: "#111111", borderRadius: "8px" }}>
                 <span className="text-[9px] uppercase tracking-[0.3em] block mb-2" style={{ color: "rgba(255,255,255,0.5)" }}>Bundle Total</span>
-                <span className="text-4xl block mb-5" style={{ color: "#dc2626" }}>{formatCurrency(bundleTotal)}</span>
-                <button onClick={handleAddBundleToCart} disabled={isAddingBundle || !Object.values(bundleSelected).some(Boolean)} className="w-full h-12 text-[10px] font-semibold uppercase tracking-[0.25em] transition-all duration-300 disabled:opacity-40" style={{ backgroundColor: "#dc2626", color: "#fff", borderRadius: "8px" }}>
+                <span className="text-4xl block mb-5" style={{ color: "#111111" }}>{formatCurrency(bundleTotal)}</span>
+                <button onClick={handleAddBundleToCart} disabled={isAddingBundle || !Object.values(bundleSelected).some(Boolean)} className="w-full h-12 text-[10px] font-semibold uppercase tracking-[0.25em] transition-all duration-300 disabled:opacity-40" style={{ backgroundColor: "#111111", color: "#fff", borderRadius: "8px" }}>
                   {isAddingBundle ? "Adding…" : "Add Bundle to Bag"}
                 </button>
               </div>
@@ -887,7 +887,7 @@ export default function ProductContent({ slug }) {
                 </div>
                 <Link
                   href="/ingredients"
-                  className="mt-4 inline-flex items-center gap-1.5 text-[11px] uppercase tracking-[0.15em] font-bold text-red-600 hover:text-neutral-700"
+                  className="mt-4 inline-flex items-center gap-1.5 text-[11px] uppercase tracking-[0.15em] font-bold text-neutral-800 hover:text-neutral-700"
                 >
                   See all MWP ingredients
                   <IconChevronRight className="h-3.5 w-3.5" stroke={2} />
@@ -979,8 +979,8 @@ export default function ProductContent({ slug }) {
         <div className="max-w-7xl mx-auto px-5 md:px-8 lg:px-10 pb-20">
           <div className="flex items-end justify-between mb-10">
             <div>
-              <span className="text-[10px] uppercase tracking-[0.25em] font-medium block mb-3" style={{ color: "#dc2626" }}>Keep Exploring</span>
-              <h2 className="text-3xl md:text-4xl tracking-tight" style={{ color: "#111111" }}>You May Also <em className="italic" style={{ color: "#dc2626" }}>Like</em></h2>
+              <span className="text-[10px] uppercase tracking-[0.25em] font-medium block mb-3" style={{ color: "#111111" }}>Keep Exploring</span>
+              <h2 className="text-3xl md:text-4xl tracking-tight" style={{ color: "#111111" }}>You May Also <em className="italic" style={{ color: "#111111" }}>Like</em></h2>
             </div>
             <Link href="/products" className="text-[11px] uppercase tracking-[0.15em] font-medium shrink-0 hover:text-neutral-900 transition-colors" style={{ color: "#111111" }}>View All →</Link>
           </div>
@@ -1000,7 +1000,7 @@ export default function ProductContent({ slug }) {
               </div>
               <div className="min-w-0">
                 <h4 className="text-[13px] font-bold text-gray-900 truncate">{product.name}</h4>
-                <p className="text-[14px] font-extrabold text-red-600 mt-0.5">
+                <p className="text-[14px] font-extrabold text-neutral-800 mt-0.5">
                   {formatCurrency(selectedVariant ? (effectivePriceInfo?.price || selectedVariant.price) : (product.basePrice || product.regularPrice))}
                 </p>
               </div>
@@ -1043,7 +1043,7 @@ export default function ProductContent({ slug }) {
           {/* Header Controls */}
           <div className="flex items-center justify-between z-10 text-white border-b border-white/10 pb-4">
             <div className="flex items-center gap-3">
-              <span className="text-xs uppercase tracking-[0.2em] font-medium text-red-600">{product.name}</span>
+              <span className="text-xs uppercase tracking-[0.2em] font-medium text-neutral-800">{product.name}</span>
               {images.length > 1 && (
                 <span className="text-xs text-white/50 tracking-wider">
                   ({activeThumb + 1} of {images.length})
@@ -1063,7 +1063,7 @@ export default function ProductContent({ slug }) {
                 </button>
                 <button
                   onClick={() => setLightboxScale(1)}
-                  className="px-2 py-1 text-xs font-mono font-medium text-red-600 hover:bg-white/10 rounded transition-colors"
+                  className="px-2 py-1 text-xs font-mono font-medium text-neutral-800 hover:bg-white/10 rounded transition-colors"
                   title="Reset Zoom"
                 >
                   {Math.round(lightboxScale * 100)}%
@@ -1138,7 +1138,7 @@ export default function ProductContent({ slug }) {
                     setActiveThumb(idx);
                     setLightboxScale(1);
                   }}
-                  className={`relative flex-shrink-0 w-14 h-14 rounded-lg overflow-hidden transition-all border-2 ${activeThumb === idx ? "border-red-500 opacity-100 scale-105" : "border-transparent opacity-50 hover:opacity-80"
+                  className={`relative flex-shrink-0 w-14 h-14 rounded-lg overflow-hidden transition-all border-2 ${activeThumb === idx ? "border-neutral-900 opacity-100 scale-105" : "border-transparent opacity-50 hover:opacity-80"
                     }`}
                 >
                   <Image src={getImageUrl(img.url)} alt="" fill className="object-cover" sizes="56px" />

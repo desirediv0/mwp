@@ -187,8 +187,8 @@ export default function ComparePage() {
     return (
       <div className="min-h-[70vh] bg-white flex items-center justify-center px-5">
         <div className="text-center max-w-md">
-          <div className="w-16 h-16 rounded-2xl bg-red-50 flex items-center justify-center mx-auto mb-5">
-            <GitCompareArrows className="h-8 w-8 text-red-500" />
+          <div className="w-16 h-16 rounded-2xl bg-neutral-100 flex items-center justify-center mx-auto mb-5">
+            <GitCompareArrows className="h-8 w-8 text-neutral-600" />
           </div>
           <h1 className="text-2xl font-extrabold text-gray-900 mb-2">Nothing to compare yet</h1>
           <p className="text-[14px] text-gray-500 mb-6">
@@ -196,7 +196,7 @@ export default function ComparePage() {
           </p>
           <Link
             href="/products"
-            className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-red-600 text-white text-[12px] uppercase tracking-wider font-bold hover:bg-red-700 transition-colors"
+            className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-neutral-900 text-white text-[12px] uppercase tracking-wider font-bold hover:bg-neutral-900 transition-colors"
           >
             Browse Products <ArrowRight className="h-4 w-4" />
           </Link>
@@ -218,11 +218,11 @@ export default function ComparePage() {
         <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4 mb-6">
           <div>
             <div className="flex items-center gap-2.5 mb-2">
-              <span className="h-px w-8 bg-red-500/50" />
-              <span className="text-[10px] uppercase tracking-[0.3em] text-red-600 font-bold">Side by Side</span>
+              <span className="h-px w-8 bg-neutral-800/50" />
+              <span className="text-[10px] uppercase tracking-[0.3em] text-neutral-800 font-bold">Side by Side</span>
             </div>
             <h1 className="text-3xl sm:text-4xl font-extrabold text-gray-900 tracking-tight">
-              Compare <span className="text-red-600">Products</span>
+              Compare <span className="text-neutral-800">Products</span>
             </h1>
             <p className="text-[14px] text-gray-500 mt-2">
               {items.length} product{items.length > 1 ? "s" : ""} selected
@@ -234,13 +234,13 @@ export default function ComparePage() {
                 type="checkbox"
                 checked={onlyDiff}
                 onChange={(e) => setOnlyDiff(e.target.checked)}
-                className="w-4 h-4 rounded accent-red-600"
+                className="w-4 h-4 rounded accent-neutral-900"
               />
               Highlight differences
             </label>
             <button
               onClick={clearCompare}
-              className="inline-flex items-center gap-2 px-4 py-2.5 rounded-lg border border-gray-200 text-gray-600 text-[12px] uppercase tracking-wider font-bold hover:border-red-300 hover:text-red-600 transition-colors"
+              className="inline-flex items-center gap-2 px-4 py-2.5 rounded-lg border border-gray-200 text-gray-600 text-[12px] uppercase tracking-wider font-bold hover:border-neutral-300 hover:text-neutral-800 transition-colors"
             >
               <X className="h-4 w-4" /> Clear All
             </button>
@@ -249,7 +249,7 @@ export default function ComparePage() {
 
         {loading ? (
           <div className="flex items-center justify-center py-24">
-            <Loader2 className="h-8 w-8 animate-spin text-red-500" />
+            <Loader2 className="h-8 w-8 animate-spin text-neutral-600" />
           </div>
         ) : (
           <div className="overflow-x-auto rounded-2xl border border-gray-200">
@@ -263,7 +263,7 @@ export default function ComparePage() {
                       <div className="relative">
                         <button
                           onClick={() => removeFromCompare(p.id)}
-                          className="absolute -top-2 -right-2 z-10 w-7 h-7 rounded-full bg-white border border-gray-200 shadow-sm flex items-center justify-center text-gray-400 hover:text-red-600 hover:border-red-300 transition-colors"
+                          className="absolute -top-2 -right-2 z-10 w-7 h-7 rounded-full bg-white border border-gray-200 shadow-sm flex items-center justify-center text-gray-400 hover:text-neutral-800 hover:border-neutral-300 transition-colors"
                           aria-label="Remove"
                         >
                           <X className="h-3.5 w-3.5" />
@@ -272,12 +272,12 @@ export default function ComparePage() {
                           <div className="relative aspect-square rounded-xl overflow-hidden bg-white border border-gray-200 mb-3">
                             <Image src={img(p.image)} alt={p.name} fill className="object-cover" sizes="230px" />
                             {p.discount > 0 && (
-                              <span className="absolute top-2 left-2 bg-red-600 text-white text-[10px] font-extrabold px-1.5 py-0.5 rounded">
+                              <span className="absolute top-2 left-2 bg-neutral-900 text-white text-[10px] font-extrabold px-1.5 py-0.5 rounded">
                                 −{p.discount}%
                               </span>
                             )}
                           </div>
-                          <h3 className="text-[14px] font-bold text-gray-900 leading-snug line-clamp-2 hover:text-red-600 transition-colors">
+                          <h3 className="text-[14px] font-bold text-gray-900 leading-snug line-clamp-2 hover:text-neutral-800 transition-colors">
                             {p.name}
                           </h3>
                         </Link>
@@ -292,7 +292,7 @@ export default function ComparePage() {
                         <button
                           onClick={() => handleAdd(p)}
                           disabled={!p.inStock || adding[p.id]}
-                          className="mt-3 w-full inline-flex items-center justify-center gap-2 py-2.5 rounded-lg bg-red-600 text-white text-[11px] uppercase tracking-wider font-bold hover:bg-red-700 disabled:opacity-50 transition-colors"
+                          className="mt-3 w-full inline-flex items-center justify-center gap-2 py-2.5 rounded-lg bg-neutral-900 text-white text-[11px] uppercase tracking-wider font-bold hover:bg-neutral-900 disabled:opacity-50 transition-colors"
                         >
                           {adding[p.id] ? (
                             <Loader2 className="h-3.5 w-3.5 animate-spin" />
@@ -314,7 +314,7 @@ export default function ComparePage() {
                   render={(p) => p.maxReg ? <span className="text-[13px] text-gray-500 line-through">{formatCurrency(p.maxReg)}</span> : <Dash />} />
                 <Row label="Discount" products={products} onlyDiff={onlyDiff} differs={differs} pick={(p) => p.discount}
                   render={(p) => p.discount > 0
-                    ? <span className="inline-block bg-red-600 text-white text-[11px] font-extrabold px-2 py-0.5 rounded">−{p.discount}%</span>
+                    ? <span className="inline-block bg-neutral-900 text-white text-[11px] font-extrabold px-2 py-0.5 rounded">−{p.discount}%</span>
                     : <Dash />} />
 
                 <SectionHead>Quick Compare</SectionHead>
@@ -373,7 +373,7 @@ export default function ComparePage() {
                               <span className="line-through text-gray-400 ml-1">{formatCurrency(v.price)}</span>
                             )}
                           </span>
-                          <span className={cn("ml-1.5 text-[10px] font-bold uppercase", v.stock > 0 ? "text-emerald-600" : "text-red-600")}>
+                          <span className={cn("ml-1.5 text-[10px] font-bold uppercase", v.stock > 0 ? "text-emerald-600" : "text-neutral-800")}>
                             {v.stock > 0 ? "in stock" : "sold out"}
                           </span>
                         </li>
@@ -385,7 +385,7 @@ export default function ComparePage() {
                 <Row label="Stock" products={products} onlyDiff={onlyDiff} differs={differs} pick={(p) => p.inStock}
                   render={(p) => p.inStock
                     ? <span className="inline-flex items-center gap-1.5 text-[12px] font-bold text-emerald-600"><Check className="h-4 w-4" /> In Stock ({p.stock})</span>
-                    : <span className="text-[12px] font-bold text-red-600">Out of Stock</span>} />
+                    : <span className="text-[12px] font-bold text-neutral-800">Out of Stock</span>} />
                 <Row label="Rating" products={products} onlyDiff={onlyDiff} differs={differs} pick={(p) => p.rating}
                   render={(p) => (
                     <span className="inline-flex items-center gap-1.5">
@@ -421,7 +421,7 @@ export default function ComparePage() {
                     <td key={p.id} className="p-4 border-l border-gray-100">
                       <Link
                         href={`/products/${p.slug}`}
-                        className="inline-flex items-center gap-1.5 text-[12px] uppercase tracking-wider font-bold text-red-600 hover:text-red-700"
+                        className="inline-flex items-center gap-1.5 text-[12px] uppercase tracking-wider font-bold text-neutral-800 hover:text-neutral-900"
                       >
                         View Full Details <ArrowRight className="h-3.5 w-3.5" />
                       </Link>
