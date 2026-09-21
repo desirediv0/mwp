@@ -1,5 +1,14 @@
 import { NextResponse } from "next/server";
 
+// Maintenance mode — set NEXT_PUBLIC_MAINTENANCE_MODE=true in .env to show a
+// "Coming Soon" page across the whole site instead of the real storefront.
+// Bypass it (e.g. for internal preview) with ?preview=<MAINTENANCE_BYPASS_KEY>,
+// which is remembered via a cookie for the rest of the session.
+const MAINTENANCE_MODE = process.env.NEXT_PUBLIC_MAINTENANCE_MODE === "true";
+const BYPASS_KEY = process.env.MAINTENANCE_BYPASS_KEY || "";
+const BYPASS_COOKIE = "mwp_maintenance_bypass";
+const MAINTENANCE_ALLOWED_PATHS = ["/maintenance"];
+
 // Define private routes that require authentication
 const privateRoutes = ["/profile", "/checkout", "/wishlist", "/orders"];
 
@@ -14,7 +23,36 @@ const authRoutes = [
 ];
 
 export function middleware(request) {
-    const { pathname } = request.nextUrl;
+    const { pathname, searchParams } = request.nextUrl;
+
+    if (MAINTENANCE_MODE) {
+        const hasBypassCookie = request.cookies.get(BYPASS_COOKIE)?.value === "1";
+        const bypassParam = searchParams.get("preview");
+        const isBypassing =
+            hasBypassCookie || (BYPASS_KEY && bypassParam === BYPASS_KEY);
+
+        const isAllowedPath = MAINTENANCE_ALLOWED_PATHS.some((p) =>
+            pathname.startsWith(p)
+        );
+
+        if (!isBypassing && !isAllowedPath) {
+            const res = NextResponse.rewrite(new URL("/maintenance", request.url));
+            res.headers.set("x-robots-tag", "noindex, nofollow");
+            res.headers.set("x-maintenance-active", "1");
+            return res;
+        }
+
+        if (isBypassing && !hasBypassCookie) {
+            const res = NextResponse.next();
+            res.cookies.set(BYPASS_COOKIE, "1", {
+                maxAge: 60 * 60 * 24, // 1 day
+                path: "/",
+                httpOnly: true,
+                sameSite: "lax",
+            });
+            return res;
+        }
+    }
 
     // Get the authentication cookie
     const isAuthenticated =

@@ -32,6 +32,8 @@ import adminIngredientRoutes, {
 } from "./routes/admin.ingredient.routes.js";
 import certificateRoutes from "./routes/certificate.routes.js";
 import adminCertificateRoutes from "./routes/admin.certificate.routes.js";
+import verificationRoutes from "./routes/verification.routes.js";
+import adminVerificationRoutes from "./routes/admin.verification.routes.js";
 import adminBrandRoutes from "./routes/admin.brand.routes.js";
 import adminBannerRoutes from "./routes/admin.banner.routes.js";
 import adminProductSectionRoutes from "./routes/admin.product-section.routes.js";
@@ -173,6 +175,8 @@ app.use("/api/admin/ingredients", adminIngredientRoutes);
 app.use("/api/admin/product-ingredients", productIngredientAdminRouter);
 app.use("/api/certificates", certificateRoutes);
 app.use("/api/admin/certificates", adminCertificateRoutes);
+app.use("/api/public/verify", verificationRoutes);
+app.use("/api/admin/verifications", adminVerificationRoutes);
 app.use("/api/admin", adminBrandRoutes);
 app.use("/api/admin", adminBannerRoutes);
 app.use("/api/admin", adminProductSectionRoutes);

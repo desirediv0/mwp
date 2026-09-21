@@ -243,64 +243,65 @@ model VariantAttributeValue {
 // Product & Variant (using universal attributes)
 // -----------------------
 model Product {
-  id                String               @id @default(uuid())
-  name              String
-  description       String?
-  slug              String               @unique
-  featured          Boolean              @default(false)
-  productType       Json? // e.g. { "type": "mobile" }
-  isActive          Boolean              @default(true)
-  isDeleted         Boolean              @default(false)
-  deletedAt         DateTime?
-  deletedBy         String?
-  createdAt         DateTime             @default(now())
-  updatedAt         DateTime             @updatedAt
-  hasVariants       Boolean              @default(false)
-  primaryCategoryId String?
-  metaTitle         String?
-  metaDescription   String?
-  keywords          String?
-  tags              String[]             @default([])
-  topBrandIds       String[]             @default([])
-  newBrandIds       String[]             @default([])
-  hotBrandIds       String[]             @default([])
-  ourProduct        Boolean              @default(false)
-  visibility        ProductVisibility    @default(PUBLIC)
-  gender            ProductGender        @default(UNISEX)
-  fragranceNotes    String?              @db.Text
-  feelings          String?              @db.Text
-  occasions         String?              @db.Text
-  behindThePerfume  String?              @db.Text
-  shippingReturn    String?              @db.Text
-  legalInfo         String?              @db.Text
-  lifestyleImage    String?
-  lifestyleDescription String?           @db.Text
+  id                        String                     @id @default(uuid())
+  name                      String
+  description               String?
+  slug                      String                     @unique
+  featured                  Boolean                    @default(false)
+  productType               Json? // e.g. { "type": "mobile" }
+  isActive                  Boolean                    @default(true)
+  isDeleted                 Boolean                    @default(false)
+  deletedAt                 DateTime?
+  deletedBy                 String?
+  createdAt                 DateTime                   @default(now())
+  updatedAt                 DateTime                   @updatedAt
+  hasVariants               Boolean                    @default(false)
+  primaryCategoryId         String?
+  metaTitle                 String?
+  metaDescription           String?
+  keywords                  String?
+  tags                      String[]                   @default([])
+  topBrandIds               String[]                   @default([])
+  newBrandIds               String[]                   @default([])
+  hotBrandIds               String[]                   @default([])
+  ourProduct                Boolean                    @default(false)
+  visibility                ProductVisibility          @default(PUBLIC)
+  gender                    ProductGender              @default(UNISEX)
+  fragranceNotes            String?                    @db.Text
+  feelings                  String?                    @db.Text
+  occasions                 String?                    @db.Text
+  behindThePerfume          String?                    @db.Text
+  shippingReturn            String?                    @db.Text
+  legalInfo                 String?                    @db.Text
+  lifestyleImage            String?
+  lifestyleDescription      String?                    @db.Text
   // Simple comparison fields (shown on the /compare page)
-  bestFor           String?              @db.Text
-  mainBenefits      String?              @db.Text
-  dosageForm        String?              // e.g. "Capsule", "Tablet", "Powder"
-  servingSize       String?              // e.g. "2 capsules"
-  whenToTake        String?              @db.Text
-  brandId           String?
-  brand             Brand?               @relation(fields: [brandId], references: [id])
-  orderItems        OrderItem[]
-  categories        ProductCategory[]
-  subCategories     ProductSubCategory[]
-  images            ProductImage[]
-  variants          ProductVariant[]
-  reviews           Review[]
-  wishlistItems     WishlistItem[]
-  ProductView       ProductView[]
-  coupons           CouponProduct[]
-  productSections   ProductSectionItem[]
-  flashSaleProducts FlashSaleProduct[]
-  moqSettings       MOQSetting[]
-  pricingSlabs      PricingSlab[]
-  videoReelProducts VideoReelProduct[]
+  bestFor                   String?                    @db.Text
+  mainBenefits              String?                    @db.Text
+  dosageForm                String? // e.g. "Capsule", "Tablet", "Powder"
+  servingSize               String? // e.g. "2 capsules"
+  whenToTake                String?                    @db.Text
+  brandId                   String?
+  brand                     Brand?                     @relation(fields: [brandId], references: [id])
+  orderItems                OrderItem[]
+  categories                ProductCategory[]
+  subCategories             ProductSubCategory[]
+  images                    ProductImage[]
+  variants                  ProductVariant[]
+  reviews                   Review[]
+  wishlistItems             WishlistItem[]
+  ProductView               ProductView[]
+  coupons                   CouponProduct[]
+  productSections           ProductSectionItem[]
+  flashSaleProducts         FlashSaleProduct[]
+  moqSettings               MOQSetting[]
+  pricingSlabs              PricingSlab[]
+  videoReelProducts         VideoReelProduct[]
   fragranceQuizRuleProducts FragranceQuizRuleProduct[]
-  notes             ProductNote[]
-  ingredients       ProductIngredient[]
-  ingredientItems   ProductIngredientItem[]
+  notes                     ProductNote[]
+  ingredients               ProductIngredient[]
+  ingredientItems           ProductIngredientItem[]
+  verifications             Verification[]
 }
 
 model ProductNote {
@@ -484,7 +485,7 @@ model OrderItem {
   flashSaleDiscount Float? // Discount percentage applied
   originalPrice     Decimal?        @db.Decimal(10, 2) // Price before flash sale discount
   // Complete product snapshot at time of purchase (immutable)
-  productSnapshot   Json?           // Stores: name, slug, sku, image, brand, categories, variant attributes, etc.
+  productSnapshot   Json? // Stores: name, slug, sku, image, brand, categories, variant attributes, etc.
   order             Order           @relation(fields: [orderId], references: [id], onDelete: Cascade)
   product           Product         @relation(fields: [productId], references: [id])
   variant           ProductVariant  @relation(fields: [variantId], references: [id])
@@ -854,16 +855,16 @@ model Brand {
 
 // Ingredient library shown on the public /ingredients page and managed in admin.
 model Ingredient {
-  id          String   @id @default(uuid())
-  name        String   @unique
-  slug        String   @unique
-  image       String?  // raw / natural form image
-  benefit     String   @db.Text // short, easy benefit description
-  displayOrder Int     @default(0)
-  isActive    Boolean  @default(true)
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-  products    ProductIngredient[]
+  id           String              @id @default(uuid())
+  name         String              @unique
+  slug         String              @unique
+  image        String? // raw / natural form image
+  benefit      String              @db.Text // short, easy benefit description
+  displayOrder Int                 @default(0)
+  isActive     Boolean             @default(true)
+  createdAt    DateTime            @default(now())
+  updatedAt    DateTime            @updatedAt
+  products     ProductIngredient[]
 
   @@index([isActive, displayOrder])
 }
@@ -889,11 +890,11 @@ model ProductIngredientItem {
   id             String   @id @default(uuid())
   productId      String
   name           String
-  scientificName String?  // botanical/scientific name, e.g. "Withania Somnifera"
-  type           String?  // e.g. "Powder", "Extract", "Capsule Fill" — free text
-  keyBenefit     String?  // short scannable tag, e.g. "Boosts Energy"
-  source         String?  // origin/sourcing, e.g. "India — Ashwagandha root"
-  image          String?  // raw/natural form image, stored via S3/Spaces
+  scientificName String? // botanical/scientific name, e.g. "Withania Somnifera"
+  type           String? // e.g. "Powder", "Extract", "Capsule Fill" — free text
+  keyBenefit     String? // short scannable tag, e.g. "Boosts Energy"
+  source         String? // origin/sourcing, e.g. "India — Ashwagandha root"
+  image          String? // raw/natural form image, stored via S3/Spaces
   description    String   @db.Text
   displayOrder   Int      @default(0)
   createdAt      DateTime @default(now())
@@ -910,14 +911,77 @@ model ProductIngredientItem {
 model Certificate {
   id           String   @id @default(uuid())
   title        String
-  fileUrl      String   // image or PDF, stored via the same S3/Spaces uploader as other admin assets
-  fileType     String   // "image" | "pdf"
+  fileUrl      String // image or PDF, stored via the same S3/Spaces uploader as other admin assets
+  fileType     String // "image" | "pdf"
   displayOrder Int      @default(0)
   isActive     Boolean  @default(true)
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
 
   @@index([isActive, displayOrder])
+}
+
+// Permanent QR-based product/batch authenticity verification.
+// verificationCode is generated once and NEVER changes — the printed QR
+// encodes only https://domain.com/verify/{verificationCode}. All editable
+// fields (batch, dates, COA, badge, status, etc.) are looked up live by
+// that permanent code, so editing this record never invalidates the QR.
+model Verification {
+  id                 String                   @id @default(uuid())
+  verificationCode   String                   @unique
+  productId          String?
+  product            Product?                 @relation(fields: [productId], references: [id], onDelete: SetNull)
+  productName        String
+  productSlug        String?
+  productImage       String?
+  batchNumber        String?
+  lotNumber          String?
+  manufacturingDate  DateTime?
+  expiryDate         DateTime?
+  authenticityStatus VerificationAuthenticity @default(VERIFIED)
+  status             VerificationStatus       @default(ACTIVE)
+  description        String?                  @db.Text
+  coaUrl             String?
+  certificateUrl     String?
+  ingredients        String[]                 @default([])
+  origin             String?
+  badgeType          String?
+  badgeImage         String?
+  isActive           Boolean                  @default(true)
+  createdBy          String?
+  updatedBy          String?
+  createdAt          DateTime                 @default(now())
+  updatedAt          DateTime                 @updatedAt
+  auditLogs          VerificationAuditLog[]
+
+  @@index([status])
+  @@index([productId])
+}
+
+model VerificationAuditLog {
+  id             String       @id @default(uuid())
+  verificationId String
+  verification   Verification @relation(fields: [verificationId], references: [id], onDelete: Cascade)
+  action         String // e.g. "CREATED", "BATCH_UPDATED", "COA_UPDATED", "STATUS_CHANGED", "REVOKED"
+  detail         String?      @db.Text
+  performedBy    String?
+  createdAt      DateTime     @default(now())
+
+  @@index([verificationId, createdAt])
+}
+
+enum VerificationStatus {
+  ACTIVE
+  INACTIVE
+  EXPIRED
+  SUSPENDED
+  REVOKED
+}
+
+enum VerificationAuthenticity {
+  VERIFIED
+  UNVERIFIED
+  UNAVAILABLE
 }
 
 enum UserRole {
@@ -1437,28 +1501,28 @@ enum SecretAccessStatus {
 }
 
 model SecretAccess {
-  id              String             @id @default(uuid())
-  userId          String?
-  orderId         String?
-  email           String
-  displayCode     String             @unique
-  tokenHash       String             @unique
-  status          SecretAccessStatus @default(PENDING)
-  usageLimit      Int                @default(1)
-  usageCount      Int                @default(0)
-  expiresAt       DateTime
-  activatedAt     DateTime?
-  lastUsedAt      DateTime?
-  lastUsedIP      String?
-  lastUsedDevice  String?
-  createdByAdmin  String?
-  revokedByAdmin  String?
-  revokedReason   String?
-  createdAt       DateTime           @default(now())
-  updatedAt       DateTime           @updatedAt
+  id             String             @id @default(uuid())
+  userId         String?
+  orderId        String?
+  email          String
+  displayCode    String             @unique
+  tokenHash      String             @unique
+  status         SecretAccessStatus @default(PENDING)
+  usageLimit     Int                @default(1)
+  usageCount     Int                @default(0)
+  expiresAt      DateTime
+  activatedAt    DateTime?
+  lastUsedAt     DateTime?
+  lastUsedIP     String?
+  lastUsedDevice String?
+  createdByAdmin String?
+  revokedByAdmin String?
+  revokedReason  String?
+  createdAt      DateTime           @default(now())
+  updatedAt      DateTime           @updatedAt
 
-  user            User?              @relation(fields: [userId], references: [id], onDelete: SetNull)
-  order           Order?             @relation(fields: [orderId], references: [id], onDelete: SetNull)
+  user  User?  @relation(fields: [userId], references: [id], onDelete: SetNull)
+  order Order? @relation(fields: [orderId], references: [id], onDelete: SetNull)
 
   @@index([userId])
   @@index([orderId])
@@ -1486,35 +1550,35 @@ enum FragranceRuleOperator {
 }
 
 model FragranceQuiz {
-  id              String   @id @default(uuid())
-  title           String   @default("Fragrance Finder")
-  description     String?
-  heroImage       String?
-  isActive        Boolean  @default(true)
-  showResults     Boolean  @default(true)
-  maxQuestions    Int      @default(15)
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
+  id           String   @id @default(uuid())
+  title        String   @default("Fragrance Finder")
+  description  String?
+  heroImage    String?
+  isActive     Boolean  @default(true)
+  showResults  Boolean  @default(true)
+  maxQuestions Int      @default(15)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
 
-  questions       FragranceQuizQuestion[]
-  responses       FragranceQuizResponse[]
-  rules           FragranceQuizRule[]
+  questions FragranceQuizQuestion[]
+  responses FragranceQuizResponse[]
+  rules     FragranceQuizRule[]
 }
 
 model FragranceQuizQuestion {
-  id              String                @id @default(uuid())
-  quizId          String
-  title           String
-  description     String?
-  questionType    FragranceQuestionType @default(SINGLE_CHOICE)
-  isRequired      Boolean               @default(true)
-  isActive        Boolean               @default(true)
-  image           String?
-  order           Int                   @default(0)
-  createdAt       DateTime              @default(now())
-  updatedAt       DateTime              @updatedAt
+  id           String                @id @default(uuid())
+  quizId       String
+  title        String
+  description  String?
+  questionType FragranceQuestionType @default(SINGLE_CHOICE)
+  isRequired   Boolean               @default(true)
+  isActive     Boolean               @default(true)
+  image        String?
+  order        Int                   @default(0)
+  createdAt    DateTime              @default(now())
+  updatedAt    DateTime              @updatedAt
 
-  quiz            FragranceQuiz          @relation(fields: [quizId], references: [id], onDelete: Cascade)
+  quiz            FragranceQuiz                 @relation(fields: [quizId], references: [id], onDelete: Cascade)
   options         FragranceQuizOption[]
   ruleConditions  FragranceQuizRuleCondition[]
   responseAnswers FragranceQuizResponseAnswer[]
@@ -1524,21 +1588,21 @@ model FragranceQuizQuestion {
 }
 
 model FragranceQuizOption {
-  id              String   @id @default(uuid())
-  questionId      String
-  title           String
-  description     String?
-  image           String?
-  icon            String?
-  score           Int      @default(1)
-  tags            String[] @default([])
-  priority        Int      @default(0)
-  order           Int      @default(0)
-  isActive        Boolean  @default(true)
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
+  id          String   @id @default(uuid())
+  questionId  String
+  title       String
+  description String?
+  image       String?
+  icon        String?
+  score       Int      @default(1)
+  tags        String[] @default([])
+  priority    Int      @default(0)
+  order       Int      @default(0)
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 
-  question        FragranceQuizQuestion @relation(fields: [questionId], references: [id], onDelete: Cascade)
+  question        FragranceQuizQuestion         @relation(fields: [questionId], references: [id], onDelete: Cascade)
   ruleConditions  FragranceQuizRuleCondition[]
   responseAnswers FragranceQuizResponseAnswer[]
 
@@ -1547,49 +1611,49 @@ model FragranceQuizOption {
 }
 
 model FragranceQuizRule {
-  id              String   @id @default(uuid())
-  quizId          String
-  name            String
-  description     String?
-  operator        FragranceRuleOperator @default(AND)
-  priority        Int      @default(0)
-  weight          Float    @default(1.0)
-  isActive        Boolean  @default(true)
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
+  id          String                @id @default(uuid())
+  quizId      String
+  name        String
+  description String?
+  operator    FragranceRuleOperator @default(AND)
+  priority    Int                   @default(0)
+  weight      Float                 @default(1.0)
+  isActive    Boolean               @default(true)
+  createdAt   DateTime              @default(now())
+  updatedAt   DateTime              @updatedAt
 
-  quiz            FragranceQuiz               @relation(fields: [quizId], references: [id], onDelete: Cascade)
-  conditions      FragranceQuizRuleCondition[]
-  products        FragranceQuizRuleProduct[]
+  quiz       FragranceQuiz                @relation(fields: [quizId], references: [id], onDelete: Cascade)
+  conditions FragranceQuizRuleCondition[]
+  products   FragranceQuizRuleProduct[]
 
   @@index([quizId])
   @@index([priority])
 }
 
 model FragranceQuizRuleCondition {
-  id              String   @id @default(uuid())
-  ruleId          String
-  questionId      String
-  optionId        String
-  createdAt       DateTime @default(now())
+  id         String   @id @default(uuid())
+  ruleId     String
+  questionId String
+  optionId   String
+  createdAt  DateTime @default(now())
 
-  rule            FragranceQuizRule      @relation(fields: [ruleId], references: [id], onDelete: Cascade)
-  question        FragranceQuizQuestion  @relation(fields: [questionId], references: [id], onDelete: Cascade)
-  option          FragranceQuizOption    @relation(fields: [optionId], references: [id], onDelete: Cascade)
+  rule     FragranceQuizRule     @relation(fields: [ruleId], references: [id], onDelete: Cascade)
+  question FragranceQuizQuestion @relation(fields: [questionId], references: [id], onDelete: Cascade)
+  option   FragranceQuizOption   @relation(fields: [optionId], references: [id], onDelete: Cascade)
 
   @@unique([ruleId, questionId, optionId])
   @@index([ruleId])
 }
 
 model FragranceQuizRuleProduct {
-  id              String   @id @default(uuid())
-  ruleId          String
-  productId       String
-  priority        Int      @default(0)
-  createdAt       DateTime @default(now())
+  id        String   @id @default(uuid())
+  ruleId    String
+  productId String
+  priority  Int      @default(0)
+  createdAt DateTime @default(now())
 
-  rule            FragranceQuizRule @relation(fields: [ruleId], references: [id], onDelete: Cascade)
-  product         Product           @relation(fields: [productId], references: [id], onDelete: Cascade)
+  rule    FragranceQuizRule @relation(fields: [ruleId], references: [id], onDelete: Cascade)
+  product Product           @relation(fields: [productId], references: [id], onDelete: Cascade)
 
   @@unique([ruleId, productId])
   @@index([ruleId])
@@ -1612,9 +1676,9 @@ model FragranceQuizResponse {
   createdAt           DateTime @default(now())
   updatedAt           DateTime @updatedAt
 
-  quiz                FragranceQuiz?       @relation(fields: [quizId], references: [id], onDelete: SetNull)
-  user                User?                @relation(fields: [userId], references: [id], onDelete: SetNull)
-  responseAnswers     FragranceQuizResponseAnswer[]
+  quiz            FragranceQuiz?                @relation(fields: [quizId], references: [id], onDelete: SetNull)
+  user            User?                         @relation(fields: [userId], references: [id], onDelete: SetNull)
+  responseAnswers FragranceQuizResponseAnswer[]
 
   @@index([userId])
   @@index([guestId])
@@ -1622,52 +1686,52 @@ model FragranceQuizResponse {
 }
 
 model FragranceQuizResponseAnswer {
-  id          String   @id @default(uuid())
-  responseId  String
-  questionId  String
-  optionId    String?
-  value       String?
-  createdAt   DateTime @default(now())
+  id         String   @id @default(uuid())
+  responseId String
+  questionId String
+  optionId   String?
+  value      String?
+  createdAt  DateTime @default(now())
 
-  response    FragranceQuizResponse @relation(fields: [responseId], references: [id], onDelete: Cascade)
-  question    FragranceQuizQuestion @relation(fields: [questionId], references: [id], onDelete: Cascade)
-  option      FragranceQuizOption?  @relation(fields: [optionId], references: [id], onDelete: SetNull)
+  response FragranceQuizResponse @relation(fields: [responseId], references: [id], onDelete: Cascade)
+  question FragranceQuizQuestion @relation(fields: [questionId], references: [id], onDelete: Cascade)
+  option   FragranceQuizOption?  @relation(fields: [optionId], references: [id], onDelete: SetNull)
 
   @@index([responseId])
   @@index([questionId])
 }
 
 model EmailCampaign {
-  id             String              @id @default(uuid())
-  subject        String
-  htmlContent    String              @db.Text
-  plainText      String?             @db.Text
-  status         EmailCampaignStatus @default(DRAFT)
-  totalRecipients Int                @default(0)
-  sentCount      Int                 @default(0)
-  failedCount    Int                 @default(0)
-  createdById    String
-  createdAt      DateTime            @default(now())
-  updatedAt      DateTime            @updatedAt
-  sentAt         DateTime?
-  logs           EmailLog[]
+  id              String              @id @default(uuid())
+  subject         String
+  htmlContent     String              @db.Text
+  plainText       String?             @db.Text
+  status          EmailCampaignStatus @default(DRAFT)
+  totalRecipients Int                 @default(0)
+  sentCount       Int                 @default(0)
+  failedCount     Int                 @default(0)
+  createdById     String
+  createdAt       DateTime            @default(now())
+  updatedAt       DateTime            @updatedAt
+  sentAt          DateTime?
+  logs            EmailLog[]
 
   @@index([status])
   @@index([createdAt])
 }
 
 model EmailLog {
-  id          String      @id @default(uuid())
-  campaignId  String
-  email       String
-  userName    String?
-  status      EmailLogStatus @default(PENDING)
+  id           String         @id @default(uuid())
+  campaignId   String
+  email        String
+  userName     String?
+  status       EmailLogStatus @default(PENDING)
   errorMessage String?
-  retryCount  Int         @default(0)
-  sentAt      DateTime?
-  createdAt   DateTime    @default(now())
-  updatedAt   DateTime    @updatedAt
-  campaign    EmailCampaign @relation(fields: [campaignId], references: [id], onDelete: Cascade)
+  retryCount   Int            @default(0)
+  sentAt       DateTime?
+  createdAt    DateTime       @default(now())
+  updatedAt    DateTime       @updatedAt
+  campaign     EmailCampaign  @relation(fields: [campaignId], references: [id], onDelete: Cascade)
 
   @@index([campaignId])
   @@index([status])
@@ -1757,34 +1821,33 @@ enum CustomPaymentStatus {
 }
 
 model CustomPerfumeOrder {
-  id                 String              @id @default(uuid())
-  orderNumber        String              @unique
-  userId             String
-  baseNotes          String[]
-  heartNotes         String[]
-  topNotes           String[]
-  bottleSilhouette   String
-  monogramEngraving  String?
-  amount             Decimal             @db.Decimal(10, 2)
-  paymentStatus      CustomPaymentStatus @default(PENDING)
-  orderStatus        CustomOrderStatus   @default(ORDER_RECEIVED)
-  razorpayOrderId    String?
-  razorpayPaymentId  String?
-  shippingName       String
-  shippingPhone      String
-  shippingAddress    String
-  shippingCity       String
-  shippingState      String
-  shippingPincode    String
-  trackingNumber     String?
-  notes              String?
-  cancelReason       String?
-  createdAt          DateTime            @default(now())
-  updatedAt          DateTime            @updatedAt
-  user               User                @relation(fields: [userId], references: [id])
+  id                String              @id @default(uuid())
+  orderNumber       String              @unique
+  userId            String
+  baseNotes         String[]
+  heartNotes        String[]
+  topNotes          String[]
+  bottleSilhouette  String
+  monogramEngraving String?
+  amount            Decimal             @db.Decimal(10, 2)
+  paymentStatus     CustomPaymentStatus @default(PENDING)
+  orderStatus       CustomOrderStatus   @default(ORDER_RECEIVED)
+  razorpayOrderId   String?
+  razorpayPaymentId String?
+  shippingName      String
+  shippingPhone     String
+  shippingAddress   String
+  shippingCity      String
+  shippingState     String
+  shippingPincode   String
+  trackingNumber    String?
+  notes             String?
+  cancelReason      String?
+  createdAt         DateTime            @default(now())
+  updatedAt         DateTime            @updatedAt
+  user              User                @relation(fields: [userId], references: [id])
 
   @@index([userId])
   @@index([orderStatus])
   @@index([paymentStatus])
 }
-

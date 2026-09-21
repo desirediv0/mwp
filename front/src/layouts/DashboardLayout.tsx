@@ -26,9 +26,8 @@ import {
   Eye,
   Truck,
   Video,
-  Sparkles,
   BadgeCheck,
-  FlaskConical,
+  ShieldCheck,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { SafeRender } from "@/components/SafeRender";
@@ -413,58 +412,12 @@ export default function DashboardLayout() {
                 hasPermission={hasPermissionFor(admin, Resource.PRODUCTS, Action.READ)}
               />
 
-              {/* Ingredients - Single Item */}
+              {/* QR Verifications - Single Item */}
               <NavItem
-                href="/ingredients"
-                icon={<FlaskConical className="h-[1.125rem] w-[1.125rem]" />}
-                title="QR"
+                href="/verifications"
+                icon={<ShieldCheck className="h-[1.125rem] w-[1.125rem]" />}
+                title="QR Verifications"
                 hasPermission={hasPermissionFor(admin, Resource.PRODUCTS, Action.READ)}
-              />
-
-              {/* Checkout Recommendations - Single Item */}
-              <NavItem
-                href="/checkout-recommendations"
-                icon={<Sparkles className="h-[1.125rem] w-[1.125rem]" />}
-                title="Checkout Recommendations"
-                hasPermission={hasPermissionFor(
-                  admin,
-                  Resource.PRODUCTS,
-                  Action.READ
-                )}
-              />
-
-              {/* Email Marketing - Single Item */}
-              <NavItem
-                href="/email-marketing"
-                icon={<Mail className="h-[1.125rem] w-[1.125rem]" />}
-                title="Email Marketing"
-                hasPermission={hasPermissionFor(
-                  admin,
-                  Resource.SETTINGS,
-                  Action.CREATE
-                )}
-              />
-              <NavItem
-                href="/newsletter-subscribers"
-                icon={<Users className="h-[1.125rem] w-[1.125rem]" />}
-                title="Newsletter Subscribers"
-                hasPermission={hasPermissionFor(
-                  admin,
-                  Resource.USERS,
-                  Action.READ
-                )}
-              />
-
-              {/* Bundle Management - Single Item */}
-              <NavItem
-                href="/bundles"
-                icon={<Layers className="h-[1.125rem] w-[1.125rem]" />}
-                title="Bundle Management"
-                hasPermission={hasPermissionFor(
-                  admin,
-                  Resource.BUNDLES,
-                  Action.READ
-                )}
               />
 
               {/* Products - Collapsible */}
@@ -870,63 +823,13 @@ export default function DashboardLayout() {
                 hasPermission={hasPermissionFor(admin, Resource.PRODUCTS, Action.READ)}
               />
 
-              {/* Ingredients - Single Item */}
+              {/* QR Verifications - Single Item */}
               <NavItem
-                href="/ingredients"
-                icon={<FlaskConical className="h-[1.125rem] w-[1.125rem]" />}
-                title="QR"
+                href="/verifications"
+                icon={<ShieldCheck className="h-[1.125rem] w-[1.125rem]" />}
+                title="QR Verifications"
                 onClick={toggleMobileMenu}
                 hasPermission={hasPermissionFor(admin, Resource.PRODUCTS, Action.READ)}
-              />
-
-              {/* Checkout Recommendations - Single Item */}
-              <NavItem
-                href="/checkout-recommendations"
-                icon={<Sparkles className="h-[1.125rem] w-[1.125rem]" />}
-                title="Checkout Recommendations"
-                onClick={toggleMobileMenu}
-                hasPermission={hasPermissionFor(
-                  admin,
-                  Resource.PRODUCTS,
-                  Action.READ
-                )}
-              />
-
-              {/* Email Marketing - Single Item */}
-              <NavItem
-                href="/email-marketing"
-                icon={<Mail className="h-[1.125rem] w-[1.125rem]" />}
-                title="Email Marketing"
-                onClick={toggleMobileMenu}
-                hasPermission={hasPermissionFor(
-                  admin,
-                  Resource.SETTINGS,
-                  Action.CREATE
-                )}
-              />
-              <NavItem
-                href="/newsletter-subscribers"
-                icon={<Users className="h-[1.125rem] w-[1.125rem]" />}
-                title="Newsletter Subscribers"
-                onClick={toggleMobileMenu}
-                hasPermission={hasPermissionFor(
-                  admin,
-                  Resource.USERS,
-                  Action.READ
-                )}
-              />
-
-              {/* Bundle Management - Single Item */}
-              <NavItem
-                href="/bundles"
-                icon={<Layers className="h-[1.125rem] w-[1.125rem]" />}
-                title="Bundle Management"
-                onClick={toggleMobileMenu}
-                hasPermission={hasPermissionFor(
-                  admin,
-                  Resource.BUNDLES,
-                  Action.READ
-                )}
               />
 
               {/* Products - Collapsible */}

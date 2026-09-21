@@ -1,13 +1,10 @@
 import "./globals.css";
 import { Inter } from "next/font/google";
-import { Navbar } from "@/components/layout/Header";
-import { Footer } from "@/components/layout/Footer";
+import { headers } from "next/headers";
 import { CartProvider } from "@/lib/cart-context";
 import { AuthProvider } from "@/lib/auth-context";
 import { CompareProvider } from "@/lib/compare-context";
-import { CompareTray } from "@/components/products/CompareTray";
-import { FloatingWhatsApp } from "@/components/ui/FloatingWhatsApp";
-import { AuthModal } from "@/components/ui/AuthModal";
+import { SiteChrome } from "@/components/layout/SiteChrome";
 import { Toaster } from "sonner";
 
 const inter = Inter({
@@ -44,6 +41,8 @@ export const metadata = {
 };
 
 export default function RootLayout({ children }) {
+  const isMaintenance = headers().get("x-maintenance-active") === "1";
+
   return (
     <html lang="en" className={inter.variable}>
       <body className="antialiased font-sans bg-[#09090b] text-white">
@@ -65,14 +64,7 @@ export default function RootLayout({ children }) {
                 },
               }}
             />
-            <Navbar />
-            <main className="min-h-screen">
-              {children}
-            </main>
-            <Footer />
-            <CompareTray />
-            <FloatingWhatsApp />
-            <AuthModal />
+            <SiteChrome isMaintenance={isMaintenance}>{children}</SiteChrome>
             </CompareProvider>
           </CartProvider>
         </AuthProvider>

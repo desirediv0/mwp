@@ -37,7 +37,7 @@ import ProductSectionsPage from "./pages/ProductSections";
 import CheckoutRecommendationsPage from "./pages/CheckoutRecommendationsPage";
 import BannersPage from "./pages/BannersPage";
 import CertificatesPage from "./pages/CertificatesPage";
-import ProductIngredientsPage from "./pages/ProductIngredientsPage";
+import VerificationsPage from "./pages/VerificationsPage";
 import VideoReelsPage from "./pages/VideoReelsPage";
 import BundleCampaignsPage from "./pages/BundleCampaignsPage";
 import BundleCampaignCreatePage from "./pages/BundleCampaignCreatePage";
@@ -817,10 +817,10 @@ const App = () => {
             />
 
             <Route
-              path="ingredients"
+              path="verifications"
               element={
                 <ProtectedRoute resource={Resource.PRODUCTS} action={Action.READ}>
-                  <ProductIngredientsPage />
+                  <VerificationsPage />
                 </ProtectedRoute>
               }
             />

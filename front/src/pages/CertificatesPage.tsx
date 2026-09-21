@@ -25,6 +25,7 @@ import {
   Download,
   Copy,
   Check,
+  Printer,
 } from "lucide-react";
 
 // Permanent public URL — never changes, so the QR printed on packaging
@@ -53,12 +54,13 @@ export default function CertificatesPage() {
   const fileRef = useRef<HTMLInputElement>(null);
   const [qrDataUrl, setQrDataUrl] = useState("");
   const [copied, setCopied] = useState(false);
+  const [qrOpen, setQrOpen] = useState(false);
 
   useEffect(() => {
     QRCode.toDataURL(CERTIFICATES_URL, {
       errorCorrectionLevel: "H",
       margin: 2,
-      width: 512,
+      width: 640,
       color: { dark: "#0A0A0A", light: "#FFFFFF" },
     })
       .then(setQrDataUrl)
@@ -99,6 +101,21 @@ export default function CertificatesPage() {
     setCopied(true);
     toast.success("URL copied");
     setTimeout(() => setCopied(false), 1500);
+  };
+
+  const printQr = () => {
+    const win = window.open("", "_blank");
+    if (!win) return;
+    win.document.write(`
+      <html><head><title>Certificates QR</title></head>
+      <body style="display:flex;flex-direction:column;align-items:center;justify-content:center;height:100vh;font-family:sans-serif;">
+        <img src="${qrDataUrl}" style="width:320px;height:320px;" />
+        <p style="margin-top:12px;font-weight:bold;">MWP Certificates</p>
+        <p style="color:#666;font-size:12px;">${CERTIFICATES_URL}</p>
+      </body></html>
+    `);
+    win.document.close();
+    win.print();
   };
 
   const load = async () => {
@@ -195,8 +212,11 @@ export default function CertificatesPage() {
       </div>
 
       {/* Permanent QR code for the /certificates page */}
-      <div className="rounded-xl border bg-white p-4 flex flex-col sm:flex-row items-start sm:items-center gap-4">
-        <div className="w-20 h-20 rounded-lg border bg-white p-1 shrink-0">
+      <button
+        onClick={() => setQrOpen(true)}
+        className="w-full text-left rounded-xl border bg-white p-4 flex flex-col sm:flex-row items-start sm:items-center gap-4 hover:border-[#4CAF50] transition-colors"
+      >
+        <div className="w-16 h-16 rounded-lg border bg-white p-1 shrink-0">
           {qrDataUrl ? (
             <img src={qrDataUrl} alt="Certificates page QR" className="w-full h-full object-contain" />
           ) : (
@@ -212,23 +232,11 @@ export default function CertificatesPage() {
           <p className="text-[11px] text-[#9CA3AF] mt-0.5 truncate" title={CERTIFICATES_URL}>
             {CERTIFICATES_URL}
           </p>
-          <button
-            onClick={copyUrl}
-            className="mt-1.5 inline-flex items-center gap-1 text-[10px] uppercase tracking-wide font-bold text-[#9CA3AF] hover:text-[#4B5563]"
-          >
-            {copied ? <Check className="h-3 w-3" /> : <Copy className="h-3 w-3" />}
-            Copy URL
-          </button>
+          <span className="mt-1.5 inline-flex items-center gap-1 text-[10px] uppercase tracking-wide font-bold text-[#4CAF50]">
+            View, download &amp; print QR
+          </span>
         </div>
-        <div className="flex gap-2 shrink-0">
-          <Button size="sm" variant="outline" onClick={downloadQrPng}>
-            <Download className="h-3.5 w-3.5 mr-1.5" /> PNG
-          </Button>
-          <Button size="sm" variant="outline" onClick={downloadQrSvg}>
-            <Download className="h-3.5 w-3.5 mr-1.5" /> SVG
-          </Button>
-        </div>
-      </div>
+      </button>
 
       {loading ? (
         <div className="flex justify-center py-20">
@@ -354,6 +362,53 @@ export default function CertificatesPage() {
               {editing ? "Save Changes" : "Add"}
             </Button>
           </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* QR preview dialog */}
+      <Dialog open={qrOpen} onOpenChange={setQrOpen}>
+        <DialogContent className="sm:max-w-[420px]">
+          <div className="text-center py-2">
+            <DialogHeader>
+              <DialogTitle>MWP Certificates</DialogTitle>
+            </DialogHeader>
+            <div className="mt-3 mx-auto w-56 h-56 rounded-xl border p-3 bg-white">
+              {qrDataUrl ? (
+                <img src={qrDataUrl} alt="Certificates QR" className="w-full h-full object-contain" />
+              ) : (
+                <div className="w-full h-full flex items-center justify-center">
+                  <Loader2 className="h-5 w-5 animate-spin text-[#9CA3AF]" />
+                </div>
+              )}
+            </div>
+            <a
+              href={CERTIFICATES_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="mt-3 text-xs text-[#4B5563] hover:text-[#2E7D32] inline-flex items-center gap-1"
+            >
+              {CERTIFICATES_URL.replace(/^https?:\/\//, "")} <ExternalLink className="h-3 w-3" />
+            </a>
+
+            <div className="flex flex-wrap justify-center gap-2 mt-5">
+              <Button size="sm" variant="outline" onClick={downloadQrPng}>
+                <Download className="h-3.5 w-3.5 mr-1.5" /> PNG
+              </Button>
+              <Button size="sm" variant="outline" onClick={downloadQrSvg}>
+                <Download className="h-3.5 w-3.5 mr-1.5" /> SVG
+              </Button>
+              <Button size="sm" variant="outline" onClick={printQr}>
+                <Printer className="h-3.5 w-3.5 mr-1.5" /> Print
+              </Button>
+              <Button size="sm" variant="outline" onClick={copyUrl}>
+                {copied ? <Check className="h-3.5 w-3.5 mr-1.5" /> : <Copy className="h-3.5 w-3.5 mr-1.5" />}
+                Copy URL
+              </Button>
+              <Button size="sm" variant="outline" onClick={() => window.open(CERTIFICATES_URL, "_blank")}>
+                <ExternalLink className="h-3.5 w-3.5 mr-1.5" /> Open
+              </Button>
+            </div>
+          </div>
         </DialogContent>
       </Dialog>
     </div>

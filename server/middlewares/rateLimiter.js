@@ -34,4 +34,19 @@ export const generalRateLimiter = rateLimit({
     legacyHeaders: false,
 });
 
+// Public QR verification lookup — generous enough for real scans, tight
+// enough to make verificationCode brute-forcing impractical.
+export const verificationRateLimiter = rateLimit({
+    windowMs: 60 * 1000,
+    max: 30,
+    standardHeaders: true,
+    legacyHeaders: false,
+    keyGenerator: (req) => ipKeyGenerator(req),
+    message: {
+        success: false,
+        verified: false,
+        message: "Too many verification requests. Please try again in a minute.",
+    },
+});
+
 export default otpRateLimiter;

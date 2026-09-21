@@ -1625,3 +1625,64 @@ export const certificates = {
   },
   remove: (id: string) => api.delete(`/api/admin/certificates/${id}`),
 };
+
+export interface VerificationData {
+  productId?: string;
+  productName?: string;
+  productSlug?: string;
+  productImage?: File | null;
+  batchNumber?: string;
+  lotNumber?: string;
+  manufacturingDate?: string;
+  expiryDate?: string;
+  authenticityStatus?: "VERIFIED" | "UNVERIFIED" | "UNAVAILABLE";
+  status?: "ACTIVE" | "INACTIVE" | "EXPIRED" | "SUSPENDED" | "REVOKED";
+  description?: string;
+  ingredients?: string[];
+  origin?: string;
+  badgeType?: string;
+  badgeImage?: File | null;
+  coa?: File | null;
+  certificate?: File | null;
+}
+
+const buildVerificationFormData = (data: VerificationData) => {
+  const fd = new FormData();
+  if (data.productId !== undefined) fd.append("productId", data.productId);
+  if (data.productName !== undefined) fd.append("productName", data.productName);
+  if (data.productSlug !== undefined) fd.append("productSlug", data.productSlug);
+  if (data.batchNumber !== undefined) fd.append("batchNumber", data.batchNumber);
+  if (data.lotNumber !== undefined) fd.append("lotNumber", data.lotNumber);
+  if (data.manufacturingDate !== undefined) fd.append("manufacturingDate", data.manufacturingDate);
+  if (data.expiryDate !== undefined) fd.append("expiryDate", data.expiryDate);
+  if (data.authenticityStatus !== undefined) fd.append("authenticityStatus", data.authenticityStatus);
+  if (data.status !== undefined) fd.append("status", data.status);
+  if (data.description !== undefined) fd.append("description", data.description);
+  if (data.ingredients !== undefined) fd.append("ingredients", JSON.stringify(data.ingredients));
+  if (data.origin !== undefined) fd.append("origin", data.origin);
+  if (data.badgeType !== undefined) fd.append("badgeType", data.badgeType);
+  if (data.productImage) fd.append("productImage", data.productImage);
+  if (data.badgeImage) fd.append("badgeImage", data.badgeImage);
+  if (data.coa) fd.append("coa", data.coa);
+  if (data.certificate) fd.append("certificate", data.certificate);
+  return fd;
+};
+
+export const verifications = {
+  list: (params?: { search?: string; status?: string; page?: number; limit?: number }) =>
+    api.get("/api/admin/verifications", { params }),
+  get: (id: string) => api.get(`/api/admin/verifications/${id}`),
+  getByCode: (code: string) => api.get(`/api/admin/verifications/code/${code}`),
+  create: (data: VerificationData) =>
+    api.post("/api/admin/verifications", buildVerificationFormData(data), {
+      headers: { "Content-Type": "multipart/form-data" },
+    }),
+  update: (id: string, data: VerificationData) =>
+    api.patch(`/api/admin/verifications/${id}`, buildVerificationFormData(data), {
+      headers: { "Content-Type": "multipart/form-data" },
+    }),
+  updateStatus: (id: string, status: string) =>
+    api.patch(`/api/admin/verifications/${id}/status`, { status }),
+  reactivate: (id: string) => api.patch(`/api/admin/verifications/${id}/reactivate`),
+  remove: (id: string) => api.delete(`/api/admin/verifications/${id}`),
+};

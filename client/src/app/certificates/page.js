@@ -4,12 +4,42 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { fetchApi } from "@/lib/utils";
-import { IconCertificate, IconFileTypePdf, IconDownload, IconEye, IconX } from "@tabler/icons-react";
+import {
+  IconCertificate,
+  IconFileTypePdf,
+  IconDownload,
+  IconEye,
+  IconX,
+  IconExternalLink,
+  IconShare,
+  IconPrinter,
+  IconCheck,
+} from "@tabler/icons-react";
 
 export default function CertificatesPage() {
   const [certificates, setCertificates] = useState([]);
   const [loading, setLoading] = useState(true);
   const [preview, setPreview] = useState(null);
+  const [copiedId, setCopiedId] = useState(null);
+
+  const copyLink = (c) => {
+    navigator.clipboard.writeText(c.fileUrl);
+    setCopiedId(c.id);
+    setTimeout(() => setCopiedId(null), 1500);
+  };
+
+  const printFile = (c) => {
+    const win = window.open(c.fileUrl, "_blank");
+    if (!win) return;
+    if (c.fileType === "pdf") {
+      win.onload = () => win.print();
+    } else {
+      win.onload = () => {
+        win.document.title = c.title;
+        win.print();
+      };
+    }
+  };
 
   useEffect(() => {
     fetchApi("/certificates")
@@ -91,18 +121,59 @@ export default function CertificatesPage() {
                     <IconEye className="h-6 w-6 text-white opacity-0 group-hover:opacity-100 transition-opacity" stroke={2} />
                   </div>
                 </button>
-                <div className="p-3.5 flex items-center justify-between gap-2">
-                  <h3 className="text-[13px] font-bold text-gray-900 leading-snug truncate">{c.title}</h3>
-                  <a
-                    href={c.fileUrl}
-                    download
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="shrink-0 w-8 h-8 rounded-lg bg-gray-50 hover:bg-red-50 hover:text-red-600 text-gray-400 flex items-center justify-center transition-colors"
-                    aria-label={`Download ${c.title}`}
-                  >
-                    <IconDownload className="h-4 w-4" stroke={2} />
-                  </a>
+                <div className="p-3.5">
+                  <h3 className="text-[13px] font-bold text-gray-900 leading-snug truncate mb-2.5">{c.title}</h3>
+                  <div className="flex items-center gap-1.5">
+                    <button
+                      onClick={() => setPreview(c)}
+                      className="flex-1 h-8 rounded-lg bg-gray-50 hover:bg-red-50 hover:text-red-600 text-gray-400 flex items-center justify-center transition-colors"
+                      aria-label={`View ${c.title}`}
+                      title="View"
+                    >
+                      <IconEye className="h-4 w-4" stroke={2} />
+                    </button>
+                    <a
+                      href={c.fileUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex-1 h-8 rounded-lg bg-gray-50 hover:bg-red-50 hover:text-red-600 text-gray-400 flex items-center justify-center transition-colors"
+                      aria-label={`Open ${c.title}`}
+                      title="Open in new tab"
+                    >
+                      <IconExternalLink className="h-4 w-4" stroke={2} />
+                    </a>
+                    <button
+                      onClick={() => printFile(c)}
+                      className="flex-1 h-8 rounded-lg bg-gray-50 hover:bg-red-50 hover:text-red-600 text-gray-400 flex items-center justify-center transition-colors"
+                      aria-label={`Print ${c.title}`}
+                      title="Print"
+                    >
+                      <IconPrinter className="h-4 w-4" stroke={2} />
+                    </button>
+                    <button
+                      onClick={() => copyLink(c)}
+                      className="flex-1 h-8 rounded-lg bg-gray-50 hover:bg-red-50 hover:text-red-600 text-gray-400 flex items-center justify-center transition-colors"
+                      aria-label={`Share link to ${c.title}`}
+                      title="Copy link"
+                    >
+                      {copiedId === c.id ? (
+                        <IconCheck className="h-4 w-4 text-emerald-500" stroke={2} />
+                      ) : (
+                        <IconShare className="h-4 w-4" stroke={2} />
+                      )}
+                    </button>
+                    <a
+                      href={c.fileUrl}
+                      download
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex-1 h-8 rounded-lg bg-gray-50 hover:bg-red-50 hover:text-red-600 text-gray-400 flex items-center justify-center transition-colors"
+                      aria-label={`Download ${c.title}`}
+                      title="Download"
+                    >
+                      <IconDownload className="h-4 w-4" stroke={2} />
+                    </a>
+                  </div>
                 </div>
               </div>
             ))}
@@ -135,17 +206,44 @@ export default function CertificatesPage() {
                 <Image src={preview.fileUrl} alt={preview.title} fill className="object-contain" sizes="800px" />
               </div>
             )}
-            <div className="mt-4 flex items-center gap-3">
+            <div className="mt-4 flex flex-col items-center gap-3">
               <span className="text-white text-sm font-semibold">{preview.title}</span>
-              <a
-                href={preview.fileUrl}
-                download
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-red-600 hover:bg-red-700 text-white text-[11px] uppercase tracking-wider font-bold transition-colors"
-              >
-                <IconDownload className="h-3.5 w-3.5" /> Download
-              </a>
+              <div className="flex flex-wrap items-center justify-center gap-2">
+                <a
+                  href={preview.fileUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-white/10 hover:bg-white/20 text-white text-[11px] uppercase tracking-wider font-bold transition-colors"
+                >
+                  <IconExternalLink className="h-3.5 w-3.5" /> Open
+                </a>
+                <button
+                  onClick={() => printFile(preview)}
+                  className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-white/10 hover:bg-white/20 text-white text-[11px] uppercase tracking-wider font-bold transition-colors"
+                >
+                  <IconPrinter className="h-3.5 w-3.5" /> Print
+                </button>
+                <button
+                  onClick={() => copyLink(preview)}
+                  className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-white/10 hover:bg-white/20 text-white text-[11px] uppercase tracking-wider font-bold transition-colors"
+                >
+                  {copiedId === preview.id ? (
+                    <IconCheck className="h-3.5 w-3.5 text-emerald-400" />
+                  ) : (
+                    <IconShare className="h-3.5 w-3.5" />
+                  )}
+                  {copiedId === preview.id ? "Copied" : "Share"}
+                </button>
+                <a
+                  href={preview.fileUrl}
+                  download
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-red-600 hover:bg-red-700 text-white text-[11px] uppercase tracking-wider font-bold transition-colors"
+                >
+                  <IconDownload className="h-3.5 w-3.5" /> Download
+                </a>
+              </div>
             </div>
           </div>
         </div>
