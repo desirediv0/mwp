@@ -940,10 +940,14 @@ model Verification {
   expiryDate         DateTime?
   authenticityStatus VerificationAuthenticity @default(VERIFIED)
   status             VerificationStatus       @default(ACTIVE)
+  tagline            String? // short hero tagline, e.g. "Built for the man who expects more"
+  shortDescription   String?                  @db.Text
   description        String?                  @db.Text
+  features           String[]                 @default([]) // short badges, e.g. "2 Capsules Daily", "60 Count"
   coaUrl             String?
   certificateUrl     String?
-  ingredients        String[]                 @default([])
+  // Structured ingredient list: [{ name, amount, description, origin }]
+  ingredients        Json                     @default("[]")
   origin             String?
   badgeType          String?
   badgeImage         String?

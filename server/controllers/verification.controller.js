@@ -53,7 +53,10 @@ const formatPublic = (v) => ({
   authenticityStatus: v.authenticityStatus,
   coaUrl: resolveFile(v.coaUrl),
   certificateUrl: resolveFile(v.certificateUrl),
+  tagline: v.tagline,
+  shortDescription: v.shortDescription,
   description: v.description,
+  features: v.features,
   ingredients: v.ingredients,
   origin: v.origin,
   badgeType: v.badgeType,
@@ -150,12 +153,45 @@ export const adminGetVerificationByCode = asyncHandler(async (req, res) => {
 });
 
 const parseDate = (v) => (v ? new Date(v) : null);
+
+// Structured ingredient list: [{ name, amount, description, origin }].
+// Accepts a JSON string (from FormData), an already-parsed array, or falls
+// back to treating a plain comma-separated string as name-only entries.
 const parseIngredients = (v) => {
   if (v === undefined) return undefined;
-  if (Array.isArray(v)) return v;
+  if (Array.isArray(v)) {
+    return v
+      .map((item) => {
+        if (item && typeof item === "object") {
+          return {
+            name: String(item.name || "").trim(),
+            amount: String(item.amount || "").trim(),
+            description: String(item.description || "").trim(),
+            origin: String(item.origin || "").trim(),
+          };
+        }
+        return { name: String(item || "").trim(), amount: "", description: "", origin: "" };
+      })
+      .filter((i) => i.name);
+  }
   try {
     const parsed = JSON.parse(v);
-    return Array.isArray(parsed) ? parsed : [];
+    return parseIngredients(parsed);
+  } catch {
+    return String(v)
+      .split(",")
+      .map((s) => s.trim())
+      .filter(Boolean)
+      .map((name) => ({ name, amount: "", description: "", origin: "" }));
+  }
+};
+
+const parseFeatures = (v) => {
+  if (v === undefined) return undefined;
+  if (Array.isArray(v)) return v.map((s) => String(s).trim()).filter(Boolean);
+  try {
+    const parsed = JSON.parse(v);
+    return Array.isArray(parsed) ? parsed.map((s) => String(s).trim()).filter(Boolean) : [];
   } catch {
     return String(v)
       .split(",")
@@ -175,7 +211,10 @@ export const adminCreateVerification = asyncHandler(async (req, res) => {
     expiryDate,
     authenticityStatus,
     status,
+    tagline,
+    shortDescription,
     description,
+    features,
     ingredients,
     origin,
     badgeType,
@@ -219,7 +258,10 @@ export const adminCreateVerification = asyncHandler(async (req, res) => {
       expiryDate: parseDate(expiryDate),
       authenticityStatus: authenticityStatus || "VERIFIED",
       status: status || "ACTIVE",
+      tagline: tagline || null,
+      shortDescription: shortDescription || null,
       description: description || null,
+      features: parseFeatures(features) || [],
       coaUrl,
       certificateUrl,
       ingredients: parseIngredients(ingredients) || [],
@@ -252,7 +294,10 @@ export const adminUpdateVerification = asyncHandler(async (req, res) => {
     expiryDate,
     authenticityStatus,
     status,
+    tagline,
+    shortDescription,
     description,
+    features,
     ingredients,
     origin,
     badgeType,
@@ -276,7 +321,10 @@ export const adminUpdateVerification = asyncHandler(async (req, res) => {
     data.status = status;
     auditNotes.push(`STATUS_CHANGED:${existing.status}->${status}`);
   }
+  if (tagline !== undefined) data.tagline = tagline || null;
+  if (shortDescription !== undefined) data.shortDescription = shortDescription || null;
   if (description !== undefined) data.description = description || null;
+  if (features !== undefined) data.features = parseFeatures(features) || [];
   if (ingredients !== undefined) data.ingredients = parseIngredients(ingredients) || [];
   if (origin !== undefined) data.origin = origin || null;
   if (badgeType !== undefined) data.badgeType = badgeType || null;

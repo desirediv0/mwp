@@ -45,6 +45,13 @@ const verifyUrl = (code: string) => `${SITE_BASE}/verify/${code}`;
 type Status = "ACTIVE" | "INACTIVE" | "EXPIRED" | "SUSPENDED" | "REVOKED";
 type Authenticity = "VERIFIED" | "UNVERIFIED" | "UNAVAILABLE";
 
+interface IngredientRow {
+  name: string;
+  amount: string;
+  description: string;
+  origin: string;
+}
+
 interface Verification {
   id: string;
   verificationCode: string;
@@ -58,10 +65,13 @@ interface Verification {
   expiryDate: string | null;
   authenticityStatus: Authenticity;
   status: Status;
+  tagline: string | null;
+  shortDescription: string | null;
   description: string | null;
+  features: string[];
   coaUrl: string | null;
   certificateUrl: string | null;
-  ingredients: string[];
+  ingredients: IngredientRow[];
   origin: string | null;
   badgeType: string | null;
   badgeImage: string | null;
@@ -69,6 +79,8 @@ interface Verification {
   createdAt: string;
   updatedAt: string;
 }
+
+const emptyIngredient: IngredientRow = { name: "", amount: "", description: "", origin: "" };
 
 const STATUS_STYLES: Record<Status, string> = {
   ACTIVE: "bg-[#E8F5E9] text-[#2E7D32]",
@@ -88,10 +100,13 @@ const emptyForm = {
   expiryDate: "",
   authenticityStatus: "VERIFIED" as Authenticity,
   status: "ACTIVE" as Status,
+  tagline: "",
+  shortDescription: "",
   description: "",
+  featuresText: "",
   origin: "",
   badgeType: "",
-  ingredientsText: "",
+  ingredients: [] as IngredientRow[],
 };
 
 const descriptionConfig = {
@@ -203,10 +218,13 @@ export default function VerificationsPage() {
       expiryDate: v.expiryDate ? v.expiryDate.slice(0, 10) : "",
       authenticityStatus: v.authenticityStatus,
       status: v.status,
+      tagline: v.tagline || "",
+      shortDescription: v.shortDescription || "",
       description: v.description || "",
+      featuresText: (v.features || []).join(", "),
       origin: v.origin || "",
       badgeType: v.badgeType || "",
-      ingredientsText: (v.ingredients || []).join(", "),
+      ingredients: (v.ingredients || []).length > 0 ? v.ingredients : [],
     });
     setProductImage(null);
     setBadgeImage(null);
@@ -240,13 +258,16 @@ export default function VerificationsPage() {
         expiryDate: form.expiryDate || undefined,
         authenticityStatus: form.authenticityStatus,
         status: form.status,
+        tagline: form.tagline || undefined,
+        shortDescription: form.shortDescription || undefined,
         description: form.description || undefined,
-        origin: form.origin || undefined,
-        badgeType: form.badgeType || undefined,
-        ingredients: form.ingredientsText
+        features: form.featuresText
           .split(",")
           .map((s) => s.trim())
           .filter(Boolean),
+        origin: form.origin || undefined,
+        badgeType: form.badgeType || undefined,
+        ingredients: form.ingredients.filter((i) => i.name.trim()),
         productImage,
         badgeImage,
         coa: coaFile,
@@ -622,6 +643,33 @@ export default function VerificationsPage() {
             </div>
 
             <div>
+              <Label>Tagline</Label>
+              <Input
+                value={form.tagline}
+                onChange={(e) => setForm((f) => ({ ...f, tagline: e.target.value }))}
+                placeholder="e.g. Built for the man who expects more from every day."
+              />
+            </div>
+
+            <div>
+              <Label>Short Description</Label>
+              <Input
+                value={form.shortDescription}
+                onChange={(e) => setForm((f) => ({ ...f, shortDescription: e.target.value }))}
+                placeholder="One or two line summary shown right under the tagline"
+              />
+            </div>
+
+            <div>
+              <Label>Feature Badges (comma-separated)</Label>
+              <Input
+                value={form.featuresText}
+                onChange={(e) => setForm((f) => ({ ...f, featuresText: e.target.value }))}
+                placeholder="2 Capsules Daily, 60 Count, Globally Selected Ingredients"
+              />
+            </div>
+
+            <div>
               <Label>Description</Label>
               <div className="mt-1 border rounded-md overflow-hidden">
                 <JoditEditor
@@ -651,13 +699,105 @@ export default function VerificationsPage() {
               </div>
             </div>
 
+            {/* Structured ingredient list */}
             <div>
-              <Label>Ingredients (comma-separated)</Label>
-              <Input
-                value={form.ingredientsText}
-                onChange={(e) => setForm((f) => ({ ...f, ingredientsText: e.target.value }))}
-                placeholder="Whey Protein, Creatine, BCAA"
-              />
+              <div className="flex items-center justify-between mb-2">
+                <Label>Ingredients (What&apos;s Inside)</Label>
+                <Button
+                  type="button"
+                  size="sm"
+                  variant="outline"
+                  onClick={() =>
+                    setForm((f) => ({ ...f, ingredients: [...f.ingredients, { ...emptyIngredient }] }))
+                  }
+                >
+                  <Plus className="h-3.5 w-3.5 mr-1" /> Add Ingredient
+                </Button>
+              </div>
+              {form.ingredients.length === 0 ? (
+                <p className="text-xs text-[#9CA3AF] border border-dashed rounded-lg p-3 text-center">
+                  No ingredients added yet.
+                </p>
+              ) : (
+                <div className="space-y-2">
+                  {form.ingredients.map((ing, idx) => (
+                    <div key={idx} className="rounded-lg border p-3 space-y-2 bg-[#F9FAFB]">
+                      <div className="grid grid-cols-2 gap-2">
+                        <Input
+                          value={ing.name}
+                          onChange={(e) =>
+                            setForm((f) => ({
+                              ...f,
+                              ingredients: f.ingredients.map((it, i) =>
+                                i === idx ? { ...it, name: e.target.value } : it
+                              ),
+                            }))
+                          }
+                          placeholder="Name, e.g. KSM-66 Ashwagandha"
+                          className="bg-white"
+                        />
+                        <Input
+                          value={ing.amount}
+                          onChange={(e) =>
+                            setForm((f) => ({
+                              ...f,
+                              ingredients: f.ingredients.map((it, i) =>
+                                i === idx ? { ...it, amount: e.target.value } : it
+                              ),
+                            }))
+                          }
+                          placeholder="Amount, e.g. 600 mg"
+                          className="bg-white"
+                        />
+                      </div>
+                      <div className="grid grid-cols-2 gap-2">
+                        <Input
+                          value={ing.description}
+                          onChange={(e) =>
+                            setForm((f) => ({
+                              ...f,
+                              ingredients: f.ingredients.map((it, i) =>
+                                i === idx ? { ...it, description: e.target.value } : it
+                              ),
+                            }))
+                          }
+                          placeholder="Short benefit, e.g. Supports stress resilience"
+                          className="bg-white"
+                        />
+                        <Input
+                          value={ing.origin}
+                          onChange={(e) =>
+                            setForm((f) => ({
+                              ...f,
+                              ingredients: f.ingredients.map((it, i) =>
+                                i === idx ? { ...it, origin: e.target.value } : it
+                              ),
+                            }))
+                          }
+                          placeholder="Origin, e.g. India"
+                          className="bg-white"
+                        />
+                      </div>
+                      <div className="flex justify-end">
+                        <Button
+                          type="button"
+                          size="sm"
+                          variant="outline"
+                          className="border-[#EF4444] text-[#EF4444] hover:bg-[#FEF2F2]"
+                          onClick={() =>
+                            setForm((f) => ({
+                              ...f,
+                              ingredients: f.ingredients.filter((_, i) => i !== idx),
+                            }))
+                          }
+                        >
+                          <Trash2 className="h-3.5 w-3.5 mr-1" /> Remove
+                        </Button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
 
             {/* file uploads */}

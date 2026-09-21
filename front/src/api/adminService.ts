@@ -1626,6 +1626,13 @@ export const certificates = {
   remove: (id: string) => api.delete(`/api/admin/certificates/${id}`),
 };
 
+export interface VerificationIngredientData {
+  name: string;
+  amount?: string;
+  description?: string;
+  origin?: string;
+}
+
 export interface VerificationData {
   productId?: string;
   productName?: string;
@@ -1637,8 +1644,11 @@ export interface VerificationData {
   expiryDate?: string;
   authenticityStatus?: "VERIFIED" | "UNVERIFIED" | "UNAVAILABLE";
   status?: "ACTIVE" | "INACTIVE" | "EXPIRED" | "SUSPENDED" | "REVOKED";
+  tagline?: string;
+  shortDescription?: string;
   description?: string;
-  ingredients?: string[];
+  features?: string[];
+  ingredients?: VerificationIngredientData[];
   origin?: string;
   badgeType?: string;
   badgeImage?: File | null;
@@ -1657,7 +1667,10 @@ const buildVerificationFormData = (data: VerificationData) => {
   if (data.expiryDate !== undefined) fd.append("expiryDate", data.expiryDate);
   if (data.authenticityStatus !== undefined) fd.append("authenticityStatus", data.authenticityStatus);
   if (data.status !== undefined) fd.append("status", data.status);
+  if (data.tagline !== undefined) fd.append("tagline", data.tagline);
+  if (data.shortDescription !== undefined) fd.append("shortDescription", data.shortDescription);
   if (data.description !== undefined) fd.append("description", data.description);
+  if (data.features !== undefined) fd.append("features", JSON.stringify(data.features));
   if (data.ingredients !== undefined) fd.append("ingredients", JSON.stringify(data.ingredients));
   if (data.origin !== undefined) fd.append("origin", data.origin);
   if (data.badgeType !== undefined) fd.append("badgeType", data.badgeType);

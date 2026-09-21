@@ -9,13 +9,12 @@ import {
   IconShieldCheck,
   IconAlertTriangle,
   IconCircleX,
-  IconCertificate,
-  IconFileText,
   IconMapPin,
   IconCalendar,
   IconRefresh,
   IconShoppingBag,
   IconExternalLink,
+  IconArrowRight,
 } from "@tabler/icons-react";
 
 const img = (raw) => {
@@ -76,25 +75,57 @@ const STATUS_META = {
   },
 };
 
-function StatCard({ icon: Icon, label, value }) {
-  if (!value) return null;
+function IngredientRow({ ing }) {
   return (
-    <div className="rounded-2xl border border-[#e7ddc8] bg-[#FBF6EA] p-5">
-      <div className="flex items-center gap-2 text-[#8a6d1f] mb-2">
-        <Icon className="h-4 w-4" />
-        <span className="text-[10px] uppercase tracking-[0.18em] font-bold">{label}</span>
+    <div className="rounded-2xl border border-[#e7ddc8] bg-[#FBF6EA] p-4 sm:p-5">
+      <div className="flex items-start justify-between gap-3">
+        <p className="font-serif text-[15px] sm:text-base text-[#1a1a1a] leading-snug">{ing.name}</p>
+        {ing.amount && (
+          <span className="shrink-0 text-[13px] font-bold text-[#8a6d1f] whitespace-nowrap">{ing.amount}</span>
+        )}
       </div>
-      <p className="text-[#1a1a1a] font-serif text-lg">{value}</p>
+      {ing.description && (
+        <p className="text-[12.5px] text-[#6b6045] mt-1.5 leading-relaxed">{ing.description}</p>
+      )}
+      {ing.origin && (
+        <p className="text-[10px] uppercase tracking-[0.14em] font-bold text-[#8a6d1f] mt-2.5">
+          Origin &middot; {ing.origin}
+        </p>
+      )}
     </div>
+  );
+}
+
+function TapCard({ label, value, onClick, href }) {
+  const content = (
+    <>
+      <p className="text-[11px] uppercase tracking-[0.16em] font-bold text-[#8a6d1f]">{label}</p>
+      <p className="text-[12px] text-[#6b6045] mt-1">{value}</p>
+    </>
+  );
+  const className =
+    "rounded-2xl border border-[#e7ddc8] bg-[#FBF6EA] hover:border-[#c9a44c] hover:bg-white transition-colors p-5 text-center cursor-pointer";
+  if (href) {
+    return (
+      <a href={href} target="_blank" rel="noopener noreferrer" className={className}>
+        {content}
+      </a>
+    );
+  }
+  return (
+    <button onClick={onClick} className={className}>
+      {content}
+    </button>
   );
 }
 
 export default function VerifyPage() {
   const { verificationCode } = useParams();
   const [data, setData] = useState(null);
-  const [verified, setVerified] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
+  const [showBatch, setShowBatch] = useState(false);
+  const [showAuth, setShowAuth] = useState(false);
 
   const load = useCallback(() => {
     if (!verificationCode) return;
@@ -102,7 +133,6 @@ export default function VerifyPage() {
     setError(false);
     fetchApi(`/public/verify/${verificationCode}`)
       .then((r) => {
-        setVerified(!!r?.data?.verified);
         setData(r?.data?.verification || null);
       })
       .catch(() => setError(true))
@@ -119,7 +149,7 @@ export default function VerifyPage() {
       <div className="min-h-screen bg-[#F7F2E7] flex items-center justify-center px-5">
         <div className="w-full max-w-md space-y-4 animate-pulse">
           <div className="h-8 w-40 bg-[#e7ddc8] rounded mx-auto" />
-          <div className="h-48 w-48 bg-[#e7ddc8] rounded-2xl mx-auto" />
+          <div className="h-48 w-full bg-[#e7ddc8] rounded-2xl mx-auto" />
           <div className="h-6 w-3/4 bg-[#e7ddc8] rounded mx-auto" />
           <div className="h-4 w-1/2 bg-[#e7ddc8] rounded mx-auto" />
         </div>
@@ -173,116 +203,201 @@ export default function VerifyPage() {
   const StatusIcon = meta.icon;
   const productImg = img(data.productImage);
   const badgeImg = img(data.badgeImage);
+  const ingredients = Array.isArray(data.ingredients) ? data.ingredients : [];
 
   return (
-    <div className="min-h-screen bg-[#F7F2E7]">
-      {/* Header */}
-      <header className="bg-[#0d1b2a] text-[#F7F2E7]">
-        <div className="max-w-3xl mx-auto px-5 py-8 text-center">
-          <p className="font-serif tracking-[0.3em] text-2xl md:text-3xl">MWP</p>
-          <p className="text-[10px] md:text-[11px] uppercase tracking-[0.35em] text-[#c9a44c] mt-1.5">
-            Men &bull; Women &bull; Power
-          </p>
-        </div>
-      </header>
+    <div className="min-h-screen bg-[#F7F2E7] py-6 md:py-10 px-4 sm:px-6">
+      <div className="max-w-5xl mx-auto rounded-3xl bg-white border border-[#e7ddc8] shadow-[0_20px_60px_-25px_rgba(13,27,42,0.15)] overflow-hidden">
+        {/* Header */}
+        <header className="flex items-center justify-between px-6 md:px-10 py-6 border-b border-[#f0ead8]">
+          <div>
+            <p className="font-serif tracking-[0.25em] text-xl md:text-2xl text-[#1a1a1a]">MWP</p>
+            <p className="text-[9px] md:text-[10px] uppercase tracking-[0.3em] text-[#8a6d1f] font-bold mt-0.5">
+              Men &bull; Women &bull; Power
+            </p>
+          </div>
+          {data.productSlug && (
+            <Link
+              href={`/products/${data.productSlug}`}
+              className="inline-flex items-center px-5 py-2.5 rounded-full bg-[#c9a44c] text-[#0d1b2a] text-[11px] uppercase tracking-wider font-bold hover:bg-[#ddb960] transition-colors whitespace-nowrap"
+            >
+              Order Now
+            </Link>
+          )}
+        </header>
 
-      <div className="max-w-3xl mx-auto px-5 py-10 md:py-14">
-        {/* Trust statement */}
-        <div className="text-center mb-9">
-          <p className="font-serif italic text-[#0d1b2a] text-xl md:text-2xl leading-snug">
-            &ldquo;Proof Before Promises.&rdquo;
-          </p>
-          <p className="text-[#6b6045] text-[13px] md:text-sm mt-2 max-w-md mx-auto">
-            What goes into your body should earn your trust.
-          </p>
-        </div>
-
-        {/* Verification card */}
-        <div className="rounded-3xl bg-white border border-[#e7ddc8] shadow-[0_20px_60px_-25px_rgba(13,27,42,0.25)] overflow-hidden">
-          {/* Product */}
-          <div className="p-6 md:p-9 text-center border-b border-[#f0ead8]">
-            <div className="relative w-28 h-28 md:w-32 md:h-32 mx-auto rounded-2xl overflow-hidden bg-[#F7F2E7] border border-[#e7ddc8] mb-5">
+        {/* HERO */}
+        <div className="overflow-hidden">
+          <div className="grid md:grid-cols-[minmax(0,1fr)_1.3fr] gap-8 md:gap-10 p-6 md:p-10">
+            {/* Product image */}
+            <div className="relative w-full aspect-[5/4] rounded-2xl overflow-hidden bg-gradient-to-br from-[#141416] via-[#0f0f12] to-[#0A0A0A] border border-[#e7ddc8]">
               {productImg ? (
-                <Image src={productImg} alt={data.productName} fill sizes="128px" className="object-cover" />
+                <Image
+                  src={productImg}
+                  alt={data.productName}
+                  fill
+                  sizes="(max-width:768px) 100vw, 420px"
+                  className="object-cover"
+                  priority
+                />
               ) : (
-                <div className="w-full h-full flex items-center justify-center text-[#c9a44c]">
-                  <IconShieldCheck className="h-10 w-10" />
+                <div className="w-full h-full flex items-center justify-center">
+                  <span className="font-serif text-[#c9a44c] text-2xl tracking-wide px-6 text-center border border-[#c9a44c]/40 rounded-xl py-8">
+                    {data.productName}
+                  </span>
                 </div>
               )}
             </div>
-            <p className="text-[10px] uppercase tracking-[0.25em] text-[#c9a44c] font-bold mb-1.5">
-              Product Verification
-            </p>
-            <h1 className="font-serif text-2xl md:text-3xl text-[#0d1b2a]">{data.productName}</h1>
 
-            <div
-              className={`mt-5 inline-flex items-center gap-2.5 px-5 py-2.5 rounded-full border ${meta.bg} ${meta.border}`}
-            >
-              <StatusIcon className={`h-5 w-5 ${meta.color}`} />
-              <span className={`text-[12px] md:text-sm font-bold tracking-wide ${meta.color}`}>{meta.label}</span>
-            </div>
-            <p className="text-[#6b6045] text-[13px] mt-2 max-w-sm mx-auto">{meta.sub}</p>
-          </div>
-
-          {/* Details grid */}
-          <div className="p-6 md:p-9 grid grid-cols-1 sm:grid-cols-2 gap-3.5">
-            <StatCard icon={IconShieldCheck} label="Verification ID" value={data.verificationCode} />
-            <StatCard
-              icon={IconFileText}
-              label="Batch / Lot"
-              value={[data.batchNumber, data.lotNumber].filter(Boolean).join(" / ") || null}
-            />
-            <StatCard icon={IconCalendar} label="Manufacturing Date" value={formatDate(data.manufacturingDate)} />
-            <StatCard icon={IconCalendar} label="Expiry Date" value={formatDate(data.expiryDate)} />
-            <StatCard
-              icon={IconShieldCheck}
-              label="Authenticity Status"
-              value={data.authenticityStatus === "VERIFIED" ? "Verified" : data.authenticityStatus}
-            />
-            <StatCard icon={IconMapPin} label="Origin / Source" value={data.origin} />
-          </div>
-
-          {/* COA / Certificate */}
-          {(data.coaUrl || data.certificateUrl) && (
-            <div className="px-6 md:px-9 pb-6 md:pb-9 grid grid-cols-1 sm:grid-cols-2 gap-3.5">
-              {data.coaUrl && (
-                <a
-                  href={data.coaUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex items-center justify-between rounded-2xl border border-[#c9a44c]/40 bg-gradient-to-br from-[#fdf8ec] to-[#f7ead0] px-5 py-4 hover:border-[#c9a44c] transition-colors"
-                >
-                  <span>
-                    <span className="block text-[10px] uppercase tracking-[0.2em] font-bold text-[#8a6d1f]">
-                      Approved COA
-                    </span>
-                    <span className="block text-[#0d1b2a] font-serif text-[15px] mt-0.5">View Certificate</span>
-                  </span>
-                  <IconExternalLink className="h-4 w-4 text-[#8a6d1f] shrink-0" />
-                </a>
+            {/* Hero copy */}
+            <div className="flex flex-col justify-center">
+              <p className="text-[10px] uppercase tracking-[0.3em] text-[#c9a44c] font-bold mb-3">
+                Men &bull; Women &bull; Power
+              </p>
+              <h1 className="font-serif text-3xl sm:text-4xl md:text-5xl text-[#1a1a1a] leading-[1.05]">
+                {data.productName}
+              </h1>
+              {data.tagline && (
+                <p className="mt-4 text-[15px] sm:text-base font-semibold text-[#1a1a1a]">{data.tagline}</p>
               )}
-              {data.certificateUrl && (
-                <a
-                  href={data.certificateUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex items-center justify-between rounded-2xl border border-[#c9a44c]/40 bg-gradient-to-br from-[#fdf8ec] to-[#f7ead0] px-5 py-4 hover:border-[#c9a44c] transition-colors"
-                >
-                  <span>
-                    <span className="block text-[10px] uppercase tracking-[0.2em] font-bold text-[#8a6d1f]">
-                      Certificate
+              {data.shortDescription && (
+                <p className="mt-2 text-[13.5px] sm:text-[14px] text-[#6b6045] leading-relaxed">
+                  {data.shortDescription}
+                </p>
+              )}
+
+              {data.features?.length > 0 && (
+                <div className="mt-5 flex flex-wrap gap-2">
+                  {data.features.map((f, i) => (
+                    <span
+                      key={i}
+                      className="text-[11px] uppercase tracking-wide font-bold text-[#8a6d1f] border border-[#c9a44c]/50 rounded-full px-3.5 py-1.5"
+                    >
+                      {f}
                     </span>
-                    <span className="block text-[#0d1b2a] font-serif text-[15px] mt-0.5">View Document</span>
-                  </span>
-                  <IconExternalLink className="h-4 w-4 text-[#8a6d1f] shrink-0" />
-                </a>
+                  ))}
+                </div>
+              )}
+
+              <div
+                className={`mt-6 inline-flex items-center gap-2.5 px-5 py-2.5 rounded-full border ${meta.bg} ${meta.border} w-fit`}
+              >
+                <StatusIcon className={`h-5 w-5 ${meta.color}`} />
+                <span className={`text-[12px] font-bold tracking-wide ${meta.color}`}>{meta.label}</span>
+              </div>
+
+              {data.productSlug && (
+                <Link
+                  href={`/products/${data.productSlug}`}
+                  className="mt-6 inline-flex items-center gap-2 w-fit px-7 py-3 rounded-full bg-[#c9a44c] text-[#0d1b2a] text-[12px] uppercase tracking-wider font-bold hover:bg-[#ddb960] transition-colors"
+                >
+                  Discover {data.productName} <IconArrowRight className="h-4 w-4" />
+                </Link>
+              )}
+            </div>
+          </div>
+        </div>
+
+        {/* WHAT'S INSIDE */}
+        {ingredients.length > 0 && (
+          <div className="px-6 md:px-10 py-9 border-t border-[#f0ead8]">
+            <h2 className="font-serif text-2xl sm:text-3xl text-[#1a1a1a] mb-1.5">What&apos;s Inside</h2>
+            <p className="text-[10px] uppercase tracking-[0.2em] font-bold text-[#c9a44c] mb-1.5">
+              World-Class Ingredients. Globally Sourced.
+            </p>
+            <p className="text-[13px] text-[#6b6045] max-w-2xl mb-6">
+              {data.productName} brings together carefully selected ingredients from trusted sources
+              around the world, chosen for quality, purpose and their role in the formula.
+            </p>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+              {ingredients.map((ing, i) => (
+                <IngredientRow key={i} ing={ing} />
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* VERIFY YOUR PRODUCT */}
+        <div className="px-6 md:px-10 py-9 border-t border-[#f0ead8]">
+          <h2 className="font-serif text-2xl sm:text-3xl text-[#1a1a1a] mb-6 text-center">
+            Verify Your Product
+          </h2>
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3.5">
+            <TapCard
+              label="Batch / Lot"
+              value={showBatch ? [data.batchNumber, data.lotNumber].filter(Boolean).join(" / ") || "—" : "Display current lot details"}
+              onClick={() => setShowBatch((s) => !s)}
+            />
+            <TapCard
+              label="Authenticity"
+              value={
+                showAuth
+                  ? data.authenticityStatus === "VERIFIED"
+                    ? "Verified"
+                    : data.authenticityStatus
+                  : "Product verification status"
+              }
+              onClick={() => setShowAuth((s) => !s)}
+            />
+            <TapCard
+              label="Approved COA"
+              value={data.coaUrl ? "Tap to view available report" : "No report available"}
+              href={data.coaUrl || undefined}
+            />
+          </div>
+
+          {(data.manufacturingDate || data.expiryDate || data.origin) && (
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3.5 mt-3.5">
+              {data.manufacturingDate && (
+                <div className="rounded-2xl border border-[#e7ddc8] bg-[#FBF6EA] p-5 text-center">
+                  <div className="flex items-center justify-center gap-1.5 text-[#8a6d1f] mb-1.5">
+                    <IconCalendar className="h-3.5 w-3.5" />
+                    <span className="text-[11px] uppercase tracking-[0.16em] font-bold">Manufactured</span>
+                  </div>
+                  <p className="text-[13px] text-[#1a1a1a] font-serif">{formatDate(data.manufacturingDate)}</p>
+                </div>
+              )}
+              {data.expiryDate && (
+                <div className="rounded-2xl border border-[#e7ddc8] bg-[#FBF6EA] p-5 text-center">
+                  <div className="flex items-center justify-center gap-1.5 text-[#8a6d1f] mb-1.5">
+                    <IconCalendar className="h-3.5 w-3.5" />
+                    <span className="text-[11px] uppercase tracking-[0.16em] font-bold">Expiry</span>
+                  </div>
+                  <p className="text-[13px] text-[#1a1a1a] font-serif">{formatDate(data.expiryDate)}</p>
+                </div>
+              )}
+              {data.origin && (
+                <div className="rounded-2xl border border-[#e7ddc8] bg-[#FBF6EA] p-5 text-center">
+                  <div className="flex items-center justify-center gap-1.5 text-[#8a6d1f] mb-1.5">
+                    <IconMapPin className="h-3.5 w-3.5" />
+                    <span className="text-[11px] uppercase tracking-[0.16em] font-bold">Origin</span>
+                  </div>
+                  <p className="text-[13px] text-[#1a1a1a] font-serif">{data.origin}</p>
+                </div>
               )}
             </div>
           )}
 
+          {data.certificateUrl && (
+            <a
+              href={data.certificateUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="mt-3.5 flex items-center justify-between rounded-2xl border border-[#c9a44c]/40 bg-gradient-to-br from-[#fdf8ec] to-[#f7ead0] px-5 py-4 hover:border-[#c9a44c] transition-colors"
+            >
+              <span>
+                <span className="block text-[10px] uppercase tracking-[0.2em] font-bold text-[#8a6d1f]">
+                  Certificate
+                </span>
+                <span className="block text-[#0d1b2a] font-serif text-[15px] mt-0.5">View Document</span>
+              </span>
+              <IconExternalLink className="h-4 w-4 text-[#8a6d1f] shrink-0" />
+            </a>
+          )}
+
           {/* Description */}
           {data.description && (
-            <div className="px-6 md:px-9 pb-6 md:pb-9">
+            <div className="mt-6 pt-6 border-t border-[#f0ead8]">
               <p className="text-[10px] uppercase tracking-[0.2em] font-bold text-[#8a6d1f] mb-2">
                 Product Information
               </p>
@@ -290,56 +405,30 @@ export default function VerifyPage() {
             </div>
           )}
 
-          {/* Ingredients */}
-          {data.ingredients?.length > 0 && (
-            <div className="px-6 md:px-9 pb-6 md:pb-9">
-              <p className="text-[10px] uppercase tracking-[0.2em] font-bold text-[#8a6d1f] mb-3">Ingredients</p>
-              <div className="flex flex-wrap gap-2">
-                {data.ingredients.map((ing, i) => (
-                  <span
-                    key={i}
-                    className="text-[12px] px-3 py-1.5 rounded-full bg-[#F7F2E7] border border-[#e7ddc8] text-[#3a3325]"
-                  >
-                    {ing}
-                  </span>
-                ))}
-              </div>
-            </div>
-          )}
-
           {/* Badge */}
           {badgeImg && (
-            <div className="px-6 md:px-9 pb-8 md:pb-10 flex flex-col items-center border-t border-[#f0ead8] pt-7">
-              <div className="relative w-20 h-20 rounded-full overflow-hidden border-2 border-[#c9a44c]">
-                <Image src={badgeImg} alt={data.badgeType || "Certification badge"} fill sizes="80px" className="object-cover" />
+            <div className="mt-6 pt-6 border-t border-[#f0ead8] flex flex-col items-center">
+              <div className="relative w-16 h-16 rounded-full overflow-hidden border-2 border-[#c9a44c]">
+                <Image src={badgeImg} alt={data.badgeType || "Certification badge"} fill sizes="64px" className="object-cover" />
               </div>
               {data.badgeType && (
-                <p className="text-[11px] uppercase tracking-[0.2em] text-[#8a6d1f] font-bold mt-2.5">
+                <p className="text-[10px] uppercase tracking-[0.2em] text-[#8a6d1f] font-bold mt-2">
                   {data.badgeType}
                 </p>
               )}
             </div>
           )}
-        </div>
 
-        {/* Trust footer badges */}
-        <div className="mt-8 grid grid-cols-2 sm:grid-cols-4 gap-3 text-center">
-          {[
-            { icon: IconShieldCheck, label: "Verified Product" },
-            { icon: IconCertificate, label: "Authenticity" },
-            { icon: IconFileText, label: "Batch / Lot" },
-            { icon: IconCertificate, label: "Certificate / COA" },
-          ].map(({ icon: Icon, label }, i) => (
-            <div key={i} className="rounded-xl border border-[#e7ddc8] bg-white/60 py-4 px-2">
-              <Icon className="h-5 w-5 text-[#c9a44c] mx-auto mb-1.5" />
-              <p className="text-[10px] uppercase tracking-wide text-[#6b6045] font-semibold">{label}</p>
-            </div>
-          ))}
+          <p className="mt-7 text-center text-[10px] uppercase tracking-[0.16em] text-[#a89968]">
+            MWP &middot; Men &bull; Women &bull; Power &middot; Product Information
+          </p>
         </div>
+      </div>
 
-        {/* CTA */}
-        {data.productSlug && (
-          <div className="mt-10 rounded-2xl bg-[#0d1b2a] text-[#F7F2E7] p-7 sm:p-9 text-center">
+      {/* CTA */}
+      {data.productSlug && (
+        <div className="max-w-5xl mx-auto mt-6">
+          <div className="rounded-2xl bg-[#0d1b2a] text-[#F7F2E7] p-7 sm:p-9 text-center">
             <h3 className="font-serif text-xl sm:text-2xl">{data.productName}</h3>
             <p className="text-[#c9c2ab] text-[13px] mt-2 max-w-md mx-auto">
               Experience the same product, verified and trusted.
@@ -351,8 +440,8 @@ export default function VerifyPage() {
               <IconShoppingBag className="h-4 w-4" /> Buy Now
             </Link>
           </div>
-        )}
-      </div>
+        </div>
+      )}
     </div>
   );
 }
