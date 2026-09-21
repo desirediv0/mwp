@@ -76,12 +76,12 @@ export default function CategoryPage() {
     return (
       <div className="min-h-[70vh] bg-white flex items-center justify-center px-4">
         <div className="border border-gray-200 rounded-2xl p-8 max-w-md w-full text-center">
-          <div className="w-14 h-14 mx-auto mb-5 bg-red-50 rounded-xl flex items-center justify-center">
-            <AlertCircle className="w-7 h-7 text-red-500" />
+          <div className="w-14 h-14 mx-auto mb-5 bg-neutral-100 rounded-xl flex items-center justify-center">
+            <AlertCircle className="w-7 h-7 text-neutral-600" />
           </div>
           <h2 className="text-xl font-extrabold text-gray-900 mb-2">Category Not Found</h2>
           <p className="text-gray-500 mb-6 text-[14px]">{error}</p>
-          <Link href="/categories" className="inline-flex items-center gap-1.5 px-5 py-2.5 rounded-xl bg-red-600 text-white text-[12px] uppercase tracking-wider font-bold hover:bg-red-700 transition-colors">
+          <Link href="/categories" className="inline-flex items-center gap-1.5 px-5 py-2.5 rounded-xl bg-neutral-900 text-white text-[12px] uppercase tracking-wider font-bold hover:bg-neutral-900 transition-colors">
             <ChevronLeft className="w-4 h-4" /> Back to Categories
           </Link>
         </div>
@@ -99,7 +99,7 @@ export default function CategoryPage() {
           <div className="absolute inset-0 bg-gradient-to-br from-[#141416] via-[#0f0f12] to-[#0A0A0A]" />
         )}
         <div className="absolute inset-0 bg-gradient-to-t from-[#0A0A0A] via-black/55 to-black/30" />
-        <div className="absolute -top-20 right-0 w-72 h-72 rounded-full opacity-20 pointer-events-none blur-2xl bg-red-600" />
+        <div className="absolute -top-20 right-0 w-72 h-72 rounded-full opacity-20 pointer-events-none blur-2xl bg-white/10" />
 
         <div className="relative z-10 w-full max-w-7xl mx-auto px-5 md:px-8 lg:px-10 pb-10 md:pb-14 pt-24">
           <nav className="flex items-center gap-2 text-[11px] uppercase tracking-[0.15em] text-white/50 mb-5">
@@ -110,7 +110,7 @@ export default function CategoryPage() {
             <span className="text-white/80">{category?.name}</span>
           </nav>
 
-          <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-red-600/15 border border-red-500/30 text-red-400 text-[10px] font-bold uppercase tracking-[0.2em] mb-4">
+          <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/[0.06] border border-white/15 text-white/70 text-[10px] font-bold uppercase tracking-[0.2em] mb-4">
             <Package className="w-3.5 h-3.5" />
             {pagination.total} Product{pagination.total === 1 ? "" : "s"}
           </div>
@@ -138,14 +138,14 @@ export default function CategoryPage() {
             <div className="flex items-center bg-gray-100 rounded-lg p-1">
               <button
                 onClick={() => setViewMode("grid")}
-                className={cn("p-1.5 rounded-md transition-colors", viewMode === "grid" ? "bg-white text-red-600 shadow-sm" : "text-gray-400 hover:text-gray-600")}
+                className={cn("p-1.5 rounded-md transition-colors", viewMode === "grid" ? "bg-white text-neutral-800 shadow-sm" : "text-gray-400 hover:text-gray-600")}
                 title="Grid view"
               >
                 <LayoutGrid className="w-4 h-4" />
               </button>
               <button
                 onClick={() => setViewMode("list")}
-                className={cn("p-1.5 rounded-md transition-colors", viewMode === "list" ? "bg-white text-red-600 shadow-sm" : "text-gray-400 hover:text-gray-600")}
+                className={cn("p-1.5 rounded-md transition-colors", viewMode === "list" ? "bg-white text-neutral-800 shadow-sm" : "text-gray-400 hover:text-gray-600")}
                 title="List view"
               >
                 <List className="w-4 h-4" />
@@ -157,7 +157,7 @@ export default function CategoryPage() {
               <select
                 value={sortOption}
                 onChange={(e) => { setSortOption(e.target.value); setPagination((p) => ({ ...p, page: 1 })); }}
-                className="w-full appearance-none bg-white border border-gray-200 text-gray-700 rounded-lg px-3.5 py-2.5 pr-9 text-[13px] font-semibold cursor-pointer focus:outline-none focus:border-red-500 focus:ring-4 focus:ring-red-600/10 transition-all"
+                className="w-full appearance-none bg-white border border-gray-200 text-gray-700 rounded-lg px-3.5 py-2.5 pr-9 text-[13px] font-semibold cursor-pointer focus:outline-none focus:border-neutral-800 focus:ring-4 focus:ring-neutral-900/10 transition-all"
               >
                 <option value="newest">Newest First</option>
                 <option value="oldest">Oldest First</option>
@@ -178,12 +178,12 @@ export default function CategoryPage() {
           </div>
         ) : products.length === 0 ? (
           <div className="text-center py-20">
-            <div className="w-16 h-16 mx-auto mb-4 rounded-2xl bg-red-50 flex items-center justify-center">
-              <Package className="w-8 h-8 text-red-500" />
+            <div className="w-16 h-16 mx-auto mb-4 rounded-2xl bg-neutral-100 flex items-center justify-center">
+              <Package className="w-8 h-8 text-neutral-600" />
             </div>
             <h2 className="text-xl font-extrabold text-gray-900 mb-2">No Products Yet</h2>
             <p className="text-gray-500 mb-6 text-[14px]">This category doesn&apos;t have any products yet.</p>
-            <Link href="/products" className="inline-flex items-center px-6 py-3 rounded-xl bg-red-600 text-white text-[12px] uppercase tracking-wider font-bold hover:bg-red-700 transition-colors">
+            <Link href="/products" className="inline-flex items-center px-6 py-3 rounded-xl bg-neutral-900 text-white text-[12px] uppercase tracking-wider font-bold hover:bg-neutral-900 transition-colors">
               Browse All Products
             </Link>
           </div>
@@ -199,7 +199,7 @@ export default function CategoryPage() {
             <button
               onClick={() => handlePageChange(pagination.page - 1)}
               disabled={pagination.page === 1}
-              className="w-10 h-10 flex items-center justify-center bg-white border border-gray-200 rounded-lg text-gray-500 hover:text-red-600 hover:border-red-300 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+              className="w-10 h-10 flex items-center justify-center bg-white border border-gray-200 rounded-lg text-gray-500 hover:text-neutral-800 hover:border-neutral-300 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
             >
               <ChevronLeft className="w-4 h-4" />
             </button>
@@ -212,7 +212,7 @@ export default function CategoryPage() {
                     onClick={() => handlePageChange(page)}
                     className={cn(
                       "w-10 h-10 rounded-lg font-bold text-[13px] transition-colors",
-                      pagination.page === page ? "bg-red-600 text-white" : "bg-white border border-gray-200 text-gray-700 hover:border-red-300"
+                      pagination.page === page ? "bg-neutral-900 text-white" : "bg-white border border-gray-200 text-gray-700 hover:border-neutral-300"
                     )}
                   >
                     {page}
@@ -227,7 +227,7 @@ export default function CategoryPage() {
             <button
               onClick={() => handlePageChange(pagination.page + 1)}
               disabled={pagination.page === pagination.pages}
-              className="w-10 h-10 flex items-center justify-center bg-white border border-gray-200 rounded-lg text-gray-500 hover:text-red-600 hover:border-red-300 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+              className="w-10 h-10 flex items-center justify-center bg-white border border-gray-200 rounded-lg text-gray-500 hover:text-neutral-800 hover:border-neutral-300 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
             >
               <ChevronDown className="w-4 h-4 -rotate-90" />
             </button>

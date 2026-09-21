@@ -25,7 +25,7 @@ function CategoryCard({ category }) {
   const img = getImageUrl(category.image);
   return (
     <Link href={`/category/${category.slug}`} className="group block">
-      <div className="rounded-2xl bg-white border border-gray-200 overflow-hidden transition-all duration-300 hover:-translate-y-1 hover:border-red-300 hover:shadow-[0_20px_50px_-20px_rgba(0,0,0,0.18)]">
+      <div className="rounded-2xl bg-white border border-gray-200 overflow-hidden transition-all duration-300 hover:-translate-y-1 hover:border-neutral-300 hover:shadow-[0_20px_50px_-20px_rgba(0,0,0,0.18)]">
         <div className="relative aspect-[4/3] w-full overflow-hidden bg-gray-100">
           {img ? (
             <Image
@@ -139,18 +139,18 @@ export default function CategoriesPage() {
       {/* Hero */}
       <section className="relative overflow-hidden bg-[#0A0A0A] text-white">
         <div className="absolute inset-0 bg-gradient-to-br from-[#141416] via-[#0f0f12] to-[#0A0A0A]" />
-        <div className="absolute -top-24 left-1/2 -translate-x-1/2 w-[600px] h-[300px] bg-red-600/20 blur-[140px] rounded-full pointer-events-none" />
+        <div className="absolute -top-24 left-1/2 -translate-x-1/2 w-[600px] h-[300px] bg-white/[0.05] blur-[140px] rounded-full pointer-events-none" />
         <div className="relative z-10 max-w-7xl mx-auto px-5 md:px-8 lg:px-10 py-16 md:py-24 text-center">
           <nav className="flex items-center justify-center gap-2 text-[11px] uppercase tracking-[0.15em] text-white/40 mb-6">
             <Link href="/" className="hover:text-white transition-colors">Home</Link>
             <span>/</span>
             <span className="text-white/80">Categories</span>
           </nav>
-          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-red-600/15 border border-red-500/30 text-red-400 text-[10px] font-bold uppercase tracking-[0.2em] mb-5">
+          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/[0.06] border border-white/15 text-white/70 text-[10px] font-bold uppercase tracking-[0.2em] mb-5">
             {total} {total === 1 ? "Category" : "Categories"}
           </div>
           <h1 className="text-4xl md:text-6xl font-extrabold tracking-tight mb-4">
-            Shop by <span className="text-red-500">Category</span>
+            Shop by <span className="text-white/50">Category</span>
           </h1>
           <p className="text-white/60 max-w-lg mx-auto text-[14px] md:text-base leading-relaxed">
             Targeted nutritional protocols for strength, hormone balance, endurance, recovery, and daily wellness.
@@ -161,8 +161,8 @@ export default function CategoriesPage() {
       {/* Error */}
       {error && (
         <div className="max-w-7xl mx-auto px-5 mt-8">
-          <div className="bg-red-50 border border-red-200 rounded-xl p-5 flex items-start gap-3">
-            <IconPackageOff className="text-red-500 flex-shrink-0 w-5 h-5 mt-0.5" stroke={1.5} />
+          <div className="bg-neutral-100 border border-neutral-200 rounded-xl p-5 flex items-start gap-3">
+            <IconPackageOff className="text-neutral-600 flex-shrink-0 w-5 h-5 mt-0.5" stroke={1.5} />
             <div>
               <h3 className="font-bold text-gray-900 mb-1">Error Loading Categories</h3>
               <p className="text-gray-500 text-sm">{error}</p>
@@ -181,14 +181,14 @@ export default function CategoriesPage() {
               value={search}
               onChange={handleSearch}
               placeholder="Search categories…"
-              className="w-full h-12 pl-11 pr-4 rounded-xl border border-gray-200 bg-white text-gray-900 text-[14px] placeholder:text-gray-400 focus:outline-none focus:border-red-500 focus:ring-4 focus:ring-red-600/10 transition-all"
+              className="w-full h-12 pl-11 pr-4 rounded-xl border border-gray-200 bg-white text-gray-900 text-[14px] placeholder:text-gray-400 focus:outline-none focus:border-neutral-800 focus:ring-4 focus:ring-neutral-900/10 transition-all"
             />
           </div>
           <div className="relative">
             <select
               value={sort}
               onChange={handleSort}
-              className="h-12 pl-5 pr-11 rounded-xl border border-gray-200 bg-white text-gray-700 text-[13px] font-semibold appearance-none cursor-pointer focus:outline-none focus:border-red-500 focus:ring-4 focus:ring-red-600/10 transition-all"
+              className="h-12 pl-5 pr-11 rounded-xl border border-gray-200 bg-white text-gray-700 text-[13px] font-semibold appearance-none cursor-pointer focus:outline-none focus:border-neutral-800 focus:ring-4 focus:ring-neutral-900/10 transition-all"
             >
               <option value="name-asc">Name: A → Z</option>
               <option value="name-desc">Name: Z → A</option>
@@ -209,8 +209,8 @@ export default function CategoriesPage() {
           </div>
         ) : categories.length === 0 ? (
           <div className="text-center py-20 bg-white border border-gray-200 rounded-2xl">
-            <div className="w-16 h-16 mx-auto mb-5 rounded-2xl bg-red-50 flex items-center justify-center">
-              <IconPackageOff className="w-8 h-8 text-red-500" stroke={1.5} />
+            <div className="w-16 h-16 mx-auto mb-5 rounded-2xl bg-neutral-100 flex items-center justify-center">
+              <IconPackageOff className="w-8 h-8 text-neutral-600" stroke={1.5} />
             </div>
             <h2 className="text-xl font-extrabold text-gray-900 mb-2">No Categories Found</h2>
             <p className="text-gray-500 mb-8 max-w-sm mx-auto text-[14px]">
@@ -218,7 +218,7 @@ export default function CategoriesPage() {
             </p>
             <Link
               href="/products"
-              className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-red-600 text-white text-[12px] uppercase tracking-wider font-bold hover:bg-red-700 transition-colors"
+              className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-neutral-900 text-white text-[12px] uppercase tracking-wider font-bold hover:bg-neutral-900 transition-colors"
             >
               Browse All Products <IconArrowRight className="h-4 w-4" stroke={2} />
             </Link>
@@ -234,7 +234,7 @@ export default function CategoriesPage() {
                 <button
                   onClick={() => handlePageChange(currentPage - 1)}
                   disabled={currentPage === 1}
-                  className="w-10 h-10 flex items-center justify-center rounded-lg border border-gray-200 bg-white text-gray-500 hover:text-red-600 hover:border-red-300 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+                  className="w-10 h-10 flex items-center justify-center rounded-lg border border-gray-200 bg-white text-gray-500 hover:text-neutral-800 hover:border-neutral-300 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
                 >
                   <IconChevronLeft className="h-4 w-4" stroke={2} />
                 </button>
@@ -247,7 +247,7 @@ export default function CategoriesPage() {
                         onClick={() => handlePageChange(page)}
                         className={cn(
                           "w-10 h-10 rounded-lg text-[13px] font-bold transition-colors",
-                          currentPage === page ? "bg-red-600 text-white" : "bg-white border border-gray-200 text-gray-700 hover:border-red-300"
+                          currentPage === page ? "bg-neutral-900 text-white" : "bg-white border border-gray-200 text-gray-700 hover:border-neutral-300"
                         )}
                       >
                         {page}
@@ -262,7 +262,7 @@ export default function CategoriesPage() {
                 <button
                   onClick={() => handlePageChange(currentPage + 1)}
                   disabled={currentPage === pagination.pages}
-                  className="w-10 h-10 flex items-center justify-center rounded-lg border border-gray-200 bg-white text-gray-500 hover:text-red-600 hover:border-red-300 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+                  className="w-10 h-10 flex items-center justify-center rounded-lg border border-gray-200 bg-white text-gray-500 hover:text-neutral-800 hover:border-neutral-300 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
                 >
                   <IconChevronRight className="h-4 w-4" stroke={2} />
                 </button>
