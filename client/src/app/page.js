@@ -8,7 +8,7 @@ import HomePageContent from "@/components/sections/HomePageContent";
 import QualityPromiseSection from "@/components/sections/home/QualityPromiseSection";
 import CustomerReviewsSection from "@/components/sections/home/CustomerReviewsSection";
 import HomeFaqSection from "@/components/sections/home/HomeFaqSection";
-import PerformanceClubCta from "@/components/sections/home/PerformanceClubCta";
+// import PerformanceClubCta from "@/components/sections/home/PerformanceClubCta";
 
 export const metadata = {
   title: "MWP SUPPLEMENTS — Men | Women | Power | Precision Sports Nutrition",
@@ -50,7 +50,7 @@ export default function Home() {
       <HomeFaqSection />
 
       {/* 9. Performance Club CTA */}
-      <PerformanceClubCta />
+      {/* <PerformanceClubCta /> */}
     </main>
   );
 }

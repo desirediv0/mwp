@@ -86,12 +86,12 @@ export const Footer = () => {
               Join the <span className="text-white">MWP Performance Club</span>
             </h3>
             <p className="text-[13px] text-neutral-400 mt-1.5">
-              Get 10% off your first order plus training & nutrition protocols.
+              Get latest updates and offers
             </p>
           </div>
           {subscribed ? (
             <div className="inline-flex items-center gap-2 bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-sm font-semibold px-4 py-3">
-              <IconShieldCheck className="h-5 w-5" /> You&apos;re in — check your inbox.
+              <IconShieldCheck className="h-5 w-5" /> You&apos;re in.
             </div>
           ) : (
             <form onSubmit={handleSubscribe} className="w-full lg:w-auto flex gap-2.5">
