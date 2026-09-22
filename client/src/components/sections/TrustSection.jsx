@@ -6,50 +6,50 @@ import { useRef, useState, useEffect, useCallback } from "react";
    DATA
  ───────────────────────────────────────────── */
 const STATS = [
-  { value: "6+", label: "Design Collections", icon: ShoppingBasket },
-  { value: "5,000+", label: "Happy Clients", icon: Users },
-  { value: "100%", label: "Handcrafted Quality", icon: CheckCircle2 },
-  { value: "Artisan", label: "Pooja Khan Original", icon: Sparkles },
+  { value: "6", label: "Flagship Stacks", icon: ShoppingBasket },
+  { value: "25,000+", label: "Active Athletes", icon: Users },
+  { value: "100%", label: "Lab Tested Quality", icon: CheckCircle2 },
+  { value: "Clinical", label: "Standardized Potency", icon: Sparkles },
 ];
 
 const TESTIMONIALS = [
   {
-    name: "Anita Sen",
-    role: "Collector",
+    name: "Arjun Verma",
+    role: "Powerlifter",
     city: "Delhi",
-    text: "Exquisite necklaces that are perfect for wedding occasions. Every detail is perfect, and it came in a beautiful signature box. MWP Supplements is my go-to for unique accessories.",
+    text: "Ultra Pro has transformed my recovery and stamina between heavy sessions. Clean energy, zero jitters, and the verified lab test results give me complete peace of mind.",
     rating: 5,
     verified: true
   },
   {
-    name: "Rohan Iyer",
-    role: "Custom Order",
+    name: "Sneha Kapoor",
+    role: "CrossFit Athlete",
+    city: "Bengaluru",
+    text: "Her Power is exactly what I was looking for. Hormonal balance, sustained energy throughout tough metcons, and no crash. Truly clinical grade.",
+    rating: 5,
+    verified: true
+  },
+  {
+    name: "Rohit Malhotra",
+    role: "Marathon Runner",
     city: "Mumbai",
-    text: "The custom gold-plated ring I ordered is stunning. The details are fine and the quality of the finish is excellent. A true handmade masterpiece.",
+    text: "Rapid Boost gives an undeniable pump and nitric expansion during tempo runs. Mixes instantly and tastes clean without artificial aftertaste.",
     rating: 5,
     verified: true
   },
   {
-    name: "Priya Nair",
-    role: "Regular Buyer",
-    city: "Kochi",
-    text: "Beautifully handcrafted earrings that got me so many compliments at a recent family function. The WhatsApp support is extremely friendly and helpful.",
-    rating: 5,
-    verified: true
-  },
-  {
-    name: "Sunita Mehta",
-    role: "Collector",
-    city: "Pune",
-    text: "I absolutely adore the festive sets from MWP Supplements. They feel premium, lightweight, and carry a distinct ethnic style that stands out from typical mass-produced jewelry.",
-    rating: 5,
-    verified: true
-  },
-  {
-    name: "Kavitha Reddy",
-    role: "Gifting Client",
+    name: "Kavya Reddy",
+    role: "Fitness Coach",
     city: "Hyderabad",
-    text: "Ordered three customized sets as gifts for my sisters. The gift packaging was incredibly elegant and they arrived on time. Highly recommend Pooja Khan's designs.",
+    text: "Daily Boost is a staple for my athletes. Complete 32-in-1 micronutrient profile with chelated minerals that digest effortlessly on an empty stomach.",
+    rating: 5,
+    verified: true
+  },
+  {
+    name: "Ishaan Gupta",
+    role: "Gym Enthusiast",
+    city: "Pune",
+    text: "Switched to MWP Supplements because of their complete transparency and batch test reports. Strength numbers are consistently climbing.",
     rating: 5,
     verified: true
   },
@@ -237,13 +237,13 @@ export const TrustSection = () => {
             <div className="inline-flex items-center gap-2 px-3 py-1 bg-primary/10 rounded-full text-primary text-[11px]   uppercase tracking-wider mb-5">
               Success Stories
             </div>
-            <h2 className="text-4xl md:text-5xl   text-gray-900 leading-[1.1] tracking-tight">
-              Adored by Style Lovers <br />
-              <span className="text-primary">Across India.</span>
+            <h2 className="text-4xl md:text-5xl text-gray-900 leading-[1.1] tracking-tight">
+              Trusted by High Performers <br />
+              <span className="text-neutral-900">Across India.</span>
             </h2>
           </div>
           <p className="text-gray-500 max-w-xs md:text-right text-base leading-relaxed">
-            From customized wedding adornments to elegant festive sets, MWP Supplements is the trusted choice for handcrafted jewelry.
+            From male vitality to female balance and pre-workout energy, MWP Supplements delivers precision sports nutrition.
           </p>
         </div>
 

@@ -96,27 +96,27 @@ export default function CategoryGrid() {
     <section className="py-14 md:py-20 bg-white">
       <div className="max-w-7xl mx-auto px-5 md:px-8 lg:px-10">
         <Reveal>
-          <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4 mb-10 md:mb-12">
+          <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-3 sm:gap-4 mb-6 sm:mb-8 pb-4 border-b border-gray-100">
             <div>
-              <div className="flex items-center gap-3 mb-3">
-                <span className="h-px w-8 bg-gray-900/50" />
-                <span className="text-[10px] uppercase tracking-[0.3em] text-gray-900 font-bold">
+              <div className="inline-flex items-center gap-2 mb-1.5 sm:mb-2">
+                <span className="h-1.5 w-1.5 rounded-full bg-neutral-900" />
+                <span className="text-[10px] sm:text-[11px] uppercase tracking-[0.25em] text-neutral-600 font-bold">
                   Performance Targets
                 </span>
               </div>
-              <h2 className="text-3xl sm:text-4xl md:text-[42px] font-extrabold text-gray-900 tracking-tight leading-tight">
-                Shop by <span className="text-gray-900">Category</span>
+              <h2 className="text-2xl sm:text-3xl md:text-4xl font-extrabold tracking-tight text-neutral-950 uppercase">
+                Shop by Category
               </h2>
-              <p className="text-[15px] text-gray-500 mt-3 font-light max-w-lg leading-relaxed">
+              <p className="text-xs sm:text-sm text-neutral-500 mt-1 font-normal max-w-lg">
                 Targeted nutritional protocols for strength, hormone balance, endurance, and daily wellness.
               </p>
             </div>
             <Link
               href="/categories"
-              className="shrink-0 inline-flex items-center gap-2 text-[12px] uppercase tracking-[0.14em] font-bold text-gray-900 hover:text-gray-900 transition-colors"
+              className="inline-flex items-center gap-1.5 text-xs sm:text-sm font-bold tracking-wider uppercase text-neutral-900 hover:text-neutral-600 transition-colors group self-start sm:self-end shrink-0"
             >
-              View All Categories
-              <IconArrowRight className="h-4 w-4" stroke={2} />
+              <span>View All</span>
+              <IconArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" stroke={2} />
             </Link>
           </div>
         </Reveal>

@@ -74,15 +74,18 @@ export const NewArrivals = () => {
 
   if (loading) {
     return (
-      <section className="py-10 md:py-14 bg-white">
-        <div className="max-w-7xl mx-auto px-4">
-          <div className="text-center mb-8">
-            <div className="inline-flex items-center gap-2.5 mb-4"><span className="h-px w-8 bg-gray-900/50" /><span className="text-[10px] uppercase tracking-[0.3em] text-gray-900 font-bold">Just Arrived</span><span className="h-px w-8 bg-gray-900/50" /></div>
-          <h2 className="text-3xl sm:text-4xl md:text-5xl font-extrabold tracking-tight text-gray-900">New <span className="text-gray-900">Arrivals</span></h2>
-            <p className="text-[15px] text-gray-500 mt-3.5 font-light max-w-xl mx-auto">Fresh products just added to our lineup</p>
+      <section className="py-10 md:py-14 bg-white border-b border-gray-100">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-8 pb-4 border-b border-gray-100">
+            <div>
+              <div className="h-3 w-24 bg-gray-200 rounded mb-2 animate-pulse" />
+              <div className="h-8 w-48 bg-gray-200 rounded mb-1 animate-pulse" />
+              <div className="h-4 w-64 bg-gray-100 rounded animate-pulse" />
+            </div>
+            <div className="h-5 w-20 bg-gray-200 rounded animate-pulse" />
           </div>
-          <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
-            {[...Array(6)].map((_, index) => (
+          <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-4">
+            {[...Array(5)].map((_, index) => (
               <ProductSkeleton key={index} />
             ))}
           </div>
@@ -96,13 +99,32 @@ export const NewArrivals = () => {
   }
 
   return (
-    <section className="py-10 md:py-14 bg-white">
-      <div className="max-w-7xl mx-auto px-4">
-        {/* Header */}
-        <div className="text-center mb-8">
-          <div className="inline-flex items-center gap-2.5 mb-4"><span className="h-px w-8 bg-gray-900/50" /><span className="text-[10px] uppercase tracking-[0.3em] text-gray-900 font-bold">Just Arrived</span><span className="h-px w-8 bg-gray-900/50" /></div>
-          <h2 className="text-3xl sm:text-4xl md:text-5xl font-extrabold tracking-tight text-gray-900">New <span className="text-gray-900">Arrivals</span></h2>
-          <p className="text-[15px] text-gray-500 mt-3.5 font-light max-w-xl mx-auto">Fresh products just added to our lineup</p>
+    <section className="py-10 md:py-14 bg-white border-b border-gray-100">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        {/* Section Header with Top-Right "View All" */}
+        <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-3 sm:gap-4 mb-6 sm:mb-8 pb-4 border-b border-gray-100">
+          <div>
+            <div className="inline-flex items-center gap-2 mb-1.5 sm:mb-2">
+              <span className="h-1.5 w-1.5 rounded-full bg-neutral-900" />
+              <span className="text-[10px] sm:text-[11px] uppercase tracking-[0.25em] text-neutral-600 font-bold">
+                Just Arrived
+              </span>
+            </div>
+            <h2 className="text-2xl sm:text-3xl md:text-4xl font-extrabold tracking-tight text-neutral-950 uppercase">
+              New Arrivals
+            </h2>
+            <p className="text-xs sm:text-sm text-neutral-500 mt-1 font-normal max-w-lg">
+              Fresh clinical-grade performance formulas just added to our lineup
+            </p>
+          </div>
+
+          <Link
+            href="/products?productType=new"
+            className="inline-flex items-center gap-1.5 text-xs sm:text-sm font-bold tracking-wider uppercase text-neutral-900 hover:text-neutral-600 transition-colors group self-start sm:self-end shrink-0"
+          >
+            <span>View All</span>
+            <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
+          </Link>
         </div>
 
         {/* Products Carousel */}
@@ -119,7 +141,7 @@ export const NewArrivals = () => {
               {products.map((product, index) => (
                 <CarouselItem
                   key={product.id || product.slug || index}
-                  className="pl-4 basis-1/2 md:basis-1/3 lg:basis-1/4 xl:basis-1/5 py-4"
+                  className="pl-4 basis-1/2 md:basis-1/3 lg:basis-1/4 xl:basis-1/5 py-2 sm:py-4"
                 >
                   <ProductCard product={product} />
                 </CarouselItem>
@@ -127,23 +149,9 @@ export const NewArrivals = () => {
             </CarouselContent>
 
             {/* Navigation Controls */}
-            <CarouselPrevious className="absolute -left-2 md:left-2 top-1/2 -translate-y-1/2 h-10 w-10 bg-white hover:bg-white hover:text-primary border-gray-200 text-gray-700 shadow-lg z-10" />
-            <CarouselNext className="absolute -right-2 md:right-2 top-1/2 -translate-y-1/2 h-10 w-10 bg-white hover:bg-white hover:text-primary border-gray-200 text-gray-700 shadow-lg z-10" />
+            <CarouselPrevious className="hidden sm:flex absolute -left-2 md:left-2 top-1/2 -translate-y-1/2 h-9 w-9 md:h-10 md:w-10 bg-white hover:bg-white hover:text-primary border-gray-200 text-gray-700 shadow-lg z-10" />
+            <CarouselNext className="hidden sm:flex absolute -right-2 md:right-2 top-1/2 -translate-y-1/2 h-9 w-9 md:h-10 md:w-10 bg-white hover:bg-white hover:text-primary border-gray-200 text-gray-700 shadow-lg z-10" />
           </Carousel>
-        </div>
-
-        {/* View All Button */}
-        <div className="text-center mt-6">
-          <Link href="/products?productType=new">
-            <Button
-              variant="outline"
-              size="lg"
-              className="font-medium border-primary text-primary border-gray-200 hover:bg-gray-900 hover:text-white group px-8"
-            >
-              View All New Products
-              <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform duration-300" />
-            </Button>
-          </Link>
         </div>
       </div>
     </section>

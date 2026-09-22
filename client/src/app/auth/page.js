@@ -58,10 +58,10 @@ function AuthForm() {
   };
 
   return (
-    <div className="min-h-screen bg-white flex">
+    <div className="min-h-screen bg-white flex flex-col lg:flex-row overflow-x-hidden">
 
       {/* ── Left Panel — Branding (Desktop) ──────────────── */}
-      <div className="hidden lg:flex lg:w-[46%] relative overflow-hidden bg-[#0A0A0A]">
+      <div className="hidden lg:flex lg:w-[46%] lg:shrink-0 relative overflow-hidden bg-[#0A0A0A]">
         {/* Background image */}
         <img
           src="/auth-hero.jpg"
@@ -72,7 +72,7 @@ function AuthForm() {
         <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-transparent to-black/40" />
 
         {/* Content */}
-        <div className="relative z-10 flex flex-col justify-between p-12 xl:p-16 w-full">
+        <div className="relative z-10 flex flex-col justify-between gap-8 p-8 sm:p-12 xl:p-16 w-full min-h-full overflow-y-auto">
           {/* Logo */}
           <Link href="/" className="inline-block">
             <img src="/logo.png" alt="MWP SUPPLEMENTS" className="h-11 w-auto object-contain" />
@@ -86,7 +86,7 @@ function AuthForm() {
                 Men &bull; Women &bull; Power
               </span>
             </div>
-            <h1 className="font-extrabold text-4xl xl:text-[3.25rem] text-white tracking-tight mb-5 leading-[1.05] uppercase">
+            <h1 className="font-extrabold text-3xl xl:text-[3.25rem] text-white tracking-tight mb-5 leading-[1.05] uppercase">
               Fuel Your
               <br />
               <span className="text-white/70">Next Personal Best</span>
@@ -104,18 +104,18 @@ function AuthForm() {
           </div>
 
           {/* Bottom */}
-          <p className="text-[10px] uppercase tracking-[0.2em] text-white/40">
+          <p className="text-[10px] uppercase tracking-[0.2em] text-white/40 mt-auto pt-4">
             &copy; {new Date().getFullYear()} MWP SUPPLEMENTS &bull; All Rights Reserved
           </p>
         </div>
       </div>
 
       {/* ── Right Panel — Form ───────────────────────────── */}
-      <div className="flex-1 flex items-center justify-center px-5 sm:px-8 py-12 lg:py-0">
+      <div className="flex-1 min-w-0 flex items-start lg:items-center justify-center px-5 sm:px-8 py-12 lg:py-16 min-h-screen">
         <div className="w-full max-w-[420px]">
 
           {/* Mobile logo */}
-          <div className="lg:hidden text-center mb-10">
+          <div className="lg:hidden text-center mb-8">
             <Link href="/" className="inline-block">
               <span className="font-extrabold text-2xl text-gray-900 tracking-wider">
                 MWP SUPPLEMENTS
@@ -124,7 +124,7 @@ function AuthForm() {
           </div>
 
           {/* Tabs */}
-          <div className="flex gap-1 p-1.5 bg-gray-100 rounded-2xl mb-10">
+          <div className="flex gap-1 p-1.5 bg-gray-100 rounded-2xl mb-8">
             {[
               { key: "login", label: "Sign In" },
               { key: "register", label: "Register" },
@@ -160,7 +160,7 @@ function AuthForm() {
           </div>
 
           {/* Terms */}
-          <p className="text-center text-[11px] text-gray-500 mt-8 font-light">
+          <p className="text-center text-[11px] text-gray-500 mt-6 sm:mt-8 font-light">
             By continuing, you agree to our{" "}
             <Link href="/terms" className="text-gray-900 hover:text-neutral-800 transition-colors underline underline-offset-2">Terms</Link>
             {" "}&{" "}
@@ -404,7 +404,7 @@ function RegisterForm({ onSwitch, redirect }) {
   ];
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-5">
+    <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-5">
       <div>
         <h2 className="text-2xl text-gray-900 tracking-tight mb-1">Create account</h2>
         <p className="text-[13px] text-gray-500 font-light">Join the MWP SUPPLEMENTS family</p>
@@ -431,7 +431,7 @@ function RegisterForm({ onSwitch, redirect }) {
               onChange={handleChange}
               required
               placeholder={placeholder}
-              className="w-full h-14 pl-12 pr-4 bg-gray-50 border border-gray-200 rounded-xl text-gray-900 text-[13.5px] placeholder:text-gray-400 focus:outline-none focus:border-neutral-800 focus:ring-4 focus:ring-neutral-900/10 transition-all duration-500"
+              className="w-full h-12 sm:h-14 pl-12 pr-4 bg-gray-50 border border-gray-200 rounded-xl text-gray-900 text-[13.5px] placeholder:text-gray-400 focus:outline-none focus:border-neutral-800 focus:ring-4 focus:ring-neutral-900/10 transition-all duration-500"
             />
           </div>
         </div>
@@ -449,7 +449,7 @@ function RegisterForm({ onSwitch, redirect }) {
             onChange={handleChange}
             required
             placeholder="Min 8 characters"
-            className="w-full h-14 pl-12 pr-12 bg-gray-50 border border-gray-200 rounded-xl text-gray-900 text-[13.5px] placeholder:text-gray-400 focus:outline-none focus:border-neutral-800 focus:ring-4 focus:ring-neutral-900/10 transition-all duration-500"
+            className="w-full h-12 sm:h-14 pl-12 pr-12 bg-gray-50 border border-gray-200 rounded-xl text-gray-900 text-[13.5px] placeholder:text-gray-400 focus:outline-none focus:border-neutral-800 focus:ring-4 focus:ring-neutral-900/10 transition-all duration-500"
           />
           <button
             type="button"
@@ -461,7 +461,7 @@ function RegisterForm({ onSwitch, redirect }) {
         </div>
         {/* Strength indicator */}
         {formData.password && (
-          <div className="mt-3 flex items-center gap-3">
+          <div className="mt-2.5 flex items-center gap-3">
             <div className="flex-1 flex gap-1">
               {[1, 2, 3, 4].map((i) => (
                 <div
@@ -496,7 +496,7 @@ function RegisterForm({ onSwitch, redirect }) {
             onChange={handleChange}
             required
             placeholder="Confirm your password"
-            className="w-full h-14 pl-12 pr-12 bg-gray-50 border border-gray-200 rounded-xl text-gray-900 text-[13.5px] placeholder:text-gray-400 focus:outline-none focus:border-neutral-800 focus:ring-4 focus:ring-neutral-900/10 transition-all duration-500"
+            className="w-full h-12 sm:h-14 pl-12 pr-12 bg-gray-50 border border-gray-200 rounded-xl text-gray-900 text-[13.5px] placeholder:text-gray-400 focus:outline-none focus:border-neutral-800 focus:ring-4 focus:ring-neutral-900/10 transition-all duration-500"
           />
           {formData.confirmPassword && (
             <span className="absolute right-4 top-1/2 -translate-y-1/2">
@@ -514,7 +514,7 @@ function RegisterForm({ onSwitch, redirect }) {
       <button
         type="submit"
         disabled={isSubmitting}
-        className="w-full h-14 rounded-xl bg-neutral-900 text-white text-[12px] uppercase tracking-[0.15em] font-bold shadow-lg shadow-neutral-900/20 flex items-center justify-center gap-2.5 hover:bg-neutral-900 disabled:opacity-50 transition-all duration-500"
+        className="w-full h-12 sm:h-14 rounded-xl bg-neutral-900 text-white text-[12px] uppercase tracking-[0.15em] font-bold shadow-lg shadow-neutral-900/20 flex items-center justify-center gap-2.5 hover:bg-neutral-900 disabled:opacity-50 transition-all duration-500"
       >
         {isSubmitting ? (
           <IconLoader2 className="h-4 w-4 animate-spin" stroke={1.5} />
@@ -527,7 +527,7 @@ function RegisterForm({ onSwitch, redirect }) {
       </button>
 
       {/* Switch */}
-      <p className="text-center text-[13px] text-gray-500 font-light pt-2">
+      <p className="text-center text-[13px] text-gray-500 font-light pt-1 sm:pt-2">
         Already have an account?{" "}
         <button type="button" onClick={onSwitch} className="text-gray-900 font-medium hover:text-neutral-800 transition-colors">
           Sign In

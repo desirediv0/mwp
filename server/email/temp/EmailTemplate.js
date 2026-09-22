@@ -413,7 +413,7 @@ export const getPaymentSuccessTemplate = (data) => {
                 <p><strong>Order ID:</strong> ${data.paymentId}</p>
                 <p><strong>Date:</strong> ${new Date(data.date).toLocaleString()}</p>
             </div>
-            <p>Thank you for choosing <strong>${store.storeName}</strong> for your custom and handcrafted jewellery designs!</p>
+            <p>Thank you for choosing <strong>${store.storeName}</strong> for your performance nutrition and supplement needs!</p>
         </div>
         ${FOOTER_HTML(store)}
     </div>
@@ -499,7 +499,7 @@ export const getContactFormTemplate = (data) => {
     <div class="container">
         ${HEADER_HTML("New Contact Inquiry", "Customer Inquiry", store)}
         <div class="content">
-            <h2>${data.subject || "Jewellery Sourcing Inquiry"}</h2>
+            <h2>${data.subject || "Product & Supplement Inquiry"}</h2>
             <div class="info-box">
                 <p>${data.message}</p>
             </div>

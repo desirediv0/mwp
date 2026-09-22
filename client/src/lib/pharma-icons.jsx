@@ -1,4 +1,4 @@
-// Shared jewellery category icon mapping
+// Shared supplement category icon mapping
 // Used by CategoriesCarousel, CategoryGrid, and page layouts
 
 import {

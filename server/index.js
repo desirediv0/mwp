@@ -42,11 +42,11 @@ process.on("SIGINT", gracefulShutdown);
 const seedDefaultSections = async () => {
   try {
     const defaults = [
-      { name: "Featured Collections", slug: "featured", description: "Handpicked handcrafted jewellery pieces selected for your style", color: "bg-blue-500", displayOrder: 1 },
-      { name: "Latest Additions", slug: "latest", description: "Newly added premium jewellery collections", color: "bg-green-500", displayOrder: 2 },
-      { name: "Best Sellers", slug: "bestseller", description: "Our most popular jewellery designs loved by clients across India", color: "bg-yellow-500", displayOrder: 3 },
-      { name: "Trending Now", slug: "trending", description: "Most loved and trending handmade designs and accessories this week", color: "bg-purple-500", displayOrder: 4 },
-      { name: "New Arrivals", slug: "new", description: "Fresh handcrafted creations added to our gallery", color: "bg-pink-500", displayOrder: 5 },
+      { name: "Featured Collections", slug: "featured", description: "Handpicked flagship supplements engineered for peak athletic output", color: "bg-blue-500", displayOrder: 1 },
+      { name: "Latest Additions", slug: "latest", description: "Newly added clinical performance and sports nutrition formulas", color: "bg-green-500", displayOrder: 2 },
+      { name: "Best Sellers", slug: "bestseller", description: "Our most popular supplement formulations trusted by athletes across India", color: "bg-yellow-500", displayOrder: 3 },
+      { name: "Trending Now", slug: "trending", description: "Most demanded sports nutrition and hormone vitality stacks this week", color: "bg-purple-500", displayOrder: 4 },
+      { name: "New Arrivals", slug: "new", description: "Fresh clinical-grade supplement formulas just added to our lineup", color: "bg-pink-500", displayOrder: 5 },
     ];
 
     for (const s of defaults) {
@@ -65,6 +65,14 @@ const seedDefaultSections = async () => {
           }
         });
         console.log(`Auto-seeded default section: ${s.name} 🌱`);
+      } else if (/jewel|handcrafted/i.test(existing.description || "")) {
+        await prisma.productSection.update({
+          where: { slug: s.slug },
+          data: {
+            description: s.description,
+            name: s.name,
+          }
+        });
       }
     }
   } catch (err) {

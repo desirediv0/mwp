@@ -48,11 +48,11 @@ function SkeletonLoader({ heightStyle }) {
     >
       <div className="absolute inset-0 bg-gradient-to-br from-[#09090b] via-[#0f0f12] to-[#09090b]" />
       <div className="absolute inset-0 flex items-center justify-center">
-        <div className="text-center space-y-6 px-6">
+        <div className="text-center space-y-4 px-6">
           <div className="h-px w-16 bg-white/10 mx-auto" />
-          <div className="h-8 w-56 bg-white/5 mx-auto" />
-          <div className="h-4 w-72 bg-white/5 mx-auto" />
-          <div className="h-10 w-40 bg-white/5 mx-auto mt-4" />
+          <div className="h-7 w-48 sm:w-56 bg-white/5 mx-auto" />
+          <div className="h-3.5 w-60 sm:w-72 bg-white/5 mx-auto" />
+          <div className="h-9 w-36 bg-white/5 mx-auto mt-3" />
         </div>
       </div>
     </div>
@@ -182,7 +182,7 @@ export default function MwpHeroSection() {
   };
 
   const heightStyle = {
-    height: isMobile ? "480px" : isTablet ? "600px" : isLaptop ? "700px" : "820px",
+    height: isMobile ? "400px" : isTablet ? "460px" : isLaptop ? "500px" : "540px",
   };
 
   if (loading) return <SkeletonLoader heightStyle={heightStyle} />;
@@ -229,26 +229,26 @@ export default function MwpHeroSection() {
             placeholder="blur"
             blurDataURL="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTkyMCIgaGVpZ2h0PSIxMDgwIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPjxyZWN0IHdpZHRoPSIxMDAlIiBoZWlnaHQ9IjEwMCUiIGZpbGw9IiMwOTA5MGIiLz48L3N2Zz4="
           />
-          <div className="absolute inset-0 bg-gradient-to-r from-black/75 via-black/35 to-transparent" />
-          <div className="absolute inset-0 bg-gradient-to-t from-black/55 via-transparent to-transparent" />
+          <div className="absolute inset-0 bg-gradient-to-r from-black/85 via-black/55 to-black/30 sm:from-black/75 sm:via-black/35 sm:to-transparent" />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent sm:from-black/55" />
         </motion.div>
       </AnimatePresence>
 
       {/* -------- text overlay -------- */}
       <AnimatePresence mode="wait">
         <motion.div key={`text-${current.id}`} className="absolute inset-0 z-20 flex items-center">
-          <div className="w-full px-5 sm:px-10 md:px-16 lg:px-20 xl:px-24">
-            <div className="max-w-[520px] sm:max-w-[640px] pointer-events-auto">
+          <div className="w-full px-4 sm:px-10 md:px-16 lg:px-20 xl:px-24">
+            <div className="max-w-[440px] sm:max-w-[580px] pointer-events-auto">
               <motion.div
                 custom={0}
                 variants={contentVariants}
                 initial="hidden"
                 animate="visible"
                 exit="exit"
-                className="flex items-center gap-2 sm:gap-3 mb-4 md:mb-7"
+                className="flex items-center gap-2 sm:gap-3 mb-2 sm:mb-3 md:mb-4"
               >
-                <span className="block h-px w-6 sm:w-10 bg-neutral-900" />
-                <span className="text-[9px] sm:text-[10px] md:text-[11px] uppercase tracking-[0.25em] sm:tracking-[0.3em] text-white/70 font-semibold">
+                <span className="block h-px w-5 sm:w-10 bg-white/40" />
+                <span className="text-[8.5px] sm:text-[10px] md:text-[11px] uppercase tracking-[0.22em] sm:tracking-[0.3em] text-white/80 font-semibold">
                   MWP Supplements &bull; Men | Women | Power
                 </span>
               </motion.div>
@@ -259,9 +259,9 @@ export default function MwpHeroSection() {
                 initial="hidden"
                 animate="visible"
                 exit="exit"
-                className="font-extrabold uppercase leading-[1.05] tracking-tight mb-4 sm:mb-6 text-white"
+                className="font-extrabold uppercase leading-[1.12] sm:leading-[1.08] tracking-tight mb-2.5 sm:mb-4 text-white"
                 style={{
-                  fontSize: isMobile ? "28px" : isTablet ? "46px" : isLaptop ? "56px" : "68px",
+                  fontSize: isMobile ? "22px" : isTablet ? "36px" : isLaptop ? "44px" : "52px",
                 }}
               >
                 {current.title}
@@ -273,8 +273,8 @@ export default function MwpHeroSection() {
                 initial="hidden"
                 animate="visible"
                 exit="exit"
-                className="font-normal leading-relaxed tracking-wide mb-6 sm:mb-8 md:mb-10 text-white/75 max-w-[540px]"
-                style={{ fontSize: isMobile ? "14px" : isTablet ? "16px" : "18px" }}
+                className="font-normal leading-snug sm:leading-relaxed tracking-wide mb-3.5 sm:mb-6 text-white/80 max-w-[460px]"
+                style={{ fontSize: isMobile ? "12px" : isTablet ? "14px" : "15px" }}
               >
                 {current.subtitle}
               </motion.p>
@@ -285,20 +285,20 @@ export default function MwpHeroSection() {
                 initial="hidden"
                 animate="visible"
                 exit="exit"
-                className="flex flex-row flex-wrap gap-2 sm:gap-3"
+                className="flex flex-row items-center gap-2 sm:gap-3"
               >
                 <button
                   onClick={() => router.push(current.link || "/products")}
-                  className="inline-flex items-center justify-center gap-1.5 sm:gap-2 px-4 sm:px-7 py-1.5 sm:py-2 bg-gradient-to-r from-neutral-900 to-neutral-800 text-white text-[10px] sm:text-[12px] font-bold tracking-[0.08em] uppercase  hover:from-neutral-800 hover:to-neutral-700 shadow-lg shadow-neutral-900/30 transition-all duration-300 active:scale-[0.98]"
-                  style={{ height: isMobile ? "34px" : "48px" }}
+                  className="inline-flex items-center justify-center gap-1.5 sm:gap-2 px-3.5 sm:px-6 py-1.5 sm:py-2 bg-gradient-to-r from-neutral-900 to-neutral-800 text-white text-[10px] sm:text-[12px] font-bold tracking-[0.08em] uppercase hover:from-neutral-800 hover:to-neutral-700 shadow-lg shadow-neutral-900/30 active:scale-95 transition-all rounded"
+                  style={{ height: isMobile ? "36px" : "42px" }}
                 >
                   Shop Now
                   <IconArrowRight className="h-3 w-3 sm:h-3.5 sm:w-3.5" stroke={2} />
                 </button>
                 <Link
                   href="/categories"
-                  className="inline-flex items-center justify-center gap-1.5 sm:gap-2 px-4 sm:px-7 py-1.5 sm:py-2 border border-white/25 text-white text-[10px] sm:text-[12px] font-semibold tracking-[0.08em] uppercase  hover:bg-white/10 transition-all duration-300 active:scale-[0.98]"
-                  style={{ height: isMobile ? "34px" : "48px" }}
+                  className="inline-flex items-center justify-center gap-1.5 sm:gap-2 px-3.5 sm:px-6 py-1.5 sm:py-2 border border-white/30 text-white text-[10px] sm:text-[12px] font-semibold tracking-[0.08em] uppercase hover:bg-white/10 active:scale-95 transition-all rounded"
+                  style={{ height: isMobile ? "36px" : "42px" }}
                 >
                   Collections
                 </Link>
@@ -308,34 +308,35 @@ export default function MwpHeroSection() {
         </motion.div>
       </AnimatePresence>
 
-      {/* -------- arrows + dots -------- */}
+      {/* -------- arrows (desktop only; hidden on mobile for clean view) -------- */}
       {banners.length > 1 && (
         <>
           <button
             onClick={prev}
-            className="absolute left-3 sm:left-4 md:left-8 top-1/2 -translate-y-1/2 z-30 w-9 h-9 sm:w-12 sm:h-12 flex items-center justify-center bg-black/30 backdrop-blur-sm border border-white/10 text-white/60 hover:text-white hover:bg-black/50 transition-all duration-300"
+            className="hidden sm:flex absolute left-3 sm:left-4 md:left-6 top-1/2 -translate-y-1/2 z-30 w-8 h-8 sm:w-10 sm:h-10 items-center justify-center bg-black/40 backdrop-blur-sm border border-white/10 text-white/70 hover:text-white hover:bg-black/60 transition-all rounded-full"
             aria-label="Previous banner"
           >
-            <IconChevronLeft className="h-4 w-4 sm:h-6 sm:w-6" stroke={1.5} />
+            <IconChevronLeft className="h-4 w-4 sm:h-5 sm:w-5" stroke={1.5} />
           </button>
           <button
             onClick={next}
-            className="absolute right-3 sm:right-4 md:right-8 top-1/2 -translate-y-1/2 z-30 w-9 h-9 sm:w-12 sm:h-12 flex items-center justify-center bg-black/30 backdrop-blur-sm border border-white/10 text-white/60 hover:text-white hover:bg-black/50 transition-all duration-300"
+            className="hidden sm:flex absolute right-3 sm:right-4 md:right-6 top-1/2 -translate-y-1/2 z-30 w-8 h-8 sm:w-10 sm:h-10 items-center justify-center bg-black/40 backdrop-blur-sm border border-white/10 text-white/70 hover:text-white hover:bg-black/60 transition-all rounded-full"
             aria-label="Next banner"
           >
-            <IconChevronRight className="h-4 w-4 sm:h-6 sm:w-6" stroke={1.5} />
+            <IconChevronRight className="h-4 w-4 sm:h-5 sm:w-5" stroke={1.5} />
           </button>
 
-          <div className="absolute bottom-8 left-1/2 -translate-x-1/2 z-30 flex items-center gap-3">
+          {/* Dots Indicator */}
+          <div className="absolute bottom-3.5 sm:bottom-6 left-1/2 -translate-x-1/2 z-30 flex items-center gap-2">
             {banners.map((_, i) => (
               <button
                 key={i}
                 onClick={() => goTo(i)}
                 aria-label={`Go to slide ${i + 1}`}
-                className={`transition-all duration-300 ${
+                className={`transition-all duration-300 rounded-full ${
                   i === currentIndex
-                    ? "w-8 h-2 bg-neutral-900"
-                    : "w-2 h-2 bg-white/30 hover:bg-white/50"
+                    ? "w-6 sm:w-7 h-1.5 bg-white"
+                    : "w-1.5 sm:w-2 h-1.5 bg-white/40 hover:bg-white/60"
                 }`}
               />
             ))}
@@ -345,14 +346,14 @@ export default function MwpHeroSection() {
 
       {/* -------- slide counter -------- */}
       <div className="absolute bottom-0 left-0 right-0 z-10">
-        <div className="w-full px-5 sm:px-10 md:px-16 lg:px-20 xl:px-24 pb-4 sm:pb-6 md:pb-8 flex items-end justify-end">
-          <span className="text-[8px] sm:text-[9px] uppercase tracking-[0.25em] sm:tracking-[0.35em] text-white/25">
+        <div className="w-full px-4 sm:px-10 md:px-16 lg:px-20 xl:px-24 pb-2.5 sm:pb-4 md:pb-5 flex items-end justify-end">
+          <span className="text-[8px] sm:text-[9px] uppercase tracking-[0.25em] sm:tracking-[0.35em] text-white/40 font-medium">
             {String(currentIndex + 1).padStart(2, "0")} / {String(banners.length).padStart(2, "0")}
           </span>
         </div>
       </div>
 
-      <div className="absolute bottom-0 left-0 right-0 h-32 z-[5] bg-gradient-to-t from-[#09090b] to-transparent pointer-events-none" />
+      <div className="absolute bottom-0 left-0 right-0 h-14 sm:h-20 z-[5] bg-gradient-to-t from-[#09090b] to-transparent pointer-events-none" />
     </section>
   );
 }

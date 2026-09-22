@@ -219,57 +219,61 @@ export default function HomePageContent() {
         s.slug?.toLowerCase().replace(/-/g, "") === key.toLowerCase()
     );
 
+    const cleanDesc = (text) => {
+      if (!text || /jewel|handcrafted piece|custom and handcrafted/i.test(text)) {
+        return defaultBanner.dateText;
+      }
+      return text;
+    };
+
     const banner = {
       ...defaultBanner,
-      tag: dbSection?.name || defaultBanner.tag,
+      tag: dbSection?.name && !/jewel/i.test(dbSection.name) ? dbSection.name : defaultBanner.tag,
       title: dbSection?.title || defaultBanner.title,
       subtitle: defaultBanner.subtitle,
-      dateText: dbSection?.description || defaultBanner.dateText,
+      dateText: cleanDesc(dbSection?.description),
     };
 
     return (
       <section
         key={key}
-        className={`py-12 md:py-16 overflow-hidden ${
-          "bg-white"
-        } border-b border-gray-100`}
+        className="py-10 md:py-14 overflow-hidden bg-white border-b border-gray-100"
       >
-        <div className="max-w-7xl mx-auto px-5 md:px-8 lg:px-10">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <Reveal>
-            {/* Centered 2-color heading */}
-            <div className="text-center mb-10 md:mb-12">
-              <div className="inline-flex items-center gap-2.5 mb-4">
-                <span className="h-px w-8 bg-neutral-500/40" />
-                <span className="text-[10px] uppercase tracking-[0.3em] text-neutral-900 font-bold">
-                  {banner.tag}
-                </span>
-                <span className="h-px w-8 bg-neutral-500/40" />
+            {/* Section Header with Top-Right "View All" */}
+            <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-3 sm:gap-4 mb-6 sm:mb-8 pb-4 border-b border-gray-100">
+              <div>
+                <div className="inline-flex items-center gap-2 mb-1.5 sm:mb-2">
+                  <span className="h-1.5 w-1.5 rounded-full bg-neutral-900" />
+                  <span className="text-[10px] sm:text-[11px] uppercase tracking-[0.25em] text-neutral-600 font-bold">
+                    {banner.tag}
+                  </span>
+                </div>
+                <h2 className="text-2xl sm:text-3xl md:text-4xl font-extrabold tracking-tight text-neutral-950 uppercase">
+                  {banner.title}{" "}
+                  {banner.subtitle && <span>{banner.subtitle}</span>}
+                </h2>
+                {banner.dateText && (
+                  <p className="text-xs sm:text-sm text-neutral-500 mt-1 font-normal max-w-lg">
+                    {banner.dateText}
+                  </p>
+                )}
               </div>
-              <h2 className="text-3xl sm:text-4xl md:text-5xl font-extrabold tracking-tight leading-tight text-gray-900">
-                {banner.title}{" "}
-                {banner.subtitle && <span className="text-neutral-900">{banner.subtitle}</span>}
-              </h2>
-              {banner.dateText && (
-                <p className="text-[15px] text-gray-500 mt-3.5 font-light max-w-xl mx-auto leading-relaxed">
-                  {banner.dateText}
-                </p>
-              )}
-            </div>
 
-            <ProductCarousel products={sectionProducts || []} isLoading={loading} />
-
-            <div className="text-center mt-9">
               <Link
                 href={banner.linkUrl}
-                className="inline-flex items-center gap-2 px-7 py-3 border-2 border-gray-900 text-gray-900 text-[12px] uppercase tracking-[0.12em] font-bold hover:bg-gray-900 hover:text-white transition-colors group/link"
+                className="inline-flex items-center gap-1.5 text-xs sm:text-sm font-bold tracking-wider uppercase text-neutral-900 hover:text-neutral-600 transition-colors group self-start sm:self-end shrink-0"
               >
-                View All
+                <span>View All</span>
                 <IconArrowRight
-                  className="h-4 w-4 transition-transform group-hover/link:translate-x-1"
+                  className="h-4 w-4 transition-transform group-hover:translate-x-1"
                   stroke={2}
                 />
               </Link>
             </div>
+
+            <ProductCarousel products={sectionProducts || []} isLoading={loading} />
           </Reveal>
         </div>
       </section>
