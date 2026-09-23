@@ -192,15 +192,18 @@ export function Navbar() {
             )}
           >
             {/* 1. Left — Brand Logo */}
-            <Link href="/" className="flex items-center shrink-0">
+            <Link
+              href="/"
+              className="flex items-center shrink-0 focus-visible:outline-none focus:outline-none"
+            >
               <Image
                 src="/logo.png"
                 alt="MWP SUPPLEMENTS"
-                width={160}
-                height={60}
+                width={200}
+                height={72}
                 className={cn(
-                  "w-auto object-contain transition-all duration-300",
-                  scrolled ? "h-7 sm:h-9" : "h-8 sm:h-10 md:h-11"
+                  "w-auto object-contain transition-all duration-300 focus-visible:outline-none focus:outline-none",
+                  scrolled ? "h-9 sm:h-10" : "h-10 sm:h-12 md:h-14"
                 )}
                 priority
               />
@@ -309,11 +312,11 @@ export function Navbar() {
             </nav>
 
             {/* 3. Right — Action Buttons */}
-            <div className="flex items-center gap-1 sm:gap-2 shrink-0">
+            <div className="flex items-center gap-0.5 sm:gap-1 shrink-0 pl-2">
               {/* Search button — opens interactive live search dialog */}
               <button
                 onClick={() => setIsSearchOpen(true)}
-                className="flex items-center justify-center w-9 h-9 sm:w-10 sm:h-10 text-neutral-300 hover:text-white hover:bg-white/10 active:scale-95 transition-all rounded-md"
+                className="flex items-center justify-center w-9 h-9 sm:w-9 sm:h-9 text-neutral-300 hover:text-white hover:bg-white/10 active:scale-95 transition-all rounded-md"
                 aria-label="Search"
                 title="Search products"
               >
@@ -324,7 +327,7 @@ export function Navbar() {
                 {isAuthenticated ? (
                   <Link
                     href="/account"
-                    className="hidden sm:flex items-center justify-center w-9 h-9 sm:w-10 sm:h-10 hover:bg-white/10 transition-colors rounded-md"
+                    className="hidden sm:flex items-center justify-center w-9 h-9 hover:bg-white/10 transition-colors rounded-md"
                     aria-label="Account"
                   >
                     <AvatarCircle name={user?.name} size="sm" />
@@ -332,7 +335,7 @@ export function Navbar() {
                 ) : (
                   <Link
                     href="/auth"
-                    className="hidden sm:flex items-center justify-center w-9 h-9 sm:w-10 sm:h-10 text-neutral-300 hover:text-white hover:bg-white/10 transition-colors rounded-md"
+                    className="hidden sm:flex items-center justify-center w-9 h-9 text-neutral-300 hover:text-white hover:bg-white/10 transition-colors rounded-md"
                     aria-label="Login"
                   >
                     <IconUser className="h-4.5 w-4.5 sm:h-5 sm:w-5" stroke={2} />
@@ -342,7 +345,7 @@ export function Navbar() {
 
               <Link
                 href="/compare"
-                className="hidden xl:flex relative items-center justify-center w-9 h-9 sm:w-10 sm:h-10 text-neutral-300 hover:text-white hover:bg-white/10 transition-colors rounded-md"
+                className="hidden xl:flex relative items-center justify-center w-9 h-9 text-neutral-300 hover:text-white hover:bg-white/10 transition-colors rounded-md"
                 aria-label="Compare"
               >
                 <IconGitCompare className="h-4.5 w-4.5 sm:h-5 sm:w-5" stroke={2} />
@@ -355,7 +358,7 @@ export function Navbar() {
 
               <Link
                 href="/wishlist"
-                className="hidden xl:flex items-center justify-center w-9 h-9 sm:w-10 sm:h-10 text-neutral-300 hover:text-white hover:bg-white/10 transition-colors rounded-md"
+                className="hidden xl:flex items-center justify-center w-9 h-9 text-neutral-300 hover:text-white hover:bg-white/10 transition-colors rounded-md"
                 aria-label="Wishlist"
               >
                 <IconHeart className="h-4.5 w-4.5 sm:h-5 sm:w-5" stroke={2} />
@@ -364,7 +367,7 @@ export function Navbar() {
               <ClientOnly>
                 <Link
                   href="/cart"
-                  className="relative flex items-center justify-center w-9 h-9 sm:w-10 sm:h-10 bg-white/[0.06] border border-white/10 text-white hover:bg-white hover:text-black hover:border-white active:scale-95 transition-all rounded-md"
+                  className="relative flex items-center justify-center w-9 h-9 bg-white/[0.06] border border-white/10 text-white hover:bg-white hover:text-black hover:border-white active:scale-95 transition-all rounded-md"
                   aria-label="Cart"
                 >
                   <IconShoppingBag className="h-4.5 w-4.5 sm:h-5 sm:w-5" stroke={2} />
@@ -379,7 +382,7 @@ export function Navbar() {
               {/* Mobile Menu Button with clear tap target */}
               <button
                 onClick={() => setIsMenuOpen(true)}
-                className="lg:hidden flex items-center justify-center w-9 h-9 sm:w-10 sm:h-10 bg-white/[0.06] border border-white/10 text-white hover:bg-white/10 active:scale-95 transition-all rounded-md ml-0.5"
+                className="lg:hidden flex items-center justify-center w-9 h-9 bg-white/[0.06] border border-white/10 text-white hover:bg-white/10 active:scale-95 transition-all rounded-md ml-0.5"
                 aria-label="Toggle Menu"
               >
                 <IconMenu2 className="h-5 w-5" stroke={2} />

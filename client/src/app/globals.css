@@ -108,6 +108,11 @@
     outline: 1px solid var(--gold);
     outline-offset: 2px;
   }
+  a:focus-visible,
+  a:focus,
+  img:focus-visible {
+    outline: none;
+  }
 }
 
 /* ── Typography ───────────────────────── */
