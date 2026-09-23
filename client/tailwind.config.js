@@ -1,5 +1,7 @@
+import animate from "tailwindcss-animate";
+
 /** @type {import('tailwindcss').Config} */
-module.exports = {
+export default {
 	darkMode: ["class"],
 	content: [
 		"./src/pages/**/*.{js,ts,jsx,tsx,mdx}",
@@ -12,6 +14,7 @@ module.exports = {
 				sans: ['Acumin Pro', 'sans-serif'],
 				display: ['var(--font-display)', 'Playfair Display', 'Georgia', 'serif'],
 				heading: ['var(--font-display)', 'Playfair Display', 'Georgia', 'serif'],
+				serif: ['var(--font-display)', 'Playfair Display', 'Georgia', 'serif'],
 			},
 			letterSpacing: {
 				luxe: '0.2em',
@@ -53,9 +56,9 @@ module.exports = {
 				input: 'hsl(var(--input))',
 				ring: 'hsl(var(--ring))',
 				mwp: {
-					red: '#EF4444',
-					redDark: '#DC2626',
-					crimson: '#991B1B',
+					red: '#C9A227',
+					redDark: '#A6841C',
+					crimson: '#8B6914',
 					black: '#09090B',
 					carbon: '#121216',
 					steel: '#27272A',
@@ -72,12 +75,12 @@ module.exports = {
 					dark: '#121216',
 					heading: '#09090B',
 					paragraph: '#52525B',
-					red: '#EF4444',
-					gold: '#E2E8F0',
-					goldLight: '#F8FAFC',
-					goldDark: '#94A3B8',
+					red: '#C9A227',
+					gold: '#C9A227',
+					goldLight: '#E5C56A',
+					goldDark: '#8B6914',
 					success: '#10B981',
-					error: '#EF4444',
+					error: '#C9A227',
 				},
 				noir: {
 					DEFAULT: '#09090B',
@@ -90,9 +93,32 @@ module.exports = {
 					warm: '#FFFFFF',
 				},
 				gold: {
-					DEFAULT: '#E2E8F0',
-					light: '#F8FAFC',
-					dark: '#94A3B8',
+					DEFAULT: '#C9A227',
+					light: '#E5C56A',
+					dark: '#8B6914',
+					50: '#FBF7EA',
+					100: '#F5ECCF',
+					200: '#EBD9A0',
+					300: '#E0C46E',
+					400: '#D4AF37',
+					500: '#C9A227',
+					600: '#A6841C',
+					700: '#8B6914',
+					800: '#6B5010',
+					900: '#4A370B',
+				},
+				red: {
+					50: '#FBF7EA',
+					100: '#F5ECCF',
+					200: '#EBD9A0',
+					300: '#E0C46E',
+					400: '#D4AF37',
+					500: '#C9A227',
+					600: '#A6841C',
+					700: '#8B6914',
+					800: '#6B5010',
+					900: '#4A370B',
+					950: '#2E2206',
 				},
 				stone: {
 					DEFAULT: '#71717A',
@@ -156,5 +182,5 @@ module.exports = {
 			},
 		}
 	},
-	plugins: [require("tailwindcss-animate")],
+	plugins: [animate],
 };

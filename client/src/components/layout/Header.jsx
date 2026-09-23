@@ -22,23 +22,34 @@ import {
   IconBrandInstagram,
   IconBrandFacebook,
   IconArrowUpRight,
-  IconHome,
-  IconBuildingStore,
-  IconCategory,
-  IconInfoCircle,
   IconChevronDown,
   IconChevronRight,
   IconShieldCheck,
   IconTruck,
   IconGitCompare,
+  IconLeaf,
+  IconSchool,
+  IconWriting,
+  IconCertificate,
 } from "@tabler/icons-react";
 import { useCompare } from "@/lib/compare-context";
+import { useLanguage } from "@/lib/language-context";
+
+const PRODUCT_MENU = [
+  { href: "/products?search=Ultra%20Pro", label: "MWP Ultra Pro" },
+  { href: "/products?search=Power%20Max", label: "MWP Power Max" },
+  { href: "/products?search=Rapid%20Boost", label: "MWP Rapid Boost" },
+  { href: "/products?search=Her%20Power", label: "MWP Her Power" },
+  { href: "/products?search=Her%20Energy", label: "MWP Her Energy" },
+  { href: "/products?search=Daily%20Vitality", label: "MWP Daily Vitality" },
+];
 
 const NAV_LINKS = [
-  { href: "/", label: "Home", icon: IconHome },
-  { href: "/products", label: "Shop All", icon: IconBuildingStore },
-  { href: "/why-us", label: "Why MWP", icon: IconInfoCircle },
-  { href: "/contact", label: "Contact", icon: IconPhone },
+  { href: "/ingredients", labelKey: "ingredients", icon: IconLeaf },
+  { href: "/university", labelKey: "university", icon: IconSchool },
+  { href: "/founder", labelKey: "founderLetter", icon: IconWriting },
+  { href: "/certificates", labelKey: "certificateWall", icon: IconCertificate },
+  { href: "/contact", labelKey: "contact", icon: IconPhone },
 ];
 
 const ANNOUNCEMENTS = [
@@ -67,13 +78,14 @@ export function Navbar() {
   const { user, isAuthenticated, logout } = useAuth();
   const { count: compareCount } = useCompare();
   const { getCartItemCount } = useCart();
+  const { t } = useLanguage();
   const router = useRouter();
   const pathname = usePathname();
 
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [categories, setCategories] = useState([]);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
-  const [isCatOpen, setIsCatOpen] = useState(false);
+  const [isProductsOpen, setIsProductsOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
 
   const catCloseTimer = useRef(null);
@@ -85,18 +97,18 @@ export function Navbar() {
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
-  const openCat = () => {
+  const openProducts = () => {
     if (catCloseTimer.current) clearTimeout(catCloseTimer.current);
-    setIsCatOpen(true);
+    setIsProductsOpen(true);
   };
-  const closeCatSoon = () => {
-    catCloseTimer.current = setTimeout(() => setIsCatOpen(false), 150);
+  const closeProductsSoon = () => {
+    catCloseTimer.current = setTimeout(() => setIsProductsOpen(false), 150);
   };
 
   useEffect(() => {
     setIsMenuOpen(false);
     setIsSearchOpen(false);
-    setIsCatOpen(false);
+    setIsProductsOpen(false);
   }, [pathname]);
 
   useEffect(() => {
@@ -195,111 +207,101 @@ export function Navbar() {
             </Link>
 
             {/* 2. Center — Navigation Menu (Desktop & Laptop) */}
-            <nav className="hidden lg:flex items-center gap-1 xl:gap-2">
-              {/* All Categories Trigger + Mega Dropdown */}
-              {categories.length > 0 && (
-                <div className="relative" onMouseEnter={openCat} onMouseLeave={closeCatSoon}>
-                  <button
-                    onClick={() => setIsCatOpen((v) => !v)}
+            <nav className="hidden lg:flex flex-1 min-w-0 items-center justify-center gap-0 xl:gap-0.5 2xl:gap-1">
+              {/* ALL PRODUCTS dropdown */}
+              <div
+                className="relative"
+                onMouseEnter={openProducts}
+                onMouseLeave={closeProductsSoon}
+              >
+                <button
+                  onClick={() => setIsProductsOpen((v) => !v)}
+                  className={cn(
+                    "flex items-center gap-1 px-1.5 xl:px-2 2xl:px-2.5 py-2 text-[11px] xl:text-[11.5px] 2xl:text-[12px] font-bold uppercase tracking-tight 2xl:tracking-wide transition-all rounded-md whitespace-nowrap",
+                    isProductsOpen || pathname === "/products"
+                      ? "bg-white/10 text-white"
+                      : "text-neutral-200 hover:text-white hover:bg-white/[0.06]"
+                  )}
+                  aria-haspopup="true"
+                  aria-expanded={isProductsOpen}
+                >
+                  {t("allProducts")}
+                  <IconChevronDown
                     className={cn(
-                      "flex items-center gap-1.5 px-3 py-2 text-[12px] xl:text-[12.5px] font-bold uppercase tracking-wider transition-all rounded-md",
-                      isCatOpen
-                        ? "bg-white/10 text-white"
-                        : "text-neutral-200 hover:text-white hover:bg-white/[0.06]"
+                      "h-3.5 w-3.5 transition-transform duration-200",
+                      isProductsOpen && "rotate-180"
                     )}
-                    aria-haspopup="true"
-                    aria-expanded={isCatOpen}
-                  >
-                    <IconCategory className="h-4 w-4 text-white/80" stroke={2} />
-                    All Categories
-                    <IconChevronDown
-                      className={cn(
-                        "h-3.5 w-3.5 transition-transform duration-200",
-                        isCatOpen && "rotate-180"
-                      )}
-                      stroke={2.5}
-                    />
-                  </button>
+                    stroke={2.5}
+                  />
+                </button>
 
-                  <AnimatePresence>
-                    {isCatOpen && (
-                      <motion.div
-                        initial={{ opacity: 0, y: 8, scale: 0.98 }}
-                        animate={{ opacity: 1, y: 0, scale: 1 }}
-                        exit={{ opacity: 0, y: 8, scale: 0.98 }}
-                        transition={{ duration: 0.16, ease: [0.22, 1, 0.36, 1] }}
-                        className="absolute left-0 top-full mt-2 w-[540px] max-w-[85vw] bg-[#101012] border border-white/10 rounded-lg shadow-[0_24px_60px_-12px_rgba(0,0,0,0.85)] overflow-hidden z-[70]"
-                      >
-                        <div className="px-5 pt-3.5 pb-2.5 flex items-center justify-between border-b border-white/[0.06] bg-white/[0.02]">
-                          <span className="text-[10px] uppercase tracking-[0.28em] text-white font-bold">
-                            Shop by Category
-                          </span>
-                          <Link
-                            href="/categories"
-                            onClick={() => setIsCatOpen(false)}
-                            className="text-[10px] uppercase tracking-[0.15em] text-neutral-400 hover:text-white transition-colors inline-flex items-center gap-1"
-                          >
-                            View all <IconArrowUpRight className="h-3 w-3" />
-                          </Link>
-                        </div>
-                        <div className="max-h-[360px] overflow-y-auto p-2.5 grid grid-cols-2 gap-1.5">
-                          {categories.map((c) => {
-                            const href = `/category/${c.slug}`;
-                            const active = pathname === href;
-                            return (
-                              <Link
-                                key={c.id}
-                                href={href}
-                                onClick={() => setIsCatOpen(false)}
-                                className={cn(
-                                  "group/cat flex items-center justify-between gap-2 px-3 py-2.5 text-[12px] font-semibold transition-all rounded",
-                                  active
-                                    ? "bg-white/15 text-white font-bold"
-                                    : "text-neutral-300 hover:bg-white/[0.06] hover:text-white"
-                                )}
-                              >
-                                <span className="flex items-center gap-2 min-w-0">
-                                  <span
-                                    className={cn(
-                                      "w-1.5 h-1.5 rounded-full shrink-0 transition-colors",
-                                      active ? "bg-white" : "bg-white/30 group-hover/cat:bg-white"
-                                    )}
-                                  />
-                                  <span className="truncate">{c.name}</span>
-                                </span>
-                                {c._count?.products ? (
-                                  <span className="shrink-0 text-[10px] text-neutral-400 font-medium bg-white/[0.05] px-1.5 py-0.5 rounded">
-                                    {c._count.products}
-                                  </span>
-                                ) : null}
-                              </Link>
-                            );
-                          })}
-                        </div>
-                      </motion.div>
-                    )}
-                  </AnimatePresence>
-                </div>
-              )}
+                <AnimatePresence>
+                  {isProductsOpen && (
+                    <motion.div
+                      initial={{ opacity: 0, y: 8, scale: 0.98 }}
+                      animate={{ opacity: 1, y: 0, scale: 1 }}
+                      exit={{ opacity: 0, y: 8, scale: 0.98 }}
+                      transition={{ duration: 0.16, ease: [0.22, 1, 0.36, 1] }}
+                      className="absolute left-0 top-full mt-2 w-[320px] max-w-[85vw] bg-[#101012] border border-white/10 rounded-lg shadow-[0_24px_60px_-12px_rgba(0,0,0,0.85)] overflow-hidden z-[70]"
+                    >
+                      <div className="px-4 pt-3.5 pb-2.5 border-b border-white/[0.06] bg-white/[0.02]">
+                        <span className="text-[10px] uppercase tracking-[0.28em] text-[color:var(--gold)] font-bold">
+                          {t("allProducts")}
+                        </span>
+                      </div>
+                      <div className="p-2 space-y-0.5 max-h-[360px] overflow-y-auto">
+                        {PRODUCT_MENU.map((item) => {
+                          const active = pathname === item.href;
+                          return (
+                            <Link
+                              key={item.href}
+                              href={item.href}
+                              onClick={() => setIsProductsOpen(false)}
+                              className={cn(
+                                "flex items-center justify-between gap-2 px-3 py-2.5 text-[12.5px] font-semibold transition-all rounded",
+                                active
+                                  ? "bg-white/15 text-white font-bold"
+                                  : "text-neutral-300 hover:bg-white/[0.06] hover:text-white"
+                              )}
+                            >
+                              <span className="truncate">{item.label}</span>
+                              <IconChevronRight className="h-3.5 w-3.5 opacity-40 shrink-0" />
+                            </Link>
+                          );
+                        })}
+                      </div>
+                      <div className="px-3 py-2.5 border-t border-white/[0.06]">
+                        <Link
+                          href="/products"
+                          onClick={() => setIsProductsOpen(false)}
+                          className="text-[10px] uppercase tracking-[0.15em] text-neutral-400 hover:text-white transition-colors inline-flex items-center gap-1"
+                        >
+                          {t("viewAll")} <IconArrowUpRight className="h-3 w-3" />
+                        </Link>
+                      </div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </div>
 
-              <span className="w-px h-4 bg-white/10 mx-1" />
+              <span className="hidden 2xl:block w-px h-4 bg-white/10 mx-1" />
 
-              {NAV_LINKS.map(({ href, label }) => {
+              {NAV_LINKS.map(({ href, labelKey }) => {
                 const active = pathname === href;
                 return (
                   <Link
                     key={href}
                     href={href}
                     className={cn(
-                      "relative px-3 py-2 text-[12px] xl:text-[12.5px] font-bold uppercase tracking-wider transition-all rounded-md whitespace-nowrap",
+                      "relative px-1.5 xl:px-2 2xl:px-2.5 py-2 text-[11px] xl:text-[11.5px] 2xl:text-[12px] font-bold uppercase tracking-tight 2xl:tracking-wide transition-all rounded-md whitespace-nowrap",
                       active
                         ? "text-white bg-white/10"
                         : "text-neutral-300 hover:text-white hover:bg-white/[0.06]"
                     )}
                   >
-                    {label}
+                    {t(labelKey)}
                     {active && (
-                      <span className="absolute bottom-0 left-2.5 right-2.5 h-[2px] bg-white rounded-full" />
+                      <span className="absolute bottom-0 left-1.5 right-1.5 h-[2px] bg-[color:var(--gold)] rounded-full" />
                     )}
                   </Link>
                 );
@@ -340,7 +342,7 @@ export function Navbar() {
 
               <Link
                 href="/compare"
-                className="hidden sm:flex relative items-center justify-center w-9 h-9 sm:w-10 sm:h-10 text-neutral-300 hover:text-white hover:bg-white/10 transition-colors rounded-md"
+                className="hidden xl:flex relative items-center justify-center w-9 h-9 sm:w-10 sm:h-10 text-neutral-300 hover:text-white hover:bg-white/10 transition-colors rounded-md"
                 aria-label="Compare"
               >
                 <IconGitCompare className="h-4.5 w-4.5 sm:h-5 sm:w-5" stroke={2} />
@@ -353,7 +355,7 @@ export function Navbar() {
 
               <Link
                 href="/wishlist"
-                className="hidden sm:flex items-center justify-center w-9 h-9 sm:w-10 sm:h-10 text-neutral-300 hover:text-white hover:bg-white/10 transition-colors rounded-md"
+                className="hidden xl:flex items-center justify-center w-9 h-9 sm:w-10 sm:h-10 text-neutral-300 hover:text-white hover:bg-white/10 transition-colors rounded-md"
                 aria-label="Wishlist"
               >
                 <IconHeart className="h-4.5 w-4.5 sm:h-5 sm:w-5" stroke={2} />
@@ -658,7 +660,8 @@ function MobileMenu({
   pathname,
   onOpenSearch,
 }) {
-  const [catsExpanded, setCatsExpanded] = useState(true);
+  const { t } = useLanguage();
+  const [productsExpanded, setProductsExpanded] = useState(true);
 
   return (
     <AnimatePresence>
@@ -786,14 +789,51 @@ function MobileMenu({
               </ClientOnly>
             </div>
 
-            {/* 4. Scrollable Navigation & Categories */}
+            {/* 4. Scrollable Navigation */}
             <div className="flex-1 overflow-y-auto p-3.5 space-y-4">
-              {/* Main Nav Links */}
+              {/* ALL PRODUCTS group */}
               <div className="space-y-1">
+                <button
+                  type="button"
+                  onClick={() => setProductsExpanded((v) => !v)}
+                  className="w-full flex items-center justify-between px-2 mb-1.5 text-[10px] uppercase tracking-widest font-extrabold text-neutral-500"
+                >
+                  <span>{t("allProducts")}</span>
+                  <IconChevronDown
+                    className={cn(
+                      "h-3.5 w-3.5 transition-transform",
+                      productsExpanded && "rotate-180"
+                    )}
+                  />
+                </button>
+                {productsExpanded &&
+                  PRODUCT_MENU.map(({ href, label }) => {
+                    const active = pathname === href;
+                    return (
+                      <Link
+                        key={href}
+                        href={href}
+                        onClick={onClose}
+                        className={cn(
+                          "flex items-center justify-between py-2 px-3 text-xs font-bold uppercase tracking-wider transition-colors rounded-md",
+                          active
+                            ? "text-white bg-white/10 font-extrabold"
+                            : "text-neutral-300 hover:text-white hover:bg-white/5"
+                        )}
+                      >
+                        <span className="truncate">{label}</span>
+                        <IconChevronRight className="h-3.5 w-3.5 opacity-40" />
+                      </Link>
+                    );
+                  })}
+              </div>
+
+              {/* Primary nav */}
+              <div className="space-y-1 pt-2 border-t border-white/[0.08]">
                 <p className="text-[10px] uppercase tracking-widest font-extrabold text-neutral-500 px-2 mb-1.5">
                   Menu
                 </p>
-                {NAV_LINKS.map(({ href, label, icon: Icon }) => {
+                {NAV_LINKS.map(({ href, labelKey, icon: Icon }) => {
                   const active = pathname === href;
                   return (
                     <Link
@@ -808,8 +848,10 @@ function MobileMenu({
                       )}
                     >
                       <div className="flex items-center gap-2.5">
-                        {Icon && <Icon className="h-4 w-4 text-white/80" stroke={2} />}
-                        <span>{label}</span>
+                        {Icon && (
+                          <Icon className="h-4 w-4 text-[color:var(--gold)]" stroke={2} />
+                        )}
+                        <span>{t(labelKey)}</span>
                       </div>
                       <IconChevronRight className="h-3.5 w-3.5 opacity-40" />
                     </Link>
@@ -822,14 +864,14 @@ function MobileMenu({
                 <div className="pt-2 border-t border-white/[0.08]">
                   <div className="flex items-center justify-between px-2 mb-2">
                     <span className="text-[10px] uppercase tracking-widest font-extrabold text-neutral-500">
-                      All Categories
+                      {t("categories")}
                     </span>
                     <Link
                       href="/categories"
                       onClick={onClose}
                       className="text-[10px] uppercase font-bold text-neutral-400 hover:text-white inline-flex items-center gap-0.5"
                     >
-                      View All <IconArrowUpRight className="h-3 w-3" />
+                      {t("viewAll")} <IconArrowUpRight className="h-3 w-3" />
                     </Link>
                   </div>
 

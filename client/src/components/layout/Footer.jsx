@@ -12,37 +12,58 @@ import {
   IconBrandInstagram,
   IconBrandFacebook,
   IconBrandWhatsapp,
+  IconLeaf,
+  IconFlask2,
   IconShieldCheck,
-  IconTruck,
-  IconCertificate,
-  IconRotateClockwise,
+  IconTrophy,
   IconArrowRight,
 } from "@tabler/icons-react";
+import { useLanguage } from "@/lib/language-context";
 
 const WHATSAPP_NUMBER = "917678336268";
 
-const TRUST = [
-  { icon: IconShieldCheck, label: "3rd-Party Lab Tested" },
-  { icon: IconCertificate, label: "GMP & FSSAI Certified" },
-  { icon: IconTruck, label: "Free Shipping ₹999+" },
-  { icon: IconRotateClockwise, label: "7-Day Easy Returns" },
-];
-
 export const Footer = () => {
-  const [categories, setCategories] = useState([]);
+  const { t } = useLanguage();
   const [email, setEmail] = useState("");
   const [subscribed, setSubscribed] = useState(false);
 
-  useEffect(() => {
-    fetchApi("/public/categories")
-      .then((res) => setCategories((res.data?.categories || []).slice(0, 6)))
-      .catch(console.error);
-  }, []);
-
-  const shopLinks = [
-    ...categories.map((c) => ({ label: c.name, href: `/category/${c.slug}` })),
-    { label: "Shop All", href: "/products" },
+  const TRUST = [
+    { icon: IconLeaf, label: t("premiumIngredients") },
+    { icon: IconFlask2, label: t("qualityTested") },
+    { icon: IconShieldCheck, label: t("trustedFormula") },
+    { icon: IconTrophy, label: t("madeForResults") },
   ];
+
+  const productLinks = [
+    { label: "MWP Ultra Pro", href: "/products?search=ultra%20pro" },
+    { label: "MWP Power Max", href: "/products?search=power%20max" },
+    { label: "MWP Rapid Boost", href: "/products?search=rapid%20boost" },
+    { label: "MWP Her Power", href: "/products?search=her%20power" },
+    { label: "MWP Her Energy", href: "/products?search=her%20energy" },
+    { label: "MWP Daily Vitality", href: "/products?search=daily" },
+  ];
+
+  const companyLinks = [
+    { label: t("ingredients"), href: "/ingredients" },
+    { label: t("university"), href: "/university" },
+    { label: t("founderLetter"), href: "/founder" },
+    { label: t("certificateWall"), href: "/certificates" },
+    { label: t("findYourFormula"), href: "/quiz" },
+    { label: t("contact"), href: "/contact" },
+  ];
+
+  const careLinks = [
+    { label: t("returnPolicy"), href: "/return-policy" },
+    { label: "Shipping Policy", href: "/shipping-policy" },
+    { label: "Privacy Policy", href: "/privacy-policy" },
+    { label: "Terms of Service", href: "/terms" },
+    { label: "FAQs", href: "/faqs" },
+    { label: "Track Order", href: "/account/orders" },
+  ];
+
+  useEffect(() => {
+    // keep newsletter endpoint warm-check optional; no category fetch needed
+  }, []);
 
   const handleSubscribe = async (e) => {
     e.preventDefault();
@@ -69,7 +90,7 @@ export const Footer = () => {
         <div className="max-w-7xl mx-auto px-5 md:px-8 lg:px-10 grid grid-cols-2 md:grid-cols-4 divide-x divide-white/[0.06]">
           {TRUST.map(({ icon: Icon, label }) => (
             <div key={label} className="flex items-center justify-center gap-2.5 py-5 px-3 text-center">
-              <Icon className="h-5 w-5 text-white shrink-0" stroke={1.75} />
+              <Icon className="h-5 w-5 text-red-500 shrink-0" stroke={1.75} />
               <span className="text-[11px] sm:text-[12px] font-bold uppercase tracking-wider text-neutral-300">
                 {label}
               </span>
@@ -83,7 +104,7 @@ export const Footer = () => {
         <div className="max-w-7xl mx-auto px-5 md:px-8 lg:px-10 py-10 flex flex-col lg:flex-row lg:items-center gap-6 lg:gap-10">
           <div className="flex-1">
             <h3 className="text-xl sm:text-2xl font-extrabold tracking-tight">
-              Join the <span className="text-white">MWP Performance Club</span>
+              Join the <span className="text-red-500">MWP Performance Club</span>
             </h3>
             <p className="text-[13px] text-neutral-400 mt-1.5">
               Get latest updates and offers
@@ -108,7 +129,7 @@ export const Footer = () => {
               </div>
               <button
                 type="submit"
-                className="shrink-0 h-12 px-5 bg-neutral-800 hover:bg-neutral-700 text-white text-[12px] font-bold uppercase tracking-wider inline-flex items-center gap-2 transition-colors"
+                className="shrink-0 h-12 px-5 bg-red-600 hover:bg-red-500 text-white text-[12px] font-bold uppercase tracking-wider inline-flex items-center gap-2 transition-colors"
               >
                 Subscribe <IconArrowRight className="h-4 w-4" />
               </button>
@@ -125,9 +146,12 @@ export const Footer = () => {
             <Link href="/" className="inline-block mb-5">
               <Image src="/logo.png" alt="MWP SUPPLEMENTS" width={180} height={72} className="h-11 w-auto object-contain" />
             </Link>
-            <p className="text-[13px] text-neutral-400 leading-relaxed mb-6 max-w-sm">
-              MWP SUPPLEMENTS — Men | Women | Power. Clinical-grade performance nutrition
-              engineered for stamina, hormonal vitality, and clean power.
+            <p className="text-[13px] text-neutral-400 leading-relaxed mb-2 max-w-sm">
+              MWP SUPPLEMENTS — Men | Women | Power. Premium global wellness formulas
+              engineered for vitality, performance and clean daily power.
+            </p>
+            <p className="text-[11px] uppercase tracking-[0.28em] font-bold text-red-400 mb-6">
+              Men • Women • Power
             </p>
             <div className="flex gap-2.5">
               {[
@@ -149,29 +173,25 @@ export const Footer = () => {
             </div>
           </div>
 
-          {/* Shop */}
-          <FooterCol title="Shop">
-            {shopLinks.map((l) => (
+          {/* Products */}
+          <FooterCol title={t("products")}>
+            {productLinks.map((l) => (
               <FooterLink key={l.label} href={l.href}>{l.label}</FooterLink>
             ))}
           </FooterCol>
 
           {/* Company */}
-          <FooterCol title="Company">
-            <FooterLink href="/about">About MWP</FooterLink>
-            <FooterLink href="/why-us">Why Choose MWP</FooterLink>
-            <FooterLink href="/become-partner" highlighted>Become an Athlete Partner</FooterLink>
-            <FooterLink href="/account">Track Order</FooterLink>
-            <FooterLink href="/contact">Contact Us</FooterLink>
+          <FooterCol title="Explore">
+            {companyLinks.map((l) => (
+              <FooterLink key={l.href} href={l.href}>{l.label}</FooterLink>
+            ))}
           </FooterCol>
 
           {/* Care */}
           <FooterCol title="Customer Care">
-            <FooterLink href="/shipping-policy">Shipping Policy</FooterLink>
-            <FooterLink href="/return-policy">Return &amp; Replacement</FooterLink>
-            <FooterLink href="/privacy-policy">Privacy Policy</FooterLink>
-            <FooterLink href="/terms">Terms of Service</FooterLink>
-            <FooterLink href="/faqs">Dosage &amp; Stacking FAQ</FooterLink>
+            {careLinks.map((l) => (
+              <FooterLink key={l.href} href={l.href}>{l.label}</FooterLink>
+            ))}
           </FooterCol>
         </div>
 
@@ -230,7 +250,7 @@ function FooterCol({ title, children }) {
   return (
     <div>
       <h4 className="text-[11px] uppercase tracking-[0.22em] font-extrabold text-white mb-5 flex items-center gap-2">
-        <span className="w-1.5 h-3.5 bg-white " />
+        <span className="w-1.5 h-3.5 bg-red-600" />
         {title}
       </h4>
       <ul className="space-y-3">{children}</ul>

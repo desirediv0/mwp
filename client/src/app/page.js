@@ -11,11 +11,12 @@ import HomeFaqSection from "@/components/sections/home/HomeFaqSection";
 // import PerformanceClubCta from "@/components/sections/home/PerformanceClubCta";
 
 export const metadata = {
-  title: "MWP SUPPLEMENTS — Men | Women | Power | Precision Sports Nutrition",
+  title: "MWP SUPPLEMENTS — Men | Women | Power",
   description:
-    "MWP SUPPLEMENTS delivers clinical-grade performance nutrition. Explore our 6 flagship formulations: Ultra Pro, Power Max, Rapid Boost, Her Power, Her Energy, and Daily Boost.",
+    "Premium global wellness formulas for Men, Women & Power. Discover Ultra Pro, Power Max, Rapid Boost, Her Power, Her Energy and Daily Vitality.",
 };
 
+// Homepage per brand brief: Header + six product showcase slides + Footer only.
 export default function Home() {
   return (
     <main className="min-h-screen bg-white">

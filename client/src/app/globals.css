@@ -56,36 +56,35 @@
     --chart-3: 0 0% 55%;
     --chart-4: 0 0% 92%;
     --chart-5: 42 40% 48%;
-    --destructive: 4 51% 51%;
+    --destructive: 42 70% 40%;
     --destructive-foreground: 0 0% 100%;
     --border: 0 0% 91%;
     --input: 0 0% 91%;
-    --ring: 42 40% 58%;
+    --ring: 42 70% 40%;
     --radius: 4px;
 
     --brand-black: #09090B;
     --brand-white: #FFFFFF;
     --brand-gray: #F4F4F5;
     --brand-silver: #E2E8F0;
-    --brand-gold: #E2E8F0;
-    --brand-gold-light: #F8FAFC;
-    --brand-gold-dark: #94A3B8;
+    --brand-gold: #C9A227;
+    --brand-gold-light: #E5C56A;
+    --brand-gold-dark: #8B6914;
     --brand-heading: #09090B;
     --brand-paragraph: #52525B;
     --brand-success: #10B981;
-    --brand-error: #EF4444;
+    --brand-error: #C9A227;
 
     --noir: #09090B;
     --noir-soft: #18181B;
     --ivory: #FAFAFA;
     --ivory-deep: #F4F4F5;
-    --gold: #E2E8F0;
-    --gold-light: #F8FAFC;
-    --gold-dark: #94A3B8;
-    --mwp-red: #EF4444;
+    --gold: #C9A227;
+    --gold-light: #E5C56A;
+    --gold-dark: #8B6914;
+    --mwp-red: #C9A227;
     --stone: #71717A;
     --line: #E4E4E7;
-    --font-display: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   }
 }
 

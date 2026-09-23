@@ -563,7 +563,7 @@ export default function ProductContent({ slug }) {
             )}
 
             {/* Promise */}
-            <div className="mb-7 flex items-center gap-4 p-4" style={{ border: "1px solid rgba(239,68,68,0.3)", backgroundColor: "#FAFAFA", borderRadius: "8px" }}>
+            <div className="mb-7 flex items-center gap-4 p-4" style={{ border: "1px solid rgba(201,162,39,0.45)", backgroundColor: "#FAFAFA", borderRadius: "8px" }}>
               <IconShieldCheck className="h-5 w-5 flex-shrink-0 text-neutral-600" stroke={1.5} />
               <p className="text-[12px] leading-relaxed tracking-wide" style={{ color: "rgba(17,17,17,0.7)" }}>
                 <strong className="font-semibold text-neutral-900">MWP Performance Guarantee</strong> — 100% authentic clinical nutrition, GMP certified &amp; third-party lab verified.
