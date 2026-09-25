@@ -36,12 +36,12 @@ import { useCompare } from "@/lib/compare-context";
 import { useLanguage } from "@/lib/language-context";
 
 const PRODUCT_MENU = [
-  { href: "/products?search=Ultra%20Pro", label: "MWP Ultra Pro" },
-  { href: "/products?search=Power%20Max", label: "MWP Power Max" },
-  { href: "/products?search=Rapid%20Boost", label: "MWP Rapid Boost" },
-  { href: "/products?search=Her%20Power", label: "MWP Her Power" },
-  { href: "/products?search=Her%20Energy", label: "MWP Her Energy" },
-  { href: "/products?search=Daily%20Vitality", label: "MWP Daily Vitality" },
+  { href: "/products?search=Ultra%20Pro", label: "MWP Ultra Pro", tag: "The Quiet Miracle", image: "/mwp-tile-ultra-pro.png" },
+  { href: "/products?search=Power%20Max", label: "MWP Power Max", tag: "Unlock Your Miracle", image: "/mwp-tile-power-max.png" },
+  { href: "/products?search=Rapid%20Boost", label: "MWP Rapid Boost", tag: "Fast Action. Real Results.", image: "/mwp-tile-rapid-boost.png" },
+  { href: "/products?search=Her%20Power", label: "MWP Her Power", tag: "Her Inner Miracle", image: "/mwp-tile-her-power.png" },
+  { href: "/products?search=Her%20Energy", label: "MWP Her Energy", tag: "Keeps Up With Her", image: "/mwp-tile-her-energy.png" },
+  { href: "/products?search=Daily%20Vitality", label: "MWP Daily Vitality", tag: "Age Is A Number", image: "/mwp-tile-daily-vitality.png" },
 ];
 
 const NAV_LINKS = [
@@ -89,12 +89,45 @@ export function Navbar() {
   const [scrolled, setScrolled] = useState(false);
 
   const catCloseTimer = useRef(null);
+  const headerRef = useRef(null);
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 15);
     onScroll();
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
+  }, []);
+
+  // One-time GSAP entrance on first mount (App Router persists this layout
+  // across client-side navigations, so this never replays mid-session).
+  useEffect(() => {
+    let mounted = true;
+    (async () => {
+      const gsapModule = await import("gsap");
+      if (!mounted) return;
+      const gsap = gsapModule.default;
+      const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      if (reduceMotion || !headerRef.current) return;
+
+      gsap.fromTo(
+        headerRef.current.querySelector("[data-header-logo]"),
+        { opacity: 0, x: -12 },
+        { opacity: 1, x: 0, duration: 0.6, ease: "power3.out", delay: 0.1 }
+      );
+      gsap.fromTo(
+        headerRef.current.querySelectorAll("[data-header-navitem]"),
+        { opacity: 0, y: -8 },
+        { opacity: 1, y: 0, duration: 0.5, stagger: 0.05, ease: "power3.out", delay: 0.2 }
+      );
+      gsap.fromTo(
+        headerRef.current.querySelectorAll("[data-header-action]"),
+        { opacity: 0, scale: 0.9 },
+        { opacity: 1, scale: 1, duration: 0.45, stagger: 0.04, ease: "back.out(2)", delay: 0.35 }
+      );
+    })();
+    return () => {
+      mounted = false;
+    };
   }, []);
 
   const openProducts = () => {
@@ -128,6 +161,7 @@ export function Navbar() {
   return (
     <>
       <header
+        ref={headerRef}
         className={cn(
           "sticky top-0 left-0 right-0 z-50 w-full text-white transition-all duration-300",
           scrolled
@@ -135,51 +169,17 @@ export function Navbar() {
             : "bg-[#0A0A0A] border-b border-white/[0.06]"
         )}
       >
-        {/* Announcement bar — collapses smoothly on scroll, Track Order removed */}
+        {/* Announcement bar — collapses smoothly on scroll, flat and quiet */}
         <div
           className={cn(
-            "overflow-hidden bg-gradient-to-r from-neutral-900 via-neutral-800 to-neutral-900 border-b border-white/[0.04] transition-all duration-300",
-            scrolled ? "max-h-0 opacity-0" : "max-h-8 opacity-100"
+            "overflow-hidden bg-black border-b border-white/[0.06] transition-all duration-300",
+            scrolled ? "max-h-0 opacity-0" : "max-h-7 opacity-100"
           )}
         >
-          <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 flex items-center justify-between h-8 text-[11px] font-semibold text-white/90">
-            {/* Desktop Left: Social + Lab Tested */}
-            <div className="hidden md:flex items-center gap-3">
-              <a
-                href="https://www.instagram.com/mwpsupplements"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="hover:text-white transition-colors"
-                aria-label="Instagram"
-              >
-                <IconBrandInstagram className="h-3.5 w-3.5" />
-              </a>
-              <a
-                href="https://www.facebook.com/mwpsupplements"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="hover:text-white transition-colors"
-                aria-label="Facebook"
-              >
-                <IconBrandFacebook className="h-3.5 w-3.5" />
-              </a>
-              <span className="text-white/20">|</span>
-              <span className="inline-flex items-center gap-1 text-[10px] text-emerald-400 font-medium">
-                <IconShieldCheck className="h-3.5 w-3.5" /> 100% Lab Tested
-              </span>
-            </div>
-
-            {/* Announcement Center (visible on all screens) */}
-            <div className="flex-1 text-center truncate tracking-wider uppercase text-[10px] sm:text-[11px] text-white/90 px-2 font-medium">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-center h-7 text-[11px] text-white/60">
+            <span className="truncate tracking-wide text-center px-2">
               {ANNOUNCEMENTS[0]}
-            </div>
-
-            {/* Desktop Right: Shipping info (Track Order removed) */}
-            <div className="hidden md:flex items-center gap-3 text-[11px] uppercase tracking-wider">
-              <span className="inline-flex items-center gap-1 text-[10px] text-white/70">
-                <IconTruck className="h-3.5 w-3.5" /> Free Express Shipping ₹999+
-              </span>
-            </div>
+            </span>
           </div>
         </div>
 
@@ -194,6 +194,7 @@ export function Navbar() {
             {/* 1. Left — Brand Logo */}
             <Link
               href="/"
+              data-header-logo
               className="flex items-center shrink-0 focus-visible:outline-none focus:outline-none"
             >
               <Image
@@ -210,9 +211,10 @@ export function Navbar() {
             </Link>
 
             {/* 2. Center — Navigation Menu (Desktop & Laptop) */}
-            <nav className="hidden lg:flex flex-1 min-w-0 items-center justify-center gap-0 xl:gap-0.5 2xl:gap-1">
+            <nav className="hidden lg:flex flex-1 min-w-0 items-center justify-center gap-1 xl:gap-2">
               {/* ALL PRODUCTS dropdown */}
               <div
+                data-header-navitem
                 className="relative"
                 onMouseEnter={openProducts}
                 onMouseLeave={closeProductsSoon}
@@ -220,10 +222,10 @@ export function Navbar() {
                 <button
                   onClick={() => setIsProductsOpen((v) => !v)}
                   className={cn(
-                    "flex items-center gap-1 px-1.5 xl:px-2 2xl:px-2.5 py-2 text-[11px] xl:text-[11.5px] 2xl:text-[12px] font-bold uppercase tracking-tight 2xl:tracking-wide transition-all rounded-md whitespace-nowrap",
+                    "flex items-center gap-1 px-3 py-2 text-[13px] font-medium tracking-tight transition-all rounded-full whitespace-nowrap",
                     isProductsOpen || pathname === "/products"
                       ? "bg-white/10 text-white"
-                      : "text-neutral-200 hover:text-white hover:bg-white/[0.06]"
+                      : "text-neutral-300 hover:text-white hover:bg-white/[0.06]"
                   )}
                   aria-haspopup="true"
                   aria-expanded={isProductsOpen}
@@ -234,7 +236,7 @@ export function Navbar() {
                       "h-3.5 w-3.5 transition-transform duration-200",
                       isProductsOpen && "rotate-180"
                     )}
-                    stroke={2.5}
+                    stroke={2}
                   />
                 </button>
 
@@ -245,14 +247,14 @@ export function Navbar() {
                       animate={{ opacity: 1, y: 0, scale: 1 }}
                       exit={{ opacity: 0, y: 8, scale: 0.98 }}
                       transition={{ duration: 0.16, ease: [0.22, 1, 0.36, 1] }}
-                      className="absolute left-0 top-full mt-2 w-[320px] max-w-[85vw] bg-[#101012] border border-white/10 rounded-lg shadow-[0_24px_60px_-12px_rgba(0,0,0,0.85)] overflow-hidden z-[70]"
+                      className="absolute left-1/2 -translate-x-1/2 top-full mt-3 w-[560px] max-w-[92vw] bg-[#0C0C0E] border border-white/10 rounded-2xl shadow-[0_30px_80px_-20px_rgba(0,0,0,0.9)] overflow-hidden z-[70]"
                     >
-                      <div className="px-4 pt-3.5 pb-2.5 border-b border-white/[0.06] bg-white/[0.02]">
+                      <div className="px-6 pt-5 pb-1">
                         <span className="text-[10px] uppercase tracking-[0.28em] text-[color:var(--gold)] font-bold">
                           {t("allProducts")}
                         </span>
                       </div>
-                      <div className="p-2 space-y-0.5 max-h-[360px] overflow-y-auto">
+                      <div className="p-3 grid grid-cols-2 gap-1.5 max-h-[420px] overflow-y-auto">
                         {PRODUCT_MENU.map((item) => {
                           const active = pathname === item.href;
                           return (
@@ -261,19 +263,39 @@ export function Navbar() {
                               href={item.href}
                               onClick={() => setIsProductsOpen(false)}
                               className={cn(
-                                "flex items-center justify-between gap-2 px-3 py-2.5 text-[12.5px] font-semibold transition-all rounded",
-                                active
-                                  ? "bg-white/15 text-white font-bold"
-                                  : "text-neutral-300 hover:bg-white/[0.06] hover:text-white"
+                                "group flex items-center gap-3 p-2.5 rounded-xl transition-all",
+                                active ? "bg-white/10" : "hover:bg-white/[0.06]"
                               )}
                             >
-                              <span className="truncate">{item.label}</span>
-                              <IconChevronRight className="h-3.5 w-3.5 opacity-40 shrink-0" />
+                              <span className="relative w-14 h-14 shrink-0 rounded-lg overflow-hidden bg-white/5">
+                                {item.image && (
+                                  <Image
+                                    src={item.image}
+                                    alt={item.label}
+                                    fill
+                                    className="object-cover"
+                                    sizes="56px"
+                                  />
+                                )}
+                              </span>
+                              <span className="min-w-0">
+                                <span
+                                  className={cn(
+                                    "block text-[13px] font-semibold truncate transition-colors",
+                                    active ? "text-white" : "text-neutral-200 group-hover:text-white"
+                                  )}
+                                >
+                                  {item.label}
+                                </span>
+                                <span className="block text-[11px] text-neutral-500 truncate mt-0.5">
+                                  {item.tag}
+                                </span>
+                              </span>
                             </Link>
                           );
                         })}
                       </div>
-                      <div className="px-3 py-2.5 border-t border-white/[0.06]">
+                      <div className="px-4 py-3 border-t border-white/[0.06]">
                         <Link
                           href="/products"
                           onClick={() => setIsProductsOpen(false)}
@@ -287,16 +309,15 @@ export function Navbar() {
                 </AnimatePresence>
               </div>
 
-              <span className="hidden 2xl:block w-px h-4 bg-white/10 mx-1" />
-
               {NAV_LINKS.map(({ href, labelKey }) => {
                 const active = pathname === href;
                 return (
                   <Link
                     key={href}
                     href={href}
+                    data-header-navitem
                     className={cn(
-                      "relative px-1.5 xl:px-2 2xl:px-2.5 py-2 text-[11px] xl:text-[11.5px] 2xl:text-[12px] font-bold uppercase tracking-tight 2xl:tracking-wide transition-all rounded-md whitespace-nowrap",
+                      "relative px-3 py-2 text-[13px] font-medium tracking-tight transition-all rounded-full whitespace-nowrap",
                       active
                         ? "text-white bg-white/10"
                         : "text-neutral-300 hover:text-white hover:bg-white/[0.06]"
@@ -304,7 +325,7 @@ export function Navbar() {
                   >
                     {t(labelKey)}
                     {active && (
-                      <span className="absolute bottom-0 left-1.5 right-1.5 h-[2px] bg-[color:var(--gold)] rounded-full" />
+                      <span className="absolute bottom-0.5 left-3 right-3 h-[2px] bg-[color:var(--gold)] rounded-full" />
                     )}
                   </Link>
                 );
@@ -316,7 +337,8 @@ export function Navbar() {
               {/* Search button — opens interactive live search dialog */}
               <button
                 onClick={() => setIsSearchOpen(true)}
-                className="flex items-center justify-center w-9 h-9 sm:w-9 sm:h-9 text-neutral-300 hover:text-white hover:bg-white/10 active:scale-95 transition-all rounded-md"
+                data-header-action
+                className="flex items-center justify-center w-9 h-9 sm:w-9 sm:h-9 text-neutral-300 hover:text-white hover:bg-white/10 active:scale-95 transition-all rounded-full"
                 aria-label="Search"
                 title="Search products"
               >
@@ -327,7 +349,8 @@ export function Navbar() {
                 {isAuthenticated ? (
                   <Link
                     href="/account"
-                    className="hidden sm:flex items-center justify-center w-9 h-9 hover:bg-white/10 transition-colors rounded-md"
+                    data-header-action
+                    className="hidden sm:flex items-center justify-center w-9 h-9 hover:bg-white/10 transition-colors rounded-full"
                     aria-label="Account"
                   >
                     <AvatarCircle name={user?.name} size="sm" />
@@ -335,7 +358,8 @@ export function Navbar() {
                 ) : (
                   <Link
                     href="/auth"
-                    className="hidden sm:flex items-center justify-center w-9 h-9 text-neutral-300 hover:text-white hover:bg-white/10 transition-colors rounded-md"
+                    data-header-action
+                    className="hidden sm:flex items-center justify-center w-9 h-9 text-neutral-300 hover:text-white hover:bg-white/10 transition-colors rounded-full"
                     aria-label="Login"
                   >
                     <IconUser className="h-4.5 w-4.5 sm:h-5 sm:w-5" stroke={2} />
@@ -345,7 +369,8 @@ export function Navbar() {
 
               <Link
                 href="/compare"
-                className="hidden xl:flex relative items-center justify-center w-9 h-9 text-neutral-300 hover:text-white hover:bg-white/10 transition-colors rounded-md"
+                data-header-action
+                className="hidden xl:flex relative items-center justify-center w-9 h-9 text-neutral-300 hover:text-white hover:bg-white/10 transition-colors rounded-full"
                 aria-label="Compare"
               >
                 <IconGitCompare className="h-4.5 w-4.5 sm:h-5 sm:w-5" stroke={2} />
@@ -358,7 +383,8 @@ export function Navbar() {
 
               <Link
                 href="/wishlist"
-                className="hidden xl:flex items-center justify-center w-9 h-9 text-neutral-300 hover:text-white hover:bg-white/10 transition-colors rounded-md"
+                data-header-action
+                className="hidden xl:flex items-center justify-center w-9 h-9 text-neutral-300 hover:text-white hover:bg-white/10 transition-colors rounded-full"
                 aria-label="Wishlist"
               >
                 <IconHeart className="h-4.5 w-4.5 sm:h-5 sm:w-5" stroke={2} />
@@ -367,7 +393,8 @@ export function Navbar() {
               <ClientOnly>
                 <Link
                   href="/cart"
-                  className="relative flex items-center justify-center w-9 h-9 bg-white/[0.06] border border-white/10 text-white hover:bg-white hover:text-black hover:border-white active:scale-95 transition-all rounded-md"
+                  data-header-action
+                  className="relative flex items-center justify-center w-9 h-9 bg-white/[0.06] border border-white/10 text-white hover:bg-white hover:text-black hover:border-white active:scale-95 transition-all rounded-full"
                   aria-label="Cart"
                 >
                   <IconShoppingBag className="h-4.5 w-4.5 sm:h-5 sm:w-5" stroke={2} />
@@ -382,7 +409,8 @@ export function Navbar() {
               {/* Mobile Menu Button with clear tap target */}
               <button
                 onClick={() => setIsMenuOpen(true)}
-                className="lg:hidden flex items-center justify-center w-9 h-9 bg-white/[0.06] border border-white/10 text-white hover:bg-white/10 active:scale-95 transition-all rounded-md ml-0.5"
+                data-header-action
+                className="lg:hidden flex items-center justify-center w-9 h-9 bg-white/[0.06] border border-white/10 text-white hover:bg-white/10 active:scale-95 transition-all rounded-full ml-0.5"
                 aria-label="Toggle Menu"
               >
                 <IconMenu2 className="h-5 w-5" stroke={2} />
