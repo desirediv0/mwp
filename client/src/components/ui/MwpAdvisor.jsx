@@ -550,12 +550,12 @@ export default function MwpAdvisor() {
               {/* Header */}
               <div className="relative shrink-0 px-4 py-3.5 border-b border-white/10 bg-gradient-to-r from-[#16161A] via-[#101014] to-[#0A0A0C]">
                 <div
-                  className="absolute inset-x-0 top-0 h-[2px] bg-gradient-to-r from-red-600 via-red-400 to-transparent"
+                  className="absolute inset-x-0 top-0 h-[2px] bg-gradient-to-r from-[color:var(--gold)] via-[color:var(--gold-light)] to-transparent"
                   aria-hidden
                 />
                 <div className="flex items-center justify-between gap-3">
                   <div className="flex items-center gap-3 min-w-0">
-                    <span className="relative w-10 h-10 rounded-xl bg-red-600/20 border border-red-500/40 flex items-center justify-center text-red-400 shrink-0">
+                    <span className="relative w-10 h-10 rounded-xl bg-white/10 border border-white/15 flex items-center justify-center text-white shrink-0">
                       <IconMessageChatbot className="h-5.5 w-5.5" stroke={2} />
                       <span className="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 bg-emerald-400 rounded-full ring-2 ring-[#101014]" />
                     </span>
@@ -612,7 +612,7 @@ export default function MwpAdvisor() {
                       )}
                     >
                       {m.role === "advisor" && (
-                        <span className="inline-flex items-center gap-1 text-[9px] uppercase tracking-[0.18em] font-bold text-red-400 mb-1.5">
+                        <span className="inline-flex items-center gap-1 text-[9px] uppercase tracking-[0.18em] font-bold text-[color:var(--gold)] mb-1.5">
                           <IconSparkles className="h-3 w-3" /> Advisor
                         </span>
                       )}
@@ -641,7 +641,7 @@ export default function MwpAdvisor() {
                               />
                             </div>
                             <div className="min-w-0 flex-1">
-                              <p className="text-[10px] uppercase tracking-[0.16em] text-red-400 font-bold mb-0.5">
+                              <p className="text-[10px] uppercase tracking-[0.16em] text-[color:var(--gold)] font-bold mb-0.5">
                                 {copy.step}
                               </p>
                               <p className="text-[13px] font-extrabold text-white leading-tight">
@@ -714,7 +714,7 @@ export default function MwpAdvisor() {
                               className={
                                 c.kind === "retake" || c.kind === "free"
                                   ? "w-full flex items-center justify-between gap-2 px-3 py-2.5 text-[12px] font-bold text-white/70 bg-white/[0.04] border border-white/10 rounded-xl hover:bg-white/[0.08] hover:text-white transition-colors text-left"
-                                  : "w-full flex items-center justify-between gap-2 px-3 py-3 text-[12.5px] font-bold text-white bg-red-600/15 border border-red-500/35 hover:bg-red-600 hover:border-red-500 rounded-xl transition-all text-left group"
+                                  : "w-full flex items-center justify-between gap-2 px-3 py-3 text-[12.5px] font-bold text-white bg-white/[0.06] border border-white/15 hover:bg-white hover:text-black hover:border-white rounded-xl transition-all text-left group"
                               }
                             >
                               <span>{c.label}</span>
@@ -735,7 +735,7 @@ export default function MwpAdvisor() {
                               className={cn(
                                 "px-2.5 py-1.5 text-[10px] font-bold uppercase tracking-wider rounded-lg transition-colors border",
                                 l.primary
-                                  ? "bg-red-600 hover:bg-red-500 text-white border-red-500"
+                                  ? "bg-neutral-900 hover:bg-white hover:text-black text-white border-white/20"
                                   : "bg-white/10 hover:bg-white hover:text-black border-white/15 text-white"
                               )}
                             >
@@ -754,7 +754,7 @@ export default function MwpAdvisor() {
                       {[0, 1, 2].map((i) => (
                         <span
                           key={i}
-                          className="w-1.5 h-1.5 rounded-full bg-red-400 animate-bounce"
+                          className="w-1.5 h-1.5 rounded-full bg-white/60 animate-bounce"
                           style={{ animationDelay: `${i * 0.12}s` }}
                         />
                       ))}
@@ -793,12 +793,12 @@ export default function MwpAdvisor() {
                   onChange={(e) => setInput(e.target.value)}
                   placeholder={copy.askMore}
                   enterKeyHint="send"
-                  className="flex-1 h-11 px-4 bg-white/[0.06] border border-white/12 rounded-xl text-[13.5px] text-white placeholder:text-white/35 focus:outline-none focus:border-red-500/50 focus:bg-white/[0.08] transition-colors min-w-0"
+                  className="flex-1 h-11 px-4 bg-white/[0.06] border border-white/12 rounded-xl text-[13.5px] text-white placeholder:text-white/35 focus:outline-none focus:border-white/40 focus:bg-white/[0.08] transition-colors min-w-0"
                   aria-label="Message MWP Advisor"
                 />
                 <button
                   type="submit"
-                  className="w-11 h-11 shrink-0 bg-red-600 hover:bg-red-500 text-white rounded-xl flex items-center justify-center transition-colors disabled:opacity-40 active:scale-95"
+                  className="w-11 h-11 shrink-0 bg-neutral-900 hover:bg-neutral-800 text-white rounded-xl flex items-center justify-center transition-colors disabled:opacity-40 active:scale-95"
                   disabled={!input.trim() || thinking}
                   aria-label={t("send")}
                 >
@@ -816,7 +816,7 @@ export default function MwpAdvisor() {
           <button
             type="button"
             onClick={() => setOpen((v) => !v)}
-            className="w-full flex items-center justify-center gap-2.5 h-12 bg-red-600 hover:bg-red-500 text-white rounded-full border border-red-400/40 shadow-[0_10px_28px_-6px_rgba(201,162,39,0.55)] active:scale-[0.98] transition-all"
+            className="w-full flex items-center justify-center gap-2.5 h-12 bg-neutral-900 hover:bg-black text-white rounded-full border border-white/15 shadow-[0_10px_28px_-6px_rgba(0,0,0,0.5)] active:scale-[0.98] transition-all"
             aria-label={open ? copy.close : copy.open}
             aria-expanded={open}
           >
@@ -825,7 +825,7 @@ export default function MwpAdvisor() {
             ) : (
               <span className="relative flex items-center justify-center w-6 h-6 rounded-full bg-white/15">
                 <IconMessageChatbot className="h-4.5 w-4.5" stroke={2.25} />
-                <span className="absolute -top-0.5 -right-0.5 w-2 h-2 bg-emerald-400 rounded-full ring-2 ring-red-600" />
+                <span className="absolute -top-0.5 -right-0.5 w-2 h-2 bg-emerald-400 rounded-full ring-2 ring-neutral-900" />
               </span>
             )}
             <span className="text-[11px] font-black uppercase tracking-[0.14em] leading-none">
@@ -837,7 +837,7 @@ export default function MwpAdvisor() {
         <button
           type="button"
           onClick={() => setOpen((v) => !v)}
-          className="hidden sm:flex pointer-events-auto group items-center gap-2.5 h-11 pl-3 pr-4 bg-red-600 hover:bg-red-500 text-white rounded-full border border-red-400/40 shadow-[0_10px_28px_-6px_rgba(201,162,39,0.5)] focus:outline-none focus-visible:ring-2 focus-visible:ring-red-400/60 focus-visible:ring-offset-2 focus-visible:ring-offset-black transition-all active:scale-95 self-end"
+          className="hidden sm:flex pointer-events-auto group items-center gap-2.5 h-11 pl-3 pr-4 bg-neutral-900 hover:bg-black text-white rounded-full border border-white/15 shadow-[0_10px_28px_-6px_rgba(0,0,0,0.5)] focus:outline-none focus-visible:ring-2 focus-visible:ring-white/40 focus-visible:ring-offset-2 focus-visible:ring-offset-black transition-all active:scale-95 self-end"
           aria-label={open ? copy.close : copy.open}
           aria-expanded={open}
         >
@@ -846,7 +846,7 @@ export default function MwpAdvisor() {
           ) : (
             <span className="relative flex items-center justify-center w-6 h-6 rounded-full bg-white/15">
               <IconMessageChatbot className="h-4.5 w-4.5" stroke={2.25} />
-              <span className="absolute -top-0.5 -right-0.5 w-2 h-2 bg-emerald-400 rounded-full ring-2 ring-red-600" />
+              <span className="absolute -top-0.5 -right-0.5 w-2 h-2 bg-emerald-400 rounded-full ring-2 ring-neutral-900" />
             </span>
           )}
           <span className="text-[11px] font-black uppercase tracking-[0.14em] leading-none">
