@@ -163,20 +163,20 @@ export function Navbar() {
       <header
         ref={headerRef}
         className={cn(
-          "sticky top-0 left-0 right-0 z-50 w-full text-white transition-all duration-300",
+          "sticky top-0 left-0 right-0 z-50 w-full text-neutral-900 transition-all duration-300",
           scrolled
-            ? "bg-[#0A0A0A]/95 backdrop-blur-md shadow-[0_8px_30px_rgba(0,0,0,0.6)] border-b border-white/10"
-            : "bg-[#0A0A0A] border-b border-white/[0.06]"
+            ? "bg-white/95 backdrop-blur-md shadow-[0_8px_30px_rgba(30,50,40,0.08)] border-b border-neutral-200/80"
+            : "bg-white border-b border-neutral-200"
         )}
       >
         {/* Announcement bar — collapses smoothly on scroll, flat and quiet */}
         <div
           className={cn(
-            "overflow-hidden bg-black border-b border-white/[0.06] transition-all duration-300",
+            "overflow-hidden bg-[#eef3f0] border-b border-neutral-200 transition-all duration-300",
             scrolled ? "max-h-0 opacity-0" : "max-h-7 opacity-100"
           )}
         >
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-center h-7 text-[11px] text-white/60">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-center h-7 text-[11px] text-neutral-600">
             <span className="truncate tracking-wide text-center px-2">
               {ANNOUNCEMENTS[0]}
             </span>
@@ -188,14 +188,14 @@ export function Navbar() {
           <div
             className={cn(
               "flex items-center justify-between gap-2 sm:gap-4 transition-all duration-300",
-              scrolled ? "h-14 sm:h-16" : "h-16 sm:h-[72px]"
+              scrolled ? "h-16 sm:h-[72px]" : "h-[76px] sm:h-[88px]"
             )}
           >
-            {/* 1. Left — Brand Logo */}
+            {/* 1. Left — Brand Logo (chrome logo needs a dark backing to stay legible on white) */}
             <Link
               href="/"
               data-header-logo
-              className="flex items-center shrink-0 focus-visible:outline-none focus:outline-none"
+              className="flex items-center shrink-0 focus-visible:outline-none focus:outline-none rounded-xl bg-neutral-950 transition-all duration-300 px-4"
             >
               <Image
                 src="/logo.png"
@@ -204,14 +204,14 @@ export function Navbar() {
                 height={72}
                 className={cn(
                   "w-auto object-contain transition-all duration-300 focus-visible:outline-none focus:outline-none",
-                  scrolled ? "h-9 sm:h-10" : "h-10 sm:h-12 md:h-14"
+                  scrolled ? "h-11 sm:h-12" : "h-12 sm:h-14 md:h-16"
                 )}
                 priority
               />
             </Link>
 
             {/* 2. Center — Navigation Menu (Desktop & Laptop) */}
-            <nav className="hidden lg:flex flex-1 min-w-0 items-center justify-center gap-1 xl:gap-2">
+            <nav className="hidden xl:flex flex-1 min-w-0 items-center justify-center gap-1 xl:gap-2">
               {/* ALL PRODUCTS dropdown */}
               <div
                 data-header-navitem
@@ -224,8 +224,8 @@ export function Navbar() {
                   className={cn(
                     "flex items-center gap-1 px-3 py-2 text-[13px] font-medium tracking-tight transition-all rounded-full whitespace-nowrap",
                     isProductsOpen || pathname === "/products"
-                      ? "bg-white/10 text-white"
-                      : "text-neutral-300 hover:text-white hover:bg-white/[0.06]"
+                      ? "bg-emerald-50 text-emerald-900"
+                      : "text-neutral-600 hover:text-neutral-950 hover:bg-neutral-100"
                   )}
                   aria-haspopup="true"
                   aria-expanded={isProductsOpen}
@@ -247,10 +247,10 @@ export function Navbar() {
                       animate={{ opacity: 1, y: 0, scale: 1 }}
                       exit={{ opacity: 0, y: 8, scale: 0.98 }}
                       transition={{ duration: 0.16, ease: [0.22, 1, 0.36, 1] }}
-                      className="absolute left-1/2 -translate-x-1/2 top-full mt-3 w-[560px] max-w-[92vw] bg-[#0C0C0E] border border-white/10 rounded-2xl shadow-[0_30px_80px_-20px_rgba(0,0,0,0.9)] overflow-hidden z-[70]"
+                      className="absolute left-1/2 -translate-x-1/2 top-full mt-3 w-[560px] max-w-[92vw] bg-white border border-neutral-200 rounded-2xl shadow-[0_24px_60px_-24px_rgba(20,35,28,0.24)] overflow-hidden z-[70]"
                     >
                       <div className="px-6 pt-5 pb-1">
-                        <span className="text-[10px] uppercase tracking-[0.28em] text-[color:var(--gold)] font-bold">
+                        <span className="text-[10px] uppercase tracking-[0.28em] text-emerald-800 font-bold">
                           {t("allProducts")}
                         </span>
                       </div>
@@ -264,10 +264,10 @@ export function Navbar() {
                               onClick={() => setIsProductsOpen(false)}
                               className={cn(
                                 "group flex items-center gap-3 p-2.5 rounded-xl transition-all",
-                                active ? "bg-white/10" : "hover:bg-white/[0.06]"
+                                active ? "bg-emerald-50" : "hover:bg-neutral-50"
                               )}
                             >
-                              <span className="relative w-14 h-14 shrink-0 rounded-lg overflow-hidden bg-white/5">
+                              <span className="relative w-14 h-14 shrink-0 rounded-lg overflow-hidden bg-[#f1f3f2]">
                                 {item.image && (
                                   <Image
                                     src={item.image}
@@ -282,7 +282,7 @@ export function Navbar() {
                                 <span
                                   className={cn(
                                     "block text-[13px] font-semibold truncate transition-colors",
-                                    active ? "text-white" : "text-neutral-200 group-hover:text-white"
+                                    active ? "text-neutral-950" : "text-neutral-700 group-hover:text-emerald-900"
                                   )}
                                 >
                                   {item.label}
@@ -295,11 +295,11 @@ export function Navbar() {
                           );
                         })}
                       </div>
-                      <div className="px-4 py-3 border-t border-white/[0.06]">
+                      <div className="px-4 py-3 border-t border-neutral-200">
                         <Link
                           href="/products"
                           onClick={() => setIsProductsOpen(false)}
-                          className="text-[10px] uppercase tracking-[0.15em] text-neutral-400 hover:text-white transition-colors inline-flex items-center gap-1"
+                          className="text-[10px] uppercase tracking-[0.15em] text-neutral-600 hover:text-emerald-800 transition-colors inline-flex items-center gap-1"
                         >
                           {t("viewAll")} <IconArrowUpRight className="h-3 w-3" />
                         </Link>
@@ -319,13 +319,13 @@ export function Navbar() {
                     className={cn(
                       "relative px-3 py-2 text-[13px] font-medium tracking-tight transition-all rounded-full whitespace-nowrap",
                       active
-                        ? "text-white bg-white/10"
-                        : "text-neutral-300 hover:text-white hover:bg-white/[0.06]"
+                        ? "text-emerald-900 bg-emerald-50"
+                        : "text-neutral-600 hover:text-neutral-950 hover:bg-neutral-100"
                     )}
                   >
                     {t(labelKey)}
                     {active && (
-                      <span className="absolute bottom-0.5 left-3 right-3 h-[2px] bg-[color:var(--gold)] rounded-full" />
+                      <span className="absolute bottom-0.5 left-3 right-3 h-[2px] bg-emerald-700 rounded-full" />
                     )}
                   </Link>
                 );
@@ -338,7 +338,7 @@ export function Navbar() {
               <button
                 onClick={() => setIsSearchOpen(true)}
                 data-header-action
-                className="flex items-center justify-center w-9 h-9 sm:w-9 sm:h-9 text-neutral-300 hover:text-white hover:bg-white/10 active:scale-95 transition-all rounded-full"
+                className="flex items-center justify-center w-9 h-9 sm:w-9 sm:h-9 text-neutral-600 hover:text-neutral-950 hover:bg-neutral-100 active:scale-95 transition-all rounded-full"
                 aria-label="Search"
                 title="Search products"
               >
@@ -350,7 +350,7 @@ export function Navbar() {
                   <Link
                     href="/account"
                     data-header-action
-                    className="hidden sm:flex items-center justify-center w-9 h-9 hover:bg-white/10 transition-colors rounded-full"
+                    className="hidden sm:flex items-center justify-center w-9 h-9 hover:bg-neutral-100 transition-colors rounded-full"
                     aria-label="Account"
                   >
                     <AvatarCircle name={user?.name} size="sm" />
@@ -359,7 +359,7 @@ export function Navbar() {
                   <Link
                     href="/auth"
                     data-header-action
-                    className="hidden sm:flex items-center justify-center w-9 h-9 text-neutral-300 hover:text-white hover:bg-white/10 transition-colors rounded-full"
+                    className="hidden sm:flex items-center justify-center w-9 h-9 text-neutral-600 hover:text-neutral-950 hover:bg-neutral-100 transition-colors rounded-full"
                     aria-label="Login"
                   >
                     <IconUser className="h-4.5 w-4.5 sm:h-5 sm:w-5" stroke={2} />
@@ -370,12 +370,12 @@ export function Navbar() {
               <Link
                 href="/compare"
                 data-header-action
-                className="hidden xl:flex relative items-center justify-center w-9 h-9 text-neutral-300 hover:text-white hover:bg-white/10 transition-colors rounded-full"
+                className="hidden xl:flex relative items-center justify-center w-9 h-9 text-neutral-600 hover:text-neutral-950 hover:bg-neutral-100 transition-colors rounded-full"
                 aria-label="Compare"
               >
                 <IconGitCompare className="h-4.5 w-4.5 sm:h-5 sm:w-5" stroke={2} />
                 {compareCount > 0 && (
-                  <span className="absolute -top-1 -right-1 bg-neutral-700 text-white text-[10px] font-black min-w-[18px] h-[18px] flex items-center justify-center px-1 ring-2 ring-[#0A0A0A] rounded-full">
+                  <span className="absolute -top-1 -right-1 bg-emerald-700 text-white text-[10px] font-bold min-w-[18px] h-[18px] flex items-center justify-center px-1 ring-2 ring-white rounded-full">
                     {compareCount}
                   </span>
                 )}
@@ -384,7 +384,7 @@ export function Navbar() {
               <Link
                 href="/wishlist"
                 data-header-action
-                className="hidden xl:flex items-center justify-center w-9 h-9 text-neutral-300 hover:text-white hover:bg-white/10 transition-colors rounded-full"
+                className="hidden xl:flex items-center justify-center w-9 h-9 text-neutral-600 hover:text-neutral-950 hover:bg-neutral-100 transition-colors rounded-full"
                 aria-label="Wishlist"
               >
                 <IconHeart className="h-4.5 w-4.5 sm:h-5 sm:w-5" stroke={2} />
@@ -394,12 +394,12 @@ export function Navbar() {
                 <Link
                   href="/cart"
                   data-header-action
-                  className="relative flex items-center justify-center w-9 h-9 bg-white/[0.06] border border-white/10 text-white hover:bg-white hover:text-black hover:border-white active:scale-95 transition-all rounded-full"
+                  className="relative flex items-center justify-center w-9 h-9 bg-emerald-50 border border-emerald-100 text-emerald-900 hover:bg-emerald-700 hover:text-white hover:border-emerald-700 active:scale-95 transition-all rounded-full"
                   aria-label="Cart"
                 >
                   <IconShoppingBag className="h-4.5 w-4.5 sm:h-5 sm:w-5" stroke={2} />
                   {cartCount > 0 && (
-                    <span className="absolute -top-1 -right-1 bg-white text-black text-[10px] font-black min-w-[18px] h-[18px] flex items-center justify-center px-1 rounded-full shadow">
+                    <span className="absolute -top-1 -right-1 bg-emerald-700 text-white text-[10px] font-bold min-w-[18px] h-[18px] flex items-center justify-center px-1 rounded-full shadow">
                       {cartCount}
                     </span>
                   )}
@@ -410,7 +410,7 @@ export function Navbar() {
               <button
                 onClick={() => setIsMenuOpen(true)}
                 data-header-action
-                className="lg:hidden flex items-center justify-center w-9 h-9 bg-white/[0.06] border border-white/10 text-white hover:bg-white/10 active:scale-95 transition-all rounded-full ml-0.5"
+                className="xl:hidden flex items-center justify-center w-9 h-9 bg-white border border-neutral-200 text-neutral-700 hover:bg-neutral-100 active:scale-95 transition-all rounded-full ml-0.5"
                 aria-label="Toggle Menu"
               >
                 <IconMenu2 className="h-5 w-5" stroke={2} />
@@ -517,25 +517,25 @@ function SearchDialog({ open, onOpenChange, categories }) {
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="w-[94vw] sm:max-w-[600px] max-h-[85vh] bg-[#0E0E11] text-white p-0 overflow-hidden border border-white/15 shadow-[0_24px_70px_rgba(0,0,0,0.9)] rounded-xl">
+      <DialogContent className="w-[94vw] sm:max-w-[600px] max-h-[85vh] bg-white text-neutral-900 p-0 overflow-hidden border border-neutral-200 shadow-[0_24px_70px_rgba(20,35,28,0.18)] rounded-xl">
         {/* Search Input Bar */}
-        <form onSubmit={handleSearch} className="relative border-b border-white/10 p-3.5 sm:p-5">
+        <form onSubmit={handleSearch} className="relative border-b border-neutral-200 p-3.5 sm:p-5">
           <div className="relative flex items-center">
-            <IconSearch className="absolute left-3.5 h-4.5 w-4.5 sm:h-5 sm:w-5 text-neutral-400" stroke={2.2} />
+            <IconSearch className="absolute left-3.5 h-4.5 w-4.5 sm:h-5 sm:w-5 text-neutral-500" stroke={2.2} />
             <input
               ref={searchInputRef}
               type="text"
               placeholder="Search products, ingredients, protocols…"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full h-11 sm:h-12 pl-10 sm:pl-11 pr-20 sm:pr-24 bg-white/[0.06] border border-white/15 rounded-lg text-[13px] sm:text-[14px] text-white placeholder:text-neutral-500 focus:outline-none focus:border-white/40 focus:bg-white/[0.09] transition-all"
+              className="w-full h-11 sm:h-12 pl-10 sm:pl-11 pr-20 sm:pr-24 bg-neutral-50 border border-neutral-200 rounded-lg text-[13px] sm:text-[14px] text-neutral-900 placeholder:text-neutral-500 focus:outline-none focus:border-emerald-600 focus:bg-white transition-all"
             />
             <div className="absolute right-2 flex items-center gap-1 sm:gap-1.5">
               {searchQuery && (
                 <button
                   type="button"
                   onClick={() => setSearchQuery("")}
-                  className="p-1 text-neutral-400 hover:text-white rounded"
+                  className="p-1 text-neutral-500 hover:text-neutral-950 rounded"
                   aria-label="Clear search"
                 >
                   <IconX className="h-4 w-4" />
@@ -543,7 +543,7 @@ function SearchDialog({ open, onOpenChange, categories }) {
               )}
               <button
                 type="submit"
-                className="px-2.5 sm:px-3 py-1.5 bg-neutral-800 hover:bg-neutral-700 text-white text-[10px] sm:text-[11px] font-bold uppercase tracking-wider rounded transition-colors"
+                className="px-2.5 sm:px-3 py-1.5 bg-emerald-700 hover:bg-emerald-800 text-white text-[10px] sm:text-[11px] font-bold uppercase tracking-wider rounded-lg transition-colors"
               >
                 Search
               </button>
@@ -555,16 +555,16 @@ function SearchDialog({ open, onOpenChange, categories }) {
         <div className="max-h-[60vh] sm:max-h-[420px] overflow-y-auto p-3.5 sm:p-5">
           {searchQuery.trim().length >= 2 ? (
             <div>
-              <div className="flex items-center justify-between mb-3 text-[11px] uppercase tracking-wider text-neutral-400 font-semibold">
+              <div className="flex items-center justify-between mb-3 text-[11px] uppercase tracking-wider text-neutral-500 font-semibold">
                 <span>Search Results</span>
-                {loading && <span className="text-white animate-pulse">Searching…</span>}
+                {loading && <span className="text-emerald-800 animate-pulse">Searching…</span>}
               </div>
 
               {loading ? (
-                <div className="py-8 text-center text-sm text-neutral-400">Loading products…</div>
+                <div className="py-8 text-center text-sm text-neutral-500">Loading products…</div>
               ) : results.length === 0 ? (
                 <div className="py-8 text-center">
-                  <p className="text-sm text-neutral-300 font-medium">
+                  <p className="text-sm text-neutral-800 font-medium">
                     No products found for &ldquo;{searchQuery}&rdquo;
                   </p>
                   <p className="text-xs text-neutral-500 mt-1">
@@ -573,7 +573,7 @@ function SearchDialog({ open, onOpenChange, categories }) {
                   <Link
                     href="/products"
                     onClick={() => onOpenChange(false)}
-                    className="inline-block mt-4 px-4 py-2 bg-white/10 hover:bg-white/15 text-white text-xs font-bold uppercase tracking-wider rounded transition-colors"
+                    className="inline-block mt-4 px-4 py-2 bg-emerald-50 hover:bg-emerald-100 text-emerald-900 text-xs font-bold uppercase tracking-wider rounded-lg transition-colors"
                   >
                     View All Products
                   </Link>
@@ -587,9 +587,9 @@ function SearchDialog({ open, onOpenChange, categories }) {
                         key={p.id || p.slug}
                         type="button"
                         onClick={() => handleSelectProduct(p.slug)}
-                        className="w-full flex items-center gap-3 p-2 rounded-lg hover:bg-white/[0.06] transition-colors text-left group"
+                        className="w-full flex items-center gap-3 p-2 rounded-lg hover:bg-neutral-50 transition-colors text-left group"
                       >
-                        <span className="relative w-11 h-11 sm:w-12 sm:h-12 overflow-hidden bg-white/[0.04] rounded border border-white/10 shrink-0">
+                        <span className="relative w-11 h-11 sm:w-12 sm:h-12 overflow-hidden bg-neutral-100 rounded-lg border border-neutral-200 shrink-0">
                           <Image
                             src={getImg(p)}
                             alt={p.name || "Product"}
@@ -599,23 +599,23 @@ function SearchDialog({ open, onOpenChange, categories }) {
                           />
                         </span>
                         <div className="min-w-0 flex-1">
-                          <div className="text-xs sm:text-sm font-semibold text-white group-hover:text-white truncate">
+                          <div className="text-xs sm:text-sm font-semibold text-neutral-900 group-hover:text-emerald-900 truncate">
                             {p.name}
                           </div>
                           <div className="flex items-center gap-2 mt-0.5">
                             {cat && (
-                              <span className="text-[9px] sm:text-[10px] uppercase tracking-wider text-neutral-400 font-medium truncate">
+                              <span className="text-[9px] sm:text-[10px] uppercase tracking-wider text-neutral-500 font-medium truncate">
                                 {cat}
                               </span>
                             )}
                             {p.price && (
-                              <span className="text-xs font-bold text-emerald-400 shrink-0">
+                              <span className="text-xs font-bold text-emerald-700 shrink-0">
                                 ₹{Number(p.price).toLocaleString("en-IN")}
                               </span>
                             )}
                           </div>
                         </div>
-                        <IconArrowUpRight className="h-4 w-4 text-neutral-500 group-hover:text-white transition-colors shrink-0" />
+                        <IconArrowUpRight className="h-4 w-4 text-neutral-400 group-hover:text-emerald-800 transition-colors shrink-0" />
                       </button>
                     );
                   })}
@@ -623,7 +623,7 @@ function SearchDialog({ open, onOpenChange, categories }) {
                   <button
                     type="button"
                     onClick={handleSearch}
-                    className="w-full mt-3 py-2.5 text-center text-xs font-bold uppercase tracking-wider text-neutral-300 hover:text-white hover:bg-white/10 rounded border border-white/10 transition-colors"
+                    className="w-full mt-3 py-2.5 text-center text-xs font-bold uppercase tracking-wider text-neutral-700 hover:text-emerald-900 hover:bg-emerald-50 rounded-lg border border-neutral-200 transition-colors"
                   >
                     View all results for &ldquo;{searchQuery.trim()}&rdquo; &rarr;
                   </button>
@@ -634,7 +634,7 @@ function SearchDialog({ open, onOpenChange, categories }) {
             <div className="space-y-4 sm:space-y-5">
               {/* Popular Searches */}
               <div>
-                <p className="text-[10px] sm:text-[11px] uppercase tracking-wider font-bold text-neutral-400 mb-2">
+                <p className="text-[10px] sm:text-[11px] uppercase tracking-wider font-bold text-neutral-500 mb-2">
                   Popular Searches
                 </p>
                 <div className="flex flex-wrap gap-1.5 sm:gap-2">
@@ -643,7 +643,7 @@ function SearchDialog({ open, onOpenChange, categories }) {
                       key={term}
                       type="button"
                       onClick={() => handleTagClick(term)}
-                      className="px-2.5 sm:px-3 py-1 sm:py-1.5 bg-white/[0.05] hover:bg-white/15 hover:text-white border border-white/10 text-[11px] sm:text-xs font-medium text-neutral-300 rounded-full transition-colors"
+                      className="px-2.5 sm:px-3 py-1.5 bg-neutral-50 hover:bg-emerald-50 hover:text-emerald-900 border border-neutral-200 text-[11px] sm:text-xs font-medium text-neutral-700 rounded-full transition-colors"
                     >
                       {term}
                     </button>
@@ -654,7 +654,7 @@ function SearchDialog({ open, onOpenChange, categories }) {
               {/* Categories */}
               {categories.length > 0 && (
                 <div>
-                  <p className="text-[10px] sm:text-[11px] uppercase tracking-wider font-bold text-neutral-400 mb-2">
+                  <p className="text-[10px] sm:text-[11px] uppercase tracking-wider font-bold text-neutral-500 mb-2">
                     Browse Categories
                   </p>
                   <div className="flex flex-wrap gap-1.5 sm:gap-2">
@@ -663,7 +663,7 @@ function SearchDialog({ open, onOpenChange, categories }) {
                         key={c.id}
                         href={`/category/${c.slug}`}
                         onClick={() => onOpenChange(false)}
-                        className="px-2.5 sm:px-3 py-1 sm:py-1.5 bg-white/[0.03] hover:bg-white/10 border border-white/10 text-[11px] sm:text-xs font-medium text-neutral-300 rounded transition-colors"
+                        className="px-2.5 sm:px-3 py-1.5 bg-white hover:bg-emerald-50 border border-neutral-200 text-[11px] sm:text-xs font-medium text-neutral-700 hover:text-emerald-900 rounded-lg transition-colors"
                       >
                         {c.name}
                       </Link>
@@ -697,10 +697,10 @@ function MobileMenu({
   return (
     <AnimatePresence>
       {isOpen && (
-        <div className="fixed inset-0 z-50 lg:hidden">
+        <div className="fixed inset-0 z-50 xl:hidden">
           {/* Backdrop */}
           <motion.div
-            className="fixed inset-0 bg-black/80 backdrop-blur-sm"
+            className="fixed inset-0 bg-neutral-950/35 backdrop-blur-sm"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
@@ -709,24 +709,26 @@ function MobileMenu({
 
           {/* Drawer Body */}
           <motion.div
-            className="absolute left-0 top-0 bottom-0 w-[85vw] max-w-[340px] bg-[#0C0C0E] border-r border-white/10 shadow-2xl flex flex-col text-white z-50 overflow-hidden"
+            className="absolute left-0 top-0 bottom-0 w-[85vw] max-w-[360px] bg-white border-r border-neutral-200 shadow-[0_24px_60px_-20px_rgba(15,23,42,0.24)] flex flex-col text-neutral-900 z-50 overflow-hidden"
             initial={{ x: "-100%" }}
             animate={{ x: 0 }}
             exit={{ x: "-100%" }}
             transition={{ duration: 0.28, ease: [0.22, 1, 0.36, 1] }}
           >
             {/* 1. Header with Logo & Close button */}
-            <div className="flex items-center justify-between px-4 py-3.5 border-b border-white/10 bg-black/40">
-              <Image
-                src="/logo.png"
-                alt="MWP SUPPLEMENTS"
-                width={130}
-                height={50}
-                className="h-8 w-auto object-contain"
-              />
+            <div className="flex items-center justify-between px-4 py-3.5 border-b border-neutral-200 bg-[#f6f8f6]">
+              <div className="rounded-lg bg-neutral-950 px-3 py-2 flex items-center">
+                <Image
+                  src="/logo.png"
+                  alt="MWP SUPPLEMENTS"
+                  width={130}
+                  height={50}
+                  className="h-10 w-auto object-contain"
+                />
+              </div>
               <button
                 onClick={onClose}
-                className="p-1.5 text-neutral-400 hover:text-white hover:bg-white/10 active:scale-90 transition-all rounded-md"
+                className="p-1.5 text-neutral-500 hover:text-neutral-950 hover:bg-neutral-200/70 active:scale-90 transition-all rounded-md"
                 aria-label="Close menu"
               >
                 <IconX className="h-5 w-5" />
@@ -734,10 +736,10 @@ function MobileMenu({
             </div>
 
             {/* 2. Quick Search & Quick Actions Bar */}
-            <div className="p-3 border-b border-white/[0.08] bg-white/[0.02]">
+            <div className="p-3 border-b border-neutral-200 bg-white">
               <button
                 onClick={onOpenSearch}
-                className="w-full flex items-center gap-2.5 px-3 py-2 bg-white/[0.05] border border-white/10 rounded-lg text-xs text-neutral-400 hover:text-white hover:bg-white/[0.08] transition-all"
+                className="w-full flex items-center gap-2.5 px-3 py-2.5 bg-neutral-50 border border-neutral-200 rounded-lg text-xs text-neutral-600 hover:text-neutral-950 hover:bg-emerald-50 transition-all"
               >
                 <IconSearch className="h-4 w-4 text-neutral-400" />
                 <span>Search supplements, ingredients…</span>
@@ -748,7 +750,7 @@ function MobileMenu({
                 <Link
                   href="/wishlist"
                   onClick={onClose}
-                  className="flex items-center justify-center gap-1.5 py-1.5 px-2 bg-white/[0.03] border border-white/[0.08] rounded text-[11px] font-semibold text-neutral-300 hover:text-white transition-colors"
+                  className="flex items-center justify-center gap-1.5 py-2 px-2 bg-white border border-neutral-200 rounded-lg text-[11px] font-semibold text-neutral-700 hover:text-emerald-800 hover:bg-emerald-50 transition-colors"
                 >
                   <IconHeart className="h-3.5 w-3.5 text-neutral-400" />
                   <span>Wishlist</span>
@@ -756,12 +758,12 @@ function MobileMenu({
                 <Link
                   href="/compare"
                   onClick={onClose}
-                  className="flex items-center justify-center gap-1.5 py-1.5 px-2 bg-white/[0.03] border border-white/[0.08] rounded text-[11px] font-semibold text-neutral-300 hover:text-white transition-colors relative"
+                  className="flex items-center justify-center gap-1.5 py-2 px-2 bg-white border border-neutral-200 rounded-lg text-[11px] font-semibold text-neutral-700 hover:text-emerald-800 hover:bg-emerald-50 transition-colors relative"
                 >
                   <IconGitCompare className="h-3.5 w-3.5 text-neutral-400" />
                   <span>Compare</span>
                   {compareCount > 0 && (
-                    <span className="ml-1 bg-neutral-700 text-white text-[9px] font-bold px-1 rounded-full">
+                    <span className="ml-1 bg-emerald-700 text-white text-[9px] font-bold px-1 rounded-full">
                       {compareCount}
                     </span>
                   )}
@@ -770,14 +772,14 @@ function MobileMenu({
             </div>
 
             {/* 3. User Authentication Box */}
-            <div className="p-3.5 border-b border-white/[0.08] bg-white/[0.015]">
+            <div className="p-3.5 border-b border-neutral-200 bg-[#f8faf9]">
               <ClientOnly>
                 {isAuthenticated ? (
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2.5 min-w-0">
                       <AvatarCircle name={user?.name} size="sm" />
                       <div className="min-w-0">
-                        <p className="font-bold text-xs text-white truncate">
+                        <p className="font-bold text-xs text-neutral-900 truncate">
                           {user?.name || "Athlete"}
                         </p>
                         <p className="text-[10px] text-neutral-400 truncate">{user?.email}</p>
@@ -787,13 +789,13 @@ function MobileMenu({
                       <Link
                         href="/account"
                         onClick={onClose}
-                        className="px-2 py-1 bg-white/10 hover:bg-white/15 text-[11px] font-bold rounded uppercase transition-colors"
+                        className="px-2.5 py-1.5 bg-emerald-50 hover:bg-emerald-100 text-emerald-900 text-[11px] font-bold rounded-lg uppercase transition-colors"
                       >
                         Account
                       </Link>
                       <button
                         onClick={handleLogout}
-                        className="px-2 py-1 text-[11px] text-neutral-400 hover:text-white transition-colors"
+                        className="px-2 py-1 text-[11px] text-neutral-500 hover:text-neutral-950 transition-colors"
                       >
                         Logout
                       </button>
@@ -804,14 +806,14 @@ function MobileMenu({
                     <Link
                       href="/auth"
                       onClick={onClose}
-                      className="py-2 px-3 bg-neutral-800 hover:bg-neutral-700 text-white font-bold text-[11px] uppercase tracking-wider text-center rounded transition-all"
+                      className="py-2.5 px-3 bg-emerald-700 hover:bg-emerald-800 text-white font-bold text-[11px] uppercase tracking-wider text-center rounded-lg transition-all"
                     >
                       Sign In
                     </Link>
                     <Link
                       href="/auth?tab=register"
                       onClick={onClose}
-                      className="py-2 px-3 bg-white/5 hover:bg-white/10 border border-white/15 text-white font-bold text-[11px] uppercase tracking-wider text-center rounded transition-all"
+                      className="py-2.5 px-3 bg-white hover:bg-neutral-50 border border-neutral-200 text-neutral-800 font-bold text-[11px] uppercase tracking-wider text-center rounded-lg transition-all"
                     >
                       Register
                     </Link>
@@ -846,10 +848,10 @@ function MobileMenu({
                         href={href}
                         onClick={onClose}
                         className={cn(
-                          "flex items-center justify-between py-2 px-3 text-xs font-bold uppercase tracking-wider transition-colors rounded-md",
+                          "flex items-center justify-between py-2.5 px-3 text-xs font-bold uppercase tracking-wider transition-colors rounded-lg",
                           active
-                            ? "text-white bg-white/10 font-extrabold"
-                            : "text-neutral-300 hover:text-white hover:bg-white/5"
+                            ? "text-emerald-900 bg-emerald-50 font-extrabold"
+                            : "text-neutral-700 hover:text-neutral-950 hover:bg-neutral-100"
                         )}
                       >
                         <span className="truncate">{label}</span>
@@ -860,7 +862,7 @@ function MobileMenu({
               </div>
 
               {/* Primary nav */}
-              <div className="space-y-1 pt-2 border-t border-white/[0.08]">
+              <div className="space-y-1 pt-2 border-t border-neutral-200">
                 <p className="text-[10px] uppercase tracking-widest font-extrabold text-neutral-500 px-2 mb-1.5">
                   Menu
                 </p>
@@ -872,15 +874,15 @@ function MobileMenu({
                       href={href}
                       onClick={onClose}
                       className={cn(
-                        "flex items-center justify-between py-2 px-3 text-xs font-bold uppercase tracking-wider transition-colors rounded-md",
+                        "flex items-center justify-between py-2.5 px-3 text-xs font-bold uppercase tracking-wider transition-colors rounded-lg",
                         active
-                          ? "text-white bg-white/10 font-extrabold"
-                          : "text-neutral-300 hover:text-white hover:bg-white/5"
+                          ? "text-emerald-900 bg-emerald-50 font-extrabold"
+                          : "text-neutral-700 hover:text-neutral-950 hover:bg-neutral-100"
                       )}
                     >
                       <div className="flex items-center gap-2.5">
                         {Icon && (
-                          <Icon className="h-4 w-4 text-[color:var(--gold)]" stroke={2} />
+                          <Icon className="h-4 w-4 text-emerald-700" stroke={2} />
                         )}
                         <span>{t(labelKey)}</span>
                       </div>
@@ -892,7 +894,7 @@ function MobileMenu({
 
               {/* Categories Section */}
               {categories.length > 0 && (
-                <div className="pt-2 border-t border-white/[0.08]">
+                <div className="pt-2 border-t border-neutral-200">
                   <div className="flex items-center justify-between px-2 mb-2">
                     <span className="text-[10px] uppercase tracking-widest font-extrabold text-neutral-500">
                       {t("categories")}
@@ -900,7 +902,7 @@ function MobileMenu({
                     <Link
                       href="/categories"
                       onClick={onClose}
-                      className="text-[10px] uppercase font-bold text-neutral-400 hover:text-white inline-flex items-center gap-0.5"
+                      className="text-[10px] uppercase font-bold text-neutral-500 hover:text-emerald-800 inline-flex items-center gap-0.5"
                     >
                       {t("viewAll")} <IconArrowUpRight className="h-3 w-3" />
                     </Link>
@@ -916,15 +918,15 @@ function MobileMenu({
                           href={href}
                           onClick={onClose}
                           className={cn(
-                            "flex items-center justify-between py-2 px-3 text-xs rounded-md transition-colors",
+                            "flex items-center justify-between py-2.5 px-3 text-xs rounded-lg transition-colors",
                             active
-                              ? "bg-white/15 text-white font-bold"
-                              : "text-neutral-400 hover:text-white hover:bg-white/5"
+                              ? "bg-emerald-50 text-emerald-900 font-bold"
+                              : "text-neutral-600 hover:text-neutral-950 hover:bg-neutral-100"
                           )}
                         >
                           <span className="truncate">{c.name}</span>
                           {c._count?.products ? (
-                            <span className="text-[10px] font-semibold text-neutral-500 bg-white/[0.05] px-1.5 py-0.5 rounded">
+                            <span className="text-[10px] font-semibold text-neutral-600 bg-neutral-100 px-1.5 py-0.5 rounded">
                               {c._count.products}
                             </span>
                           ) : null}
@@ -937,13 +939,13 @@ function MobileMenu({
             </div>
 
             {/* 5. Mobile Drawer Footer */}
-            <div className="p-3.5 border-t border-white/10 bg-[#060608] space-y-2">
-              <div className="flex items-center justify-center gap-4 text-neutral-400">
+            <div className="p-3.5 border-t border-neutral-200 bg-[#f6f8f6] space-y-2">
+              <div className="flex items-center justify-center gap-4 text-neutral-500">
                 <a
                   href="https://www.instagram.com/mwpsupplements"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="hover:text-white transition-colors"
+                  className="hover:text-neutral-950 transition-colors"
                   aria-label="Instagram"
                 >
                   <IconBrandInstagram className="h-4 w-4" />
@@ -952,13 +954,13 @@ function MobileMenu({
                   href="https://www.facebook.com/mwpsupplements"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="hover:text-white transition-colors"
+                  className="hover:text-neutral-950 transition-colors"
                   aria-label="Facebook"
                 >
                   <IconBrandFacebook className="h-4 w-4" />
                 </a>
-                <span className="text-white/20">|</span>
-                <span className="text-[10px] text-emerald-400 font-semibold inline-flex items-center gap-1">
+                <span className="text-neutral-300">|</span>
+                <span className="text-[10px] text-emerald-800 font-semibold inline-flex items-center gap-1">
                   <IconShieldCheck className="h-3.5 w-3.5" /> 100% Lab Tested
                 </span>
               </div>

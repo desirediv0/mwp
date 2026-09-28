@@ -55,7 +55,7 @@ const SLIDES = [
   {
     n: "05",
     key: "her-energy",
-    name: "MWP Her Energy",
+    name: "MWP Alpha Prime",
     headline: "Keeps Up With Her.",
     copy: "Daily energy and focus formula for an active life.",
     href: "/products?search=Her%20Energy",
@@ -81,8 +81,12 @@ function ProductTile({ slide, index }) {
   return (
     <div
       data-tile
-      className={`group relative overflow-hidden rounded-3xl bg-gradient-to-br ${slide.tint} border border-black/[0.04] flex flex-col opacity-0`}
+      className={`group relative overflow-hidden  bg-gradient-to-br ${slide.tint} border border-black/[0.04] flex flex-col opacity-0`}
     >
+      <span className="pointer-events-none absolute left-[-44px] top-8 z-20 w-44 -rotate-45 bg-red-600 py-2.5 text-center text-lg font-black uppercase tracking-wider text-white shadow-lg ring-1 ring-red-800/30">
+        SALE
+      </span>
+
       {/* Soft colored glow behind the product, brightens on hover */}
       <div
         className="pointer-events-none absolute left-1/2 bottom-0 -translate-x-1/2 w-[70%] h-[55%] rounded-full blur-[60px] opacity-25 group-hover:opacity-45 transition-opacity duration-500"
@@ -90,7 +94,7 @@ function ProductTile({ slide, index }) {
       />
 
       <div className="relative z-10 px-8 sm:px-10 pt-10 sm:pt-12 pb-2 text-center">
-        <p className="text-[15px] sm:text-base font-semibold tracking-tight text-neutral-900">
+        <p className="text-[15px] sm:text-4xl font-semibold tracking-tight text-neutral-900">
           {slide.name}
         </p>
         <p className="mt-1.5 text-xl sm:text-2xl font-semibold tracking-tight text-neutral-800">
@@ -224,8 +228,8 @@ export default function MwpProductShowcase() {
 
   return (
     <section className="bg-white">
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 py-8 sm:py-12">
-        <div ref={gridRef} className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
+      <div >
+        <div ref={gridRef} className="grid grid-cols-1 sm:grid-cols-2 ">
           {SLIDES.map((slide, i) => (
             <ProductTile key={slide.key} slide={slide} index={i} />
           ))}

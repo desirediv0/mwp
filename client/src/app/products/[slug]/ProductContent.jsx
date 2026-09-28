@@ -10,7 +10,6 @@ import {
   IconAlertCircle,
   IconHeart,
   IconCircleCheck,
-  IconBolt,
   IconTruck,
   IconShieldCheck,
   IconChevronRight,
@@ -39,13 +38,23 @@ const getImageUrl = (img) => {
   if (!img) return "/placeholder.jpg";
   let urlStr = typeof img === "object" ? (img.url || img.image || "") : img;
   if (!urlStr || typeof urlStr !== "string") return "/placeholder.jpg";
-  if (urlStr.startsWith("http://") || urlStr.startsWith("https://")) return urlStr;
+  if (urlStr.startsWith("http://") || urlStr.startsWith("https://") || urlStr.startsWith("/mwp-tile-")) return urlStr;
   const cleanPath = urlStr.startsWith("/") ? urlStr.slice(1) : urlStr;
   return `https://desirediv-storage.blr1.digitaloceanspaces.com/${cleanPath}`;
 };
 
 // Toggle to bring reviews back in the future — set to true to show ratings + review section.
 const SHOW_REVIEWS = false;
+
+const PRODUCT_THEMES = {
+  "ultra-pro": { image: "/mwp-tile-ultra-pro.png", surface: "#F7F5F2", accent: "#1D1D1F" },
+  "power-max": { image: "/mwp-tile-power-max.png", surface: "#F2F4F7", accent: "#1D1D1F" },
+  "rapid-boost": { image: "/mwp-tile-rapid-boost.png", surface: "#F8F4EF", accent: "#1D1D1F" },
+  "her-power": { image: "/mwp-tile-her-power.png", surface: "#F8F2F3", accent: "#1D1D1F" },
+  "her-energy": { image: "/mwp-tile-her-energy.png", surface: "#F4F2F8", accent: "#1D1D1F" },
+  "daily-vitality": { image: "/mwp-tile-daily-vitality.png", surface: "#F3F5F4", accent: "#1D1D1F" },
+  default: { surface: "#F5F5F7", accent: "#1D1D1F" },
+};
 
 export default function ProductContent({ slug }) {
   const [product, setProduct] = useState(null);
@@ -298,41 +307,44 @@ export default function ProductContent({ slug }) {
   const getImages = () => {
     if (selectedVariant?.images?.length) return selectedVariant.images;
     if (product?.images?.length) return product.images;
-    return product?.variants?.find((v) => v.images?.length)?.images || [];
+    const variantImages = product?.variants?.find((v) => v.images?.length)?.images;
+    if (variantImages?.length) return variantImages;
+    const fallbackImage = PRODUCT_THEMES[product?.slug]?.image;
+    return fallbackImage ? [{ url: fallbackImage, isPrimary: true }] : [];
   };
 
   const PriceDisplay = () => {
-    if (initialLoading) return <div className="h-12 w-40 bg-gray-100 animate-pulse" style={{ borderRadius: "4px" }} />;
+    if (initialLoading) return <div className="h-11 w-40 bg-neutral-100 animate-pulse rounded-md" />;
     const hidePrices = priceSettings?.hidePricesForGuests && !isAuthenticated;
     if (hidePrices || priceSettings === null)
       return (
         <div>
-          <p className="text-2xl" style={{ color: "#666666" }}>Sign in to view price</p>
-          <Link href={`/auth?redirect=/products/${slug}`} className="mt-2 inline-block text-[11px] uppercase tracking-[0.18em] font-medium hover:underline" style={{ color: "#111111" }}>Sign in →</Link>
+          <p className="text-xl text-neutral-500">Sign in to view price</p>
+          <Link href={`/auth?redirect=/products/${slug}`} className="mt-2 inline-block text-[13px] font-medium text-neutral-900 hover:underline underline-offset-4">Sign in →</Link>
         </div>
       );
     if (product?.flashSale?.isActive) {
       const fp = parseFloat(product.flashSale.flashSalePrice);
       const rp = parseFloat(product.basePrice);
       return (
-        <div className="flex items-baseline gap-4 flex-wrap">
-          <span className="text-4xl md:text-[2.8rem] font-extrabold text-gray-900">{formatCurrency(fp)}</span>
-          <span className="text-lg line-through font-light" style={{ color: "#666666" }}>{formatCurrency(rp)}</span>
-          <span className="px-3 py-1.5 text-[9px] uppercase tracking-[0.18em] font-bold" style={{ backgroundColor: "#111111", color: "#fff", borderRadius: "4px" }}>−{product.flashSale.discountPercentage}% Flash</span>
+        <div className="flex items-baseline gap-3 flex-wrap">
+          <span className="text-3xl md:text-[2.4rem] font-semibold text-neutral-900 tracking-tight">{formatCurrency(fp)}</span>
+          <span className="text-base line-through text-neutral-400">{formatCurrency(rp)}</span>
+          <span className="px-2.5 py-1 text-[11px] font-semibold rounded-full bg-neutral-900 text-white">−{product.flashSale.discountPercentage}%</span>
         </div>
       );
     }
     if (selectedVariant) {
       const info = effectivePriceInfo || getEffectivePrice(selectedVariant, quantity);
-      if (!info) return <p className="text-2xl" style={{ color: "#666666" }}>Price unavailable</p>;
+      if (!info) return <p className="text-xl text-neutral-500">Price unavailable</p>;
       const mrp = info.originalPrice ? parseFloat(info.originalPrice) : null;
       const sp = parseFloat(info.price);
       const hasDiff = mrp && mrp > sp;
       const disc = hasDiff ? Math.round(((mrp - sp) / mrp) * 100) : 0;
       return (
-        <div className="flex items-baseline gap-4 flex-wrap">
-          <span className="text-4xl md:text-[2.8rem] font-extrabold text-gray-900">{formatCurrency(sp)}</span>
-          {hasDiff && <><span className="text-lg line-through font-light" style={{ color: "#666666" }}>{formatCurrency(mrp)}</span><span className="px-2.5 py-1 text-[10px] uppercase tracking-[0.15em] font-extrabold rounded-md bg-neutral-900 text-white">{disc}% Off</span></>}
+        <div className="flex items-baseline gap-3 flex-wrap">
+          <span className="text-3xl md:text-[2.4rem] font-semibold text-neutral-900 tracking-tight">{formatCurrency(sp)}</span>
+          {hasDiff && <><span className="text-base line-through text-neutral-400">{formatCurrency(mrp)}</span><span className="px-2.5 py-1 text-[11px] font-semibold rounded-full bg-neutral-900 text-white">{disc}% off</span></>}
         </div>
       );
     }
@@ -342,17 +354,17 @@ export default function ProductContent({ slug }) {
     const op = (product?.hasSale && rp > bp) ? rp : null;
     const disc = op ? Math.round(((op - cp) / op) * 100) : 0;
     return (
-      <div className="flex items-baseline gap-4 flex-wrap">
-        <span className="text-4xl md:text-[2.8rem] font-extrabold text-gray-900">{formatCurrency(cp)}</span>
-        {op && <><span className="text-lg line-through font-light" style={{ color: "#666666" }}>{formatCurrency(op)}</span><span className="px-2.5 py-1 text-[10px] uppercase tracking-[0.15em] font-extrabold rounded-md bg-neutral-900 text-white">{disc}% Off</span></>}
+      <div className="flex items-baseline gap-3 flex-wrap">
+        <span className="text-3xl md:text-[2.4rem] font-semibold text-neutral-900 tracking-tight">{formatCurrency(cp)}</span>
+        {op && <><span className="text-base line-through text-neutral-400">{formatCurrency(op)}</span><span className="px-2.5 py-1 text-[11px] font-semibold rounded-full bg-neutral-900 text-white">{disc}% off</span></>}
       </div>
     );
   };
 
   if (loading) return (
     <div className="min-h-screen flex flex-col items-center justify-center gap-6 bg-white">
-      <span className="italic text-2xl" style={{ color: "rgba(17,17,17,0.3)" }}>MWP SUPPLEMENTS</span>
-      <span className="block h-px w-32 overflow-hidden relative" style={{ backgroundColor: "#EAEAEA" }}>
+      <span className="text-lg font-medium text-neutral-300 tracking-tight">MWP Supplements</span>
+      <span className="block h-px w-32 overflow-hidden relative bg-neutral-100">
         <span className="absolute inset-y-0 left-0 w-1/3 bg-neutral-900 animate-marquee-x" />
       </span>
     </div>
@@ -360,18 +372,19 @@ export default function ProductContent({ slug }) {
 
   if (error || !product) return (
     <div className="min-h-screen flex flex-col items-center justify-center text-center px-4 bg-white">
-      <div className="w-20 h-20 flex items-center justify-center mb-8" style={{ border: "1px solid #EAEAEA", borderRadius: "8px" }}>
-        <IconAlertCircle className="h-8 w-8" style={{ color: "#666666" }} stroke={1.2} />
+      <div className="w-16 h-16 flex items-center justify-center mb-7 rounded-full bg-neutral-100">
+        <IconAlertCircle className="h-7 w-7 text-neutral-400" stroke={1.5} />
       </div>
-      <h2 className="text-3xl font-extrabold mb-3 text-gray-900">Product Not Found</h2>
-      <p className="mb-10 font-light" style={{ color: "#666666" }}>{error || "This product is no longer available."}</p>
-      <Link href="/products" className="inline-flex items-center gap-2 px-7 py-3.5 text-[11px] uppercase tracking-[0.15em] font-medium transition-colors duration-300" style={{ backgroundColor: "#111111", color: "#fff", borderRadius: "8px" }}>
+      <h2 className="text-2xl font-semibold mb-2.5 text-neutral-900 tracking-tight">Product Not Found</h2>
+      <p className="mb-8 text-[15px] text-neutral-500">{error || "This product is no longer available."}</p>
+      <Link href="/products" className="inline-flex items-center gap-2 px-6 py-3 text-[13px] font-medium rounded-full bg-neutral-900 text-white hover:bg-neutral-800 transition-colors">
         Back to Shop
       </Link>
     </div>
   );
 
   const images = getImages();
+  const productTheme = PRODUCT_THEMES[product.slug] || PRODUCT_THEMES.default;
   const primary = mainImage && images.some((i) => i.url === mainImage.url) ? mainImage : (images.find((i) => i.isPrimary) || images[0]);
   // Read the real stock from the selected variant. `?? ` (not `||`) so a genuine 0 is respected
   // instead of falling through to a hardcoded 15, which used to keep "Add to Bag" enabled for
@@ -386,7 +399,7 @@ export default function ProductContent({ slug }) {
 
   const bundleItems = [
     { id: product.id, name: product.name, price: parseFloat(effectivePriceInfo?.price || selectedVariant?.salePrice || selectedVariant?.price || product.basePrice || 0), isMain: true, stock, image: primary?.url },
-    ...relatedProducts.slice(0, 3).map((p) => { const v = p.variants?.[0] || {}; return { id: p.id, name: p.name, price: parseFloat(v.salePrice || v.price || p.basePrice || 0), isMain: false, stock: p.stock || 10, image: p.image || p.images?.[0]?.url }; })
+    ...relatedProducts.slice(0, 3).map((p) => { const v = p.variants?.[0] || {}; return { id: p.id, name: p.name, price: parseFloat(v.salePrice || v.price || p.basePrice || 0), isMain: false, stock: p.stock || 10, image: p.image || p.images?.[0]?.url || PRODUCT_THEMES[p.slug]?.image }; })
   ];
   const bundleTotal = bundleItems.reduce((sum, item) => sum + (bundleSelected[item.id] ? (item.price * (item.isMain ? quantity : 1)) : 0), 0);
 
@@ -394,38 +407,38 @@ export default function ProductContent({ slug }) {
     <div className="min-h-screen bg-white">
 
       {/* Breadcrumb */}
-      <div className="max-w-7xl mx-auto px-5 md:px-8 lg:px-10 pt-7 pb-2">
-        <nav className="flex items-center gap-2 text-[10px] uppercase tracking-[0.2em] flex-wrap" style={{ color: "#666666" }}>
+      <div className="max-w-6xl mx-auto px-6 lg:px-10 pt-6 pb-1">
+        <nav className="flex items-center gap-2 text-[12px] text-neutral-400 flex-wrap">
           <Link href="/" className="hover:text-neutral-900 transition-colors">Home</Link>
-          <span style={{ color: "#111111" }}>·</span>
+          <span>/</span>
           <Link href="/products" className="hover:text-neutral-900 transition-colors">Shop</Link>
-          {product.category && <><span style={{ color: "#111111" }}>·</span><Link href={`/category/${product.category.slug}`} className="hover:text-neutral-900 transition-colors">{product.category.name}</Link></>}
-          <span style={{ color: "#111111" }}>·</span>
-          <span className="font-medium truncate max-w-[200px]" style={{ color: "#111111" }}>{product.name}</span>
+          {product.category && <><span>/</span><Link href={`/category/${product.category.slug}`} className="hover:text-neutral-900 transition-colors">{product.category.name}</Link></>}
+          <span>/</span>
+          <span className="text-neutral-700 truncate max-w-[200px]">{product.name}</span>
         </nav>
       </div>
 
       {/* Product Hero */}
-      <div className="max-w-7xl mx-auto px-5 md:px-8 lg:px-10 py-6 md:py-10">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-16">
+      <div className="max-w-6xl mx-auto px-6 lg:px-10 py-6 md:py-10">
+        <div className="grid grid-cols-1 lg:grid-cols-[minmax(0,1.08fr)_minmax(0,0.92fr)] gap-10 lg:gap-16 items-start">
 
           {/* Left: Gallery */}
           <div className="flex flex-col-reverse lg:flex-row gap-4">
             {/* Thumbnails */}
             {images.length > 1 && (
-              <div className="flex lg:flex-col gap-3 overflow-x-auto lg:overflow-y-auto lg:max-h-[640px] no-scrollbar pb-2 lg:pb-0">
+              <div className="flex lg:flex-col gap-3 overflow-x-auto lg:overflow-y-auto lg:max-h-[600px] no-scrollbar pb-2 lg:pb-0">
                 {images.map((img, idx) => (
                   <button
                     key={idx}
                     onClick={() => { setMainImage(img); setActiveThumb(idx); }}
-                    className="relative flex-shrink-0 w-[72px] h-[92px] overflow-hidden transition-all duration-300"
+                    className="relative flex-shrink-0 w-[64px] h-[80px] overflow-hidden rounded-xl transition-all duration-300"
                     style={{
-                      borderRadius: "8px",
-                      border: activeThumb === idx ? "2px solid #111111" : "1px solid #EAEAEA",
-                      opacity: activeThumb === idx ? 1 : 0.7,
+                      border: activeThumb === idx ? `1.5px solid ${productTheme.accent}` : "1px solid #ECECEC",
+                      opacity: activeThumb === idx ? 1 : 0.55,
+                      backgroundColor: productTheme.surface,
                     }}
                   >
-                    <Image src={getImageUrl(img.url)} alt="" fill className="object-cover" sizes="72px" />
+                    <Image src={getImageUrl(img.url)} alt="" fill className="object-contain p-2" sizes="64px" />
                   </button>
                 ))}
               </div>
@@ -433,8 +446,8 @@ export default function ProductContent({ slug }) {
 
             {/* Main Image */}
             <div
-              className="relative flex-1 aspect-[3/4] overflow-hidden bg-gray-50 group cursor-zoom-in select-none"
-              style={{ borderRadius: "8px" }}
+              className="relative flex-1 aspect-square overflow-hidden group cursor-zoom-in select-none rounded-2xl"
+              style={{ backgroundColor: productTheme.surface }}
               onMouseEnter={() => setIsHovered(true)}
               onMouseLeave={() => setIsHovered(false)}
               onMouseMove={handleMouseMove}
@@ -448,7 +461,7 @@ export default function ProductContent({ slug }) {
                   src={getImageUrl(primary?.url)}
                   alt={product.name}
                   fill
-                  className="object-cover transition-transform duration-200 ease-out pointer-events-none"
+                  className="object-contain p-10 sm:p-14 lg:p-16 transition-transform duration-200 ease-out pointer-events-none"
                   style={{
                     transformOrigin: isHovered ? `${zoomPos.x}% ${zoomPos.y}%` : "center center",
                     transform: isHovered ? "scale(2.2)" : "scale(1)",
@@ -457,24 +470,24 @@ export default function ProductContent({ slug }) {
                   sizes="(max-width: 1024px) 100vw, 50vw"
                 />
               ) : (
-                <Image src="/placeholder.jpg" alt={product.name} fill className="object-cover" />
+                <Image src="/placeholder.jpg" alt={product.name} fill className="object-contain p-8" />
               )}
 
               {/* Hover Zoom Hint */}
-              <div className="absolute bottom-4 right-4 z-20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none bg-gray-900/80 backdrop-blur-md text-white text-[9px] tracking-widest uppercase px-3 py-1.5 rounded-full flex items-center gap-1.5 shadow-lg border border-white/10">
-                <IconZoomIn className="h-3.5 w-3.5 text-neutral-800" />
-                <span>Click to Expand</span>
+              <div className="absolute bottom-4 right-4 z-20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none bg-white/95 backdrop-blur-md text-neutral-700 text-[11px] px-3 py-1.5 rounded-full flex items-center gap-1.5 shadow-sm">
+                <IconZoomIn className="h-3.5 w-3.5" />
+                <span>Click to expand</span>
               </div>
 
               {/* Badges */}
               <div className="absolute top-5 left-5 z-20 flex flex-col gap-2 pointer-events-none">
                 {product.flashSale?.isActive && (
-                  <span className="px-4 py-2 text-[9px] font-bold uppercase tracking-[0.2em] flex items-center gap-1.5" style={{ backgroundColor: "#111111", color: "#fff", borderRadius: "4px" }}>
-                    <IconBolt className="h-3 w-3" stroke={2} /> Flash Sale
+                  <span className="px-3.5 py-1.5 text-[11px] font-semibold rounded-full bg-neutral-900 text-white">
+                    −{product.flashSale.discountPercentage}% Flash Sale
                   </span>
                 )}
                 {outOfStock && (
-                  <span className="px-4 py-2 text-[9px] font-bold uppercase tracking-[0.2em]" style={{ backgroundColor: "#111111", color: "#fff", borderRadius: "4px" }}>Sold Out</span>
+                  <span className="px-3.5 py-1.5 text-[11px] font-semibold rounded-full bg-neutral-500 text-white">Sold Out</span>
                 )}
               </div>
 
@@ -482,15 +495,15 @@ export default function ProductContent({ slug }) {
               <button
                 onClick={(e) => { e.stopPropagation(); handleWishlist(); }}
                 disabled={isAddingToWishlist}
-                className="absolute top-5 right-5 z-20 w-11 h-11 rounded-full bg-white/95 shadow-md backdrop-blur-md flex items-center justify-center transition-all duration-300 hover:scale-110 active:scale-95"
+                className="absolute top-4 right-4 sm:top-5 sm:right-5 z-20 w-10 h-10 rounded-full bg-white/95 shadow-sm backdrop-blur-md flex items-center justify-center transition-all duration-300 hover:scale-105 active:scale-95"
                 aria-label="Wishlist"
               >
-                <IconHeart className={`h-5 w-5 transition-colors ${isInWishlist ? "text-neutral-800" : "text-gray-400 hover:text-neutral-600"}`} stroke={1.8} fill={isInWishlist ? "currentColor" : "none"} />
+                <IconHeart className={`h-4.5 w-4.5 transition-colors ${isInWishlist ? "text-neutral-900" : "text-neutral-400 hover:text-neutral-700"}`} stroke={1.8} fill={isInWishlist ? "currentColor" : "none"} />
               </button>
 
               {/* Image count */}
               {images.length > 1 && (
-                <div className="absolute bottom-5 left-1/2 -translate-x-1/2 px-4 py-1.5 backdrop-blur-md text-[10px] tracking-[0.15em] z-20 pointer-events-none" style={{ backgroundColor: "rgba(17,17,17,0.5)", color: "#fff", borderRadius: "6px" }}>
+                <div className="absolute bottom-4 left-1/2 -translate-x-1/2 px-3 py-1.5 backdrop-blur-md text-[11px] z-20 pointer-events-none bg-white/90 text-neutral-600 rounded-full">
                   {activeThumb + 1} / {images.length}
                 </div>
               )}
@@ -498,25 +511,25 @@ export default function ProductContent({ slug }) {
           </div>
 
           {/* Right: Product Info */}
-          <div className="flex flex-col lg:sticky lg:top-28 lg:self-start">
+          <div className="flex flex-col lg:sticky lg:top-28 lg:self-start lg:pt-2">
 
             {/* Brand */}
             {product.brand && (
-              <span className="text-[10px] uppercase tracking-[0.25em] font-medium mb-4" style={{ color: "#111111" }}>{product.brand.name}</span>
+              <span className="text-[12px] font-medium text-neutral-400 mb-3">{product.brand.name}</span>
             )}
 
             {/* Category eyebrow + Title */}
             {product.category?.name && (
-              <span className="text-[10px] uppercase tracking-[0.25em] font-bold text-neutral-800 mb-2.5">
+              <span className="text-[12px] font-medium text-neutral-400 mb-2">
                 {product.category.name}
               </span>
             )}
-            <div className="flex items-start gap-3 mb-4 flex-wrap">
-              <h1 className="text-3xl md:text-[2.4rem] font-extrabold leading-[1.1] tracking-tight text-gray-900">{product.name}</h1>
+            <div className="flex items-start gap-3 mb-5 flex-wrap">
+              <h1 className="text-3xl md:text-[2.75rem] font-semibold leading-[1.05] tracking-tight text-neutral-900">{product.name}</h1>
               {product.gender && (
                 <Link
                   href={`/products?gender=${product.gender}`}
-                  className="mt-1.5 inline-flex items-center px-3 py-1.5 text-[10px] font-bold uppercase tracking-[0.2em] rounded-md bg-neutral-900 text-white hover:bg-neutral-800 transition-colors"
+                  className="mt-1.5 inline-flex items-center px-3 py-1 text-[11px] font-medium rounded-full bg-neutral-100 text-neutral-600 hover:bg-neutral-200 transition-colors"
                 >
                   {product.gender}
                 </Link>
@@ -526,28 +539,28 @@ export default function ProductContent({ slug }) {
             {/* Rating — hidden for now, see SHOW_REVIEWS */}
             {SHOW_REVIEWS && (
               <div className="flex items-center gap-2.5 mb-6">
-                <div className="flex gap-0.5">{[1, 2, 3, 4, 5].map(i => <IconStar key={i} className="h-3.5 w-3.5" style={{ color: "#111111" }} fill="#111111" stroke={0} />)}</div>
-                <span className="text-[11px] tracking-[0.12em] uppercase" style={{ color: "#666666" }}>({product.reviewCount || 0} reviews)</span>
+                <div className="flex gap-0.5">{[1, 2, 3, 4, 5].map(i => <IconStar key={i} className="h-3.5 w-3.5 text-neutral-900" fill="currentColor" stroke={0} />)}</div>
+                <span className="text-[12px] text-neutral-500">({product.reviewCount || 0} reviews)</span>
               </div>
             )}
 
             {/* Product Notes */}
             {product.notes && product.notes.length > 0 && (
               <div className="mb-7">
-                <p className="text-[10px] font-medium uppercase tracking-[0.25em] mb-4" style={{ color: "#111111" }}>Notes</p>
+                <p className="text-[12px] font-medium text-neutral-400 mb-3.5">Notes</p>
                 <div className="flex flex-wrap gap-4">
                   {product.notes.map((note) => (
                     <div key={note.id} className="flex flex-col items-center gap-2">
-                      <div className="relative w-16 h-16 overflow-hidden" style={{ borderRadius: "18px" }}>
+                      <div className="relative w-14 h-14 overflow-hidden rounded-2xl">
                         <Image
                           src={getImageUrl(note.image)}
                           alt={note.title || "Note"}
                           fill
                           className="object-cover"
-                          sizes="64px"
+                          sizes="56px"
                         />
                       </div>
-                      <span className="text-[11px] font-light tracking-wide" style={{ color: "#666666" }}>{note.title}</span>
+                      <span className="text-[11px] text-neutral-500">{note.title}</span>
                     </div>
                   ))}
                 </div>
@@ -555,18 +568,18 @@ export default function ProductContent({ slug }) {
             )}
 
             {/* Price */}
-            <div className="mb-7 pb-7" style={{ borderBottom: "1px solid #EAEAEA" }}><PriceDisplay /></div>
+            <div className="mb-7"><PriceDisplay /></div>
 
             {/* Short Description */}
             {product.shortDescription && (
-              <p className="text-[14px] leading-relaxed mb-7 font-light tracking-wide" style={{ color: "#666666" }}>{product.shortDescription}</p>
+              <p className="text-[15px] leading-relaxed mb-7 text-neutral-500">{product.shortDescription}</p>
             )}
 
             {/* Promise */}
-            <div className="mb-7 flex items-center gap-4 p-4" style={{ border: "1px solid rgba(201,162,39,0.45)", backgroundColor: "#FAFAFA", borderRadius: "8px" }}>
-              <IconShieldCheck className="h-5 w-5 flex-shrink-0 text-neutral-600" stroke={1.5} />
-              <p className="text-[12px] leading-relaxed tracking-wide" style={{ color: "rgba(17,17,17,0.7)" }}>
-                <strong className="font-semibold text-neutral-900">MWP Performance Guarantee</strong> — 100% authentic clinical nutrition, GMP certified &amp; third-party lab verified.
+            <div className="mb-7 flex items-center gap-3 py-3">
+              <IconShieldCheck className="h-4.5 w-4.5 flex-shrink-0 text-neutral-400" stroke={1.6} />
+              <p className="text-[13px] leading-relaxed text-neutral-500">
+                <span className="font-medium text-neutral-800">MWP Performance Guarantee.</span> 100% authentic, GMP certified &amp; third-party lab verified.
               </p>
             </div>
 
@@ -577,19 +590,18 @@ export default function ProductContent({ slug }) {
               const selVal = values.find((v) => v.id === selId);
               return (
                 <div key={attr.id} className="mb-6">
-                  <p className="text-[11px] font-bold uppercase tracking-[0.2em] mb-3 text-gray-900">
-                    {attr.name} {selVal && <span className="font-semibold normal-case tracking-normal text-[12px] text-gray-500">— {selVal.value}</span>}
+                  <p className="text-[13px] font-medium mb-3 text-neutral-800">
+                    {attr.name} {selVal && <span className="font-normal text-neutral-400">— {selVal.value}</span>}
                   </p>
-                  <div className="flex flex-wrap gap-2.5">
+                  <div className="flex flex-wrap gap-2">
                     {values.map((v) => (
                       <button
                         key={v.id}
                         onClick={() => handleAttributeChange(attr.id, v.id)}
-                        className={`min-w-[52px] px-5 py-2.5 text-[12.5px] font-bold rounded-lg border-2 transition-all ${
-                          selId === v.id
-                            ? "border-neutral-900 bg-neutral-900 text-white shadow-md shadow-neutral-900/20"
-                            : "border-gray-200 text-gray-700 hover:border-neutral-300"
-                        }`}
+                        className={`min-w-[48px] px-4 py-2 text-[13px] font-medium rounded-full border transition-all ${selId === v.id
+                          ? "text-white border-neutral-900 bg-neutral-900"
+                          : "border-neutral-200 bg-white text-neutral-600 hover:border-neutral-400"
+                          }`}
                       >
                         {v.value}
                       </button>
@@ -601,91 +613,89 @@ export default function ProductContent({ slug }) {
 
             {/* Success */}
             {cartSuccess && (
-              <div className="flex items-center gap-3 p-4 text-[13px] font-medium tracking-wide mb-6" style={{ backgroundColor: "#FAFAFA", border: "1px solid rgba(61,124,79,0.3)", color: "#3D7C4F", borderRadius: "8px" }}>
-                <IconCircleCheck className="h-5 w-5 flex-shrink-0" stroke={1.5} /> Added to your bag
+              <div className="flex items-center gap-2.5 px-4 py-3 text-[13px] font-medium mb-5 rounded-xl bg-neutral-50 text-neutral-700">
+                <IconCircleCheck className="h-4.5 w-4.5 flex-shrink-0" stroke={1.6} /> Added to your bag
               </div>
             )}
 
             {/* Quantity + Add to Cart */}
-            <div className="flex gap-3 mb-3" id="main-add-to-cart-btn">
-              <div className="flex items-center overflow-hidden h-14 bg-white rounded-xl border border-gray-200">
-                <button onClick={() => handleQuantityChange(-1)} disabled={quantity <= (selectedVariant?.moq || 1) || isAddingToCart} className="w-12 h-full flex items-center justify-center text-gray-500 hover:bg-gray-50 disabled:opacity-30 transition-colors" aria-label="Decrease quantity">
-                  <IconMinus className="h-4 w-4" stroke={2} />
+            <div className="flex gap-2.5 mb-3" id="main-add-to-cart-btn">
+              <div className="flex items-center overflow-hidden h-12 bg-white rounded-full border border-neutral-200">
+                <button onClick={() => handleQuantityChange(-1)} disabled={quantity <= (selectedVariant?.moq || 1) || isAddingToCart} className="w-10 h-full flex items-center justify-center text-neutral-500 hover:bg-neutral-50 disabled:opacity-30 transition-colors" aria-label="Decrease quantity">
+                  <IconMinus className="h-3.5 w-3.5" stroke={2} />
                 </button>
-                <span className="w-12 text-center text-lg font-bold text-gray-900">{quantity}</span>
-                <button onClick={() => handleQuantityChange(1)} disabled={quantity >= stock || isAddingToCart} className="w-12 h-full flex items-center justify-center text-gray-500 hover:bg-gray-50 disabled:opacity-30 transition-colors" aria-label="Increase quantity">
-                  <IconPlus className="h-4 w-4" stroke={2} />
+                <span className="w-9 text-center text-[15px] font-medium text-neutral-900">{quantity}</span>
+                <button onClick={() => handleQuantityChange(1)} disabled={quantity >= stock || isAddingToCart} className="w-10 h-full flex items-center justify-center text-neutral-500 hover:bg-neutral-50 disabled:opacity-30 transition-colors" aria-label="Increase quantity">
+                  <IconPlus className="h-3.5 w-3.5" stroke={2} />
                 </button>
               </div>
               <button onClick={handleAddToCart} disabled={isAddingToCart || outOfStock}
-                className="flex-1 h-14 rounded-xl text-[12px] font-bold uppercase tracking-[0.15em] flex items-center justify-center gap-2.5 transition-all disabled:opacity-40 bg-gradient-to-r from-neutral-900 to-neutral-800 text-white hover:from-neutral-800 hover:to-neutral-700 shadow-lg shadow-neutral-900/25 active:scale-[0.99]">
-                {isAddingToCart ? <div className="h-5 w-5 border-2 border-current border-t-transparent rounded-full animate-spin" /> : outOfStock ? "Sold Out" : <><IconBolt className="h-4 w-4" stroke={2} /> Add to Cart</>}
+                className="flex-1 h-12 rounded-full text-[13px] font-medium flex items-center justify-center gap-2 transition-all disabled:opacity-40 text-white bg-neutral-900 hover:bg-neutral-800 active:scale-[0.99]">
+                {isAddingToCart ? <div className="h-4 w-4 border-2 border-current border-t-transparent rounded-full animate-spin" /> : outOfStock ? "Sold Out" : "Add to Cart"}
               </button>
             </div>
 
             {/* Wishlist + Compare row */}
-            <div className="flex gap-3 mb-6">
+            <div className="flex gap-2.5 mb-7">
               <button
                 onClick={handleWishlist}
                 disabled={isAddingToWishlist}
-                className={`flex-1 h-12 rounded-xl border text-[11px] font-bold uppercase tracking-[0.12em] flex items-center justify-center gap-2 transition-colors ${
-                  isInWishlist
-                    ? "border-neutral-300 bg-neutral-50 text-neutral-900"
-                    : "border-gray-200 text-gray-600 hover:border-neutral-300 hover:text-neutral-900"
-                }`}
+                className={`flex-1 h-11 rounded-full border text-[12.5px] font-medium flex items-center justify-center gap-2 transition-colors ${isInWishlist
+                  ? "border-neutral-300 bg-neutral-50 text-neutral-900"
+                  : "border-neutral-200 text-neutral-500 hover:border-neutral-400 hover:text-neutral-900"
+                  }`}
               >
-                <IconHeart className="h-4 w-4" stroke={2} fill={isInWishlist ? "currentColor" : "none"} />
+                <IconHeart className="h-3.5 w-3.5" stroke={2} fill={isInWishlist ? "currentColor" : "none"} />
                 {isInWishlist ? "Wishlisted" : "Wishlist"}
               </button>
               <button
                 onClick={() => toggleCompare(product)}
-                className={`flex-1 h-12 rounded-xl border text-[11px] font-bold uppercase tracking-[0.12em] flex items-center justify-center gap-2 transition-colors ${
-                  isInCompare(product?.id)
-                    ? "border-neutral-300 bg-neutral-50 text-neutral-900"
-                    : "border-gray-200 text-gray-600 hover:border-neutral-300 hover:text-neutral-900"
-                }`}
+                className={`flex-1 h-11 rounded-full border text-[12.5px] font-medium flex items-center justify-center gap-2 transition-colors ${isInCompare(product?.id)
+                  ? "border-neutral-300 bg-neutral-50 text-neutral-900"
+                  : "border-neutral-200 text-neutral-500 hover:border-neutral-400 hover:text-neutral-900"
+                  }`}
               >
-                <IconGitCompare className="h-4 w-4" stroke={2} />
+                <IconGitCompare className="h-3.5 w-3.5" stroke={2} />
                 {isInCompare(product?.id) ? "In Compare" : "Compare"}
               </button>
             </div>
 
             {/* Delivery */}
-            <div className="mb-7">
-              <div className="flex items-center gap-3 p-4" style={{ border: "1px solid #EAEAEA", borderRadius: "8px" }}>
-                <IconTruck className="h-5 w-5 flex-shrink-0" style={{ color: "#111111" }} stroke={1.5} />
+            <div className="mb-6">
+              <div className="flex items-center gap-3 py-2.5">
+                <IconTruck className="h-4.5 w-4.5 flex-shrink-0 text-neutral-400" stroke={1.6} />
                 <div>
-                  <p className="text-[9px] font-semibold uppercase tracking-[0.18em]" style={{ color: "#111111" }}>Delivery</p>
-                  <p className="text-[10px] mt-0.5 font-light" style={{ color: "#666666" }}>5–7 business days</p>
+                  <p className="text-[13px] font-medium text-neutral-800">Delivery</p>
+                  <p className="text-[12px] mt-0.5 text-neutral-400">5–7 business days</p>
                 </div>
               </div>
             </div>
 
             {/* Delivery Date */}
-            <div className="flex items-center gap-2 text-[12px] mb-6 tracking-wide" style={{ color: "#666666" }}>
-              <span className="font-semibold uppercase text-[10px] tracking-[0.18em]" style={{ color: "#111111" }}>Est. delivery</span>
-              <span className="font-semibold">{getDeliveryDates()}</span>
+            <div className="flex items-center gap-2 text-[13px] mb-6 text-neutral-500">
+              <span className="font-medium text-neutral-800">Est. delivery</span>
+              <span>{getDeliveryDates()}</span>
             </div>
 
             {/* Meta */}
-            <div className="pt-6 space-y-3" style={{ borderTop: "1px solid #EAEAEA" }}>
+            <div className="pt-6 space-y-2.5 border-t border-neutral-100">
               {product.category && (
-                <div className="flex text-[12px] items-baseline">
-                  <span className="w-24 text-[9px] font-semibold uppercase tracking-[0.2em]" style={{ color: "#666666" }}>Category</span>
+                <div className="flex text-[13px] items-baseline">
+                  <span className="w-24 text-neutral-400">Category</span>
                   <Link
                     href={`/category/${product.category.slug}`}
-                    className="tracking-wide text-gray-900 hover:text-neutral-900 transition-colors font-medium hover:underline underline-offset-4"
+                    className="text-neutral-800 hover:text-neutral-900 transition-colors font-medium hover:underline underline-offset-4"
                   >
                     {product.category.name}
                   </Link>
                 </div>
               )}
               {product.brand && (
-                <div className="flex text-[12px] items-baseline">
-                  <span className="w-24 text-[9px] font-semibold uppercase tracking-[0.2em]" style={{ color: "#666666" }}>Brand</span>
+                <div className="flex text-[13px] items-baseline">
+                  <span className="w-24 text-neutral-400">Brand</span>
                   <Link
                     href={`/brand/${product.brand.slug}`}
-                    className="tracking-wide text-gray-900 hover:text-neutral-900 transition-colors font-medium hover:underline underline-offset-4"
+                    className="text-neutral-800 hover:text-neutral-900 transition-colors font-medium hover:underline underline-offset-4"
                   >
                     {product.brand.name}
                   </Link>
@@ -694,44 +704,44 @@ export default function ProductContent({ slug }) {
             </div>
 
             {/* Share */}
-            <div className="flex items-center gap-4 mt-6 pt-6" style={{ borderTop: "1px solid #EAEAEA" }}>
-              <span className="flex items-center gap-2 text-[10px] uppercase tracking-[0.2em] font-medium" style={{ color: "#666666" }}>
-                <IconShare className="h-4 w-4 text-neutral-800" stroke={1.5} /> Share
+            <div className="flex items-center gap-4 mt-6 pt-6 border-t border-neutral-100">
+              <span className="flex items-center gap-2 text-[12px] font-medium text-neutral-400">
+                <IconShare className="h-3.5 w-3.5" stroke={1.5} /> Share
               </span>
               <div className="flex items-center gap-2">
                 <button
                   onClick={() => handleSocialShare("whatsapp")}
-                  className="w-9 h-9 flex items-center justify-center rounded-lg border border-gray-200 hover:border-emerald-600 hover:bg-emerald-600 hover:text-white text-gray-500 transition-all duration-300 shadow-sm"
+                  className="w-8 h-8 flex items-center justify-center rounded-full border border-neutral-200 hover:border-neutral-900 hover:bg-neutral-900 hover:text-white text-neutral-400 transition-all duration-300"
                   title="Share on WhatsApp"
                   aria-label="Share on WhatsApp"
                 >
-                  <IconBrandWhatsapp className="w-4 h-4" stroke={1.8} />
+                  <IconBrandWhatsapp className="w-3.5 h-3.5" stroke={1.8} />
                 </button>
                 <button
                   onClick={() => handleSocialShare("facebook")}
-                  className="w-9 h-9 flex items-center justify-center rounded-lg border border-gray-200 hover:border-blue-600 hover:bg-blue-600 hover:text-white text-gray-500 transition-all duration-300 shadow-sm"
+                  className="w-8 h-8 flex items-center justify-center rounded-full border border-neutral-200 hover:border-neutral-900 hover:bg-neutral-900 hover:text-white text-neutral-400 transition-all duration-300"
                   title="Share on Facebook"
                   aria-label="Share on Facebook"
                 >
-                  <IconBrandFacebook className="w-4 h-4" stroke={1.8} />
+                  <IconBrandFacebook className="w-3.5 h-3.5" stroke={1.8} />
                 </button>
                 <button
                   onClick={() => handleSocialShare("twitter")}
-                  className="w-9 h-9 flex items-center justify-center rounded-lg border border-gray-200 hover:border-gray-900 hover:bg-gray-900 hover:text-white text-gray-500 transition-all duration-300 shadow-sm"
+                  className="w-8 h-8 flex items-center justify-center rounded-full border border-neutral-200 hover:border-neutral-900 hover:bg-neutral-900 hover:text-white text-neutral-400 transition-all duration-300"
                   title="Share on X"
                   aria-label="Share on X"
                 >
-                  <IconBrandX className="w-4 h-4" stroke={1.8} />
+                  <IconBrandX className="w-3.5 h-3.5" stroke={1.8} />
                 </button>
                 <button
                   onClick={() => handleSocialShare("copy")}
-                  className="w-9 h-9 flex items-center justify-center rounded-lg border border-gray-200 hover:border-gray-900 hover:bg-gray-900 hover:text-white text-gray-500 transition-all duration-300 shadow-sm relative"
+                  className="w-8 h-8 flex items-center justify-center rounded-full border border-neutral-200 hover:border-neutral-900 hover:bg-neutral-900 hover:text-white text-neutral-400 transition-all duration-300 relative"
                   title="Copy Link"
                   aria-label="Copy Link"
                 >
-                  {copied ? <IconCheck className="w-4 h-4 text-emerald-500" stroke={2} /> : <IconLink className="w-4 h-4" stroke={1.8} />}
+                  {copied ? <IconCheck className="w-3.5 h-3.5 text-emerald-500" stroke={2} /> : <IconLink className="w-3.5 h-3.5" stroke={1.8} />}
                   {copied && (
-                    <span className="absolute -top-8 left-1/2 -translate-x-1/2 bg-gray-900 text-white text-[9px] px-2 py-0.5 rounded shadow whitespace-nowrap animate-fadeIn">
+                    <span className="absolute -top-8 left-1/2 -translate-x-1/2 bg-neutral-900 text-white text-[10px] px-2 py-1 rounded-full shadow whitespace-nowrap">
                       Copied!
                     </span>
                   )}
@@ -744,31 +754,31 @@ export default function ProductContent({ slug }) {
 
       {/* Bundle */}
       {relatedProducts.length > 0 && (
-        <div className="max-w-7xl mx-auto px-5 md:px-8 lg:px-10 mb-16">
-          <div className="p-6 md:p-10" style={{ border: "1px solid #EAEAEA", borderRadius: "8px", backgroundColor: "#FAFAFA" }}>
+        <div className="max-w-6xl mx-auto px-6 lg:px-10 mb-16 md:mb-20">
+          <div className="p-6 sm:p-8 md:p-10 rounded-3xl bg-neutral-50">
             <div className="mb-8">
-              <span className="text-[10px] uppercase tracking-[0.25em] font-medium block mb-2" style={{ color: "#111111" }}>Complete the Look</span>
-              <h3 className="text-2xl md:text-3xl" style={{ color: "#111111" }}>Frequently Bought <em className="italic" style={{ color: "#111111" }}>Together</em></h3>
+              <span className="text-[12px] font-medium text-neutral-400 block mb-2">Build your routine</span>
+              <h3 className="text-2xl md:text-3xl font-semibold text-neutral-900 tracking-tight">Frequently bought together</h3>
             </div>
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
               <div className="lg:col-span-8 space-y-2">
                 {bundleItems.map((item) => (
-                  <div key={item.id} className="flex items-center gap-4 p-3 bg-white transition-colors" style={{ border: "1px solid #EAEAEA", borderRadius: "8px" }}>
-                    <input type="checkbox" checked={!!bundleSelected[item.id]} disabled={item.isMain} onChange={(e) => setBundleSelected({ ...bundleSelected, [item.id]: e.target.checked })} className="w-4 h-4 cursor-pointer disabled:opacity-50" style={{ accentColor: "#111111" }} />
-                    <div className="relative w-14 h-16 overflow-hidden flex-shrink-0" style={{ borderRadius: "6px" }}>
-                      <Image src={getImageUrl(item.image)} alt="" fill className="object-cover" sizes="56px" />
+                  <div key={item.id} className="flex items-center gap-3 sm:gap-4 p-3 bg-white transition-colors rounded-2xl">
+                    <input type="checkbox" checked={!!bundleSelected[item.id]} disabled={item.isMain} onChange={(e) => setBundleSelected({ ...bundleSelected, [item.id]: e.target.checked })} className="w-4 h-4 cursor-pointer disabled:opacity-50 accent-neutral-900" />
+                    <div className="relative w-14 h-16 overflow-hidden flex-shrink-0 rounded-xl" style={{ backgroundColor: productTheme.surface }}>
+                      <Image src={getImageUrl(item.image)} alt="" fill className="object-contain p-1" sizes="56px" />
                     </div>
                     <div className="flex-1 min-w-0">
-                      <p className="text-[13px] truncate tracking-wide" style={{ color: "#111111" }}>{item.isMain && <span className="text-[9px] uppercase tracking-[0.18em] mr-2" style={{ color: "#111111" }}>This piece</span>}{item.name}</p>
+                      <p className="text-[13.5px] truncate font-medium text-neutral-900">{item.isMain && <span className="text-[11px] text-neutral-400 mr-2">This formula</span>}{item.name}</p>
                     </div>
-                    <span className="text-[13px] font-semibold" style={{ color: "#111111" }}>{formatCurrency(item.price)}</span>
+                    <span className="text-[13.5px] font-semibold text-neutral-900">{formatCurrency(item.price)}</span>
                   </div>
                 ))}
               </div>
-              <div className="lg:col-span-4 p-8 text-center" style={{ backgroundColor: "#111111", borderRadius: "8px" }}>
-                <span className="text-[9px] uppercase tracking-[0.3em] block mb-2" style={{ color: "rgba(255,255,255,0.5)" }}>Bundle Total</span>
-                <span className="text-4xl block mb-5" style={{ color: "#111111" }}>{formatCurrency(bundleTotal)}</span>
-                <button onClick={handleAddBundleToCart} disabled={isAddingBundle || !Object.values(bundleSelected).some(Boolean)} className="w-full h-12 text-[10px] font-semibold uppercase tracking-[0.25em] transition-all duration-300 disabled:opacity-40" style={{ backgroundColor: "#111111", color: "#fff", borderRadius: "8px" }}>
+              <div className="lg:col-span-4 p-7 sm:p-8 text-center rounded-2xl bg-white">
+                <span className="text-[12px] font-medium text-neutral-400 block mb-2">Bundle total</span>
+                <span className="text-3xl sm:text-4xl font-semibold block mb-5 text-neutral-900 tracking-tight">{formatCurrency(bundleTotal)}</span>
+                <button onClick={handleAddBundleToCart} disabled={isAddingBundle || !Object.values(bundleSelected).some(Boolean)} className="w-full h-12 text-[13px] font-medium transition-all duration-300 disabled:opacity-40 rounded-full text-white bg-neutral-900 hover:bg-neutral-800">
                   {isAddingBundle ? "Adding…" : "Add Bundle to Bag"}
                 </button>
               </div>
@@ -778,17 +788,17 @@ export default function ProductContent({ slug }) {
       )}
 
       {/* Accordion Sections */}
-      <div className="max-w-7xl mx-auto px-5 md:px-8 lg:px-10 mb-16">
+      <div className="max-w-6xl mx-auto px-6 lg:px-10 mb-16 md:mb-20">
         {/* Description - always visible */}
         {product.description && (
-          <div className="mb-10 max-w-4xl">
-            <p className="text-[10px] font-medium uppercase tracking-[0.25em] mb-4" style={{ color: "#111111" }}>Description</p>
-            <div className="text-[14px] leading-relaxed font-light tracking-wide" style={{ color: "#666666" }} dangerouslySetInnerHTML={{ __html: product.description }} />
+          <div className="mb-10 max-w-3xl">
+            <p className="text-[12px] font-medium text-neutral-400 mb-4">About this formula</p>
+            <div className="text-[15px] leading-relaxed text-neutral-600" dangerouslySetInnerHTML={{ __html: product.description }} />
           </div>
         )}
 
         {/* Collapsible sections */}
-        <div className="max-w-4xl space-y-0" style={{ borderTop: "1px solid #EAEAEA" }}>
+        <div className="max-w-3xl space-y-0 border-t border-neutral-100">
           {[
             { key: "fragranceNotes", label: "Formula & Key Actives" },
             { key: "feelings", label: "Benefits & Results" },
@@ -802,15 +812,15 @@ export default function ProductContent({ slug }) {
             if (!content && !hasNotesList) return null;
             const isOpen = !!openSections[key];
             return (
-              <div key={key} style={{ borderBottom: "1px solid #EAEAEA" }}>
+              <div key={key} className="border-b border-neutral-100">
                 <button
                   onClick={() => setOpenSections((prev) => ({ ...prev, [key]: !prev[key] }))}
                   className="flex items-center justify-between w-full py-5 text-left transition-colors"
                 >
-                  <span className="text-[12px] font-semibold uppercase tracking-[0.2em]" style={{ color: "#111111" }}>{label}</span>
+                  <span className="text-[14px] font-medium text-neutral-900">{label}</span>
                   <IconChevronRight
-                    className="h-4 w-4 transition-transform duration-300"
-                    style={{ color: "#666666", transform: isOpen ? "rotate(90deg)" : "rotate(0deg)" }}
+                    className="h-4 w-4 transition-transform duration-300 text-neutral-400"
+                    style={{ transform: isOpen ? "rotate(90deg)" : "rotate(0deg)" }}
                     stroke={1.5}
                   />
                 </button>
@@ -822,8 +832,8 @@ export default function ProductContent({ slug }) {
                     <div className="mb-6">
                       <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4 py-2">
                         {product.notes.map((note) => (
-                          <div key={note.id || note.title} className="flex flex-col items-center p-3 rounded-xl border border-gray-200/60 bg-gray-50/40 hover:border-neutral-500/50 transition-all text-center group">
-                            <div className="relative w-16 h-16 sm:w-20 sm:h-20 overflow-hidden mb-2 rounded-xl shadow-sm">
+                          <div key={note.id || note.title} className="flex flex-col items-center p-3 rounded-2xl bg-neutral-50 hover:bg-neutral-100 transition-all text-center group">
+                            <div className="relative w-16 h-16 sm:w-20 sm:h-20 overflow-hidden mb-2 rounded-2xl">
                               <Image
                                 src={getImageUrl(note.image)}
                                 alt={note.title || "Key Active"}
@@ -832,14 +842,14 @@ export default function ProductContent({ slug }) {
                                 sizes="80px"
                               />
                             </div>
-                            <span className="text-[11px] font-medium tracking-wider uppercase text-gray-900">{note.title}</span>
+                            <span className="text-[11px] font-medium text-neutral-700">{note.title}</span>
                           </div>
                         ))}
                       </div>
                     </div>
                   )}
                   {content && (
-                    <div className="text-[14px] leading-relaxed font-light tracking-wide" style={{ color: "#666666" }} dangerouslySetInnerHTML={{ __html: content }} />
+                    <div className="text-[15px] leading-relaxed text-neutral-600" dangerouslySetInnerHTML={{ __html: content }} />
                   )}
                 </div>
               </div>
@@ -848,16 +858,16 @@ export default function ProductContent({ slug }) {
 
           {/* Ingredients in this product */}
           {product.ingredients && product.ingredients.length > 0 && (
-            <div style={{ borderBottom: "1px solid #EAEAEA" }}>
+            <div className="border-b border-neutral-100">
               <button
                 onClick={() => setOpenSections((prev) => ({ ...prev, ingredients: !prev.ingredients }))}
                 className="flex items-center justify-between w-full py-5 text-left transition-colors"
               >
-                <span className="text-[12px] font-semibold uppercase tracking-[0.2em] text-gray-900">
+                <span className="text-[14px] font-medium text-neutral-900">
                   Ingredients ({product.ingredients.length})
                 </span>
                 <IconChevronRight
-                  className="h-4 w-4 transition-transform duration-300 text-gray-500"
+                  className="h-4 w-4 transition-transform duration-300 text-neutral-400"
                   style={{ transform: openSections.ingredients ? "rotate(90deg)" : "rotate(0deg)" }}
                   stroke={1.5}
                 />
@@ -868,26 +878,26 @@ export default function ProductContent({ slug }) {
               >
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   {product.ingredients.map((ing) => (
-                    <div key={ing.id} className="flex items-center gap-3 p-3 rounded-xl border border-gray-100 bg-gray-50">
+                    <div key={ing.id} className="flex items-center gap-3 p-3 rounded-2xl bg-neutral-50">
                       {ing.image ? (
-                        <div className="relative w-12 h-12 rounded-lg overflow-hidden bg-white border border-gray-100 shrink-0">
-                          <Image src={ing.image} alt={ing.name} fill className="object-cover" sizes="48px" />
+                        <div className="relative w-11 h-11 rounded-full overflow-hidden bg-white shrink-0">
+                          <Image src={ing.image} alt={ing.name} fill className="object-cover" sizes="44px" />
                         </div>
                       ) : (
-                        <div className="w-12 h-12 rounded-lg bg-white border border-gray-100 shrink-0 flex items-center justify-center text-[9px] uppercase tracking-wide text-gray-300 text-center px-1">
-                          Image soon
+                        <div className="w-11 h-11 rounded-full bg-white shrink-0 flex items-center justify-center text-[8px] text-neutral-300 text-center px-1">
+                          Soon
                         </div>
                       )}
                       <div className="min-w-0">
-                        <p className="text-[13px] font-bold text-gray-900 leading-snug">{ing.name}</p>
-                        <p className="text-[12px] text-gray-500 leading-relaxed mt-0.5">{ing.benefit}</p>
+                        <p className="text-[13.5px] font-medium text-neutral-900 leading-snug">{ing.name}</p>
+                        <p className="text-[12.5px] text-neutral-500 leading-relaxed mt-0.5">{ing.benefit}</p>
                       </div>
                     </div>
                   ))}
                 </div>
                 <Link
                   href="/ingredients"
-                  className="mt-4 inline-flex items-center gap-1.5 text-[11px] uppercase tracking-[0.15em] font-bold text-neutral-800 hover:text-neutral-700"
+                  className="mt-4 inline-flex items-center gap-1.5 text-[12.5px] font-medium text-neutral-900 hover:underline underline-offset-4"
                 >
                   See all MWP ingredients
                   <IconChevronRight className="h-3.5 w-3.5" stroke={2} />
@@ -898,15 +908,15 @@ export default function ProductContent({ slug }) {
 
           {/* Product Videos Section */}
           {product.videos && product.videos.length > 0 && (
-            <div style={{ borderBottom: "1px solid #EAEAEA" }}>
+            <div className="border-b border-neutral-100">
               <button
                 onClick={() => setOpenSections((prev) => ({ ...prev, videos: !prev.videos }))}
                 className="flex items-center justify-between w-full py-5 text-left transition-colors"
               >
-                <span className="text-[12px] font-semibold uppercase tracking-[0.2em]" style={{ color: "#111111" }}>Videos</span>
+                <span className="text-[14px] font-medium text-neutral-900">Videos</span>
                 <IconChevronRight
-                  className="h-4 w-4 transition-transform duration-300"
-                  style={{ color: "#666666", transform: openSections.videos ? "rotate(90deg)" : "rotate(0deg)" }}
+                  className="h-4 w-4 transition-transform duration-300 text-neutral-400"
+                  style={{ transform: openSections.videos ? "rotate(90deg)" : "rotate(0deg)" }}
                   stroke={1.5}
                 />
               </button>
@@ -916,7 +926,7 @@ export default function ProductContent({ slug }) {
               >
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   {product.videos.map((video, i) => (
-                    <div key={video.id || i} className="rounded-lg overflow-hidden" style={{ border: "1px solid #EAEAEA" }}>
+                    <div key={video.id || i} className="rounded-2xl overflow-hidden bg-neutral-50">
                       <div className="aspect-video w-full bg-black">
                         <video
                           src={video.videoUrl}
@@ -926,8 +936,8 @@ export default function ProductContent({ slug }) {
                         />
                       </div>
                       {video.title && (
-                        <div className="px-3 py-2">
-                          <p className="text-[13px] font-medium" style={{ color: "#111111" }}>{video.title}</p>
+                        <div className="px-4 py-3">
+                          <p className="text-[13.5px] font-medium text-neutral-800">{video.title}</p>
                         </div>
                       )}
                     </div>
@@ -940,7 +950,7 @@ export default function ProductContent({ slug }) {
 
         {/* Reviews — hidden for now, see SHOW_REVIEWS */}
         {SHOW_REVIEWS && (
-          <div className="mt-16 max-w-4xl">
+          <div className="mt-16 max-w-3xl">
             <ReviewSection product={product} />
           </div>
         )}
@@ -948,10 +958,10 @@ export default function ProductContent({ slug }) {
 
       {/* Lifestyle Section */}
       {(product.lifestyleImage || product.lifestyleDescription) && (
-        <div className="max-w-7xl mx-auto px-5 md:px-8 lg:px-10 mb-16">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 lg:gap-14 items-center">
+        <div className="max-w-6xl mx-auto px-6 lg:px-10 mb-16 md:mb-20">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-10 lg:gap-16 items-center">
             {product.lifestyleImage && (
-              <div className="relative aspect-[4/3] overflow-hidden" style={{ borderRadius: "8px" }}>
+              <div className="relative aspect-[4/3] overflow-hidden rounded-3xl">
                 <Image
                   src={getImageUrl(product.lifestyleImage)}
                   alt={`${product.name} lifestyle`}
@@ -964,8 +974,7 @@ export default function ProductContent({ slug }) {
             {product.lifestyleDescription && (
               <div className={product.lifestyleImage ? "" : "md:col-span-2 max-w-2xl mx-auto text-center"}>
                 <div
-                  className="text-[14px] leading-relaxed font-light tracking-wide"
-                  style={{ color: "#666666" }}
+                  className="text-[15px] leading-relaxed text-neutral-600"
                   dangerouslySetInnerHTML={{ __html: product.lifestyleDescription }}
                 />
               </div>
@@ -976,13 +985,13 @@ export default function ProductContent({ slug }) {
 
       {/* Related */}
       {relatedProducts.length > 0 && (
-        <div className="max-w-7xl mx-auto px-5 md:px-8 lg:px-10 pb-20">
-          <div className="flex items-end justify-between mb-10">
+        <div className="max-w-6xl mx-auto px-6 lg:px-10 pb-20">
+          <div className="flex items-end justify-between mb-9">
             <div>
-              <span className="text-[10px] uppercase tracking-[0.25em] font-medium block mb-3" style={{ color: "#111111" }}>Keep Exploring</span>
-              <h2 className="text-3xl md:text-4xl tracking-tight" style={{ color: "#111111" }}>You May Also <em className="italic" style={{ color: "#111111" }}>Like</em></h2>
+              <span className="text-[12px] font-medium text-neutral-400 block mb-2.5">Keep exploring</span>
+              <h2 className="text-2xl md:text-3xl font-semibold text-neutral-900 tracking-tight">You may also like</h2>
             </div>
-            <Link href="/products" className="text-[11px] uppercase tracking-[0.15em] font-medium shrink-0 hover:text-neutral-900 transition-colors" style={{ color: "#111111" }}>View All →</Link>
+            <Link href="/products" className="text-[13px] font-medium text-neutral-900 shrink-0 hover:underline underline-offset-4">View all →</Link>
           </div>
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5">
             {relatedProducts.map((p) => <ProductCard key={p.id} product={p} />)}
@@ -992,15 +1001,15 @@ export default function ProductContent({ slug }) {
 
       {/* Sticky Bar */}
       {showStickyBar && (
-        <div className="fixed bottom-0 left-0 right-0 z-50 bg-white/95 backdrop-blur-xl border-t border-gray-200 shadow-[0_-8px_30px_rgba(0,0,0,0.08)] py-3">
-          <div className="max-w-7xl mx-auto px-5 md:px-8 lg:px-10 flex items-center justify-between gap-3">
+        <div className="fixed bottom-0 left-0 right-0 z-50 bg-white/95 backdrop-blur-xl border-t border-neutral-100 shadow-[0_-8px_30px_rgba(0,0,0,0.06)] py-3">
+          <div className="max-w-6xl mx-auto px-6 lg:px-10 flex items-center justify-between gap-3">
             <div className="flex items-center gap-3.5 min-w-0">
-              <div className="relative w-12 h-12 rounded-lg overflow-hidden bg-gray-50 border border-gray-200 flex-shrink-0">
-                <Image src={getImageUrl(primary?.url)} alt="" fill className="object-cover" sizes="48px" />
+              <div className="relative w-11 h-11 rounded-xl overflow-hidden bg-neutral-50 flex-shrink-0">
+                <Image src={getImageUrl(primary?.url)} alt="" fill className="object-cover" sizes="44px" />
               </div>
               <div className="min-w-0">
-                <h4 className="text-[13px] font-bold text-gray-900 truncate">{product.name}</h4>
-                <p className="text-[14px] font-extrabold text-neutral-800 mt-0.5">
+                <h4 className="text-[13.5px] font-medium text-neutral-900 truncate">{product.name}</h4>
+                <p className="text-[14px] font-semibold text-neutral-900 mt-0.5">
                   {formatCurrency(selectedVariant ? (effectivePriceInfo?.price || selectedVariant.price) : (product.basePrice || product.regularPrice))}
                 </p>
               </div>
@@ -1008,29 +1017,27 @@ export default function ProductContent({ slug }) {
             <div className="flex items-center gap-2 shrink-0">
               <button
                 onClick={() => toggleCompare(product)}
-                className={`h-12 w-12 rounded-xl border flex items-center justify-center transition-colors ${
-                  isInCompare(product?.id) ? "border-neutral-300 bg-neutral-50 text-neutral-900" : "border-gray-200 text-gray-500 hover:border-neutral-300 hover:text-neutral-900"
-                }`}
+                className={`h-11 w-11 rounded-full border flex items-center justify-center transition-colors ${isInCompare(product?.id) ? "border-neutral-300 bg-neutral-50 text-neutral-900" : "border-neutral-200 text-neutral-400 hover:border-neutral-400 hover:text-neutral-900"
+                  }`}
                 aria-label="Compare"
                 title={isInCompare(product?.id) ? "In compare" : "Add to compare"}
               >
-                <IconGitCompare className="h-5 w-5" stroke={2} />
+                <IconGitCompare className="h-4.5 w-4.5" stroke={2} />
               </button>
               <button
                 onClick={handleWishlist}
-                className={`h-12 w-12 rounded-xl border flex items-center justify-center transition-colors ${
-                  isInWishlist ? "border-neutral-300 bg-neutral-50 text-neutral-900" : "border-gray-200 text-gray-500 hover:border-neutral-300 hover:text-neutral-900"
-                }`}
+                className={`h-11 w-11 rounded-full border flex items-center justify-center transition-colors ${isInWishlist ? "border-neutral-300 bg-neutral-50 text-neutral-900" : "border-neutral-200 text-neutral-400 hover:border-neutral-400 hover:text-neutral-900"
+                  }`}
                 aria-label="Wishlist"
               >
-                <IconHeart className="h-5 w-5" stroke={2} fill={isInWishlist ? "currentColor" : "none"} />
+                <IconHeart className="h-4.5 w-4.5" stroke={2} fill={isInWishlist ? "currentColor" : "none"} />
               </button>
               <button
                 onClick={handleAddToCart}
                 disabled={isAddingToCart || outOfStock}
-                className="px-5 sm:px-8 h-12 rounded-xl text-[11px] font-bold uppercase tracking-[0.15em] flex items-center justify-center gap-2 bg-gradient-to-r from-neutral-900 to-neutral-800 text-white hover:from-neutral-800 hover:to-neutral-700 shadow-lg shadow-neutral-900/20 disabled:opacity-40 transition-all"
+                className="px-6 sm:px-8 h-11 rounded-full text-[12.5px] font-medium flex items-center justify-center gap-2 text-white bg-neutral-900 hover:bg-neutral-800 disabled:opacity-40 transition-all"
               >
-                {isAddingToCart ? "Adding…" : outOfStock ? "Sold Out" : <><IconBolt className="h-4 w-4" stroke={2} /> Add to Cart</>}
+                {isAddingToCart ? "Adding…" : outOfStock ? "Sold Out" : "Add to Cart"}
               </button>
             </div>
           </div>
@@ -1043,27 +1050,27 @@ export default function ProductContent({ slug }) {
           {/* Header Controls */}
           <div className="flex items-center justify-between z-10 text-white border-b border-white/10 pb-4">
             <div className="flex items-center gap-3">
-              <span className="text-xs uppercase tracking-[0.2em] font-medium text-neutral-800">{product.name}</span>
+              <span className="text-xs font-medium text-white/80">{product.name}</span>
               {images.length > 1 && (
-                <span className="text-xs text-white/50 tracking-wider">
+                <span className="text-xs text-white/40">
                   ({activeThumb + 1} of {images.length})
                 </span>
               )}
             </div>
 
             <div className="flex items-center gap-2 sm:gap-4">
-              <div className="flex items-center gap-1 bg-white/10 p-1 rounded-lg">
+              <div className="flex items-center gap-1 bg-white/10 p-1 rounded-full">
                 <button
                   onClick={() => setLightboxScale((prev) => Math.max(1, prev - 0.5))}
                   disabled={lightboxScale <= 1}
-                  className="p-2 rounded hover:bg-white/10 text-white disabled:opacity-30 transition-colors"
+                  className="p-2 rounded-full hover:bg-white/10 text-white disabled:opacity-30 transition-colors"
                   title="Zoom Out"
                 >
                   <IconZoomOut className="w-5 h-5" />
                 </button>
                 <button
                   onClick={() => setLightboxScale(1)}
-                  className="px-2 py-1 text-xs font-mono font-medium text-neutral-800 hover:bg-white/10 rounded transition-colors"
+                  className="px-2 py-1 text-xs font-mono font-medium text-white/70 hover:bg-white/10 rounded-full transition-colors"
                   title="Reset Zoom"
                 >
                   {Math.round(lightboxScale * 100)}%
@@ -1071,7 +1078,7 @@ export default function ProductContent({ slug }) {
                 <button
                   onClick={() => setLightboxScale((prev) => Math.min(4, prev + 0.5))}
                   disabled={lightboxScale >= 4}
-                  className="p-2 rounded hover:bg-white/10 text-white disabled:opacity-30 transition-colors"
+                  className="p-2 rounded-full hover:bg-white/10 text-white disabled:opacity-30 transition-colors"
                   title="Zoom In"
                 >
                   <IconZoomIn className="w-5 h-5" />
@@ -1093,7 +1100,7 @@ export default function ProductContent({ slug }) {
             {images.length > 1 && (
               <button
                 onClick={() => setActiveThumb((prev) => (prev > 0 ? prev - 1 : images.length - 1))}
-                className="absolute left-3 top-1/2 -translate-y-1/2 z-20 p-3 rounded-full bg-black/60 hover:bg-neutral-800 hover:text-gray-900 text-white backdrop-blur-md transition-all"
+                className="absolute left-3 top-1/2 -translate-y-1/2 z-20 p-3 rounded-full bg-black/60 hover:bg-white hover:text-neutral-900 text-white backdrop-blur-md transition-all"
                 aria-label="Previous Image"
               >
                 <IconChevronLeft className="w-6 h-6" />
@@ -1120,7 +1127,7 @@ export default function ProductContent({ slug }) {
             {images.length > 1 && (
               <button
                 onClick={() => setActiveThumb((prev) => (prev < images.length - 1 ? prev + 1 : 0))}
-                className="absolute right-3 top-1/2 -translate-y-1/2 z-20 p-3 rounded-full bg-black/60 hover:bg-neutral-800 hover:text-gray-900 text-white backdrop-blur-md transition-all"
+                className="absolute right-3 top-1/2 -translate-y-1/2 z-20 p-3 rounded-full bg-black/60 hover:bg-white hover:text-neutral-900 text-white backdrop-blur-md transition-all"
                 aria-label="Next Image"
               >
                 <IconChevronRight className="w-6 h-6" />
@@ -1138,7 +1145,7 @@ export default function ProductContent({ slug }) {
                     setActiveThumb(idx);
                     setLightboxScale(1);
                   }}
-                  className={`relative flex-shrink-0 w-14 h-14 rounded-lg overflow-hidden transition-all border-2 ${activeThumb === idx ? "border-neutral-900 opacity-100 scale-105" : "border-transparent opacity-50 hover:opacity-80"
+                  className={`relative flex-shrink-0 w-14 h-14 rounded-xl overflow-hidden transition-all border-2 ${activeThumb === idx ? "border-white opacity-100 scale-105" : "border-transparent opacity-50 hover:opacity-80"
                     }`}
                 >
                   <Image src={getImageUrl(img.url)} alt="" fill className="object-cover" sizes="56px" />

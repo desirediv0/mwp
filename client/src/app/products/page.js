@@ -110,7 +110,7 @@ function ProductsContent() {
           max: maxPrice ? Number(maxPrice) : cap,
         }));
       })
-      .catch(() => {});
+      .catch(() => { });
   }, []); // eslint-disable-line
   const [pagination, setPagination] = useState({ page: pageParam, limit: 12, total: 0, pages: 0 });
 
@@ -203,11 +203,15 @@ function ProductsContent() {
     router.push(pairs.length ? `?${pairs.join("&")}` : window.location.pathname, { scroll: false });
   };
 
-  const handleFilterChange = (name, value) => {
-    const nf = { ...filters, [name]: value };
+  const applyFilterChanges = (changes) => {
+    const nf = { ...filters, ...changes };
     setFilters(nf);
     updateURL(nf);
     if (pagination.page !== 1) setPagination((p) => ({ ...p, page: 1 }));
+  };
+
+  const handleFilterChange = (name, value) => {
+    applyFilterChanges({ [name]: value });
   };
 
   const handleAttrChange = (attrName, valueId) => {
@@ -382,8 +386,10 @@ function ProductsContent() {
             </span>
             <button
               onClick={() => {
-                handleFilterChange("minPrice", priceRange.min > 0 ? String(priceRange.min) : "");
-                handleFilterChange("maxPrice", priceRange.max < priceCap ? String(priceRange.max) : "");
+                applyFilterChanges({
+                  minPrice: priceRange.min > 0 ? String(priceRange.min) : "",
+                  maxPrice: priceRange.max < priceCap ? String(priceRange.max) : "",
+                });
               }}
               className="px-5 py-2 rounded-lg bg-neutral-900 text-white text-[11px] uppercase tracking-[0.12em] font-bold hover:bg-neutral-900 transition-colors"
             >
@@ -455,11 +461,11 @@ function ProductsContent() {
   );
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-[#f5f5f7]">
 
       {/* Shop Header */}
-      <div className="bg-white" style={{ borderBottom: "1px solid #EAEAEA" }}>
-        <div className="max-w-7xl mx-auto px-5 md:px-8 lg:px-10 py-12 md:py-16 lg:py-20">
+      <div className="bg-[#f5f5f7]" style={{ borderBottom: "1px solid rgba(0,0,0,0.06)" }}>
+        <div className="max-w-7xl mx-auto px-5 md:px-8 lg:px-10 py-8 md:py-10 lg:py-12">
           <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-6">
             <div>
               <div className="flex items-center gap-2 text-[10px] uppercase tracking-[0.25em] mb-5 text-gray-500">
@@ -474,6 +480,9 @@ function ProductsContent() {
                   <>MWP Performance <em className="italic" style={{ color: "#111111" }}>Formulas</em></>
                 )}
               </h1>
+              <p className="mt-4 max-w-xl text-sm sm:text-base leading-relaxed text-neutral-500">
+                Thoughtfully made formulas for strength, balance, and everyday vitality.
+              </p>
               {pagination.total > 0 && (
                 <p className="text-[11px] uppercase tracking-[0.2em] mt-4 font-light text-gray-500">
                   {pagination.total} {pagination.total === 1 ? "formula" : "formulas"}
@@ -511,7 +520,7 @@ function ProductsContent() {
         </div>
       </div>
 
-      <div className="max-w-7xl mx-auto px-5 md:px-8 lg:px-10 py-10 md:py-14">
+      <div className="max-w-7xl mx-auto px-5 md:px-8 lg:px-10 py-8 md:py-12">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-12">
 
           {/* Desktop Sidebar */}
@@ -539,7 +548,7 @@ function ProductsContent() {
           <div className="lg:col-span-9">
 
             {/* Quick Filter Tags */}
-            <div className="flex flex-wrap items-center gap-2.5 mb-8">
+            <div className="flex flex-wrap items-center gap-2 mb-6">
               {[
                 { label: "Featured", type: "featured" },
                 { label: "Best Sellers", type: "bestseller" },
@@ -549,12 +558,11 @@ function ProductsContent() {
                 <button
                   key={type}
                   onClick={() => handleFilterChange("productType", filters.productType === type ? "" : type)}
-                  className="px-5 py-2.5 text-[10px] uppercase tracking-[0.18em] font-medium transition-all duration-300"
+                  className="rounded-full px-4 py-2 text-[12px] font-medium transition-all duration-300"
                   style={{
-                    border: filters.productType === type ? "1px solid #111111" : "1px solid #EAEAEA",
-                    backgroundColor: filters.productType === type ? "#111111" : "transparent",
-                    color: filters.productType === type ? "#fff" : "#666666",
-                    borderRadius: "8px",
+                    border: filters.productType === type ? "1px solid #111111" : "1px solid rgba(0,0,0,0.08)",
+                    backgroundColor: filters.productType === type ? "#111111" : "rgba(255,255,255,0.72)",
+                    color: filters.productType === type ? "#fff" : "#4b4b4d",
                   }}
                 >
                   {label}
@@ -563,11 +571,11 @@ function ProductsContent() {
               {activeCount > 0 && (
                 <button
                   onClick={clearFilters}
-                  className="px-5 py-2.5 text-[10px] uppercase tracking-[0.18em] font-medium transition-colors duration-300"
+                  className="rounded-full px-4 py-2 text-[12px] font-medium transition-colors duration-300"
                   style={{
-                    border: "1px solid rgba(194,75,66,0.3)",
-                    color: "#C24B42",
-                    borderRadius: "8px",
+                    border: "1px solid rgba(0,0,0,0.1)",
+                    color: "#555558",
+                    backgroundColor: "rgba(255,255,255,0.72)",
                   }}
                 >
                   Clear All
@@ -576,8 +584,8 @@ function ProductsContent() {
             </div>
 
             {/* Controls Bar */}
-            <div className="flex items-center justify-between gap-4 pb-5 mb-8" style={{ borderBottom: "1px solid #EAEAEA" }}>
-              <span className="text-[11px] uppercase tracking-[0.18em] font-light text-gray-500">
+            <div className="flex items-center justify-between gap-4 rounded-lg border border-black/[0.06] bg-white px-4 py-3 mb-6">
+              <span className="text-[12px] text-neutral-500">
                 {loading ? (
                   <span className="h-4 bg-gray-100 animate-pulse w-24 inline-block" style={{ borderRadius: "4px" }} />
                 ) : (
@@ -587,15 +595,16 @@ function ProductsContent() {
 
               <div className="flex items-center gap-4">
                 {/* View Toggle */}
-                <div className="hidden md:flex items-center" style={{ border: "1px solid #EAEAEA", borderRadius: "6px", overflow: "hidden" }}>
+                <div className="hidden md:flex items-center gap-1 rounded-full bg-[#f5f5f7] p-1">
                   {[2, 3, 4].map((c) => (
                     <button
                       key={c}
                       onClick={() => { setViewMode("grid"); setViewCols(c); }}
-                      className="w-9 h-9 flex items-center justify-center text-[11px] font-medium transition-all"
+                      className="w-8 h-8 rounded-full flex items-center justify-center text-[11px] font-medium transition-all"
                       style={{
-                        backgroundColor: viewMode === "grid" && viewCols === c ? "#111111" : "transparent",
-                        color: viewMode === "grid" && viewCols === c ? "#fff" : "#666666",
+                        backgroundColor: viewMode === "grid" && viewCols === c ? "#fff" : "transparent",
+                        color: viewMode === "grid" && viewCols === c ? "#111" : "#777",
+                        boxShadow: viewMode === "grid" && viewCols === c ? "0 1px 3px rgba(0,0,0,0.12)" : "none",
                       }}
                       aria-label={`${c} columns`}
                     >
@@ -610,8 +619,8 @@ function ProductsContent() {
                   className="text-[11px] uppercase tracking-[0.12em] bg-transparent focus:outline-none cursor-pointer font-light"
                   style={{
                     padding: "10px 14px",
-                    border: "1px solid #EAEAEA",
-                    borderRadius: "6px",
+                    border: "1px solid rgba(0,0,0,0.08)",
+                    borderRadius: "999px",
                     color: "#111111",
                   }}
                 >
@@ -643,7 +652,7 @@ function ProductsContent() {
                 </button>
               </div>
             ) : (
-              <div className={`grid gap-5 transition-opacity duration-300 ${loading ? "opacity-60 pointer-events-none" : ""} ${getColsClass()}`}>
+              <div className={`grid gap-2 transition-opacity duration-300 ${loading ? "opacity-60 pointer-events-none" : ""} ${getColsClass()}`}>
                 {products.map((p) => (
                   <ProductCard key={p.id} product={p} viewMode={viewMode} />
                 ))}

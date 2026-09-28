@@ -1,5 +1,4 @@
 import "./globals.css";
-import { Inter, Playfair_Display } from "next/font/google";
 import { headers } from "next/headers";
 import { CartProvider } from "@/lib/cart-context";
 import { AuthProvider } from "@/lib/auth-context";
@@ -7,21 +6,6 @@ import { CompareProvider } from "@/lib/compare-context";
 import { LanguageProvider } from "@/lib/language-context";
 import { SiteChrome } from "@/components/layout/SiteChrome";
 import { Toaster } from "sonner";
-
-const inter = Inter({
-  subsets: ["latin"],
-  weight: ["300", "400", "500", "600", "700", "800", "900"],
-  variable: "--font-sans",
-  display: "swap",
-});
-
-const playfair = Playfair_Display({
-  subsets: ["latin"],
-  weight: ["400", "500", "600", "700", "800", "900"],
-  style: ["normal", "italic"],
-  variable: "--font-display",
-  display: "swap",
-});
 
 export const metadata = {
   title: {
@@ -53,7 +37,7 @@ export default function RootLayout({ children }) {
   const isMaintenance = headers().get("x-maintenance-active") === "1";
 
   return (
-    <html lang="en" className={`${inter.variable} ${playfair.variable}`}>
+    <html lang="en">
       <body className="antialiased font-sans bg-[#09090b] text-white">
         <AuthProvider>
           <CartProvider>

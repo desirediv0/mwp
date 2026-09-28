@@ -10,12 +10,12 @@ export default {
 	],
 	theme: {
 		extend: {
-			fontFamily: {
-				sans: ['Acumin Pro', 'sans-serif'],
-				display: ['var(--font-display)', 'Playfair Display', 'Georgia', 'serif'],
-				heading: ['var(--font-display)', 'Playfair Display', 'Georgia', 'serif'],
-				serif: ['var(--font-display)', 'Playfair Display', 'Georgia', 'serif'],
-			},
+		fontFamily: {
+			sans: ['Poppins', 'sans-serif'],
+			display: ['Poppins', 'sans-serif'],
+			heading: ['Poppins', 'sans-serif'],
+			serif: ['Poppins', 'sans-serif'],
+		},
 			letterSpacing: {
 				luxe: '0.2em',
 				'luxe-lg': '0.3em',
