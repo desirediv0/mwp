@@ -11,10 +11,10 @@ export default {
 	theme: {
 		extend: {
 		fontFamily: {
-			sans: ['Poppins', 'sans-serif'],
-			display: ['Poppins', 'sans-serif'],
-			heading: ['Poppins', 'sans-serif'],
-			serif: ['Poppins', 'sans-serif'],
+			sans: ['Neulis', 'sans-serif'],
+			display: ['Neulis', 'sans-serif'],
+			heading: ['Neulis', 'sans-serif'],
+			serif: ['Neulis', 'sans-serif'],
 		},
 			letterSpacing: {
 				luxe: '0.2em',

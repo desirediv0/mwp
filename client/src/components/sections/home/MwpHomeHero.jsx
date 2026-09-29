@@ -81,7 +81,7 @@ export default function MwpHomeHero() {
   return (
     <section
       ref={rootRef}
-      className="relative w-full bg-black text-white overflow-hidden flex flex-col justify-between min-h-[calc(100svh-92px)] sm:min-h-[calc(100svh-100px)]"
+      className="relative w-full bg-white text-neutral-900 overflow-hidden flex flex-col justify-between min-h-[calc(100svh-92px)] sm:min-h-[calc(100svh-100px)]"
     >
       <div ref={bgRef} className="absolute inset-0">
         <Image
@@ -89,33 +89,31 @@ export default function MwpHomeHero() {
           alt=""
           fill
           priority
-          className="object-cover opacity-50"
+          className="object-cover"
         />
       </div>
-      <div className="absolute inset-0 bg-gradient-to-b from-black/70 via-black/35 to-black/85" />
-      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_50%_35%,rgba(255,255,255,0.08),transparent_60%)]" />
-      <div className="absolute -top-32 left-1/2 -translate-x-1/2 w-[720px] h-[360px] bg-white/[0.05] blur-[160px] rounded-full pointer-events-none" />
+      <div className="absolute inset-0 bg-gradient-to-b from-white/10 via-white/0 to-white/40" />
 
       <div className="relative z-10 flex-1 flex items-center justify-center max-w-6xl mx-auto px-6 py-8 w-full">
         <div className="text-center">
           <p
             data-hero-anim
             data-hero-eyebrow
-            className="text-[11px] sm:text-xs uppercase tracking-[0.35em] text-white/50 font-semibold mb-3 opacity-0"
+            className="text-[11px] sm:text-xs uppercase tracking-[0.35em] text-neutral-500 font-semibold mb-3 opacity-0"
           >
             MWP Supplements
           </p>
           <h1
             data-hero-anim
             data-hero-title
-            className="text-4xl sm:text-5xl md:text-6xl font-semibold tracking-tight drop-shadow-[0_4px_30px_rgba(0,0,0,0.6)] opacity-0"
+            className="text-4xl sm:text-5xl md:text-6xl font-semibold tracking-tight text-neutral-900 opacity-0"
           >
             Men &bull; Women &bull; Power.
           </h1>
           <p
             data-hero-anim
             data-hero-sub
-            className="mt-3 text-sm sm:text-base md:text-lg text-white/60 max-w-xl mx-auto opacity-0"
+            className="mt-3 text-sm sm:text-base md:text-lg text-neutral-600 max-w-xl mx-auto opacity-0"
           >
             Premium global wellness formulas, engineered for everyday performance.
           </p>
@@ -125,7 +123,7 @@ export default function MwpHomeHero() {
               href="/products"
               data-hero-anim
               data-hero-cta
-              className="bg-white text-black hover:bg-neutral-200 transition-colors rounded-full px-6 py-2.5 font-medium opacity-0"
+              className="bg-neutral-900 text-white hover:bg-neutral-700 transition-colors rounded-full px-6 py-2.5 font-medium opacity-0"
             >
               {t("shopNow")}
             </Link>
@@ -133,7 +131,7 @@ export default function MwpHomeHero() {
               href="/why-us"
               data-hero-anim
               data-hero-cta
-              className="text-white hover:underline underline-offset-4 font-medium opacity-0"
+              className="text-neutral-900 hover:underline underline-offset-4 font-medium opacity-0"
             >
               Learn more
             </Link>
@@ -143,8 +141,8 @@ export default function MwpHomeHero() {
 
       {/* scroll hint */}
       <div data-hero-anim data-hero-scroll className="relative z-10 flex justify-center pb-6 opacity-0">
-        <div className="w-5 h-8 rounded-full border border-white/25 flex items-start justify-center p-1.5">
-          <span className="w-1 h-1 rounded-full bg-white/70 animate-bounce" />
+        <div className="w-5 h-8 rounded-full border border-neutral-400 flex items-start justify-center p-1.5">
+          <span className="w-1 h-1 rounded-full bg-neutral-500 animate-bounce" />
         </div>
       </div>
     </section>

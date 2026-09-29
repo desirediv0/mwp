@@ -1,5 +1,7 @@
 import MwpHomeHero from "@/components/sections/home/MwpHomeHero";
 import MwpProductShowcase from "@/components/sections/home/MwpProductShowcase";
+import MwpJourneyTimeline from "@/components/sections/home/MwpJourneyTimeline";
+import MwpScrollTextEffect from "@/components/sections/home/MwpScrollTextEffect";
 
 export const metadata = {
   title: "MWP SUPPLEMENTS — Men | Women | Power",
@@ -13,7 +15,9 @@ export default function Home() {
   return (
     <>
       <MwpHomeHero />
+      <MwpScrollTextEffect />
       <MwpProductShowcase />
+      <MwpJourneyTimeline />
     </>
   );
 }
