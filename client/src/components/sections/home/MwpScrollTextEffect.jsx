@@ -50,7 +50,7 @@ export default function MwpScrollTextEffect() {
 
         <div
           ref={targetRef}
-          className="relative box-border flex h-[160vh] sm:h-[210vh] items-center justify-center gap-[2vw] overflow-hidden bg-[#f5f4f3] p-[2vw]"
+          className="relative box-border flex h-[130vh] sm:h-[210vh] items-center justify-center gap-[2vw] overflow-hidden bg-[#f5f4f3] p-[2vw]"
         >
           <div
             className="w-full max-w-5xl text-center text-3xl sm:text-5xl md:text-6xl font-semibold uppercase tracking-wide text-black"

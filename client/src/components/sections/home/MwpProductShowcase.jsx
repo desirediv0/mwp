@@ -19,7 +19,7 @@ const SLIDES = [
     tint: "from-[#FBF7EE] to-[#F3ECD8]",
     glow: "#C9A227",
     image: "/mwp-tile-ultra-pro.png",
-    badge: "GMP Certified",
+    badge: "Natural Hills",
   },
   {
     n: "02",
@@ -31,7 +31,7 @@ const SLIDES = [
     tint: "from-[#EEF2FB] to-[#E2E9F7]",
     glow: "#3B4E8A",
     image: "/mwp-tile-power-max.png",
-    badge: "Lab Verified",
+    badge: "Natural Hills",
   },
   {
     n: "03",
@@ -43,7 +43,7 @@ const SLIDES = [
     tint: "from-[#FBF2E9] to-[#F5E4D0]",
     glow: "#A15C2C",
     image: "/mwp-tile-rapid-boost.png",
-    badge: "Fast Acting",
+    badge: "Natural Hills",
   },
   {
     n: "04",
@@ -55,7 +55,7 @@ const SLIDES = [
     tint: "from-[#FBEFEC] to-[#F5DFD9]",
     glow: "#9C5A4A",
     image: "/mwp-tile-her-power.png",
-    badge: "Hormone Safe",
+    badge: "Natural Hills",
   },
   {
     n: "05",
@@ -67,7 +67,7 @@ const SLIDES = [
     tint: "from-[#F4EEFB] to-[#E9DEF5]",
     glow: "#6B4E92",
     image: "/mwp-tile-her-energy.png",
-    badge: "Clean Energy",
+    badge: "Natural Hills",
   },
   {
     n: "06",
@@ -79,7 +79,7 @@ const SLIDES = [
     tint: "from-[#F6F5F1] to-[#ECE9E1]",
     glow: "#5C5648",
     image: "/mwp-tile-daily-vitality.png",
-    badge: "Daily Essential",
+    badge: "Natural Hills",
   },
 ];
 
@@ -90,22 +90,22 @@ function ProductTile({ slide, index }) {
       data-tile
       className={`group relative overflow-hidden  bg-gradient-to-br ${slide.tint} border border-black/[0.04] flex flex-col opacity-0`}
     >
-      {/* Shield-shaped ribbon badge, top-left corner */}
+      {/* Shield-shaped ribbon badge, top-left corner — smaller on mobile, full size from sm: up */}
       {slide.badge && (
-        <div className="pointer-events-none absolute top-0 left-6 z-20 w-20">
+        <div className="pointer-events-none absolute top-0 left-4 sm:left-6 z-20 w-14 sm:w-20">
           {/* Ambient glow behind the badge, tinted per product */}
           <div
-            className="absolute -inset-2 -top-1 rounded-full blur-lg opacity-60"
+            className="absolute -inset-1.5 sm:-inset-2 -top-1 rounded-full blur-lg opacity-60"
             style={{ background: slide.glow }}
           />
           <div
-            className="relative flex flex-col items-center justify-center bg-gradient-to-b from-neutral-800 to-neutral-950 pt-3.5 pb-5 text-white shadow-[0_8px_20px_-4px_rgba(0,0,0,0.45)]"
+            className="relative flex flex-col items-center justify-center bg-gradient-to-b from-neutral-800 to-neutral-950 pt-2.5 sm:pt-3.5 pb-3.5 sm:pb-5 text-white shadow-[0_8px_20px_-4px_rgba(0,0,0,0.45)]"
             style={{ clipPath: "polygon(0 0, 100% 0, 100% 100%, 50% 84%, 0 100%)" }}
           >
             {/* Subtle top shine */}
             <div className="pointer-events-none absolute inset-x-0 top-0 h-6 bg-gradient-to-b from-white/15 to-transparent" />
-            <IconShieldCheck className="h-5 w-5 mb-1 drop-shadow-[0_0_4px_rgba(255,255,255,0.5)]" stroke={2} />
-            <span className="text-[9.5px] font-bold uppercase tracking-wide leading-[1.15] text-center px-1">
+            <IconShieldCheck className="h-3.5 w-3.5 sm:h-5 sm:w-5 mb-0.5 sm:mb-1 drop-shadow-[0_0_4px_rgba(255,255,255,0.5)]" stroke={2} />
+            <span className="text-[7px] sm:text-[9.5px] font-bold uppercase tracking-wide leading-[1.15] text-center px-1">
               {slide.badge.split(" ").map((word, i) => (
                 <span key={i} className="block">{word}</span>
               ))}
@@ -120,8 +120,8 @@ function ProductTile({ slide, index }) {
         style={{ background: slide.glow }}
       />
 
-      <div className="relative z-10 px-8 sm:px-10 pt-10 sm:pt-12 pb-2 text-center">
-        <p className="text-[15px] sm:text-4xl font-semibold tracking-tight text-neutral-900">
+      <div className="relative z-10 px-8 sm:px-10 pt-14 sm:pt-12 pb-2 text-center">
+        <p className="text-xl sm:text-4xl font-semibold tracking-tight text-neutral-900">
           {slide.name}
         </p>
         <p className="mt-1.5 text-xl sm:text-2xl font-semibold tracking-tight text-neutral-800">

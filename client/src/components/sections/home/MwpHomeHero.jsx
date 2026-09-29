@@ -85,11 +85,18 @@ export default function MwpHomeHero() {
     >
       <div ref={bgRef} className="absolute inset-0">
         <Image
+          src="/mwp-hero-bg-mobile.jpg"
+          alt=""
+          fill
+          priority
+          className="object-cover object-top sm:hidden"
+        />
+        <Image
           src="/mwp-hero-bg.png"
           alt=""
           fill
           priority
-          className="object-cover"
+          className="hidden object-cover sm:block"
         />
       </div>
       <div className="absolute inset-0 bg-gradient-to-b from-white/10 via-white/0 to-white/40" />
