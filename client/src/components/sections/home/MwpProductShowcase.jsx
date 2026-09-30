@@ -19,7 +19,7 @@ const SLIDES = [
     tint: "from-[#FBF7EE] to-[#F3ECD8]",
     glow: "#C9A227",
     image: "/mwp-tile-ultra-pro.png",
-    badge: "Natural Hills",
+    badge: "Natural Heal",
   },
   {
     n: "02",
@@ -31,7 +31,7 @@ const SLIDES = [
     tint: "from-[#EEF2FB] to-[#E2E9F7]",
     glow: "#3B4E8A",
     image: "/mwp-tile-power-max.png",
-    badge: "Natural Hills",
+    badge: "Natural Heal",
   },
   {
     n: "03",
@@ -43,7 +43,7 @@ const SLIDES = [
     tint: "from-[#FBF2E9] to-[#F5E4D0]",
     glow: "#A15C2C",
     image: "/mwp-tile-rapid-boost.png",
-    badge: "Natural Hills",
+    badge: "Natural Heal",
   },
   {
     n: "04",
@@ -55,7 +55,7 @@ const SLIDES = [
     tint: "from-[#FBEFEC] to-[#F5DFD9]",
     glow: "#9C5A4A",
     image: "/mwp-tile-her-power.png",
-    badge: "Natural Hills",
+    badge: "Natural Heal",
   },
   {
     n: "05",
@@ -67,7 +67,7 @@ const SLIDES = [
     tint: "from-[#F4EEFB] to-[#E9DEF5]",
     glow: "#6B4E92",
     image: "/mwp-tile-her-energy.png",
-    badge: "Natural Hills",
+    badge: "Natural Heal",
   },
   {
     n: "06",
@@ -79,7 +79,7 @@ const SLIDES = [
     tint: "from-[#F6F5F1] to-[#ECE9E1]",
     glow: "#5C5648",
     image: "/mwp-tile-daily-vitality.png",
-    badge: "Natural Hills",
+    badge: "Natural Heal",
   },
 ];
 
@@ -98,18 +98,23 @@ function ProductTile({ slide, index }) {
             className="absolute -inset-1.5 sm:-inset-2 -top-1 rounded-full blur-lg opacity-60"
             style={{ background: slide.glow }}
           />
+          {/* Golden outline: gold shape with a slightly inset green shape on top */}
           <div
-            className="relative flex flex-col items-center justify-center bg-gradient-to-b from-neutral-800 to-neutral-950 pt-2.5 sm:pt-3.5 pb-3.5 sm:pb-5 text-white shadow-[0_8px_20px_-4px_rgba(0,0,0,0.45)]"
+            className="relative bg-gradient-to-b from-[#E5C56A] via-[#C9A227] to-[#8B6914] p-[2px] pb-[3px] drop-shadow-[0_8px_14px_rgba(0,0,0,0.3)]"
             style={{ clipPath: "polygon(0 0, 100% 0, 100% 100%, 50% 84%, 0 100%)" }}
           >
-            {/* Subtle top shine */}
-            <div className="pointer-events-none absolute inset-x-0 top-0 h-6 bg-gradient-to-b from-white/15 to-transparent" />
-            <IconShieldCheck className="h-3.5 w-3.5 sm:h-5 sm:w-5 mb-0.5 sm:mb-1 drop-shadow-[0_0_4px_rgba(255,255,255,0.5)]" stroke={2} />
-            <span className="text-[7px] sm:text-[9.5px] font-bold uppercase tracking-wide leading-[1.15] text-center px-1">
-              {slide.badge.split(" ").map((word, i) => (
-                <span key={i} className="block">{word}</span>
-              ))}
-            </span>
+            <div
+              className="relative flex flex-col items-center justify-center bg-gradient-to-b from-emerald-600 to-emerald-900 pt-2.5 sm:pt-3.5 pb-3.5 sm:pb-5 text-white"
+              style={{ clipPath: "polygon(0 0, 100% 0, 100% 100%, 50% 84%, 0 100%)" }}
+            >
+              <div className="pointer-events-none absolute inset-x-0 top-0 h-6 bg-gradient-to-b from-white/20 to-transparent" />
+              <IconShieldCheck className="h-3.5 w-3.5 sm:h-5 sm:w-5 mb-0.5 sm:mb-1 text-[#F5DE9A] drop-shadow-[0_0_4px_rgba(229,197,106,0.7)]" stroke={2} />
+              <span className="text-[7px] sm:text-[9.5px] font-bold uppercase tracking-wide leading-[1.15] text-center px-1">
+                {slide.badge.split(" ").map((word, i) => (
+                  <span key={i} className="block">{word}</span>
+                ))}
+              </span>
+            </div>
           </div>
         </div>
       )}
