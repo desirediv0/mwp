@@ -9,11 +9,20 @@ import Link from "next/link";
 export default function ProductFormulaSections({ product }) {
   const items = product.ingredientItems || [];
   const howToUse = [product.servingSize, product.whenToTake].filter(Boolean).join(" · ");
+  // shippingReturn / legalInfo are rich-text (HTML) in the admin; show them as plain text here.
+  const plain = (html) =>
+    (html || "")
+      .replace(/<\/(p|div|li|h[1-6])>/gi, " ")
+      .replace(/<[^>]*>/g, "")
+      .replace(/&nbsp;/g, " ")
+      .replace(/&amp;/g, "&")
+      .replace(/\s+/g, " ")
+      .trim();
 
   const infoCards = [
     { title: "How to use", body: howToUse },
-    { title: "Shipping & returns", body: product.shippingReturn },
-    { title: "Quality & trust", body: product.legalInfo },
+    { title: "Shipping & returns", body: plain(product.shippingReturn) },
+    { title: "Quality & trust", body: plain(product.legalInfo) },
   ].filter((c) => c.body);
 
   if (items.length === 0 && infoCards.length === 0) return null;

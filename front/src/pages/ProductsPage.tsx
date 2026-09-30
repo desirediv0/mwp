@@ -2582,6 +2582,47 @@ export function ProductForm({
             <p className="text-xs text-muted-foreground">
               Add rich content for each accordion section on the product page. Leave empty to hide a section.
             </p>
+            <div className="grid gap-4 sm:grid-cols-3 rounded-lg border bg-white p-4">
+              <div className="space-y-1.5">
+                <Label htmlFor="dosageForm">Dosage Form</Label>
+                <Input
+                  id="dosageForm"
+                  placeholder="e.g. Capsule"
+                  value={sectionContents.dosageForm || ""}
+                  onChange={(e) => {
+                    const v = e.target.value;
+                    setSectionContents((prev) => ({ ...prev, dosageForm: v }));
+                    setProduct((prev) => ({ ...prev, dosageForm: v }));
+                  }}
+                />
+              </div>
+              <div className="space-y-1.5">
+                <Label htmlFor="servingSize">How to use: Serving Size</Label>
+                <Input
+                  id="servingSize"
+                  placeholder="e.g. 2 Capsules Daily"
+                  value={sectionContents.servingSize || ""}
+                  onChange={(e) => {
+                    const v = e.target.value;
+                    setSectionContents((prev) => ({ ...prev, servingSize: v }));
+                    setProduct((prev) => ({ ...prev, servingSize: v }));
+                  }}
+                />
+              </div>
+              <div className="space-y-1.5">
+                <Label htmlFor="whenToTake">How to use: When to Take</Label>
+                <Input
+                  id="whenToTake"
+                  placeholder="e.g. With a meal"
+                  value={sectionContents.whenToTake || ""}
+                  onChange={(e) => {
+                    const v = e.target.value;
+                    setSectionContents((prev) => ({ ...prev, whenToTake: v }));
+                    setProduct((prev) => ({ ...prev, whenToTake: v }));
+                  }}
+                />
+              </div>
+            </div>
             <div className="grid gap-6">
               <SectionEditor
                 label="Formula & Key Actives"
