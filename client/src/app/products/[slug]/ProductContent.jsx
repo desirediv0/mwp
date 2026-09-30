@@ -29,6 +29,7 @@ import {
 import { useAuth } from "@/lib/auth-context";
 import { useRouter } from "next/navigation";
 import ReviewSection from "./ReviewSection";
+import ProductFormulaSections from "./ProductFormulaSections";
 import { useAddVariantToCart } from "@/lib/cart-utils";
 import { useCart } from "@/lib/cart-context";
 import { useCompare } from "@/lib/compare-context";
@@ -786,6 +787,8 @@ export default function ProductContent({ slug }) {
           </div>
         </div>
       )}
+
+      <ProductFormulaSections product={product} />
 
       {/* Accordion Sections */}
       <div className="max-w-6xl mx-auto px-6 lg:px-10 mb-16 md:mb-20">

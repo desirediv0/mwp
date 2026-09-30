@@ -418,6 +418,7 @@ export const getProductBySlug = asyncHandler(async (req, res) => {
         orderBy: { displayOrder: "asc" },
         include: { ingredient: true },
       },
+      ingredientItems: { orderBy: { displayOrder: "asc" } },
       variants: {
         where: { isActive: true },
         include: {
@@ -494,6 +495,11 @@ export const getProductBySlug = asyncHandler(async (req, res) => {
   // Format the response
   const formattedProduct = {
     ...product,
+    // Admin-managed ingredient list (name, dose, origin) for the "Inside the formula" section
+    ingredientItems: (product.ingredientItems || []).map((i) => ({
+      ...i,
+      image: i.image ? getFileUrl(i.image) : null,
+    })),
     // Linked ingredients (for the box-QR / ingredients section)
     ingredients: (product.ingredients || []).map((pi) => ({
       id: pi.ingredient.id,

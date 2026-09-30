@@ -43,6 +43,7 @@ interface IngredientItem {
   type: string | null;
   keyBenefit: string | null;
   source: string | null;
+  amount: string | null;
   description: string;
   image: string | null;
   displayOrder: number;
@@ -54,6 +55,7 @@ const emptyForm = {
   type: "",
   keyBenefit: "",
   source: "",
+  amount: "",
   description: "",
   displayOrder: 0,
 };
@@ -160,6 +162,158 @@ export default function ProductIngredientsPage() {
   return <ManageIngredients product={selected} onBack={() => setSelected(null)} />;
 }
 
+type QuickRow = { key: string; id?: string; name: string; amount: string; source: string };
+
+/* Spreadsheet-style editor: name / dose / origin per row, one Save button. */
+function QuickIngredientTable({
+  productId,
+  items,
+  loading,
+  onChanged,
+  onAdvanced,
+}: {
+  productId: string;
+  items: IngredientItem[];
+  loading: boolean;
+  onChanged: () => void;
+  onAdvanced: (item: IngredientItem) => void;
+}) {
+  const [rows, setRows] = useState<QuickRow[]>([]);
+  const [removed, setRemoved] = useState<string[]>([]);
+  const [saving, setSaving] = useState(false);
+
+  useEffect(() => {
+    setRows(
+      items.map((i) => ({
+        key: i.id,
+        id: i.id,
+        name: i.name,
+        amount: i.amount || "",
+        source: i.source || "",
+      }))
+    );
+    setRemoved([]);
+  }, [items]);
+
+  const setField = (key: string, field: "name" | "amount" | "source", value: string) =>
+    setRows((rs) => rs.map((r) => (r.key === key ? { ...r, [field]: value } : r)));
+
+  const addRow = () =>
+    setRows((rs) => [...rs, { key: `new-${Date.now()}-${rs.length}`, name: "", amount: "", source: "" }]);
+
+  const removeRow = (row: QuickRow) => {
+    if (row.id) setRemoved((r) => [...r, row.id as string]);
+    setRows((rs) => rs.filter((x) => x.key !== row.key));
+  };
+
+  const original = (id?: string) => items.find((i) => i.id === id);
+  const isChanged = (r: QuickRow, idx: number) => {
+    const o = original(r.id);
+    if (!o) return r.name.trim() !== "";
+    return (
+      o.name !== r.name ||
+      (o.amount || "") !== r.amount ||
+      (o.source || "") !== r.source ||
+      o.displayOrder !== idx
+    );
+  };
+  const dirty = removed.length > 0 || rows.some(isChanged);
+
+  const saveAll = async () => {
+    if (rows.some((r, i) => isChanged(r, i) && !r.name.trim())) {
+      toast.error("Ingredient name cannot be empty");
+      return;
+    }
+    setSaving(true);
+    try {
+      for (const id of removed) await api.remove(id);
+      for (let idx = 0; idx < rows.length; idx++) {
+        const r = rows[idx];
+        if (!isChanged(r, idx)) continue;
+        const payload = { name: r.name.trim(), amount: r.amount.trim(), source: r.source.trim(), displayOrder: idx };
+        if (r.id) await api.update(r.id, payload);
+        else await api.create(productId, { ...payload, description: "" });
+      }
+      toast.success("Ingredients saved");
+      onChanged();
+    } catch (err: any) {
+      toast.error(err?.response?.data?.message || "Save failed");
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  if (loading) {
+    return (
+      <div className="flex justify-center py-16">
+        <Loader2 className="h-7 w-7 animate-spin text-[#4CAF50]" />
+      </div>
+    );
+  }
+
+  return (
+    <div className="rounded-xl border bg-white p-4 space-y-3">
+      <div className="flex items-center justify-between gap-3">
+        <div>
+          <h3 className="text-sm font-bold text-[#1F2937]">Inside the formula</h3>
+          <p className="text-xs text-[#9CA3AF]">
+            Type ingredient, dose and origin, then press Save. This is what customers see on the product page.
+          </p>
+        </div>
+        <Button onClick={saveAll} disabled={!dirty || saving}>
+          {saving ? <Loader2 className="h-4 w-4 mr-2 animate-spin" /> : <Check className="h-4 w-4 mr-2" />}
+          Save changes
+        </Button>
+      </div>
+
+      <div className="hidden sm:grid grid-cols-[1.6fr_1fr_1fr_auto] gap-2 px-1 text-[10px] uppercase tracking-wide font-bold text-[#9CA3AF]">
+        <span>Ingredient</span>
+        <span>Dose (e.g. 600 mg)</span>
+        <span>Origin (e.g. India)</span>
+        <span className="w-[76px]" />
+      </div>
+
+      {rows.length === 0 && (
+        <p className="text-sm text-[#9CA3AF] py-6 text-center">No ingredients yet. Click "Add row".</p>
+      )}
+
+      {rows.map((r) => {
+        const item = original(r.id);
+        return (
+          <div key={r.key} className="grid grid-cols-1 sm:grid-cols-[1.6fr_1fr_1fr_auto] gap-2 items-center">
+            <Input value={r.name} onChange={(e) => setField(r.key, "name", e.target.value)} placeholder="Ingredient name" />
+            <Input value={r.amount} onChange={(e) => setField(r.key, "amount", e.target.value)} placeholder="Dose" />
+            <Input value={r.source} onChange={(e) => setField(r.key, "source", e.target.value)} placeholder="Origin" />
+            <div className="flex gap-1.5 w-[76px]">
+              <Button
+                size="sm"
+                variant="outline"
+                disabled={!item}
+                title={item ? "More details (image, description, benefit)" : "Save first to edit details"}
+                onClick={() => item && onAdvanced(item)}
+              >
+                <Pencil className="h-3.5 w-3.5" />
+              </Button>
+              <Button
+                size="sm"
+                variant="outline"
+                className="border-[#EF4444] text-[#EF4444] hover:bg-[#FEF2F2]"
+                onClick={() => removeRow(r)}
+              >
+                <Trash2 className="h-3.5 w-3.5" />
+              </Button>
+            </div>
+          </div>
+        );
+      })}
+
+      <Button variant="outline" size="sm" onClick={addRow}>
+        <Plus className="h-4 w-4 mr-1.5" /> Add row
+      </Button>
+    </div>
+  );
+}
+
 /* ==================================================================== */
 
 function ManageIngredients({ product, onBack }: { product: SearchProduct; onBack: () => void }) {
@@ -254,6 +408,7 @@ function ManageIngredients({ product, onBack }: { product: SearchProduct; onBack
       type: item.type || "",
       keyBenefit: item.keyBenefit || "",
       source: item.source || "",
+      amount: item.amount || "",
       description: item.description,
       displayOrder: item.displayOrder,
     });
@@ -281,17 +436,6 @@ function ManageIngredients({ product, onBack }: { product: SearchProduct; onBack
       toast.error(err?.response?.data?.message || "Save failed");
     } finally {
       setSaving(false);
-    }
-  };
-
-  const remove = async (item: IngredientItem) => {
-    if (!confirm(`Remove "${item.name}"?`)) return;
-    try {
-      await api.remove(item.id);
-      toast.success("Removed");
-      load();
-    } catch {
-      toast.error("Remove failed");
     }
   };
 
@@ -367,69 +511,7 @@ function ManageIngredients({ product, onBack }: { product: SearchProduct; onBack
         </div>
       </div>
 
-      {/* Ingredients list */}
-      {loading ? (
-        <div className="flex justify-center py-16">
-          <Loader2 className="h-7 w-7 animate-spin text-[#4CAF50]" />
-        </div>
-      ) : items.length === 0 ? (
-        <div className="text-center py-16 border rounded-xl bg-white">
-          <FlaskConical className="h-9 w-9 text-[#9CA3AF] mx-auto mb-3" />
-          <p className="text-[#1F2937] font-semibold">No ingredients yet</p>
-          <p className="text-sm text-[#9CA3AF] mt-1">Add the first ingredient for this product.</p>
-        </div>
-      ) : (
-        <div className="space-y-2">
-          {items.map((item) => (
-            <div key={item.id} className="flex items-center gap-4 p-3 rounded-xl border bg-white">
-              <div className="w-14 h-14 rounded-lg bg-[#F3F4F6] overflow-hidden shrink-0 flex items-center justify-center">
-                {item.image ? (
-                  <img src={item.image} alt={item.name} className="w-full h-full object-cover" />
-                ) : (
-                  <FlaskConical className="h-5 w-5 text-[#9CA3AF]" />
-                )}
-              </div>
-              <div className="min-w-0 flex-1">
-                <div className="flex items-center gap-2 flex-wrap">
-                  <p className="text-sm font-bold text-[#1F2937] truncate">{item.name}</p>
-                  {item.type && (
-                    <span className="text-[10px] uppercase tracking-wide font-bold text-[#2E7D32] bg-[#E8F5E9] px-1.5 py-0.5 rounded shrink-0">
-                      {item.type}
-                    </span>
-                  )}
-                  {item.keyBenefit && (
-                    <span className="text-[10px] uppercase tracking-wide font-bold text-[#B45309] bg-[#FEF3C7] px-1.5 py-0.5 rounded shrink-0">
-                      {item.keyBenefit}
-                    </span>
-                  )}
-                </div>
-                {item.scientificName && (
-                  <p className="text-[11px] italic text-[#6B7280] mt-0.5">{item.scientificName}</p>
-                )}
-                <p className="text-xs text-[#9CA3AF] truncate mt-0.5">{item.description}</p>
-                {item.source && (
-                  <p className="text-[11px] text-[#9CA3AF] mt-0.5">
-                    <span className="font-semibold text-[#6B7280]">Source:</span> {item.source}
-                  </p>
-                )}
-              </div>
-              <div className="flex gap-2 shrink-0">
-                <Button size="sm" variant="outline" onClick={() => openEdit(item)}>
-                  <Pencil className="h-3.5 w-3.5" />
-                </Button>
-                <Button
-                  size="sm"
-                  variant="outline"
-                  className="border-[#EF4444] text-[#EF4444] hover:bg-[#FEF2F2]"
-                  onClick={() => remove(item)}
-                >
-                  <Trash2 className="h-3.5 w-3.5" />
-                </Button>
-              </div>
-            </div>
-          ))}
-        </div>
-      )}
+      <QuickIngredientTable productId={product.id} items={items} loading={loading} onChanged={load} onAdvanced={openEdit} />
 
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogContent className="sm:max-w-[520px] max-h-[85vh] overflow-y-auto">
@@ -472,6 +554,14 @@ function ManageIngredients({ product, onBack }: { product: SearchProduct; onBack
                   placeholder="e.g. Boosts Energy"
                 />
               </div>
+            </div>
+            <div>
+              <Label>Amount / Dose</Label>
+              <Input
+                value={form.amount}
+                onChange={(e) => setForm((f) => ({ ...f, amount: e.target.value }))}
+                placeholder="e.g. 600 mg"
+              />
             </div>
             <div>
               <Label>Source / Origin</Label>

@@ -1564,6 +1564,7 @@ interface ProductIngredientData {
   type?: string;
   keyBenefit?: string;
   source?: string;
+  amount?: string;
   description: string;
   displayOrder?: number;
   image?: File | null;
@@ -1579,6 +1580,7 @@ export const productIngredients = {
     if (data.type) fd.append("type", data.type);
     if (data.keyBenefit) fd.append("keyBenefit", data.keyBenefit);
     if (data.source) fd.append("source", data.source);
+    if (data.amount) fd.append("amount", data.amount);
     fd.append("description", data.description);
     if (data.displayOrder !== undefined) fd.append("displayOrder", String(data.displayOrder));
     if (data.image) fd.append("image", data.image);
@@ -1593,6 +1595,7 @@ export const productIngredients = {
     if (data.type !== undefined) fd.append("type", data.type);
     if (data.keyBenefit !== undefined) fd.append("keyBenefit", data.keyBenefit);
     if (data.source !== undefined) fd.append("source", data.source);
+    if (data.amount !== undefined) fd.append("amount", data.amount);
     if (data.description !== undefined) fd.append("description", data.description);
     if (data.displayOrder !== undefined) fd.append("displayOrder", String(data.displayOrder));
     if (data.image) fd.append("image", data.image);

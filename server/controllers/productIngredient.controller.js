@@ -85,8 +85,8 @@ export const adminGetProductIngredients = asyncHandler(async (req, res) => {
 
 export const adminCreateProductIngredient = asyncHandler(async (req, res) => {
   const { productId } = req.params;
-  const { name, scientificName, type, keyBenefit, source, description, displayOrder } = req.body;
-  if (!name || !description) throw new ApiError(400, "Name and description are required");
+  const { name, scientificName, type, keyBenefit, source, amount, description, displayOrder } = req.body;
+  if (!name) throw new ApiError(400, "Name is required");
 
   const product = await prisma.product.findUnique({ where: { id: productId } });
   if (!product) throw new ApiError(404, "Product not found");
@@ -102,7 +102,8 @@ export const adminCreateProductIngredient = asyncHandler(async (req, res) => {
       type: type || null,
       keyBenefit: keyBenefit || null,
       source: source || null,
-      description,
+      amount: amount || null,
+      description: description || "",
       image,
       displayOrder: displayOrder !== undefined ? parseInt(displayOrder) || 0 : 0,
     },
@@ -116,13 +117,14 @@ export const adminUpdateProductIngredient = asyncHandler(async (req, res) => {
   const existing = await prisma.productIngredientItem.findUnique({ where: { id: itemId } });
   if (!existing) throw new ApiError(404, "Ingredient not found");
 
-  const { name, scientificName, type, keyBenefit, source, description, displayOrder } = req.body;
+  const { name, scientificName, type, keyBenefit, source, amount, description, displayOrder } = req.body;
   const data = {};
   if (name !== undefined) data.name = name;
   if (scientificName !== undefined) data.scientificName = scientificName || null;
   if (type !== undefined) data.type = type || null;
   if (keyBenefit !== undefined) data.keyBenefit = keyBenefit || null;
   if (source !== undefined) data.source = source || null;
+  if (amount !== undefined) data.amount = amount || null;
   if (description !== undefined) data.description = description;
   if (displayOrder !== undefined) data.displayOrder = parseInt(displayOrder) || 0;
 
