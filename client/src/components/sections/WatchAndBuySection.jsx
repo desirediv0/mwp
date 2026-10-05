@@ -3,6 +3,7 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 import { fetchApi, formatCurrency } from "@/lib/utils";
 import Link from "next/link";
+import Image from "next/image";
 import {
   IconPlayerPlay,
   IconVolume,
@@ -120,9 +121,12 @@ function ReelCard({ reel, onClick }) {
                 className="w-12 h-12 overflow-hidden flex-shrink-0 border border-line"
                 style={{ borderRadius: "6px" }}
               >
-                <img
+                <Image
                   src={getProductImageUrl(product)}
                   alt={product.name}
+                  width={48}
+                  height={48}
+                  unoptimized
                   className="w-full h-full object-cover"
                 />
               </div>
@@ -343,7 +347,7 @@ function ReelViewer({ reels, currentIndex, onClose, onNavigate }) {
                   className="w-16 h-16 overflow-hidden flex-shrink-0 shadow-lg"
                   style={{ borderRadius: "8px", border: "1px solid rgba(255,255,255,0.2)" }}
                 >
-                  <img src={getProductImageUrl(product)} alt={product.name} className="w-full h-full object-cover" />
+                  <Image src={getProductImageUrl(product)} alt={product.name} width={64} height={64} unoptimized className="w-full h-full object-cover" />
                 </div>
               )}
               <div className="flex-1 min-w-0">

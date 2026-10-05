@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { 
   IconFlask, 
@@ -525,7 +526,7 @@ export default function CustomPerfumePage() {
 
                                 <div>
                                   <div className="w-12 h-12 rounded-2xl mx-auto mb-2.5 flex items-center justify-center border border-[#E8DAFA] overflow-hidden relative shadow-inner bg-[#FAF5FF] group-hover:scale-105 transition-transform">
-                                    <img src={note.image} alt={note.name} className="w-full h-full object-cover opacity-85" loading="lazy" />
+                                    <Image src={note.image} alt={note.name} width={48} height={48} unoptimized className="w-full h-full object-cover opacity-85" />
                                     <div className="absolute inset-0 bg-gradient-to-t from-[#240E42]/40 via-transparent to-transparent" />
                                     <span className="w-3.5 h-3.5 rounded-full border border-white/80 shadow relative z-10" style={{ backgroundColor: note.color }} />
                                   </div>
@@ -596,7 +597,7 @@ export default function CustomPerfumePage() {
 
                                 <div>
                                   <div className="w-12 h-12 rounded-2xl mx-auto mb-2.5 flex items-center justify-center border border-[#E8DAFA] overflow-hidden relative shadow-inner bg-[#FAF5FF] group-hover:scale-105 transition-transform">
-                                    <img src={note.image} alt={note.name} className="w-full h-full object-cover opacity-85" loading="lazy" />
+                                    <Image src={note.image} alt={note.name} width={48} height={48} unoptimized className="w-full h-full object-cover opacity-85" />
                                     <div className="absolute inset-0 bg-gradient-to-t from-[#240E42]/40 via-transparent to-transparent" />
                                     <span className="w-3.5 h-3.5 rounded-full border border-white/80 shadow relative z-10" style={{ backgroundColor: note.color }} />
                                   </div>
@@ -667,7 +668,7 @@ export default function CustomPerfumePage() {
 
                                 <div>
                                   <div className="w-12 h-12 rounded-2xl mx-auto mb-2.5 flex items-center justify-center border border-[#E8DAFA] overflow-hidden relative shadow-inner bg-[#FAF5FF] group-hover:scale-105 transition-transform">
-                                    <img src={note.image} alt={note.name} className="w-full h-full object-cover opacity-85" loading="lazy" />
+                                    <Image src={note.image} alt={note.name} width={48} height={48} unoptimized className="w-full h-full object-cover opacity-85" />
                                     <div className="absolute inset-0 bg-gradient-to-t from-[#240E42]/40 via-transparent to-transparent" />
                                     <span className="w-3.5 h-3.5 rounded-full border border-white/80 shadow relative z-10" style={{ backgroundColor: note.color }} />
                                   </div>
@@ -720,7 +721,7 @@ export default function CustomPerfumePage() {
                           }`}
                         >
                           <div className="w-20 h-24 relative rounded-2xl overflow-hidden bg-[#FAF5FF] border border-[#E8DAFA] shrink-0">
-                            <img src={bottle.image} alt={bottle.name} className="w-full h-full object-cover" loading="lazy" />
+                            <Image src={bottle.image} alt={bottle.name} width={80} height={96} unoptimized className="w-full h-full object-cover" />
                           </div>
                           <div className="space-y-1">
                             <h4 className="font-serif text-lg text-[#240E42] font-semibold">{bottle.name}</h4>

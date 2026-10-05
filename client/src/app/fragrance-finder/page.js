@@ -268,9 +268,12 @@ function QuestionCard({ question, selectedOptions, onSelect, onNext, onPrev, isF
 
               {option.image && (
                 <div className="h-12 w-12 rounded-lg overflow-hidden shrink-0 bg-ivory">
-                  <img
+                  <Image
                     src={option.image}
                     alt={option.title}
+                    width={48}
+                    height={48}
+                    unoptimized
                     className="h-full w-full object-cover"
                   />
                 </div>
@@ -348,9 +351,12 @@ function ProductCard({ product, index }) {
         {/* Image & Badges */}
         <div className="relative aspect-square bg-[#FAF5FF] overflow-hidden">
           {product.image ? (
-            <img
+            <Image
               src={product.image}
               alt={product.name}
+              width={500}
+              height={500}
+              unoptimized
               className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
             />
           ) : (
