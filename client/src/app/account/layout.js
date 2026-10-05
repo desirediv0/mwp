@@ -76,7 +76,7 @@ export default function AccountLayout({ children }) {
 
               {/* Sidebar */}
               <div className="lg:col-span-1">
-                <div className="bg-[#f6f6f3] border border-neutral-200 rounded-2xl p-5 lg:sticky lg:top-28">
+                <div className="bg-[#f6f2eb] border border-[#e6ded2] rounded-2xl p-5 lg:sticky lg:top-28">
                   {/* User info */}
                   <div className="pb-6 mb-6 border-b border-line">
                     <div className="w-14 h-14 bg-noir text-ivory flex items-center justify-center font-display text-xl mb-4">

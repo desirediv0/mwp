@@ -342,12 +342,12 @@ export default function MwpJourneyTimeline({
           ref={wholeSliderRef}
           className="mr-[2vw] flex h-[30vw] w-[240vw] items-center gap-[5vw] px-[5vw] max-[600px]:h-[80vh] max-[600px]:w-[800vw] max-[600px]:px-[7vw]"
         >
-          <div className="h-full w-[30vw] overflow-hidden rounded-[1vw] max-[600px]:h-[65vw] max-[600px]:w-[85vw] max-[600px]:rounded-[5vw]">
+          <div className="h-[min(72vh,680px)] w-[30vw] shrink-0 overflow-hidden rounded-[1vw] bg-[#f6f2eb] max-[600px]:h-[62vh] max-[600px]:w-[78vw] max-[600px]:rounded-[5vw]">
             <img
               src={imageUrl}
               alt={imageAlt}
               draggable={false}
-              className="h-full w-full object-cover"
+              className="h-full w-full object-contain p-[2vw] max-[600px]:p-[5vw]"
             />
           </div>
 
@@ -360,7 +360,7 @@ export default function MwpJourneyTimeline({
 
             <div className="flex h-1/2 w-full items-center justify-start gap-[.5vw]">
               <div className="h-full w-[20%] pt-[2vw] max-[600px]:h-fit max-[600px]:pt-[5vw]">
-                <h2 className="w-[65%] text-[3vw] leading-[0.95] max-[600px]:text-[8.5vw] whitespace-pre-line">
+                <h2 className="w-full text-[3vw] leading-[0.95] max-[600px]:text-[8.5vw] whitespace-pre-line">
                   {title}
                 </h2>
               </div>

@@ -1,0 +1,6 @@
+.mwp-product-detail { color: var(--mwp-ink); font-family: 'Neulis', sans-serif; }
+.mwp-product-kicker { display: block; color: var(--mwp-gold); font-size: 11px; font-weight: 700; letter-spacing: .16em; line-height: 1.5; text-transform: uppercase; }
+.mwp-product-discount { display: inline-flex; color: var(--mwp-gold); background: var(--mwp-cream); border: 1px solid var(--mwp-line); }
+.mwp-product-detail .mwp-product-utility { border-color: var(--mwp-line); background: #fff; color: #514e49; }
+.mwp-product-detail .mwp-product-utility:hover { border-color: var(--mwp-ink); background: var(--mwp-cream); color: var(--mwp-ink); }
+.mwp-product-detail :is(button,a):focus-visible { outline: 2px solid var(--mwp-ink); outline-offset: 3px; }

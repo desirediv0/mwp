@@ -29,17 +29,6 @@ const parsePrice = (value) => {
   return isNaN(parsed) ? null : parsed;
 };
 
-const PRODUCT_ARTWORK = {
-  "ultra-pro": { background: "#f2ead4" },
-  "power-max": { background: "#e8edf8" },
-  "rapid-boost": { background: "#f4e4d4" },
-  "her-power": { background: "#f4e2dd" },
-  "her-energy": { background: "#eee5f7" },
-  "daily-vitality": { background: "#e9eee9" },
-  "alpha-prime": { background: "#f0dfc9" },
-  "titan-force": { background: "#eedbc7" },
-};
-
 export const ProductCard = ({ product, viewMode = "grid" }) => {
   const isList = viewMode === "list";
   const { isAuthenticated, openAuthModal } = useAuth();
@@ -236,11 +225,11 @@ export const ProductCard = ({ product, viewMode = "grid" }) => {
       >
         <Link
           href={`/products/${product.slug}`}
-          className="relative flex-shrink-0 overflow-hidden bg-[#f5f5f7]"
+          className="relative flex-shrink-0 overflow-hidden bg-[#f6f2eb]"
           style={{
             width: "180px",
             minHeight: "180px",
-            backgroundColor: PRODUCT_ARTWORK[product.slug]?.background || "#f5f5f7",
+            backgroundColor: "var(--mwp-cream)",
           }}
         >
           <Image
@@ -309,7 +298,7 @@ export const ProductCard = ({ product, viewMode = "grid" }) => {
         className="relative overflow-hidden"
         style={{
           aspectRatio: "4/5",
-          backgroundColor: PRODUCT_ARTWORK[product.slug]?.background || "#f5f5f7",
+          backgroundColor: "var(--mwp-cream)",
         }}
       >
         <Link href={`/products/${product.slug}`} className="relative block w-full h-full">

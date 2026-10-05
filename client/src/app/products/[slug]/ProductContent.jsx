@@ -35,6 +35,7 @@ import { useCart } from "@/lib/cart-context";
 import { useCompare } from "@/lib/compare-context";
 import { ProductCard } from "@/components/products/ProductCard";
 import { toast } from "sonner";
+import "./product-detail.css";
 
 const getImageUrl = (img) => {
   if (!img) return "/placeholder.jpg";
@@ -48,17 +49,7 @@ const getImageUrl = (img) => {
 // Reviews display approved customer feedback; new submissions go through moderation.
 const SHOW_REVIEWS = true;
 
-const PRODUCT_THEMES = {
-  "ultra-pro": { surface: "#F7F5F2", accent: "#1D1D1F" },
-  "power-max": { surface: "#F2F4F7", accent: "#1D1D1F" },
-  "rapid-boost": { surface: "#F8F4EF", accent: "#1D1D1F" },
-  "her-power": { surface: "#F8F2F3", accent: "#1D1D1F" },
-  "her-energy": { surface: "#F4F2F8", accent: "#1D1D1F" },
-  "daily-vitality": { surface: "#F3F5F4", accent: "#1D1D1F" },
-  "alpha-prime": { surface: "#FBF2E9", accent: "#1D1D1F" },
-  "titan-force": { surface: "#F8F0E7", accent: "#1D1D1F" },
-  default: { surface: "#F5F5F7", accent: "#1D1D1F" },
-};
+const PRODUCT_THEME = { surface: "var(--mwp-cream)", accent: "var(--mwp-ink)" };
 
 export default function ProductContent({ slug }) {
   const [product, setProduct] = useState(null);
@@ -336,7 +327,7 @@ export default function ProductContent({ slug }) {
         <div className="flex items-baseline gap-3 flex-wrap">
           <span className="text-3xl md:text-[2.4rem] font-semibold text-neutral-900 tracking-tight">{formatCurrency(fp)}</span>
           <span className="text-base line-through text-neutral-400">{formatCurrency(rp)}</span>
-          <span className="px-2.5 py-1 text-[11px] font-semibold rounded-full bg-neutral-900 text-white">−{product.flashSale.discountPercentage}%</span>
+          <span className="mwp-product-discount px-2.5 py-1 text-[11px] font-semibold rounded-full">−{product.flashSale.discountPercentage}%</span>
         </div>
       );
     }
@@ -350,7 +341,7 @@ export default function ProductContent({ slug }) {
       return (
         <div className="flex items-baseline gap-3 flex-wrap">
           <span className="text-3xl md:text-[2.4rem] font-semibold text-neutral-900 tracking-tight">{formatCurrency(sp)}</span>
-          {hasDiff && <><span className="text-base line-through text-neutral-400">{formatCurrency(mrp)}</span><span className="px-2.5 py-1 text-[11px] font-semibold rounded-full bg-neutral-900 text-white">{disc}% off</span></>}
+          {hasDiff && <><span className="text-base line-through text-neutral-400">{formatCurrency(mrp)}</span><span className="mwp-product-discount px-2.5 py-1 text-[11px] font-semibold rounded-full">{disc}% off</span></>}
         </div>
       );
     }
@@ -362,7 +353,7 @@ export default function ProductContent({ slug }) {
     return (
       <div className="flex items-baseline gap-3 flex-wrap">
         <span className="text-3xl md:text-[2.4rem] font-semibold text-neutral-900 tracking-tight">{formatCurrency(cp)}</span>
-        {op && <><span className="text-base line-through text-neutral-400">{formatCurrency(op)}</span><span className="px-2.5 py-1 text-[11px] font-semibold rounded-full bg-neutral-900 text-white">{disc}% off</span></>}
+        {op && <><span className="text-base line-through text-neutral-400">{formatCurrency(op)}</span><span className="mwp-product-discount px-2.5 py-1 text-[11px] font-semibold rounded-full">{disc}% off</span></>}
       </div>
     );
   };
@@ -390,7 +381,7 @@ export default function ProductContent({ slug }) {
   );
 
   const images = getImages();
-  const productTheme = PRODUCT_THEMES[product.slug] || PRODUCT_THEMES.default;
+  const productTheme = PRODUCT_THEME;
   const primary = mainImage && images.some((i) => i.url === mainImage.url) ? mainImage : (images.find((i) => i.isPrimary) || images[0]);
   // Read the real stock from the selected variant. `?? ` (not `||`) so a genuine 0 is respected
   // instead of falling through to a hardcoded 15, which used to keep "Add to Bag" enabled for
@@ -410,11 +401,11 @@ export default function ProductContent({ slug }) {
   const bundleTotal = bundleItems.reduce((sum, item) => sum + (bundleSelected[item.id] ? (item.price * (item.isMain ? quantity : 1)) : 0), 0);
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className="mwp-product-detail min-h-screen bg-white">
 
       {/* Breadcrumb */}
       <div className="max-w-6xl mx-auto px-6 lg:px-10 pt-6 pb-1">
-        <nav className="flex items-center gap-2 text-[12px] text-neutral-400 flex-wrap">
+        <nav className="flex items-center gap-2 text-[12px] text-neutral-500 flex-wrap" aria-label="Breadcrumb">
           <Link href="/" className="hover:text-neutral-900 transition-colors">Home</Link>
           <span>/</span>
           <Link href="/products" className="hover:text-neutral-900 transition-colors">Shop</Link>
@@ -526,7 +517,7 @@ export default function ProductContent({ slug }) {
 
             {/* Category eyebrow + Title */}
             {product.category?.name && (
-              <span className="text-[12px] font-medium text-neutral-400 mb-2">
+              <span className="mwp-product-kicker mb-2">
                 {product.category.name}
               </span>
             )}
@@ -596,7 +587,7 @@ export default function ProductContent({ slug }) {
               const selVal = values.find((v) => v.id === selId);
               return (
                 <div key={attr.id} className="mb-6">
-                  <p className="text-[13px] font-medium mb-3 text-neutral-800">
+                <p className="text-[13px] font-medium mb-3 text-neutral-800">
                     {attr.name} {selVal && <span className="font-normal text-neutral-400">— {selVal.value}</span>}
                   </p>
                   <div className="flex flex-wrap gap-2">
@@ -607,8 +598,8 @@ export default function ProductContent({ slug }) {
                         type="button"
                         aria-pressed={selId === v.id}
                         className={`min-w-[48px] min-h-11 px-4 py-2 text-[13px] font-medium rounded-full border bg-white text-neutral-900 transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-neutral-900 ${selId === v.id
-                          ? "border-neutral-900 ring-1 ring-neutral-900"
-                          : "border-neutral-300 hover:border-neutral-900 hover:bg-neutral-50"
+                          ? "border-neutral-900 bg-[#f6f2eb]"
+                          : "border-neutral-300 hover:border-neutral-900 hover:bg-[#f6f2eb]"
                           }`}
                       >
                         {v.value}
@@ -629,7 +620,7 @@ export default function ProductContent({ slug }) {
 
             {/* Quantity + Add to Cart */}
             <div className="flex gap-2.5 mb-3" id="main-add-to-cart-btn">
-              <div className="flex items-center overflow-hidden h-12 bg-white rounded-full border border-neutral-200">
+              <div className="flex items-center overflow-hidden h-12 bg-white rounded-full border border-[#d9d0c2]">
                 <button onClick={() => handleQuantityChange(-1)} disabled={quantity <= (selectedVariant?.moq || 1) || isAddingToCart} className="w-10 h-full flex items-center justify-center text-neutral-500 hover:bg-neutral-50 disabled:opacity-30 transition-colors" aria-label="Decrease quantity">
                   <IconMinus className="h-3.5 w-3.5" stroke={2} />
                 </button>
@@ -645,7 +636,7 @@ export default function ProductContent({ slug }) {
             </div>
 
             <button type="button" onClick={() => handleAddToCart(true)} disabled={isAddingToCart || outOfStock || quantity > stock}
-              className="w-full h-12 mb-3 rounded-full border border-neutral-900 bg-neutral-900 text-white text-[13px] font-medium hover:bg-neutral-800 disabled:opacity-40 transition-colors">
+              className="w-full h-12 mb-3 rounded-full border border-neutral-900 bg-white text-neutral-900 text-[13px] font-medium hover:bg-[#f6f2eb] disabled:opacity-40 transition-colors">
               {isAddingToCart ? "Adding…" : "Buy Now"}
             </button>
 
@@ -654,7 +645,7 @@ export default function ProductContent({ slug }) {
               <button
                 onClick={handleWishlist}
                 disabled={isAddingToWishlist}
-                className={`flex-1 h-11 rounded-full border text-[12.5px] font-medium flex items-center justify-center gap-2 transition-colors ${isInWishlist
+                className={`mwp-product-utility flex-1 h-11 rounded-full border text-[12.5px] font-medium flex items-center justify-center gap-2 transition-colors ${isInWishlist
                   ? "border-neutral-300 bg-neutral-50 text-neutral-900"
                   : "border-neutral-200 text-neutral-500 hover:border-neutral-400 hover:text-neutral-900"
                   }`}
@@ -664,7 +655,7 @@ export default function ProductContent({ slug }) {
               </button>
               <button
                 onClick={() => toggleCompare(product)}
-                className={`flex-1 h-11 rounded-full border text-[12.5px] font-medium flex items-center justify-center gap-2 transition-colors ${isInCompare(product?.id)
+                className={`mwp-product-utility flex-1 h-11 rounded-full border text-[12.5px] font-medium flex items-center justify-center gap-2 transition-colors ${isInCompare(product?.id)
                   ? "border-neutral-300 bg-neutral-50 text-neutral-900"
                   : "border-neutral-200 text-neutral-500 hover:border-neutral-400 hover:text-neutral-900"
                   }`}
@@ -753,7 +744,7 @@ export default function ProductContent({ slug }) {
                   title="Copy Link"
                   aria-label="Copy Link"
                 >
-                  {copied ? <IconCheck className="w-3.5 h-3.5 text-emerald-500" stroke={2} /> : <IconLink className="w-3.5 h-3.5" stroke={1.8} />}
+                  {copied ? <IconCheck className="w-3.5 h-3.5 text-[#886b40]" stroke={2} /> : <IconLink className="w-3.5 h-3.5" stroke={1.8} />}
                   {copied && (
                     <span className="absolute -top-8 left-1/2 -translate-x-1/2 bg-neutral-900 text-white text-[10px] px-2 py-1 rounded-full shadow whitespace-nowrap">
                       Copied!
@@ -769,7 +760,7 @@ export default function ProductContent({ slug }) {
       {/* Bundle */}
       {relatedProducts.length > 0 && (
         <div className="max-w-6xl mx-auto px-6 lg:px-10 mb-16 md:mb-20">
-          <div className="p-6 sm:p-8 md:p-10 rounded-3xl bg-neutral-50">
+          <div className="p-6 sm:p-8 md:p-10 rounded-3xl bg-[#f6f2eb]">
             <div className="mb-8">
               <span className="text-[12px] font-medium text-neutral-400 block mb-2">Build your routine</span>
               <h3 className="text-2xl md:text-3xl font-semibold text-neutral-900 tracking-tight">Frequently bought together</h3>

@@ -2,16 +2,17 @@
 .mwp-ingredients-header { display: flex; align-items: end; justify-content: space-between; gap: 32px; padding: 48px 0 72px; }
 .mwp-ingredients-header .mwp-title { margin-top: 18px; }
 .mwp-ingredients-header .mwp-lead { margin-top: 22px; }
-.mwp-ingredients-kicker { color: #957443; font-size: 11px; font-weight: 700; letter-spacing: .22em; line-height: 1.5; text-transform: uppercase; }
+.mwp-ingredients-kicker { color: var(--mwp-gold); font-size: 11px; font-weight: 700; letter-spacing: .22em; line-height: 1.5; text-transform: uppercase; }
 .mwp-ingredients-count { display: flex; align-items: end; gap: 14px; border-top: 1px solid #c7ad7c; padding-top: 16px; white-space: nowrap; }
 .mwp-ingredients-count strong { font-size: 76px; line-height: .8; font-weight: 500; letter-spacing: -.08em; }
 .mwp-ingredients-count span { color: #696660; font-size: 13px; line-height: 1.45; }
-.mwp-ingredients-section { background: #f6f2eb; border-top: 1px solid #eee7db; padding: 64px 0 72px; }
+.mwp-ingredients-section { background: var(--mwp-cream); border-top: 1px solid var(--mwp-line); padding: 64px 0 72px; }
 .mwp-ingredients-toolbar { display: flex; align-items: end; justify-content: space-between; gap: 24px; }
 .mwp-ingredients-toolbar h2 { margin-top: 9px; font-size: clamp(28px,3.1vw,40px); line-height: 1.15; font-weight: 600; letter-spacing: -.04em; }
 .mwp-ingredients-search { display: flex; align-items: center; gap: 12px; width: min(100%,370px); height: 50px; padding: 0 15px; border: 1px solid #dcd5ca; border-radius: 12px; background: #fff; color: #716c65; transition: border-color .2s, box-shadow .2s; }
 .mwp-ingredients-search:focus-within { border-color: #171717; box-shadow: 0 0 0 3px #17171710; }
 .mwp-ingredients-search input { width: 100%; min-width: 0; background: transparent; border: 0; outline: 0; color: #171717; font-size: 15px; }
+.mwp-ingredients .mwp-ingredients-search input:focus-visible { outline: none; outline-offset: 0; box-shadow: none; }
 .mwp-ingredients-search input::placeholder { color: #89847d; }
 .mwp-ingredients-search input::-webkit-search-cancel-button { display: none; }
 .mwp-ingredients-search button { flex: none; width: 28px; height: 28px; display: grid; place-items: center; color: #76716b; border-radius: 50%; }

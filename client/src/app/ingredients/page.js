@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { IconArrowRight, IconSearch, IconX } from "@tabler/icons-react";
@@ -46,13 +46,29 @@ function IngredientCard({ ingredient, index }) {
 
 export default function IngredientsPage() {
   const [query, setQuery] = useState("");
+  const [debouncedQuery, setDebouncedQuery] = useState("");
+
+  useEffect(() => {
+    if (!query.trim()) {
+      setDebouncedQuery("");
+      return;
+    }
+    const timer = setTimeout(() => setDebouncedQuery(query), 250);
+    return () => clearTimeout(timer);
+  }, [query]);
+
+  const clearSearch = () => {
+    setQuery("");
+    setDebouncedQuery("");
+  };
+
   const filtered = useMemo(() => {
-    const term = query.trim().toLocaleLowerCase();
+    const term = debouncedQuery.trim().toLocaleLowerCase();
     if (!term) return INGREDIENT_LIBRARY;
     return INGREDIENT_LIBRARY.filter((ingredient) =>
       `${ingredient.name} ${ingredient.origin} ${ingredient.description}`.toLocaleLowerCase().includes(term)
     );
-  }, [query]);
+  }, [debouncedQuery]);
 
   return (
     <main className="mwp-page mwp-ingredients">
@@ -82,10 +98,10 @@ export default function IngredientsPage() {
               <IconSearch aria-hidden="true" size={20} stroke={1.8} />
               <span className="sr-only">Search ingredients, benefits, or origins</span>
               <input type="search" value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Search ingredients or origins" />
-              {query && <button type="button" aria-label="Clear search" onClick={() => setQuery("")}><IconX size={18} /></button>}
+              {query && <button type="button" aria-label="Clear search" onClick={clearSearch}><IconX size={18} /></button>}
             </label>
           </div>
-          <p className="mwp-ingredients-results" aria-live="polite">Showing {filtered.length} of {INGREDIENT_LIBRARY.length} ingredients</p>
+          <p className="mwp-ingredients-results" aria-live="polite">{query !== debouncedQuery ? "Searching ingredients…" : `Showing ${filtered.length} of ${INGREDIENT_LIBRARY.length} ingredients`}</p>
 
           {filtered.length ? (
             <div className="mwp-ingredients-grid">
@@ -95,7 +111,7 @@ export default function IngredientsPage() {
             <div className="mwp-ingredients-empty">
               <h2>No ingredients found.</h2>
               <p>Try another name or origin to explore the library.</p>
-              <button type="button" className="mwp-button mwp-button-outline" onClick={() => setQuery("")}>Clear search</button>
+              <button type="button" className="mwp-button mwp-button-outline" onClick={clearSearch}>Clear search</button>
             </div>
           )}
 

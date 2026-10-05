@@ -8,7 +8,7 @@ const PRODUCT_ALT = "MWP collection: Ultra Pro, Power Max, Rapid Boost, Her Powe
 export default function MwpHomeHero() {
   const { t } = useLanguage();
   return (
-    <section aria-labelledby="mwp-hero-title" className="relative w-full overflow-hidden bg-[#faf2e6] text-neutral-900">
+    <section aria-labelledby="mwp-hero-title" className="relative w-full overflow-hidden bg-[#f6f2eb] text-neutral-900">
       <div aria-hidden="true" className="pointer-events-none absolute inset-x-0 bottom-0 h-[360px] bg-[radial-gradient(ellipse_at_center,rgba(255,223,158,0.35),transparent_70%)]" />
       <div className="relative z-10 mx-auto max-w-5xl px-5 pb-3 pt-5 text-center sm:pb-0 sm:pt-6">
         <p className="mb-3 text-[10px] font-semibold uppercase tracking-[0.3em] text-[#7b602e] sm:text-xs">

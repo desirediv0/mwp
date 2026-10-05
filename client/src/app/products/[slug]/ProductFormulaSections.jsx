@@ -55,7 +55,7 @@ export default function ProductFormulaSections({ product }) {
   return (
     <section className="max-w-6xl mx-auto px-6 lg:px-10 mb-16 md:mb-20 text-neutral-900">
       {items.length > 0 && (
-        <div className="rounded-3xl border border-neutral-200 bg-neutral-50 p-6 md:p-10">
+        <div className="rounded-3xl border border-[#e6ded2] bg-[#f6f2eb] p-6 md:p-10">
           <div className="grid gap-10 lg:grid-cols-[1.4fr_1fr]">
             <div>
               <h2 className="text-2xl md:text-3xl font-semibold tracking-tight text-neutral-900">
@@ -65,7 +65,7 @@ export default function ProductFormulaSections({ product }) {
                 {items.map((item) => (
                   <li
                     key={item.id}
-                    className="rounded-2xl border border-neutral-200 bg-white overflow-hidden"
+                    className="rounded-2xl border border-[#e6ded2] bg-white overflow-hidden"
                   >
                     <details className="group px-4 py-3">
                     <summary className="cursor-pointer list-none focus-visible:outline-neutral-900">
@@ -123,7 +123,7 @@ export default function ProductFormulaSections({ product }) {
       {infoCards.length > 0 && (
         <div className="mt-4 grid gap-4 md:grid-cols-3">
           {infoCards.map((card) => (
-            <div key={card.title} className="rounded-2xl border border-neutral-200 bg-white p-5">
+            <div key={card.title} className="rounded-2xl border border-[#e6ded2] bg-white p-5">
               <h3 className="text-[16px] font-semibold text-neutral-900">{card.title}</h3>
               <p className="mt-2 text-[13px] leading-relaxed text-neutral-500">
                 {card.body}

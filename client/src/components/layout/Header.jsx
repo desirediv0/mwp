@@ -189,7 +189,7 @@ export function Navbar() {
         {/* Announcement bar — collapses smoothly on scroll, flat and quiet */}
         <div
           className={cn(
-            "overflow-hidden bg-[#eef3f0] border-b border-neutral-200 transition-all duration-300",
+            "overflow-hidden bg-[#f6f2eb] border-b border-neutral-200 transition-all duration-300",
             scrolled ? "max-h-0 opacity-0" : "max-h-7 opacity-100"
           )}
         >
@@ -241,7 +241,7 @@ export function Navbar() {
                   className={cn(
                     "flex items-center gap-1 px-3 py-2 text-[13px] font-medium tracking-tight transition-all rounded-full whitespace-nowrap",
                     isProductsOpen || pathname === "/products"
-                      ? "bg-emerald-50 text-emerald-900"
+                      ? "bg-[#f6f2eb] text-neutral-900"
                       : "text-neutral-600 hover:text-neutral-950 hover:bg-neutral-100"
                   )}
                   aria-haspopup="true"
@@ -267,7 +267,7 @@ export function Navbar() {
                       className="absolute left-1/2 -translate-x-1/2 top-full mt-3 w-[560px] max-w-[92vw] bg-white border border-neutral-200 rounded-2xl shadow-[0_24px_60px_-24px_rgba(20,35,28,0.24)] overflow-hidden z-[70]"
                     >
                       <div className="px-6 pt-5 pb-1">
-                        <span className="text-[10px] uppercase tracking-[0.28em] text-emerald-800 font-bold">
+                        <span className="text-[10px] uppercase tracking-[0.28em] text-[#886b40] font-bold">
                           {t("allProducts")}
                         </span>
                       </div>
@@ -281,10 +281,10 @@ export function Navbar() {
                               onClick={() => setIsProductsOpen(false)}
                               className={cn(
                                 "group flex items-center gap-3 p-2.5 rounded-xl transition-all",
-                                active ? "bg-emerald-50" : "hover:bg-neutral-50"
+                                active ? "bg-[#f6f2eb]" : "hover:bg-neutral-50"
                               )}
                             >
-                              <span className="relative w-14 h-14 shrink-0 rounded-lg overflow-hidden bg-[#f1f3f2]">
+                              <span className="relative w-14 h-14 shrink-0 rounded-lg overflow-hidden bg-[#f6f2eb]">
                                 {item.image && (
                                   <Image
                                     src={item.image}
@@ -299,7 +299,7 @@ export function Navbar() {
                                 <span
                                   className={cn(
                                     "block text-[13px] font-semibold truncate transition-colors",
-                                    active ? "text-neutral-950" : "text-neutral-700 group-hover:text-emerald-900"
+                                    active ? "text-neutral-950" : "text-neutral-700 group-hover:text-[#886b40]"
                                   )}
                                 >
                                   {item.label}
@@ -316,7 +316,7 @@ export function Navbar() {
                         <Link
                           href="/products"
                           onClick={() => setIsProductsOpen(false)}
-                          className="text-[10px] uppercase tracking-[0.15em] text-neutral-600 hover:text-emerald-800 transition-colors inline-flex items-center gap-1"
+                          className="text-[10px] uppercase tracking-[0.15em] text-neutral-600 hover:text-[#886b40] transition-colors inline-flex items-center gap-1"
                         >
                           {t("viewAll")} <IconArrowUpRight className="h-3 w-3" />
                         </Link>
@@ -336,13 +336,13 @@ export function Navbar() {
                     className={cn(
                       "relative px-3 py-2 text-[13px] font-medium tracking-tight transition-all rounded-full whitespace-nowrap",
                       active
-                        ? "text-emerald-900 bg-emerald-50"
+                        ? "text-neutral-900 bg-[#f6f2eb]"
                         : "text-neutral-600 hover:text-neutral-950 hover:bg-neutral-100"
                     )}
                   >
                     {t(labelKey)}
                     {active && (
-                      <span className="absolute bottom-0.5 left-3 right-3 h-[2px] bg-emerald-700 rounded-full" />
+                      <span className="absolute bottom-0.5 left-3 right-3 h-[2px] bg-neutral-900 rounded-full" />
                     )}
                   </Link>
                 );
@@ -392,7 +392,7 @@ export function Navbar() {
               >
                 <IconGitCompare className="h-4.5 w-4.5 sm:h-5 sm:w-5" stroke={2} />
                 {compareCount > 0 && (
-                  <span className="absolute -top-1 -right-1 bg-emerald-700 text-white text-[10px] font-bold min-w-[18px] h-[18px] flex items-center justify-center px-1 ring-2 ring-white rounded-full">
+                  <span className="absolute -top-1 -right-1 bg-neutral-900 text-white text-[10px] font-bold min-w-[18px] h-[18px] flex items-center justify-center px-1 ring-2 ring-white rounded-full">
                     {compareCount}
                   </span>
                 )}
@@ -411,12 +411,12 @@ export function Navbar() {
                 <Link
                   href="/cart"
                   data-header-action
-                  className="relative flex items-center justify-center w-9 h-9 bg-emerald-50 border border-emerald-100 text-emerald-900 hover:bg-emerald-700 hover:text-white hover:border-emerald-700 active:scale-95 transition-all rounded-full"
+                  className="relative flex items-center justify-center w-9 h-9 bg-[#f6f2eb] border border-[#e6ded2] text-neutral-900 hover:bg-neutral-900 hover:text-white hover:border-neutral-900 active:scale-95 transition-all rounded-full"
                   aria-label="Cart"
                 >
                   <IconShoppingBag className="h-4.5 w-4.5 sm:h-5 sm:w-5" stroke={2} />
                   {cartCount > 0 && (
-                    <span className="absolute -top-1 -right-1 bg-emerald-700 text-white text-[10px] font-bold min-w-[18px] h-[18px] flex items-center justify-center px-1 rounded-full shadow">
+                    <span className="absolute -top-1 -right-1 bg-neutral-900 text-white text-[10px] font-bold min-w-[18px] h-[18px] flex items-center justify-center px-1 rounded-full shadow">
                       {cartCount}
                     </span>
                   )}
@@ -576,7 +576,7 @@ function SearchDialog({ open, onOpenChange, categories }) {
             <div>
               <div className="flex items-center justify-between mb-3 text-[11px] uppercase tracking-wider text-neutral-500 font-semibold">
                 <span>Search Results</span>
-                {loading && <span className="text-emerald-800 animate-pulse">Searching…</span>}
+                {loading && <span className="text-[#886b40] animate-pulse">Searching…</span>}
               </div>
 
               {loading ? (
@@ -592,7 +592,7 @@ function SearchDialog({ open, onOpenChange, categories }) {
                   <Link
                     href="/products"
                     onClick={() => onOpenChange(false)}
-                    className="inline-block mt-4 px-4 py-2 bg-emerald-50 hover:bg-emerald-100 text-emerald-900 text-xs font-bold uppercase tracking-wider rounded-lg transition-colors"
+                    className="inline-block mt-4 px-4 py-2 bg-[#f6f2eb] hover:bg-[#eee5d7] text-neutral-900 text-xs font-bold uppercase tracking-wider rounded-lg transition-colors"
                   >
                     View All Products
                   </Link>
@@ -618,7 +618,7 @@ function SearchDialog({ open, onOpenChange, categories }) {
                           />
                         </span>
                         <div className="min-w-0 flex-1">
-                          <div className="text-xs sm:text-sm font-semibold text-neutral-900 group-hover:text-emerald-900 truncate">
+                          <div className="text-xs sm:text-sm font-semibold text-neutral-900 group-hover:text-[#886b40] truncate">
                             {p.name}
                           </div>
                           <div className="flex items-center gap-2 mt-0.5">
@@ -628,13 +628,13 @@ function SearchDialog({ open, onOpenChange, categories }) {
                               </span>
                             )}
                             {p.price && (
-                              <span className="text-xs font-bold text-emerald-700 shrink-0">
+                              <span className="text-xs font-bold text-[#886b40] shrink-0">
                                 ${Number(p.price).toLocaleString("en-IN")}
                               </span>
                             )}
                           </div>
                         </div>
-                        <IconArrowUpRight className="h-4 w-4 text-neutral-400 group-hover:text-emerald-800 transition-colors shrink-0" />
+                        <IconArrowUpRight className="h-4 w-4 text-neutral-400 group-hover:text-[#886b40] transition-colors shrink-0" />
                       </button>
                     );
                   })}
@@ -642,7 +642,7 @@ function SearchDialog({ open, onOpenChange, categories }) {
                   <button
                     type="button"
                     onClick={handleSearch}
-                    className="w-full mt-3 py-2.5 text-center text-xs font-bold uppercase tracking-wider text-neutral-700 hover:text-emerald-900 hover:bg-emerald-50 rounded-lg border border-neutral-200 transition-colors"
+                    className="w-full mt-3 py-2.5 text-center text-xs font-bold uppercase tracking-wider text-neutral-700 hover:text-[#886b40] hover:bg-[#f6f2eb] rounded-lg border border-neutral-200 transition-colors"
                   >
                     View all results for &ldquo;{searchQuery.trim()}&rdquo; &rarr;
                   </button>
@@ -662,7 +662,7 @@ function SearchDialog({ open, onOpenChange, categories }) {
                       key={product.id}
                       type="button"
                       onClick={() => handleTagClick(product.name)}
-                      className="px-2.5 sm:px-3 py-1.5 bg-neutral-50 hover:bg-emerald-50 hover:text-emerald-900 border border-neutral-200 text-[11px] sm:text-xs font-medium text-neutral-700 rounded-full transition-colors"
+                      className="px-2.5 sm:px-3 py-1.5 bg-neutral-50 hover:bg-[#f6f2eb] hover:text-[#886b40] border border-neutral-200 text-[11px] sm:text-xs font-medium text-neutral-700 rounded-full transition-colors"
                     >
                       {product.name}
                     </button>
@@ -682,7 +682,7 @@ function SearchDialog({ open, onOpenChange, categories }) {
                         key={c.id}
                         href={`/category/${c.slug}`}
                         onClick={() => onOpenChange(false)}
-                        className="px-2.5 sm:px-3 py-1.5 bg-white hover:bg-emerald-50 border border-neutral-200 text-[11px] sm:text-xs font-medium text-neutral-700 hover:text-emerald-900 rounded-lg transition-colors"
+                        className="px-2.5 sm:px-3 py-1.5 bg-white hover:bg-[#f6f2eb] border border-neutral-200 text-[11px] sm:text-xs font-medium text-neutral-700 hover:text-[#886b40] rounded-lg transition-colors"
                       >
                         {c.name}
                       </Link>
@@ -735,7 +735,7 @@ function MobileMenu({
             transition={{ duration: 0.28, ease: [0.22, 1, 0.36, 1] }}
           >
             {/* 1. Header with Logo & Close button */}
-            <div className="flex items-center justify-between px-4 py-3.5 border-b border-neutral-200 bg-[#f6f8f6]">
+            <div className="flex items-center justify-between px-4 py-3.5 border-b border-neutral-200 bg-[#f6f2eb]">
               <div className="rounded-lg bg-neutral-950 px-3 py-2 flex items-center">
                 <Image
                   src="/logo.png"
@@ -758,7 +758,7 @@ function MobileMenu({
             <div className="p-3 border-b border-neutral-200 bg-white">
               <button
                 onClick={onOpenSearch}
-                className="w-full flex items-center gap-2.5 px-3 py-2.5 bg-neutral-50 border border-neutral-200 rounded-lg text-xs text-neutral-600 hover:text-neutral-950 hover:bg-emerald-50 transition-all"
+                className="w-full flex items-center gap-2.5 px-3 py-2.5 bg-neutral-50 border border-neutral-200 rounded-lg text-xs text-neutral-600 hover:text-neutral-950 hover:bg-[#f6f2eb] transition-all"
               >
                 <IconSearch className="h-4 w-4 text-neutral-400" />
                 <span>Search supplements, ingredients…</span>
@@ -769,7 +769,7 @@ function MobileMenu({
                 <Link
                   href="/wishlist"
                   onClick={onClose}
-                  className="flex items-center justify-center gap-1.5 py-2 px-2 bg-white border border-neutral-200 rounded-lg text-[11px] font-semibold text-neutral-700 hover:text-emerald-800 hover:bg-emerald-50 transition-colors"
+                  className="flex items-center justify-center gap-1.5 py-2 px-2 bg-white border border-neutral-200 rounded-lg text-[11px] font-semibold text-neutral-700 hover:text-[#886b40] hover:bg-[#f6f2eb] transition-colors"
                 >
                   <IconHeart className="h-3.5 w-3.5 text-neutral-400" />
                   <span>Wishlist</span>
@@ -777,12 +777,12 @@ function MobileMenu({
                 <Link
                   href="/compare"
                   onClick={onClose}
-                  className="flex items-center justify-center gap-1.5 py-2 px-2 bg-white border border-neutral-200 rounded-lg text-[11px] font-semibold text-neutral-700 hover:text-emerald-800 hover:bg-emerald-50 transition-colors relative"
+                  className="flex items-center justify-center gap-1.5 py-2 px-2 bg-white border border-neutral-200 rounded-lg text-[11px] font-semibold text-neutral-700 hover:text-[#886b40] hover:bg-[#f6f2eb] transition-colors relative"
                 >
                   <IconGitCompare className="h-3.5 w-3.5 text-neutral-400" />
                   <span>Compare</span>
                   {compareCount > 0 && (
-                    <span className="ml-1 bg-emerald-700 text-white text-[9px] font-bold px-1 rounded-full">
+                    <span className="ml-1 bg-neutral-900 text-white text-[9px] font-bold px-1 rounded-full">
                       {compareCount}
                     </span>
                   )}
@@ -791,7 +791,7 @@ function MobileMenu({
             </div>
 
             {/* 3. User Authentication Box */}
-            <div className="p-3.5 border-b border-neutral-200 bg-[#f8faf9]">
+            <div className="p-3.5 border-b border-neutral-200 bg-[#f6f2eb]">
               <ClientOnly>
                 {isAuthenticated ? (
                   <div className="flex items-center justify-between">
@@ -808,7 +808,7 @@ function MobileMenu({
                       <Link
                         href="/account"
                         onClick={onClose}
-                        className="px-2.5 py-1.5 bg-emerald-50 hover:bg-emerald-100 text-emerald-900 text-[11px] font-bold rounded-lg uppercase transition-colors"
+                        className="px-2.5 py-1.5 bg-[#f6f2eb] hover:bg-[#eee5d7] text-neutral-900 text-[11px] font-bold rounded-lg uppercase transition-colors"
                       >
                         Account
                       </Link>
@@ -825,7 +825,7 @@ function MobileMenu({
                     <Link
                       href="/auth"
                       onClick={onClose}
-                      className="py-2.5 px-3 bg-emerald-700 hover:bg-emerald-800 text-white font-bold text-[11px] uppercase tracking-wider text-center rounded-lg transition-all"
+                      className="py-2.5 px-3 bg-neutral-900 hover:bg-neutral-800 text-white font-bold text-[11px] uppercase tracking-wider text-center rounded-lg transition-all"
                     >
                       Sign In
                     </Link>
@@ -869,7 +869,7 @@ function MobileMenu({
                         className={cn(
                           "flex items-center justify-between py-2.5 px-3 text-xs font-bold uppercase tracking-wider transition-colors rounded-lg",
                           active
-                            ? "text-emerald-900 bg-emerald-50 font-extrabold"
+                            ? "text-neutral-900 bg-[#f6f2eb] font-extrabold"
                             : "text-neutral-700 hover:text-neutral-950 hover:bg-neutral-100"
                         )}
                       >
@@ -895,13 +895,13 @@ function MobileMenu({
                       className={cn(
                         "flex items-center justify-between py-2.5 px-3 text-xs font-bold uppercase tracking-wider transition-colors rounded-lg",
                         active
-                          ? "text-emerald-900 bg-emerald-50 font-extrabold"
+                          ? "text-neutral-900 bg-[#f6f2eb] font-extrabold"
                           : "text-neutral-700 hover:text-neutral-950 hover:bg-neutral-100"
                       )}
                     >
                       <div className="flex items-center gap-2.5">
                         {Icon && (
-                          <Icon className="h-4 w-4 text-emerald-700" stroke={2} />
+                          <Icon className="h-4 w-4 text-[#886b40]" stroke={2} />
                         )}
                         <span>{t(labelKey)}</span>
                       </div>
@@ -921,7 +921,7 @@ function MobileMenu({
                     <Link
                       href="/categories"
                       onClick={onClose}
-                      className="text-[10px] uppercase font-bold text-neutral-500 hover:text-emerald-800 inline-flex items-center gap-0.5"
+                      className="text-[10px] uppercase font-bold text-neutral-500 hover:text-[#886b40] inline-flex items-center gap-0.5"
                     >
                       {t("viewAll")} <IconArrowUpRight className="h-3 w-3" />
                     </Link>
@@ -939,7 +939,7 @@ function MobileMenu({
                           className={cn(
                             "flex items-center justify-between py-2.5 px-3 text-xs rounded-lg transition-colors",
                             active
-                              ? "bg-emerald-50 text-emerald-900 font-bold"
+                              ? "bg-[#f6f2eb] text-neutral-900 font-bold"
                               : "text-neutral-600 hover:text-neutral-950 hover:bg-neutral-100"
                           )}
                         >
@@ -958,7 +958,7 @@ function MobileMenu({
             </div>
 
             {/* 5. Mobile Drawer Footer */}
-            <div className="p-3.5 border-t border-neutral-200 bg-[#f6f8f6] space-y-2">
+            <div className="p-3.5 border-t border-neutral-200 bg-[#f6f2eb] space-y-2">
               <div className="flex items-center justify-center gap-4 text-neutral-500">
                 <a
                   href="https://www.instagram.com/mwpsupplements"
@@ -979,7 +979,7 @@ function MobileMenu({
                   <IconBrandFacebook className="h-4 w-4" />
                 </a>
                 <span className="text-neutral-300">|</span>
-                <span className="text-[10px] text-emerald-800 font-semibold inline-flex items-center gap-1">
+                <span className="text-[10px] text-[#886b40] font-semibold inline-flex items-center gap-1">
                   <IconShieldCheck className="h-3.5 w-3.5" /> 100% Lab Tested
                 </span>
               </div>

@@ -53,6 +53,12 @@
 
 @layer base {
   :root {
+    --mwp-ink: #171717;
+    --mwp-cream: #f6f2eb;
+    --mwp-cream-deep: #eee5d7;
+    --mwp-gold: #886b40;
+    --mwp-muted: #656561;
+    --mwp-line: #e6ded2;
     --background: 0 0% 100%;
     --foreground: 0 0% 7%;
     --card: 0 0% 100%;

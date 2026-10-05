@@ -69,7 +69,7 @@ function AuthForm() {
     <div className="mwp-auth min-h-screen bg-white flex flex-col lg:flex-row overflow-x-hidden">
 
       {/* ── Left Panel — Branding (Desktop) ──────────────── */}
-      <div className="mwp-auth-side hidden lg:flex lg:w-[46%] lg:shrink-0 relative overflow-hidden bg-[#faf2e6]">
+      <div className="mwp-auth-side hidden lg:flex lg:w-[46%] lg:shrink-0 relative overflow-hidden bg-[#f6f2eb]">
         {/* Bottle artwork is provided by the shared auth panel style. */}
         <div className="absolute inset-0 bg-gradient-to-r from-black/85 via-black/45 to-black/70" />
         <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-transparent to-black/40" />
