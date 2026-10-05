@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import Image from "next/image";
 import { useAuth } from "@/lib/auth-context";
 import { fetchApi } from "@/lib/utils";
 import { Reveal } from "@/components/ui/Reveal";
@@ -71,9 +72,10 @@ const LockedLanding = () => (
 
           {/* Left — Image */}
           <div className="relative aspect-[4/5] lg:aspect-auto overflow-hidden bg-ivory">
-            <img
+            <Image
               src="/secret-access.jpg"
               alt="Secret Collection"
+              fill
               className="w-full h-full object-cover"
             />
             <div className="absolute inset-0 bg-gradient-to-t from-noir/40 via-transparent to-transparent" />

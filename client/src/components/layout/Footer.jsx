@@ -178,7 +178,7 @@ export const Footer = () => {
                   className="px-2 py-1 bg-neutral-50 border border-neutral-200 rounded-md flex items-center justify-center h-6 min-w-[36px]"
                   title={item.name}
                 >
-                  <img src={item.src} alt={item.name} className="h-3.5 w-auto object-contain max-w-[26px]" />
+                  <Image src={item.src} alt={item.name} width={26} height={14} className="h-3.5 w-auto object-contain max-w-[26px]" />
                 </div>
               ))}
             </div>

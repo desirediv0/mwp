@@ -10,6 +10,7 @@ import {
   Star
 } from "lucide-react";
 import Link from "next/link";
+import Image from "next/image";
 
 export const metadata = {
   title: "Why MWP SUPPLEMENTS | Clinical Purity & Performance",
@@ -83,9 +84,10 @@ export default function WhyUsPage() {
     <div className="min-h-screen bg-white text-gray-900">
       {/* ── Hero Section ── */}
       <section className="relative overflow-hidden bg-[#0A0A0A] text-white">
-        <img
+        <Image
           src="/why-us-hero.jpg"
           alt=""
+          fill
           className="absolute inset-0 w-full h-full object-cover grayscale contrast-125"
         />
         <div className="absolute inset-0 bg-gradient-to-t from-[#0A0A0A] via-black/60 to-black/40" />

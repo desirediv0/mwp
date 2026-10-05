@@ -6,6 +6,7 @@
 // as possible — only content, palette and asset are project-specific.
 
 import { useLayoutEffect, useRef, useSyncExternalStore } from "react";
+import Image from "next/image";
 import gsap from "gsap";
 
 const monthOrder = {
@@ -343,10 +344,12 @@ export default function MwpJourneyTimeline({
           className="mr-[2vw] flex h-[30vw] w-[240vw] items-center gap-[5vw] px-[5vw] max-[600px]:h-[80vh] max-[600px]:w-[800vw] max-[600px]:px-[7vw]"
         >
           <div className="h-[min(72vh,680px)] w-[30vw] shrink-0 overflow-hidden rounded-[1vw] bg-[#f6f2eb] max-[600px]:h-[62vh] max-[600px]:w-[78vw] max-[600px]:rounded-[5vw]">
-            <img
+            <Image
               src={imageUrl}
               alt={imageAlt}
               draggable={false}
+              width={417}
+              height={1000}
               className="h-full w-full object-contain p-[2vw] max-[600px]:p-[5vw]"
             />
           </div>

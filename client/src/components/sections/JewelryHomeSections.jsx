@@ -231,7 +231,7 @@ export function WhatsAppSticky() {
       style={{ background: "#25D366" }}
       aria-label="Chat with us on WhatsApp"
     >
-      <img src="/whatsapp.png" alt="WhatsApp" className="w-8 h-8 object-contain" />
+      <Image src="/whatsapp.png" alt="WhatsApp" width={32} height={32} className="w-8 h-8 object-contain" />
     </a>
   );
 }

@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { useAuth } from "@/lib/auth-context";
 import Link from "next/link";
+import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import {
@@ -51,7 +52,7 @@ export default function ResendVerificationPage() {
 
       {/* Left Panel — Branding */}
       <div className="hidden lg:flex lg:w-[48%] relative overflow-hidden bg-[#0A0A0A]">
-        <img src="/auth-hero.jpg" alt="" className="absolute inset-0 w-full h-full object-cover" />
+        <Image src="/auth-hero.jpg" alt="" fill className="object-cover" />
         <div className="absolute inset-0 bg-gradient-to-b from-black/70 via-black/50 to-black/90" />
         <div className="relative z-10 flex flex-col justify-between p-12 xl:p-16 w-full">
           <Link href="/" className="inline-block">
