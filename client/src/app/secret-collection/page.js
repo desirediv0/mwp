@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
@@ -158,7 +158,7 @@ export default function SecretCollectionPage() {
     checkAccess();
   }, [authLoading, isAuthenticated]);
 
-  const fetchProducts = async (page = 1) => {
+  const fetchProducts = useCallback(async (page = 1) => {
     setLoading(true);
     try {
       const res = await fetchApi(
@@ -175,7 +175,7 @@ export default function SecretCollectionPage() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [router]);
 
   useEffect(() => {
     if (authLoading || checkingAccess) return;
@@ -188,7 +188,7 @@ export default function SecretCollectionPage() {
     } else {
       setLoading(false);
     }
-  }, [authLoading, isAuthenticated, hasSecretAccess, checkingAccess]);
+  }, [authLoading, isAuthenticated, hasSecretAccess, checkingAccess, fetchProducts]);
 
   const handlePageChange = (page) => {
     setCurrentPage(page);

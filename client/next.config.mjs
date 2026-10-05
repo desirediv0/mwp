@@ -1,5 +1,6 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+    ...(process.env.MWP_BUILD_DIST_DIR ? { distDir: process.env.MWP_BUILD_DIST_DIR } : {}),
     images: {
         remotePatterns: [
             {
@@ -18,7 +19,6 @@ const nextConfig = {
     },
     experimental: {
         webpackBuildWorker: false,
-        workerThreads: true,
     }
 };
 
