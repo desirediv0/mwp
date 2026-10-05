@@ -117,11 +117,11 @@ export default function WishlistPage() {
           ) : (
             /* Grid */
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-              {wishlistItems.map((product) => (
-                <div key={product.id} className="relative group">
-                  <ProductCard product={product} />
+              {wishlistItems.map((item) => (
+                <div key={item.id} className="relative group">
+                  <ProductCard product={{ ...item, id: item.productId }} />
                   <button
-                    onClick={(e) => { e.preventDefault(); removeFromWishlist(product.id); }}
+                    onClick={(e) => { e.preventDefault(); removeFromWishlist(item.id); }}
                     className="absolute top-3 right-3 z-30 w-9 h-9 bg-white/95 backdrop-blur-sm flex items-center justify-center text-gray-500 hover:text-red-500 shadow-sm border border-gray-200 transition-all duration-300"
                     title="Remove from wishlist"
                   >

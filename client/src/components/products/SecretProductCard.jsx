@@ -34,7 +34,7 @@ export default function SecretProductCard({ product }) {
 
   return (
     <Link href={`/secret-collection/${product.slug}`} className="group block">
-      <div className="bg-white border border-line overflow-hidden transition-all duration-700 ease-[cubic-bezier(0.22,1,0.36,1)] hover:-translate-y-2 hover:shadow-[0_30px_80px_-25px_rgba(0,0,0,0.12)] hover:border-gold/40">
+      <div className="bg-white border border-line overflow-hidden transition-all duration-700 [transition-timing-function:cubic-bezier(0.22,1,0.36,1)] hover:-translate-y-2 hover:shadow-[0_30px_80px_-25px_rgba(0,0,0,0.12)] hover:border-gold/40">
         {/* Image Container */}
         <div className="relative aspect-[4/5] w-full overflow-hidden bg-ivory">
           {product.image ? (
@@ -42,7 +42,7 @@ export default function SecretProductCard({ product }) {
               src={getImageUrl(product.image)}
               alt={product.name}
               fill
-              className="object-cover transition-transform duration-1000 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:scale-110"
+              className="object-cover transition-transform duration-1000 [transition-timing-function:cubic-bezier(0.22,1,0.36,1)] group-hover:scale-110"
             />
           ) : (
             <div className="w-full h-full flex items-center justify-center">
@@ -125,7 +125,7 @@ export default function SecretProductCard({ product }) {
           {/* CTA */}
           <span className="inline-flex items-center gap-2.5 text-[10px] uppercase font-medium tracking-[0.18em] text-noir group-hover:text-gold transition-colors duration-500">
             Discover Fragrance
-            <span className="h-px w-0 bg-gold group-hover:w-8 transition-all duration-700 ease-[cubic-bezier(0.22,1,0.36,1)]" />
+            <span className="h-px w-0 bg-gold group-hover:w-8 transition-all duration-700 [transition-timing-function:cubic-bezier(0.22,1,0.36,1)]" />
             <IconArrowRight
               className="h-3.5 w-3.5 transition-transform duration-500 group-hover:translate-x-1"
               stroke={1.5}

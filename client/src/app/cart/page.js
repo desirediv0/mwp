@@ -71,16 +71,21 @@ const CartItem = React.memo(
         const productName = isBundle
             ? item.bundleCampaign?.title || "Bundle"
             : item.productName || item.product?.name || "Product";
-        const productSlug = isBundle
-            ? `/bundles/${item.bundleCampaign?.slug}`
-            : item.productSlug || item.product?.slug || "/products";
+        const slug = item.product?.slug || item.productSlug;
+        const productHref = isBundle
+            ? (item.bundleCampaign?.slug ? `/bundles/${item.bundleCampaign.slug}` : "/bundles")
+            : !slug || slug === "product"
+                ? "/products"
+                : slug.startsWith("/products/")
+                    ? slug
+                    : `/products/${encodeURIComponent(slug.replace(/^\/+/, ""))}`;
         const sku = item.variant?.sku;
 
         return (
             <div className={`p-4 sm:p-6 transition-all duration-200 border-b border-black/5 last:border-0 ${!item.isValid ? "bg-neutral-100/50" : "hover:bg-black/[0.01]"}`}>
                 <div className="flex gap-4 sm:gap-5">
                     {/* Image */}
-                    <Link href={productSlug} className="flex-shrink-0">
+                    <Link href={productHref} className="flex-shrink-0">
                         <div className="relative h-24 w-20 sm:h-32 sm:w-28 bg-[#f6f2eb] rounded-xl overflow-hidden border border-[#e6ded2] group">
                             <Image
                                 src={productImage}
@@ -107,7 +112,7 @@ const CartItem = React.memo(
                     {/* Details */}
                     <div className="flex-1 min-w-0 flex flex-col justify-between">
                         <div>
-                            <Link href={productSlug} className="group">
+                            <Link href={productHref} className="group">
                                 <h3 className="text-sm sm:text-[15px] font-medium text-black leading-snug group-hover:text-black/70 transition-colors line-clamp-1">
                                     {productName}
                                 </h3>
