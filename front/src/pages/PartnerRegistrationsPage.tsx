@@ -425,12 +425,12 @@ export default function PartnerRegistrationsPage() {
                                                                 </div>
                                                                 <div>
                                                                     <div className="font-semibold mb-1">{t('partner_management.registrations.dialogs.details.earnings')}:</div>
-                                                                    <div>{t('partner_management.registrations.dialogs.details.total')}: <span className=" ">₹{partnerDetails.earnings.total.toFixed(2)}</span></div>
+                                                                    <div>{t('partner_management.registrations.dialogs.details.total')}: <span className=" ">${partnerDetails.earnings.total.toFixed(2)}</span></div>
                                                                     <div className="mt-1">
                                                                         <div className="font-semibold text-xs mb-1">{t('partner_management.registrations.dialogs.details.monthly')}:</div>
                                                                         <ul className="text-xs grid grid-cols-2 gap-x-4 gap-y-1">
                                                                             {Object.entries(partnerDetails.earnings.monthly).map(([month, amt]) => (
-                                                                                <li key={month}>{month}: <span className="font-mono">₹{amt.toFixed(2)}</span></li>
+                                                                                <li key={month}>{month}: <span className="font-mono">${amt.toFixed(2)}</span></li>
                                                                             ))}
                                                                         </ul>
                                                                     </div>

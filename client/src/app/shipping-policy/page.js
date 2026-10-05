@@ -95,8 +95,8 @@ export default function ShippingPolicyPage() {
                 Shipping Charges
               </h2>
               <ul className="space-y-2 text-sm text-neutral-400 list-disc pl-5 leading-relaxed">
-                <li><strong>FREE Shipping</strong> is provided on all prepaid orders above ₹999 across India.</li>
-                <li>Orders below ₹999 or Cash on Delivery (COD) orders may incur a nominal shipping &amp; handling fee shown during checkout.</li>
+                <li>Available shipping options and any charges are displayed at checkout in US dollars.</li>
+                <li>Delivery availability depends on the destination. Please review the final shipping total before placing your order.</li>
               </ul>
             </div>
 

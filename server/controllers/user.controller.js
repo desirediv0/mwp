@@ -18,6 +18,7 @@ import {
 } from "../helper/generateAccessAndRefreshTokens.js";
 import { validatePassword } from "../helper/validatePassword.js";
 import { deleteFromS3, getFileUrl } from "../utils/deleteFromS3.js";
+import { getPrimaryProductImage } from "../utils/product-image.js";
 import { processAndUploadImage } from "../middlewares/multer.middlerware.js";
 import {
   generateOTP,
@@ -1390,6 +1391,7 @@ export const getOrderDetails = asyncHandler(async (req, res, next) => {
     items: order.items.map(item => {
       // Use snapshot if available (immutable), otherwise fallback to live data
       const snapshot = item.productSnapshot;
+      const liveImage = getPrimaryProductImage({ ...item.variant, product: item.product });
       return {
         ...item,
         price: parseFloat(item.price),
@@ -1397,7 +1399,7 @@ export const getOrderDetails = asyncHandler(async (req, res, next) => {
         // Snapshot data (immutable - never changes after order)
         productName: snapshot?.name || item.product?.name,
         productSlug: snapshot?.slug || item.product?.slug,
-        productImage: snapshot?.image || null,
+        productImage: snapshot?.image || (liveImage ? getFileUrl(liveImage) : null),
         sku: snapshot?.sku || item.variant?.sku,
         brand: snapshot?.brand || null,
         categories: snapshot?.categories || [],

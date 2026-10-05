@@ -50,14 +50,9 @@ export default function ResetPasswordPage() {
   };
 
   return (
-    <div className="min-h-screen bg-white flex">
+    <div className="mwp-auth min-h-screen bg-white flex">
       {/* Left Panel */}
-      <div className="hidden lg:flex lg:w-[48%] relative overflow-hidden bg-[#0A0A0A]">
-        <img
-          src="/auth-hero.jpg"
-          alt=""
-          className="absolute inset-0 w-full h-full object-cover"
-        />
+      <div className="mwp-auth-side hidden lg:flex lg:w-[48%] relative overflow-hidden bg-[#faf2e6]">
         <div className="absolute inset-0 bg-gradient-to-b from-black/70 via-black/50 to-black/90" />
 
         <div className="relative z-10 flex flex-col justify-between p-12 xl:p-16 w-full">

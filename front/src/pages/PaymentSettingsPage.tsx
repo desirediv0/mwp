@@ -221,7 +221,7 @@ export default function PaymentSettingsPage() {
                 <div className="flex items-center gap-4">
                   <div className="flex-1">
                     <Label htmlFor="codCharge" className="text-sm font-medium text-[#1F2937] mb-1 block">
-                      COD Surcharge (₹)
+                      COD Surcharge ($)
                     </Label>
                     <p className="text-xs text-[#9CA3AF] mb-2">
                       Extra charge added to orders when customer selects Cash on Delivery

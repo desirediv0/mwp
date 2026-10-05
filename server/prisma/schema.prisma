@@ -421,6 +421,7 @@ model WishlistItem {
 
 model Order {
   id                           String               @id @default(uuid())
+  currency                     String               @default("USD")
   orderNumber                  String               @unique
   userId                       String
   status                       OrderStatus          @default(PENDING)
@@ -496,7 +497,7 @@ model RazorpayPayment {
   id                String           @id @default(uuid())
   orderId           String           @unique
   amount            Decimal          @db.Decimal(10, 2)
-  currency          String           @default("INR")
+  currency          String           @default("USD")
   razorpayOrderId   String           @unique
   razorpayPaymentId String?          @unique
   razorpaySignature String?

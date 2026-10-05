@@ -53,6 +53,8 @@ export const processAndUploadImage = async (file, subfolder = "images") => {
       ACL: "public-read",
       ContentType: `image/${fileExtension === "png"
         ? "png"
+        : fileExtension === "webp"
+          ? "webp"
         : fileExtension === "gif"
           ? "gif"
           : "jpeg"

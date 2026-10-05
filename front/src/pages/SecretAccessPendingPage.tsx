@@ -127,7 +127,7 @@ export default function SecretAccessPendingPage() {
                         {secretProducts.length} item{secretProducts.length !== 1 ? "s" : ""}
                       </Badge>
                     </TableCell>
-                    <TableCell>₹{Number(order.total).toLocaleString()}</TableCell>
+                    <TableCell>${Number(order.total).toLocaleString()}</TableCell>
                     <TableCell>{new Date(order.createdAt).toLocaleDateString()}</TableCell>
                     <TableCell className="text-right">
                       <Button

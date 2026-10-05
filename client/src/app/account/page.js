@@ -229,7 +229,7 @@ export default function AccountPage() {
                 <div className="flex justify-center py-8">
                   <IconLoader2 className="h-6 w-6 animate-spin text-neutral-800" stroke={1.5} />
                 </div>
-              ) : (
+              ) : referralCode ? (
                 <>
                   <div className="p-4 bg-gray-50 border border-gray-200 mb-6">
                     <label className="block text-[10px] uppercase tracking-[0.2em] text-gray-500 font-medium mb-2">Your Referral Code</label>
@@ -249,7 +249,7 @@ export default function AccountPage() {
                         { label: "Total Referrals", value: referralStats.totalReferrals || 0, color: "text-gray-900" },
                         { label: "Completed", value: referralStats.completedReferrals || 0, color: "text-green-600" },
                         { label: "Pending", value: referralStats.pendingReferrals || 0, color: "text-neutral-800" },
-                        { label: "Earnings", value: `₹${parseFloat(referralStats.totalEarnings || 0).toFixed(0)}`, color: "text-neutral-800" },
+                        { label: "Earnings", value: `$${parseFloat(referralStats.totalEarnings || 0).toFixed(0)}`, color: "text-neutral-800" },
                       ].map((stat) => (
                         <div key={stat.label} className="p-4 bg-gray-50 border border-gray-200 text-center">
                           <p className={`text-2xl ${stat.color}`}>{stat.value}</p>
@@ -259,6 +259,8 @@ export default function AccountPage() {
                     </div>
                   )}
                 </>
+              ) : (
+                <p className="text-sm text-neutral-500">Your referral code is unavailable right now. Refresh this page to try again.</p>
               )}
             </div>
           </div>

@@ -535,7 +535,7 @@ export default function MwpAdvisor() {
 
   return (
     <>
-      <div className="fixed bottom-0 inset-x-0 sm:inset-auto sm:bottom-6 sm:right-6 z-[60] flex flex-col items-stretch sm:items-end gap-3 pointer-events-none px-0 sm:px-0">
+      <div className={`fixed z-[60] flex flex-col gap-3 pointer-events-none sm:inset-auto sm:bottom-6 sm:right-6 sm:items-end ${open ? "inset-x-0 bottom-0 items-stretch" : "right-4 bottom-[max(16px,env(safe-area-inset-bottom))] items-end"}`}>
         <AnimatePresence>
           {open && (
             <motion.div
@@ -812,11 +812,11 @@ export default function MwpAdvisor() {
         </AnimatePresence>
 
         {/* FAB */}
-        <div className="sm:hidden pointer-events-auto px-4 pb-[max(12px,env(safe-area-inset-bottom))]">
+        <div className={`${open ? "hidden" : "sm:hidden"} pointer-events-auto`}>
           <button
             type="button"
             onClick={() => setOpen((v) => !v)}
-            className="w-full flex items-center justify-center gap-2.5 h-12 bg-neutral-900 hover:bg-black text-white rounded-full border border-white/15 shadow-[0_10px_28px_-6px_rgba(0,0,0,0.5)] active:scale-[0.98] transition-all"
+            className="w-auto px-4 flex items-center justify-center gap-2.5 h-12 bg-neutral-900 hover:bg-black text-white rounded-full border border-white/15 shadow-[0_10px_28px_-6px_rgba(0,0,0,0.5)] active:scale-[0.98] transition-all"
             aria-label={open ? copy.close : copy.open}
             aria-expanded={open}
           >
@@ -837,7 +837,7 @@ export default function MwpAdvisor() {
         <button
           type="button"
           onClick={() => setOpen((v) => !v)}
-          className="hidden sm:flex pointer-events-auto group items-center gap-2.5 h-11 pl-3 pr-4 bg-neutral-900 hover:bg-black text-white rounded-full border border-white/15 shadow-[0_10px_28px_-6px_rgba(0,0,0,0.5)] focus:outline-none focus-visible:ring-2 focus-visible:ring-white/40 focus-visible:ring-offset-2 focus-visible:ring-offset-black transition-all active:scale-95 self-end"
+          className={`${open ? "hidden" : "hidden sm:flex"} pointer-events-auto group items-center gap-2.5 h-11 pl-3 pr-4 bg-neutral-900 hover:bg-black text-white rounded-full border border-white/15 shadow-[0_10px_28px_-6px_rgba(0,0,0,0.5)] focus:outline-none focus-visible:ring-2 focus-visible:ring-white/40 focus-visible:ring-offset-2 focus-visible:ring-offset-black transition-all active:scale-95 self-end`}
           aria-label={open ? copy.close : copy.open}
           aria-expanded={open}
         >

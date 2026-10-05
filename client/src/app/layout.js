@@ -1,4 +1,5 @@
 import "./globals.css";
+import "./mwp-pages.css";
 import { headers } from "next/headers";
 import { CartProvider } from "@/lib/cart-context";
 import { AuthProvider } from "@/lib/auth-context";
@@ -13,14 +14,14 @@ export const metadata = {
     template: "%s | MWP SUPPLEMENTS",
   },
   description:
-    "MWP SUPPLEMENTS (Men | Women | Power) — premium global wellness formulas: Ultra Pro, Power Max, Rapid Boost, Her Power, Her Energy and Daily Vitality. Lab tested, GMP certified.",
+    "MWP SUPPLEMENTS (Men | Women | Power) offers eight formulas for everyday wellness, energy and performance. Explore ingredients and find the routine that fits you.",
   keywords:
-    "MWP SUPPLEMENTS, Men Women Power, Testosterone Booster, Male Vitality, Tongkat Ali, Shilajit, Nitric Oxide, Women's Wellness, Hormone Balance, Daily Wellness, Immune Support",
+    "MWP SUPPLEMENTS, Men Women Power, Ultra Pro, Power Max, Rapid Boost, Her Power, Her Energy, Daily Vitality, Alpha Prime, Titan Force, supplements, daily wellness",
   authors: [{ name: "MWP SUPPLEMENTS" }],
   openGraph: {
     title: "MWP SUPPLEMENTS — Men | Women | Power",
     description:
-      "Premium global wellness brand. Clinical-grade formulas for vitality, performance and daily health.",
+      "Eight formulas for everyday wellness, energy and performance.",
     type: "website",
     locale: "en_US",
     siteName: "MWP SUPPLEMENTS",
@@ -38,7 +39,7 @@ export default function RootLayout({ children }) {
 
   return (
     <html lang="en">
-      <body className="antialiased font-sans bg-[#09090b] text-white">
+      <body className="antialiased font-sans bg-white text-neutral-900">
         <AuthProvider>
           <CartProvider>
             <CompareProvider>

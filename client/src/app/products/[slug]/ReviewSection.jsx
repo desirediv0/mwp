@@ -81,10 +81,9 @@ export default function ReviewSection({ product }) {
       });
 
       if (response.success) {
-        toast.success("Review submitted successfully!");
+        toast.success(response.message || "Review submitted for approval.");
         setReviewForm({ rating: 0, title: "", comment: "" });
         setShowForm(false);
-        window.location.reload();
       } else {
         toast.error(response.message || "Failed to submit review");
       }
@@ -217,7 +216,7 @@ export default function ReviewSection({ product }) {
                 style={{ backgroundColor: "#111111", color: "#fff", borderRadius: "8px" }}>
                 Write a Review
               </button>
-            ) : <ReviewFormComponent />}
+            ) : ReviewFormComponent()}
 
             {!canReview() && (
               <div className="mt-4 p-3 flex items-center text-[12px]" style={{ backgroundColor: "#FAFAFA", border: "1px solid rgba(184,151,106,0.3)", color: "#B8976A", borderRadius: "8px" }}>
@@ -238,7 +237,7 @@ export default function ReviewSection({ product }) {
 
           {showForm && (
             <div className="max-w-lg mx-auto mt-8 p-6 bg-white" style={{ border: "1px solid #EAEAEA", borderRadius: "8px" }}>
-              <ReviewFormComponent />
+              {ReviewFormComponent()}
             </div>
           )}
         </div>

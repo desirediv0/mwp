@@ -13,6 +13,7 @@ import {
     mergeGuestCartWithUserCart,
     hasGuestCartItems,
     getGuestCartItemCount,
+    saveGuestCart,
 } from "./guest-cart-utils";
 
 const CartContext = createContext();
@@ -25,7 +26,7 @@ export function CartProvider({ children }) {
         itemCount: 0,
         totalQuantity: 0,
     });
-    const [loading, setLoading] = useState(false);
+    const [loading, setLoading] = useState(true);
     const [cartItemsLoading, setCartItemsLoading] = useState({}); // Track loading state for individual items
     const [error, setError] = useState(null);
     const [coupon, setCoupon] = useState(null);
@@ -214,14 +215,41 @@ export function CartProvider({ children }) {
             }
 
             const guestCart = getGuestCart();
+            if (!isAuthenticated && guestCart.items?.length) {
+                const variants = new Map();
+                await Promise.all(guestCart.items.map(async item => {
+                    if (!item.productVariantId) return;
+                    let request = variants.get(item.productVariantId);
+                    if (!request) {
+                        request = fetchApi(`/public/products/variants/${item.productVariantId}`);
+                        variants.set(item.productVariantId, request);
+                    }
+                    try {
+                        const response = await request;
+                        const variant = response.data?.variant;
+                        const image = variant?.images?.find(image => image.isPrimary)?.url
+                            || variant?.images?.[0]?.url || variant?.product?.image;
+                        if (image) item.image = image;
+                        if (variant) {
+                            const regular = Number(variant.price);
+                            const sale = Number(variant.salePrice);
+                            item.basePrice = sale > 0 && sale < regular ? sale : regular;
+                            const slabs = [...(variant.pricingSlabs || [])].sort((a, b) => b.minQty - a.minQty);
+                            const slab = slabs.find(s => item.quantity >= s.minQty && (s.maxQty == null || item.quantity <= s.maxQty));
+                            item.price = slab ? Number(slab.price) : (sale > 0 && sale < regular ? sale : regular);
+                            item.subtotal = (item.price * item.quantity).toFixed(2);
+                            item.currency = "USD";
+                            item.stock = variant.stock ?? variant.quantity ?? 0;
+                            item.moq = variant.moq || 1;
+                            item.pricingSlabs = variant.pricingSlabs || [];
+                        }
+                    } catch { /* Keep cached cart data when the API is unavailable. */ }
+                }));
+                saveGuestCart(guestCart);
+            }
             let mergedItems = [...serverItems];
 
-            if (isAuthenticated) {
-                // When authenticated, if server cart has items, clear local guest storage so it doesn't linger and duplicate
-                if (serverItems.length > 0 && guestCart.items && guestCart.items.length > 0) {
-                    clearGuestCart();
-                }
-            } else if (guestCart.items && guestCart.items.length > 0) {
+            if (!isAuthenticated && guestCart.items && guestCart.items.length > 0) {
                 // For non-authenticated users, use guestCart items cleanly
                 mergedItems = [...guestCart.items];
             }

@@ -503,6 +503,9 @@ async function ensurePickupAddressSynced(pickupAddress) {
  * Build order payload for Shiprocket from our Order
  */
 export async function buildShiprocketOrderPayload(order, warehouseId = null) {
+    if (order.currency && order.currency !== "INR") {
+        throw new Error("This domestic Shiprocket adapter expects INR amounts. Use a USD-compatible shipping integration or fulfill this USD order manually.");
+    }
     const settings = await getShiprocketSettings();
 
     // Choose which warehouse to ship from (admin pick, or nearest-by-pincode).

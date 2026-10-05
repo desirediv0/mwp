@@ -87,7 +87,7 @@ function ProductsContent() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [drawerOpen, setDrawerOpen] = useState(false);
-  const [viewCols, setViewCols] = useState(4);
+  const [viewCols, setViewCols] = useState(3);
   const [viewMode, setViewMode] = useState("grid");
 
   const [selectedColors, setSelectedColors] = useState(colorId ? [colorId] : []);
@@ -95,15 +95,15 @@ function ProductsContent() {
   const [selectedAttributes, setSelectedAttributes] = useState({});
   const [openSections, setOpenSections] = useState({ categories: true, gender: true, price: true, color: true, size: true });
 
-  const [priceCap, setPriceCap] = useState(10000);
-  const [priceRange, setPriceRange] = useState({ min: Number(minPrice) || 0, max: Number(maxPrice) || 10000 });
+  const [priceCap, setPriceCap] = useState(100);
+  const [priceRange, setPriceRange] = useState({ min: Number(minPrice) || 0, max: Number(maxPrice) || 100 });
   const [searchInput, setSearchInput] = useState(searchQuery);
 
   // Real price ceiling from the catalogue
   useEffect(() => {
     fetchApi("/public/products/max-price")
       .then((r) => {
-        const cap = Math.ceil((r?.data?.maxPrice || 10000) / 100) * 100;
+        const cap = Math.ceil((r?.data?.maxPrice || 100) / 10) * 10;
         setPriceCap(cap);
         setPriceRange((pr) => ({
           min: pr.min,
@@ -187,7 +187,7 @@ function ProductsContent() {
       }
     };
     fetchProducts();
-  }, [filters, pagination.page, selectedColors, selectedSizes, selectedAttributes]);
+  }, [filters, pagination.page, pagination.limit, selectedColors, selectedSizes, selectedAttributes]);
 
   const updateURL = (f) => {
     const pairs = [];
@@ -355,7 +355,8 @@ function ProductsContent() {
               min="0"
               max={priceCap}
               value={priceRange.min}
-              onChange={(e) => setPriceRange({ ...priceRange, min: Math.max(0, parseInt(e.target.value) || 0) })}
+              step="0.01"
+              onChange={(e) => setPriceRange({ ...priceRange, min: Math.max(0, parseFloat(e.target.value) || 0) })}
               className="w-full h-10 px-3 rounded-lg border border-gray-200 text-[13px] font-semibold text-gray-800 focus:outline-none focus:border-neutral-900 focus:ring-4 focus:ring-neutral-900/10"
               placeholder="Min"
             />
@@ -365,7 +366,8 @@ function ProductsContent() {
               min="0"
               max={priceCap}
               value={priceRange.max}
-              onChange={(e) => setPriceRange({ ...priceRange, max: parseInt(e.target.value) || priceCap })}
+              step="0.01"
+              onChange={(e) => setPriceRange({ ...priceRange, max: parseFloat(e.target.value) || priceCap })}
               className="w-full h-10 px-3 rounded-lg border border-gray-200 text-[13px] font-semibold text-gray-800 focus:outline-none focus:border-neutral-900 focus:ring-4 focus:ring-neutral-900/10"
               placeholder="Max"
             />
@@ -374,15 +376,15 @@ function ProductsContent() {
             type="range"
             min="0"
             max={priceCap}
-            step="50"
+            step="0.01"
             value={priceRange.max}
-            onChange={(e) => setPriceRange({ ...priceRange, max: parseInt(e.target.value) })}
+            onChange={(e) => setPriceRange({ ...priceRange, max: parseFloat(e.target.value) })}
             className="w-full cursor-pointer accent-neutral-900"
             style={{ height: "3px" }}
           />
           <div className="flex items-center justify-between gap-3">
             <span className="text-[12px] font-semibold text-gray-600">
-              ₹{priceRange.min.toLocaleString()} — ₹{priceRange.max.toLocaleString()}
+              ${priceRange.min.toLocaleString()} — ${priceRange.max.toLocaleString()}
             </span>
             <button
               onClick={() => {
@@ -461,27 +463,28 @@ function ProductsContent() {
   );
 
   return (
-    <div className="min-h-screen bg-[#f5f5f7]">
+    <div className="mwp-page">
 
       {/* Shop Header */}
-      <div className="bg-[#f5f5f7]" style={{ borderBottom: "1px solid rgba(0,0,0,0.06)" }}>
-        <div className="max-w-7xl mx-auto px-5 md:px-8 lg:px-10 py-8 md:py-10 lg:py-12">
-          <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-6">
-            <div>
+      <div className="bg-[#faf2e6]" style={{ borderBottom: "1px solid rgba(0,0,0,0.06)" }}>
+        <div className="max-w-7xl mx-auto px-5 md:px-8 lg:px-10 py-8 md:py-10 lg:py-12 relative overflow-hidden">
+          <div className="pointer-events-none absolute right-4 bottom-0 hidden h-full w-[36%] md:block" style={{ maskImage: "linear-gradient(to right, transparent, black 18%, black 88%, transparent)" }}><Image src="/mwp-eight-products-desktop.webp" alt="" fill priority className="object-cover object-[center_70%]" sizes="36vw" /></div>
+          <div className="relative flex flex-col md:flex-row md:items-end md:justify-between gap-6">
+            <div className="md:max-w-[60%]">
               <div className="flex items-center gap-2 text-[10px] uppercase tracking-[0.25em] mb-5 text-gray-500">
                 <Link href="/" className="hover:text-neutral-800 transition-colors">Home</Link>
                 <span style={{ color: "#111111" }}>·</span>
                 <span className="text-gray-900">Shop</span>
               </div>
-              <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-[52px] tracking-tight leading-[1.08] text-gray-900">
+              <h1 className="mwp-title text-neutral-900">
                 {filters.search ? (
                   <>Results for <em className="italic" style={{ color: "#111111" }}>&ldquo;{filters.search}&rdquo;</em></>
                 ) : (
-                  <>MWP Performance <em className="italic" style={{ color: "#111111" }}>Formulas</em></>
+                  <>Find your formula.</>
                 )}
               </h1>
               <p className="mt-4 max-w-xl text-sm sm:text-base leading-relaxed text-neutral-500">
-                Thoughtfully made formulas for strength, balance, and everyday vitality.
+                Eight formulas for strength, balance, energy, and everyday vitality. Find the one that fits your routine.
               </p>
               {pagination.total > 0 && (
                 <p className="text-[11px] uppercase tracking-[0.2em] mt-4 font-light text-gray-500">
@@ -521,11 +524,11 @@ function ProductsContent() {
       </div>
 
       <div className="max-w-7xl mx-auto px-5 md:px-8 lg:px-10 py-8 md:py-12">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-12">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-10">
 
           {/* Desktop Sidebar */}
           <aside className="hidden lg:block lg:col-span-3">
-            <div className="sticky top-28">
+            <div className="sticky top-28 rounded-2xl border border-neutral-200 bg-[#fafaf8] p-5">
               <div className="flex items-center justify-between mb-6 pb-4" style={{ borderBottom: "2px solid #111111" }}>
                 <h3 className="text-[10px] uppercase tracking-[0.3em] font-medium text-gray-900">
                   Refine
@@ -652,7 +655,7 @@ function ProductsContent() {
                 </button>
               </div>
             ) : (
-              <div className={`grid gap-2 transition-opacity duration-300 ${loading ? "opacity-60 pointer-events-none" : ""} ${getColsClass()}`}>
+              <div className={`grid gap-4 transition-opacity duration-300 ${loading ? "opacity-60 pointer-events-none" : ""} ${getColsClass()}`}>
                 {products.map((p) => (
                   <ProductCard key={p.id} product={p} viewMode={viewMode} />
                 ))}

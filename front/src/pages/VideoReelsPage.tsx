@@ -467,7 +467,7 @@ function VideoReelForm({
                             {product.name}
                           </p>
                           <p className="text-xs text-[#9CA3AF]">
-                            ₹
+                            $
                             {product.variants?.[0]?.price ||
                               product.price ||
                               "N/A"}
@@ -509,7 +509,7 @@ function VideoReelForm({
                             {product?.name || pid}
                           </span>
                           <span className="text-xs text-[#9CA3AF]">
-                            ₹{product?.variants?.[0]?.price || product?.price || "N/A"}
+                            ${product?.variants?.[0]?.price || product?.price || "N/A"}
                           </span>
                         </div>
                         <button

@@ -42,6 +42,8 @@ export default function AccountLayout({ children }) {
     );
   }
 
+  if (!isAuthenticated) return null;
+
   const navItems = [
     { path: "/account", label: "Profile", icon: "User" },
     { path: "/account/orders", label: "Orders", icon: "Package" },
@@ -56,13 +58,13 @@ export default function AccountLayout({ children }) {
 
   return (
     <ClientOnly>
-      <div className="min-h-screen bg-ivory">
+      <div className="mwp-account mwp-page min-h-screen bg-white">
 
         {/* Page Header */}
         <div className="bg-white border-b border-line">
           <div className="max-w-7xl mx-auto px-5 py-10 md:py-14">
-            <span className="luxe-eyebrow block mb-3">My Account</span>
-            <h1 className="font-display text-3xl md:text-4xl text-noir tracking-tight">
+            <span className="block mb-2 text-sm text-neutral-500">My account</span>
+            <h1 className="mwp-heading">
               {user?.name || "Welcome"}
             </h1>
           </div>
@@ -74,7 +76,7 @@ export default function AccountLayout({ children }) {
 
               {/* Sidebar */}
               <div className="lg:col-span-1">
-                <div className="bg-white border border-line p-6 lg:sticky lg:top-8">
+                <div className="bg-[#f6f6f3] border border-neutral-200 rounded-2xl p-5 lg:sticky lg:top-28">
                   {/* User info */}
                   <div className="pb-6 mb-6 border-b border-line">
                     <div className="w-14 h-14 bg-noir text-ivory flex items-center justify-center font-display text-xl mb-4">
@@ -85,7 +87,7 @@ export default function AccountLayout({ children }) {
                   </div>
 
                   {/* Navigation */}
-                  <nav className="space-y-1">
+                  <nav className="mwp-account-nav flex gap-2 overflow-x-auto lg:block lg:space-y-1" aria-label="Account sections">
                     {navItems.map((item) => {
                       const Icon = iconMap[item.icon];
                       const active = isActive(item.path);
@@ -93,7 +95,7 @@ export default function AccountLayout({ children }) {
                         <Link
                           key={item.path}
                           href={item.path}
-                          className={`flex items-center justify-between px-4 py-3 text-[13px] transition-all duration-300 ${
+                          className={`flex shrink-0 items-center justify-between gap-3 rounded-xl px-4 py-3 text-[13px] transition-all duration-300 ${
                             active
                               ? "bg-noir text-ivory font-medium"
                               : "text-stone hover:text-noir hover:bg-ivory"

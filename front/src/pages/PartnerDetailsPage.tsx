@@ -10,7 +10,7 @@ import {
     Mail,
     Phone,
     MapPin,
-    IndianRupee,
+    DollarSign,
     TrendingUp,
     Clock,
     CheckCircle,
@@ -279,7 +279,7 @@ export default function PartnerDetailsPage() {
                 <Card className="p-5 border-l-4 border-l-blue-500">
                     <div className="flex items-center gap-3">
                         <div className="w-10 h-10 bg-blue-50 rounded-lg flex items-center justify-center">
-                            <IndianRupee className="h-5 w-5 text-blue-600" />
+                            <DollarSign className="h-5 w-5 text-blue-600" />
                         </div>
                         <div className="min-w-0">
                             <p className="text-xs text-gray-500 font-medium">Lifetime Earnings</p>
@@ -292,7 +292,7 @@ export default function PartnerDetailsPage() {
                 <Card className="p-5 border-l-4 border-l-red-500">
                     <div className="flex items-center gap-3">
                         <div className="w-10 h-10 bg-red-50 rounded-lg flex items-center justify-center">
-                            <IndianRupee className="h-5 w-5 text-red-600" />
+                            <DollarSign className="h-5 w-5 text-red-600" />
                         </div>
                         <div className="min-w-0">
                             <p className="text-xs text-gray-500 font-medium">Total Pending Balance</p>
@@ -390,11 +390,11 @@ export default function PartnerDetailsPage() {
                                             <span className="font-medium">{t('partner_management.details.coupons.discount')}:</span>
                                             {coupon.discountType === 'PERCENTAGE'
                                                 ? ` ${coupon.discountValue}%`
-                                                : ` ₹${coupon.discountValue}`}
+                                                : ` $${coupon.discountValue}`}
                                         </div>
                                         {coupon.minOrderAmount && (
                                             <div>
-                                                <span className="font-medium">{t('partner_management.details.coupons.min_order')}:</span> ₹{coupon.minOrderAmount}
+                                                <span className="font-medium">{t('partner_management.details.coupons.min_order')}:</span> ${coupon.minOrderAmount}
                                             </div>
                                         )}
                                         <div>

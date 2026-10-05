@@ -1,157 +1,57 @@
-"use client";
+﻿"use client";
 
-import { useEffect, useRef } from "react";
-import Image from "next/image";
 import Link from "next/link";
 import { useLanguage } from "@/lib/language-context";
 
-// Apple-style full-width dark hero banner at the top of the homepage,
-// above the 6-product grid. Fills exactly one viewport below the sticky
-// header (announcement bar 28px + main bar ~64-72px) — no scroll needed
-// to see the whole hero. GSAP drives a cinematic entrance: background
-// slow-zoom, staggered text reveal, CTA pop.
+const PRODUCT_ALT = "MWP collection: Ultra Pro, Power Max, Rapid Boost, Her Power, Her Energy, Daily Vitality, Alpha Prime and Titan Force.";
+
 export default function MwpHomeHero() {
   const { t } = useLanguage();
-  const rootRef = useRef(null);
-  const bgRef = useRef(null);
-
-  useEffect(() => {
-    let ctx;
-    let mounted = true;
-
-    (async () => {
-      const gsapModule = await import("gsap");
-      if (!mounted) return;
-      const gsap = gsapModule.default;
-      const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-
-      ctx = gsap.context(() => {
-        if (reduceMotion) {
-          gsap.set("[data-hero-anim]", { opacity: 1, y: 0 });
-          return;
-        }
-
-        // Slow background zoom-in — classic cinematic hero move.
-        gsap.fromTo(
-          bgRef.current,
-          { scale: 1.12 },
-          { scale: 1, duration: 2.4, ease: "power2.out" }
-        );
-
-        const tl = gsap.timeline({ defaults: { ease: "power3.out" } });
-        tl.fromTo(
-          "[data-hero-eyebrow]",
-          { opacity: 0, y: 14 },
-          { opacity: 1, y: 0, duration: 0.6 },
-          0.15
-        )
-          .fromTo(
-            "[data-hero-title]",
-            { opacity: 0, y: 28, scale: 0.97 },
-            { opacity: 1, y: 0, scale: 1, duration: 0.85 },
-            0.28
-          )
-          .fromTo(
-            "[data-hero-sub]",
-            { opacity: 0, y: 16 },
-            { opacity: 1, y: 0, duration: 0.6 },
-            0.55
-          )
-          .fromTo(
-            "[data-hero-cta]",
-            { opacity: 0, y: 14, scale: 0.94 },
-            { opacity: 1, y: 0, scale: 1, duration: 0.55, stagger: 0.08 },
-            0.7
-          )
-          .fromTo(
-            "[data-hero-scroll]",
-            { opacity: 0 },
-            { opacity: 1, duration: 0.6 },
-            1.1
-          );
-      }, rootRef);
-    })();
-
-    return () => {
-      mounted = false;
-      ctx?.revert();
-    };
-  }, []);
-
   return (
-    <section
-      ref={rootRef}
-      className="relative w-full bg-white text-neutral-900 overflow-hidden flex flex-col justify-between min-h-[calc(100svh-92px)] sm:min-h-[calc(100svh-100px)]"
-    >
-      <div ref={bgRef} className="absolute inset-0">
-        <Image
-          src="/mwp-hero-bg-mobile.jpg"
-          alt=""
-          fill
-          priority
-          className="object-cover object-top sm:hidden"
-        />
-        <Image
-          src="/mwp-hero-bg.png"
-          alt=""
-          fill
-          priority
-          className="hidden object-cover sm:block"
-        />
-      </div>
-      <div className="absolute inset-0 bg-gradient-to-b from-white/10 via-white/0 to-white/40" />
-
-      <div className="relative z-10 flex-1 flex items-center justify-center max-w-6xl mx-auto px-6 py-8 w-full">
-        <div className="text-center">
-          <p
-            data-hero-anim
-            data-hero-eyebrow
-            className="text-[11px] sm:text-xs uppercase tracking-[0.35em] text-neutral-500 font-semibold mb-3 opacity-0"
-          >
-            MWP Supplements
-          </p>
-          <h1
-            data-hero-anim
-            data-hero-title
-            className="text-4xl sm:text-5xl md:text-6xl font-semibold tracking-tight text-neutral-900 opacity-0"
-          >
-            Men &bull; Women &bull; Power.
-          </h1>
-          <p
-            data-hero-anim
-            data-hero-sub
-            className="mt-3 text-sm sm:text-base md:text-lg text-neutral-600 max-w-xl mx-auto opacity-0"
-          >
-            Premium global wellness formulas, engineered for everyday performance.
-          </p>
-
-          <div className="mt-6 flex items-center justify-center gap-4 text-[15px]">
-            <Link
-              href="/products"
-              data-hero-anim
-              data-hero-cta
-              className="bg-neutral-900 text-white hover:bg-neutral-700 transition-colors rounded-full px-6 py-2.5 font-medium opacity-0"
-            >
-              {t("shopNow")}
-            </Link>
-            <Link
-              href="/why-us"
-              data-hero-anim
-              data-hero-cta
-              className="text-neutral-900 hover:underline underline-offset-4 font-medium opacity-0"
-            >
-              Learn more
-            </Link>
-          </div>
+    <section aria-labelledby="mwp-hero-title" className="relative w-full overflow-hidden bg-[#faf2e6] text-neutral-900">
+      <div aria-hidden="true" className="pointer-events-none absolute inset-x-0 bottom-0 h-[360px] bg-[radial-gradient(ellipse_at_center,rgba(255,223,158,0.35),transparent_70%)]" />
+      <div className="relative z-10 mx-auto max-w-5xl px-5 pb-3 pt-5 text-center sm:pb-0 sm:pt-6">
+        <p className="mb-3 text-[10px] font-semibold uppercase tracking-[0.3em] text-[#7b602e] sm:text-xs">
+          MWP Supplements · The complete collection
+        </p>
+        <h1 id="mwp-hero-title" className="text-3xl font-semibold tracking-tight sm:text-5xl lg:text-6xl">
+          Men &bull; Women &bull; Power.
+        </h1>
+        <p className="mx-auto mt-3 max-w-xl text-sm text-neutral-600 sm:text-base">
+          Eight distinct formulas. Discover your everyday wellness essentials.
+        </p>
+        <div className="mt-5 flex flex-wrap items-center justify-center gap-5 text-sm sm:text-base">
+          <Link href="/products" className="rounded-full bg-neutral-900 px-6 py-3 font-medium text-white transition-colors hover:bg-neutral-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4">
+            {t("shopNow")}
+          </Link>
+          <Link href="/why-us" className="font-medium underline-offset-4 hover:underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4">
+            Learn more
+          </Link>
         </div>
       </div>
-
-      {/* scroll hint */}
-      <div data-hero-anim data-hero-scroll className="relative z-10 flex justify-center pb-6 opacity-0">
-        <div className="w-5 h-8 rounded-full border border-neutral-400 flex items-start justify-center p-1.5">
-          <span className="w-1 h-1 rounded-full bg-neutral-500 animate-bounce" />
-        </div>
-      </div>
+      {/* Desktop framing trims extra studio background around the full lineup.
+          The browser fetches only the matching hero asset. */}
+      <picture
+        className="relative mx-auto block w-full"
+        style={{
+          maskImage: "linear-gradient(to right, transparent, black 3%, black 97%, transparent), linear-gradient(to bottom, transparent, black 10%, black 88%, transparent)",
+          maskComposite: "intersect",
+          WebkitMaskImage: "linear-gradient(to right, transparent, black 3%, black 97%, transparent), linear-gradient(to bottom, transparent, black 10%, black 88%, transparent)",
+          WebkitMaskComposite: "source-in",
+        }}
+      >
+        <source media="(min-width: 640px)" srcSet="/mwp-eight-products-desktop.webp" width="1774" height="887" />
+        <img
+          src="/mwp-eight-products-mobile.webp"
+          alt={PRODUCT_ALT}
+          width="1122"
+          height="1402"
+          fetchPriority="high"
+          loading="eager"
+          decoding="async"
+          className="block h-auto w-full sm:h-[max(300px,34vw)] sm:object-cover sm:object-[center_70%]"
+        />
+      </picture>
     </section>
   );
 }

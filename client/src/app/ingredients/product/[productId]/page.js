@@ -164,7 +164,7 @@ export default function ProductIngredientsPage() {
                     fill
                     sizes="240px"
                     priority
-                    className="object-cover"
+                    className="object-contain p-3"
                   />
                 ) : (
                   <div className="w-full h-full flex items-center justify-center bg-gray-100 text-gray-300">

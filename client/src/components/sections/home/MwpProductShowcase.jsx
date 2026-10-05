@@ -1,12 +1,13 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { IconShieldCheck } from "@tabler/icons-react";
 import { useLanguage } from "@/lib/language-context";
+import { fetchApi } from "@/lib/utils";
 
-// Apple-style product grid — 6 equal tiles, 2 columns, light/white base with
+// Apple-style product grid — 8 equal tiles, 2 columns, light/white base with
 // a subtle per-product tint. Static content only (no API).
 const SLIDES = [
   {
@@ -18,7 +19,7 @@ const SLIDES = [
     href: "/products?search=Ultra%20Pro",
     tint: "from-[#FBF7EE] to-[#F3ECD8]",
     glow: "#C9A227",
-    image: "/mwp-tile-ultra-pro.png",
+    image: "/products/cutouts/ultra-pro.webp",
     badge: "Natural Heal",
   },
   {
@@ -30,7 +31,7 @@ const SLIDES = [
     href: "/products?search=Power%20Max",
     tint: "from-[#EEF2FB] to-[#E2E9F7]",
     glow: "#3B4E8A",
-    image: "/mwp-tile-power-max.png",
+    image: "/products/cutouts/power-max.webp",
     badge: "Natural Heal",
   },
   {
@@ -42,7 +43,7 @@ const SLIDES = [
     href: "/products?search=Rapid%20Boost",
     tint: "from-[#FBF2E9] to-[#F5E4D0]",
     glow: "#A15C2C",
-    image: "/mwp-tile-rapid-boost.png",
+    image: "/products/cutouts/rapid-boost.webp",
     badge: "Natural Heal",
   },
   {
@@ -54,19 +55,19 @@ const SLIDES = [
     href: "/products?search=Her%20Power",
     tint: "from-[#FBEFEC] to-[#F5DFD9]",
     glow: "#9C5A4A",
-    image: "/mwp-tile-her-power.png",
+    image: "/products/cutouts/her-power.webp",
     badge: "Natural Heal",
   },
   {
     n: "05",
     key: "her-energy",
-    name: "MWP Alpha Prime",
+    name: "MWP Her Energy",
     headline: "Keeps Up With Her.",
     copy: "Daily energy and focus formula for an active life.",
     href: "/products?search=Her%20Energy",
     tint: "from-[#F4EEFB] to-[#E9DEF5]",
     glow: "#6B4E92",
-    image: "/mwp-tile-her-energy.png",
+    image: "/products/cutouts/her-energy.webp",
     badge: "Natural Heal",
   },
   {
@@ -78,7 +79,31 @@ const SLIDES = [
     href: "/products?search=Daily%20Vitality",
     tint: "from-[#F6F5F1] to-[#ECE9E1]",
     glow: "#5C5648",
-    image: "/mwp-tile-daily-vitality.png",
+    image: "/products/cutouts/daily-vitality.webp",
+    badge: "Natural Heal",
+  },
+  {
+    n: "07",
+    key: "alpha-prime",
+    name: "MWP Alpha Prime",
+    headline: "Strength. Focus. Performance.",
+    copy: "Explore the Alpha Prime performance formula.",
+    href: "/products?search=Alpha%20Prime",
+    tint: "from-[#FBF2E9] to-[#F0DFC9]",
+    glow: "#AA652B",
+    image: "/products/cutouts/alpha-prime.webp",
+    badge: "Natural Heal",
+  },
+  {
+    n: "08",
+    key: "titan-force",
+    name: "MWP Titan Force",
+    headline: "Power For Your Everyday.",
+    copy: "Discover the Titan Force performance formula.",
+    href: "/products?search=Titan%20Force",
+    tint: "from-[#F8F0E7] to-[#EEDBC7]",
+    glow: "#AF6028",
+    image: "/products/cutouts/titan-force.webp",
     badge: "Natural Heal",
   },
 ];
@@ -155,15 +180,15 @@ function ProductTile({ slide, index }) {
       {/* Product image — fills the tile edge-to-edge, no gap, gentle float on hover */}
       <div
         data-tile-image
-        className="relative z-10 flex-1 min-h-[260px] sm:min-h-[340px] -mx-2 -mb-2 transition-transform duration-500 ease-out group-hover:-translate-y-2 group-hover:scale-[1.03]"
+        className="relative z-10 mx-auto mt-5 mb-6 h-[320px] w-full max-w-[280px] sm:h-[380px] sm:max-w-[320px] transition-transform duration-500 ease-out group-hover:-translate-y-2 group-hover:scale-[1.03]"
       >
         {slide.image ? (
           <Image
             src={slide.image}
             alt={slide.name}
             fill
-            sizes="(max-width: 640px) 100vw, 50vw"
-            className="object-contain object-bottom p-4 sm:p-6 drop-shadow-[0_25px_35px_rgba(0,0,0,0.18)]"
+            sizes="(max-width: 640px) 280px, 320px"
+            className="object-contain drop-shadow-[0_18px_20px_rgba(0,0,0,0.16)]"
           />
         ) : (
           <span
@@ -180,6 +205,15 @@ function ProductTile({ slide, index }) {
 
 export default function MwpProductShowcase() {
   const gridRef = useRef(null);
+  const [catalog, setCatalog] = useState([]);
+
+  useEffect(() => {
+    let alive = true;
+    fetchApi("/public/products?limit=100")
+      .then(res => { if (alive) setCatalog(res.data?.products || []); })
+      .catch(() => {});
+    return () => { alive = false; };
+  }, []);
 
   useEffect(() => {
     let ctx;
@@ -263,7 +297,7 @@ export default function MwpProductShowcase() {
       <div >
         <div ref={gridRef} className="grid grid-cols-1 sm:grid-cols-2 ">
           {SLIDES.map((slide, i) => (
-            <ProductTile key={slide.key} slide={slide} index={i} />
+            <ProductTile key={slide.key} slide={{ ...slide, image: catalog.find(product => product.slug === slide.key)?.image || slide.image }} index={i} />
           ))}
         </div>
       </div>

@@ -34,26 +34,29 @@ import { useAddVariantToCart } from "@/lib/cart-utils";
 import { useCart } from "@/lib/cart-context";
 import { useCompare } from "@/lib/compare-context";
 import { ProductCard } from "@/components/products/ProductCard";
+import { toast } from "sonner";
 
 const getImageUrl = (img) => {
   if (!img) return "/placeholder.jpg";
   let urlStr = typeof img === "object" ? (img.url || img.image || "") : img;
   if (!urlStr || typeof urlStr !== "string") return "/placeholder.jpg";
-  if (urlStr.startsWith("http://") || urlStr.startsWith("https://") || urlStr.startsWith("/mwp-tile-")) return urlStr;
+  if (urlStr.startsWith("http://") || urlStr.startsWith("https://")) return urlStr;
   const cleanPath = urlStr.startsWith("/") ? urlStr.slice(1) : urlStr;
   return `https://desirediv-storage.blr1.digitaloceanspaces.com/${cleanPath}`;
 };
 
-// Toggle to bring reviews back in the future — set to true to show ratings + review section.
-const SHOW_REVIEWS = false;
+// Reviews display approved customer feedback; new submissions go through moderation.
+const SHOW_REVIEWS = true;
 
 const PRODUCT_THEMES = {
-  "ultra-pro": { image: "/mwp-tile-ultra-pro.png", surface: "#F7F5F2", accent: "#1D1D1F" },
-  "power-max": { image: "/mwp-tile-power-max.png", surface: "#F2F4F7", accent: "#1D1D1F" },
-  "rapid-boost": { image: "/mwp-tile-rapid-boost.png", surface: "#F8F4EF", accent: "#1D1D1F" },
-  "her-power": { image: "/mwp-tile-her-power.png", surface: "#F8F2F3", accent: "#1D1D1F" },
-  "her-energy": { image: "/mwp-tile-her-energy.png", surface: "#F4F2F8", accent: "#1D1D1F" },
-  "daily-vitality": { image: "/mwp-tile-daily-vitality.png", surface: "#F3F5F4", accent: "#1D1D1F" },
+  "ultra-pro": { surface: "#F7F5F2", accent: "#1D1D1F" },
+  "power-max": { surface: "#F2F4F7", accent: "#1D1D1F" },
+  "rapid-boost": { surface: "#F8F4EF", accent: "#1D1D1F" },
+  "her-power": { surface: "#F8F2F3", accent: "#1D1D1F" },
+  "her-energy": { surface: "#F4F2F8", accent: "#1D1D1F" },
+  "daily-vitality": { surface: "#F3F5F4", accent: "#1D1D1F" },
+  "alpha-prime": { surface: "#FBF2E9", accent: "#1D1D1F" },
+  "titan-force": { surface: "#F8F0E7", accent: "#1D1D1F" },
   default: { surface: "#F5F5F7", accent: "#1D1D1F" },
 };
 
@@ -82,6 +85,7 @@ export default function ProductContent({ slug }) {
   const [bundleSelected, setBundleSelected] = useState({});
   const [isAddingBundle, setIsAddingBundle] = useState(false);
   const [activeThumb, setActiveThumb] = useState(0);
+  const galleryLength = selectedVariant?.images?.length || product?.images?.length || 0;
 
   // Zoom & Lightbox states
   const [isHovered, setIsHovered] = useState(false);
@@ -120,12 +124,12 @@ export default function ProductContent({ slug }) {
     if (!isZoomModalOpen) return;
     const handleKeyDown = (e) => {
       if (e.key === "Escape") setIsZoomModalOpen(false);
-      if (e.key === "ArrowLeft") setActiveThumb((prev) => (prev > 0 ? prev - 1 : images.length - 1));
-      if (e.key === "ArrowRight") setActiveThumb((prev) => (prev < images.length - 1 ? prev + 1 : 0));
+      if (e.key === "ArrowLeft") setActiveThumb((prev) => (prev > 0 ? prev - 1 : Math.max(0, galleryLength - 1)));
+      if (e.key === "ArrowRight") setActiveThumb((prev) => (prev < galleryLength - 1 ? prev + 1 : 0));
     };
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [isZoomModalOpen]);
+  }, [isZoomModalOpen, galleryLength]);
 
   const { isAuthenticated, openAuthModal } = useAuth();
   const router = useRouter();
@@ -152,7 +156,7 @@ export default function ProductContent({ slug }) {
 
   useEffect(() => {
     if (!slug) return;
-    setLoading(true); setInitialLoading(true);
+    setLoading(true); setInitialLoading(true); setError(null); setCartSuccess(false);
     fetchApi(`/public/products/${slug}`)
       .then((res) => {
         const pd = res.data.product;
@@ -162,20 +166,15 @@ export default function ProductContent({ slug }) {
         if (pd.variants?.length) {
           const combos = pd.variants.filter((v) => v.isActive).map((v) => ({ attributeValueIds: v.attributes?.map((a) => a.attributeValueId) || [], variant: v }));
           setAvailableCombinations(combos);
-          if (pd.attributeOptions?.length) {
-            const defaults = {};
-            pd.attributeOptions.forEach((a) => { if (a.values?.length) defaults[a.id] = a.values[0].id; });
-            setSelectedAttributes(defaults);
-            const match = combos.find((c) => c.attributeValueIds.sort().join(",") === Object.values(defaults).sort().join(","));
-            const v = match?.variant || pd.variants[0];
+          const v = combos.find(c => (c.variant.stock ?? c.variant.quantity ?? 0) > 0)?.variant || combos[0]?.variant;
+          if (v) {
+            // Select an actual API variant, even when admin-defined attribute combinations differ.
+            setSelectedAttributes(Object.fromEntries((v.attributes || []).map(a => [a.attributeId, a.attributeValueId])));
             setSelectedVariant(v);
             setQuantity(v.moq || 1);
             setEffectivePriceInfo(getEffectivePrice(v, v.moq || 1));
           } else {
-            const v = pd.variants[0];
-            setSelectedVariant(v);
-            setQuantity(v.moq || 1);
-            setEffectivePriceInfo(getEffectivePrice(v, v.moq || 1));
+            setSelectedAttributes({}); setSelectedVariant(null); setEffectivePriceInfo(null);
           }
         }
       })
@@ -224,8 +223,10 @@ export default function ProductContent({ slug }) {
     if (match) {
       setSelectedVariant(match.variant);
       const moq = match.variant.moq || 1;
-      if (quantity < moq) setQuantity(moq);
-      setEffectivePriceInfo(getEffectivePrice(match.variant, quantity < moq ? moq : quantity));
+      const max = match.variant.stock ?? match.variant.quantity ?? moq;
+      const nextQuantity = Math.max(moq, Math.min(quantity, max));
+      setQuantity(nextQuantity);
+      setEffectivePriceInfo(getEffectivePrice(match.variant, nextQuantity));
     } else { setSelectedVariant(null); setEffectivePriceInfo(null); }
   };
 
@@ -245,14 +246,15 @@ export default function ProductContent({ slug }) {
 
   const handleQuantityChange = (delta) => {
     const moq = selectedVariant?.moq || 1;
-    const stock = selectedVariant?.stock || selectedVariant?.quantity || 0;
+    const stock = selectedVariant?.stock ?? selectedVariant?.quantity ?? 0;
     const next = quantity + delta;
-    if (next < moq || (stock > 0 && next > stock)) return;
+    if (next < moq || next > stock) return;
     setQuantity(next);
     if (selectedVariant) setEffectivePriceInfo(getEffectivePrice(selectedVariant, next));
   };
 
-  const handleAddToCart = async () => {
+  const handleAddToCart = async (buyNow = false) => {
+    if (isAddingToCart) return;
     const v = selectedVariant || product?.variants?.[0];
     if (!v) return;
     const vStock = v.stock ?? v.quantity ?? null;
@@ -263,12 +265,16 @@ export default function ProductContent({ slug }) {
     setIsAddingToCart(true); setCartSuccess(false);
     try {
       const result = await addVariantToCart(v, quantity, product.name);
-      if (result.success) { setCartSuccess(true); setTimeout(() => setCartSuccess(false), 3000); }
+      if (result.success) {
+        setCartSuccess(true); setTimeout(() => setCartSuccess(false), 3000);
+        if (buyNow === true) router.push(isAuthenticated ? "/checkout" : "/auth?redirect=%2Fcheckout");
+      }
     } catch (err) { console.error(err); }
     finally { setIsAddingToCart(false); }
   };
 
   const handleAddBundleToCart = async () => {
+    if (isAddingBundle || isAddingToCart) return;
     setIsAddingBundle(true);
     try {
       const mainV = selectedVariant || product?.variants?.[0];
@@ -277,7 +283,7 @@ export default function ProductContent({ slug }) {
         if (bundleSelected[p.id]) { const v = p.variants?.[0]; if (v) await addToCart(v.id, 1); }
       }
       setCartSuccess(true); setTimeout(() => setCartSuccess(false), 3000);
-    } catch (err) { console.error(err); }
+    } catch (err) { console.error(err); toast.error(err.message || "Some items could not be added. Please check your cart."); }
     finally { setIsAddingBundle(false); }
   };
 
@@ -310,8 +316,7 @@ export default function ProductContent({ slug }) {
     if (product?.images?.length) return product.images;
     const variantImages = product?.variants?.find((v) => v.images?.length)?.images;
     if (variantImages?.length) return variantImages;
-    const fallbackImage = PRODUCT_THEMES[product?.slug]?.image;
-    return fallbackImage ? [{ url: fallbackImage, isPrimary: true }] : [];
+    return [];
   };
 
   const PriceDisplay = () => {
@@ -400,7 +405,7 @@ export default function ProductContent({ slug }) {
 
   const bundleItems = [
     { id: product.id, name: product.name, price: parseFloat(effectivePriceInfo?.price || selectedVariant?.salePrice || selectedVariant?.price || product.basePrice || 0), isMain: true, stock, image: primary?.url },
-    ...relatedProducts.slice(0, 3).map((p) => { const v = p.variants?.[0] || {}; return { id: p.id, name: p.name, price: parseFloat(v.salePrice || v.price || p.basePrice || 0), isMain: false, stock: p.stock || 10, image: p.image || p.images?.[0]?.url || PRODUCT_THEMES[p.slug]?.image }; })
+    ...relatedProducts.slice(0, 3).map((p) => { const v = p.variants?.[0] || {}; return { id: p.id, name: p.name, price: parseFloat(v.salePrice || v.price || p.basePrice || 0), isMain: false, stock: p.stock || 10, image: p.image || p.images?.[0]?.url }; })
   ];
   const bundleTotal = bundleItems.reduce((sum, item) => sum + (bundleSelected[item.id] ? (item.price * (item.isMain ? quantity : 1)) : 0), 0);
 
@@ -462,7 +467,7 @@ export default function ProductContent({ slug }) {
                   src={getImageUrl(primary?.url)}
                   alt={product.name}
                   fill
-                  className="object-contain p-10 sm:p-14 lg:p-16 transition-transform duration-200 ease-out pointer-events-none"
+                  className="object-contain p-5 sm:p-7 lg:p-8 transition-transform duration-200 ease-out pointer-events-none"
                   style={{
                     transformOrigin: isHovered ? `${zoomPos.x}% ${zoomPos.y}%` : "center center",
                     transform: isHovered ? "scale(2.2)" : "scale(1)",
@@ -540,7 +545,7 @@ export default function ProductContent({ slug }) {
             {/* Rating — hidden for now, see SHOW_REVIEWS */}
             {SHOW_REVIEWS && (
               <div className="flex items-center gap-2.5 mb-6">
-                <div className="flex gap-0.5">{[1, 2, 3, 4, 5].map(i => <IconStar key={i} className="h-3.5 w-3.5 text-neutral-900" fill="currentColor" stroke={0} />)}</div>
+                <div className="flex gap-0.5">{[1, 2, 3, 4, 5].map(i => <IconStar key={i} className="h-3.5 w-3.5 text-neutral-900" fill={i <= Math.round(product.avgRating || 0) ? "currentColor" : "none"} stroke={1.5} />)}</div>
                 <span className="text-[12px] text-neutral-500">({product.reviewCount || 0} reviews)</span>
               </div>
             )}
@@ -599,12 +604,15 @@ export default function ProductContent({ slug }) {
                       <button
                         key={v.id}
                         onClick={() => handleAttributeChange(attr.id, v.id)}
-                        className={`min-w-[48px] px-4 py-2 text-[13px] font-medium rounded-full border transition-all ${selId === v.id
-                          ? "text-white border-neutral-900 bg-neutral-900"
-                          : "border-neutral-200 bg-white text-neutral-600 hover:border-neutral-400"
+                        type="button"
+                        aria-pressed={selId === v.id}
+                        className={`min-w-[48px] min-h-11 px-4 py-2 text-[13px] font-medium rounded-full border bg-white text-neutral-900 transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-neutral-900 ${selId === v.id
+                          ? "border-neutral-900 ring-1 ring-neutral-900"
+                          : "border-neutral-300 hover:border-neutral-900 hover:bg-neutral-50"
                           }`}
                       >
                         {v.value}
+                        {selId === v.id && <IconCheck className="inline-block h-3.5 w-3.5 ml-2" aria-hidden="true" />}
                       </button>
                     ))}
                   </div>
@@ -635,6 +643,11 @@ export default function ProductContent({ slug }) {
                 {isAddingToCart ? <div className="h-4 w-4 border-2 border-current border-t-transparent rounded-full animate-spin" /> : outOfStock ? "Sold Out" : "Add to Cart"}
               </button>
             </div>
+
+            <button type="button" onClick={() => handleAddToCart(true)} disabled={isAddingToCart || outOfStock || quantity > stock}
+              className="w-full h-12 mb-3 rounded-full border border-neutral-900 bg-neutral-900 text-white text-[13px] font-medium hover:bg-neutral-800 disabled:opacity-40 transition-colors">
+              {isAddingToCart ? "Adding…" : "Buy Now"}
+            </button>
 
             {/* Wishlist + Compare row */}
             <div className="flex gap-2.5 mb-7">

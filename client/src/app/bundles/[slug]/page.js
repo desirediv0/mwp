@@ -281,7 +281,7 @@ export default function BundleDetailPage({ params }) {
                           </div>
                         )}
                         <p className="text-sm text-gold-dark font-medium mt-1">
-                          ₹{parseFloat(price).toLocaleString()}
+                          ${parseFloat(price).toLocaleString()}
                         </p>
                       </div>
                     </button>
@@ -330,7 +330,7 @@ export default function BundleDetailPage({ params }) {
                         <span>
                           {slab.label || `${slab.itemCount} Products`}
                         </span>
-                        <span>₹{slab.price.toLocaleString()}</span>
+                        <span>${slab.price.toLocaleString()}</span>
                       </div>
                     ))}
                   </div>
@@ -343,7 +343,7 @@ export default function BundleDetailPage({ params }) {
                   <div className="flex justify-between text-sm mb-2">
                     <span className="text-gray-500">Actual Price</span>
                     <span className="line-through text-gray-400">
-                      ₹{actualPrice.toLocaleString()}
+                      ${actualPrice.toLocaleString()}
                     </span>
                   </div>
                   {bundlePrice > 0 && (
@@ -351,7 +351,7 @@ export default function BundleDetailPage({ params }) {
                       <div className="flex justify-between text-sm mb-2">
                         <span className="text-gray-500">Bundle Price</span>
                         <span className="font-medium text-[#111111]">
-                          ₹{bundlePrice.toLocaleString()}
+                          ${bundlePrice.toLocaleString()}
                         </span>
                       </div>
                       <div className="flex justify-between text-sm">
@@ -359,7 +359,7 @@ export default function BundleDetailPage({ params }) {
                           You Save
                         </span>
                         <span className="text-green-600 font-medium">
-                          ₹{savings.toLocaleString()}
+                          ${savings.toLocaleString()}
                         </span>
                       </div>
                     </>

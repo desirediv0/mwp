@@ -303,14 +303,14 @@ export function ProductCard({
             ) : selectedVariant.salePrice ? (
               <div className="flex flex-col">
                 <span className="text-orange-500   text-sm">
-                  ₹{selectedVariant.salePrice.toLocaleString('en-IN')}
+                  ${selectedVariant.salePrice.toLocaleString('en-IN')}
                 </span>
                 <span className="text-muted-foreground line-through text-xs">
-                  ₹{selectedVariant.price.toLocaleString('en-IN')}
+                  ${selectedVariant.price.toLocaleString('en-IN')}
                 </span>
               </div>
             ) : (
-              <span className="text-sm  ">₹{selectedVariant.price.toLocaleString('en-IN')}</span>
+              <span className="text-sm  ">${selectedVariant.price.toLocaleString('en-IN')}</span>
             )}
           </div>
 

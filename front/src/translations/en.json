@@ -582,7 +582,7 @@
       "discount_settings_desc": "Configure discount type, value, and usage limits",
       "discount_type": "Discount Type",
       "type_percentage": "Percentage Discount (%)",
-      "type_fixed": "Fixed Amount Discount (₹)",
+      "type_fixed": "Fixed Amount Discount ($)",
       "discount_value": "Discount Value",
       "min_order_amount": "Minimum Order Amount",
       "max_uses": "Maximum Uses",
@@ -612,9 +612,9 @@
       "partner_already_assigned": "This partner is already assigned to this coupon",
       "assign_partner_desc": "Assign this coupon to specific partners for commission tracking. Partners will earn the specified commission percentage from orders using this coupon.",
       "commission_note_title": "Commission Calculation Note",
-      "commission_example": "Example: Order value ₹100, Coupon discount ₹10, Partner commission 5%",
-      "commission_calc_1": "Commission is calculated on: ₹90 (Order value after discount)",
-      "commission_calc_2": "Partner earns: ₹4.50 (5% of ₹90)",
+      "commission_example": "Example: Order value $100, Coupon discount $10, Partner commission 5%",
+      "commission_calc_1": "Commission is calculated on: $90 (Order value after discount)",
+      "commission_calc_2": "Partner earns: $4.50 (5% of $90)",
       "commission_final_note": "Commission is always calculated on the final order amount after applying the coupon discount.",
       "cancel": "Cancel",
       "create_btn": "Create Coupon",
@@ -760,7 +760,7 @@
       "min_qty_label": "Min Quantity",
       "max_qty_label": "Max Quantity (Optional)",
       "max_qty_placeholder": "Leave empty for unlimited",
-      "price_label": "Price (INR)"
+      "price_label": "Price (USD)"
     },
     "validation": {
       "min_qty_error": "Minimum quantity must be at least 1",
@@ -2044,7 +2044,7 @@
       "threshold_label": "Free Shipping Threshold",
       "threshold_hint": "Orders above this amount will be eligible for free shipping",
       "save_success": "Shipping charges saved successfully",
-      "info": "🚚 This button ONLY saves shipping charges. Example: Set Shipping Charge=₹50, Free Threshold=₹999 → Click Save → Only these 2 values are updated. Dimensions are NOT affected."
+      "info": "🚚 This button ONLY saves shipping charges. Example: Set Shipping Charge=$50, Free Threshold=$75 → Click Save → Only these 2 values are updated. Dimensions are NOT affected."
     },
     "pickup_addresses": {
       "title": "Pickup Addresses",
@@ -2117,7 +2117,7 @@
       "add_hint": "Add quantity-based pricing for this variant",
       "min_qty": "Min Qty",
       "max_qty": "Max Qty",
-      "price": "Price (₹)",
+      "price": "Price ($)",
       "unlimited": "Unlimited",
       "save": "Save",
       "cancel": "Cancel",

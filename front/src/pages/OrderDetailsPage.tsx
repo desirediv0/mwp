@@ -1478,7 +1478,7 @@ export default function OrderDetailsPage() {
                                   ⚡ Delivery: <span className="font-medium text-gray-700">{courier.etd || `${courier.estimatedDeliveryDays} Days`}</span>
                                 </p>
                                 <div className="flex items-center gap-2 mt-1">
-                                  <span className="text-xs font-semibold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200">₹{courier.rate}</span>
+                                  <span className="text-xs font-semibold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200">${courier.rate}</span>
                                   {courier.rating > 0 && <span className="text-xs text-amber-600 font-medium">★ {courier.rating}</span>}
                                   {courier.cod && <span className="text-[10px] text-blue-600 bg-blue-50 px-1.5 py-0.5 rounded">COD Available</span>}
                                 </div>

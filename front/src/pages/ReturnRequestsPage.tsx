@@ -856,7 +856,7 @@ export default function ReturnRequestsPage() {
 function formatCurrency(arg0: number): import("react").ReactNode {
   return new Intl.NumberFormat('en-IN', {
     style: 'currency',
-    currency: 'INR',
+    currency: 'USD',
     minimumFractionDigits: 2
   }).format(arg0);
 }

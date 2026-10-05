@@ -18,6 +18,7 @@ const nextConfig = {
     },
     experimental: {
         webpackBuildWorker: false,
+        workerThreads: true,
     }
 };
 

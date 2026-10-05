@@ -93,7 +93,7 @@ export default function EarningsAnalyticsTab() {
                 <Card className="p-6 bg-gradient-to-br from-blue-50 to-blue-100">
                     <div className="text-sm text-gray-600">Total Earnings</div>
                     <div className="text-2xl   text-blue-900 mt-2">
-                        ₹{totalEarnings.toLocaleString("en-IN", { maximumFractionDigits: 0 })}
+                        ${totalEarnings.toLocaleString("en-IN", { maximumFractionDigits: 0 })}
                     </div>
                 </Card>
                 <Card className="p-6 bg-gradient-to-br from-green-50 to-green-100">
@@ -103,7 +103,7 @@ export default function EarningsAnalyticsTab() {
                 <Card className="p-6 bg-gradient-to-br from-purple-50 to-purple-100">
                     <div className="text-sm text-gray-600">Avg per Partner</div>
                     <div className="text-2xl   text-purple-900 mt-2">
-                        ₹{totalPartners > 0 ? (totalEarnings / totalPartners).toLocaleString("en-IN", { maximumFractionDigits: 0 }) : 0}
+                        ${totalPartners > 0 ? (totalEarnings / totalPartners).toLocaleString("en-IN", { maximumFractionDigits: 0 }) : 0}
                     </div>
                 </Card>
                 <Card className="p-6 bg-gradient-to-br from-orange-50 to-orange-100">
@@ -122,7 +122,7 @@ export default function EarningsAnalyticsTab() {
                         <CartesianGrid strokeDasharray="3 3" />
                         <XAxis dataKey="month" />
                         <YAxis />
-                        <Tooltip formatter={(value) => `₹${value}`} />
+                        <Tooltip formatter={(value) => `$${value}`} />
                         <Legend />
                         <Line
                             type="monotone"
@@ -152,7 +152,7 @@ export default function EarningsAnalyticsTab() {
                                 </div>
                             </div>
                             <div className="text-right">
-                                <div className="  text-lg">₹{partner.totalEarnings.toLocaleString("en-IN", { maximumFractionDigits: 2 })}</div>
+                                <div className="  text-lg">${partner.totalEarnings.toLocaleString("en-IN", { maximumFractionDigits: 2 })}</div>
                                 <div className="text-xs text-gray-500">{partner.orderCount} orders</div>
                             </div>
                         </div>
@@ -180,16 +180,16 @@ export default function EarningsAnalyticsTab() {
                                 <tr key={partner.partnerId} className="hover:bg-gray-50">
                                     <td className="px-4 py-3">{partner.name}</td>
                                     <td className="px-4 py-3 text-right font-medium">
-                                        ₹{partner.totalEarnings.toLocaleString("en-IN", { maximumFractionDigits: 2 })}
+                                        ${partner.totalEarnings.toLocaleString("en-IN", { maximumFractionDigits: 2 })}
                                     </td>
                                     <td className="px-4 py-3 text-right">
-                                        ₹{partner.thisYearEarnings.toLocaleString("en-IN", { maximumFractionDigits: 2 })}
+                                        ${partner.thisYearEarnings.toLocaleString("en-IN", { maximumFractionDigits: 2 })}
                                     </td>
                                     <td className="px-4 py-3 text-right text-blue-600">
-                                        ₹{partner.lastMonthEarnings.toLocaleString("en-IN", { maximumFractionDigits: 2 })}
+                                        ${partner.lastMonthEarnings.toLocaleString("en-IN", { maximumFractionDigits: 2 })}
                                     </td>
                                     <td className="px-4 py-3 text-right text-green-600 font-medium">
-                                        ₹{partner.thisMonthEarnings.toLocaleString("en-IN", { maximumFractionDigits: 2 })}
+                                        ${partner.thisMonthEarnings.toLocaleString("en-IN", { maximumFractionDigits: 2 })}
                                     </td>
                                     <td className="px-4 py-3 text-right">{partner.orderCount}</td>
                                 </tr>

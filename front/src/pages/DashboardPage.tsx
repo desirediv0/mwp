@@ -17,7 +17,7 @@ import {
   Package2,
   ExternalLink,
   PieChart as PieChartIcon,
-  IndianRupee,
+  DollarSign,
   Users as UsersIcon,
   RotateCcw,
   Clock,
@@ -460,11 +460,11 @@ export default function DashboardPage() {
             <CardTitle className="text-sm font-medium text-[#4B5563]">
               {t("dashboard.stats.total_revenue")}
             </CardTitle>
-            <IndianRupee className="h-5 w-5 text-[#4CAF50]" />
+            <DollarSign className="h-5 w-5 text-[#4CAF50]" />
           </CardHeader>
           <CardContent className="px-6 pb-6">
             <div className="text-3xl   text-[#1F2937]">
-              ₹
+              $
               {orderStats?.totalSales
                 ? parseFloat(orderStats.totalSales.toString()).toLocaleString(
                   "en-IN"
@@ -634,7 +634,7 @@ export default function DashboardPage() {
                           </span>
                           <span>
                             <span className="font-semibold text-[#1F2937]">
-                              ₹
+                              $
                               {typeof product.revenue === "string"
                                 ? product.revenue
                                 : parseFloat(

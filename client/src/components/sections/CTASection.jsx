@@ -19,7 +19,7 @@ export const CTASection = () => {
               <span className="text-primary">Premium Sound?</span>
             </h2>
             <p className="text-lg md:text-xl text-white/70 max-w-2xl mx-auto">
-              Shop now and get free shipping on orders above ₹25,000.
+              Shop now and get free shipping on orders above $25,000.
               1 year warranty on all products.
             </p>
           </div>
@@ -40,7 +40,7 @@ export const CTASection = () => {
               <Truck className="h-6 w-6 text-primary" />
               <div>
                 <p className="text-white font-medium">Free Shipping</p>
-                <p className="text-white/60 text-sm">On orders ₹25,000+</p>
+                <p className="text-white/60 text-sm">On orders $25,000+</p>
               </div>
             </div>
             <div className="flex items-center gap-3">

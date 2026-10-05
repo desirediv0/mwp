@@ -6,7 +6,7 @@ import {
   Loader2,
   Users,
   TrendingUp,
-  IndianRupee,
+  DollarSign,
   CheckCircle,
   Clock,
   XCircle,
@@ -235,7 +235,7 @@ export default function ReferralsPage() {
                     {t('referrals_page.stats.total_rewards_paid')}
                   </p>
                   <p className="text-2xl   text-[#1F2937] flex items-center gap-1">
-                    <IndianRupee className="h-5 w-5" />
+                    <DollarSign className="h-5 w-5" />
                     {stats.totalRewardsPaid.toFixed(2)}
                   </p>
                 </div>
@@ -279,7 +279,7 @@ export default function ReferralsPage() {
                       {ref.totalReferrals} {t('referrals_page.top_referrers.referrals_suffix')}
                     </p>
                     <p className="text-sm text-[#22C55E] flex items-center gap-1 justify-end">
-                      <IndianRupee className="h-3 w-3" />
+                      <DollarSign className="h-3 w-3" />
                       {ref.totalEarnings.toFixed(2)}
                     </p>
                   </div>
@@ -410,7 +410,7 @@ export default function ReferralsPage() {
                                   </p>
                                 </div>
                                 <p className="font-semibold flex items-center gap-1">
-                                  <IndianRupee className="h-4 w-4" />
+                                  <DollarSign className="h-4 w-4" />
                                   {referral.order.total.toFixed(2)}
                                 </p>
                               </div>
@@ -419,9 +419,9 @@ export default function ReferralsPage() {
 
                           {referral.rewardAmount && (
                             <div className="flex items-center gap-2 text-green-600">
-                              <IndianRupee className="h-4 w-4" />
+                              <DollarSign className="h-4 w-4" />
                               <span className="font-semibold">
-                                {t('referrals_page.card.reward')}: ₹{referral.rewardAmount.toFixed(2)}
+                                {t('referrals_page.card.reward')}: ${referral.rewardAmount.toFixed(2)}
                               </span>
                               {referral.completedAt && (
                                 <span className="text-sm text-muted-foreground">

@@ -1,5 +1,6 @@
 // Guest Cart Utilities
 // This file handles cart functionality for non-logged-in users
+import { fetchWithNetworkRetry } from "./api-request.js";
 
 const GUEST_CART_KEY = "mwp_guest_cart";
 
@@ -35,6 +36,7 @@ export const saveGuestCart = (cart) => {
 // Add item to guest cart
 export const addToGuestCart = async (productVariantId, quantity = 1) => {
     try {
+        if (!Number.isInteger(quantity) || quantity < 1) throw new Error("Quantity must be a positive whole number");
         let newItem;
 
         // Handle product objects (from Fragrance Finder, custom builder, or quick view)
@@ -68,13 +70,13 @@ export const addToGuestCart = async (productVariantId, quantity = 1) => {
         } else {
             const apiBase = process.env.NEXT_PUBLIC_API_URL || (process.env.NODE_ENV === "development" ? "http://localhost:4000/api" : "https://api.mwpsupplements.com/api");
 
-            let response = await fetch(
+            let response = await fetchWithNetworkRetry(
                 `${apiBase}/public/products/variants/${productVariantId}`,
                 { credentials: "include" }
             );
 
             if (!response.ok) {
-                response = await fetch(
+                response = await fetchWithNetworkRetry(
                     `${apiBase}/products/variants/${productVariantId}`,
                     { credentials: "include" }
                 );
@@ -111,6 +113,11 @@ export const addToGuestCart = async (productVariantId, quantity = 1) => {
                 productSlug: variant.product?.slug || "product",
                 variantName: `${variant.flavor?.name || ""} ${variant.weight?.display || ""}`.trim(),
                 price: variant.salePrice || variant.price,
+                basePrice: Number(variant.salePrice || variant.price),
+                stock: variantStock,
+                moq: variant.moq || 1,
+                currency: "USD",
+                pricingSlabs: variant.pricingSlabs || [],
                 quantity: quantity,
                 subtotal: ((variant.salePrice || variant.price || 0) * quantity).toFixed(2),
                 image: variant.images?.[0]?.url || variant.product?.image || "/logo.png",
@@ -128,14 +135,21 @@ export const addToGuestCart = async (productVariantId, quantity = 1) => {
         );
 
         if (existingItemIndex !== -1) {
-            currentCart.items[existingItemIndex].quantity += quantity;
+            const combinedQuantity = currentCart.items[existingItemIndex].quantity + quantity;
+            if (newItem.stock != null && combinedQuantity > newItem.stock) throw new Error(`Only ${newItem.stock} left in stock`);
+            currentCart.items[existingItemIndex] = { ...currentCart.items[existingItemIndex], ...newItem, id: currentCart.items[existingItemIndex].id, quantity: combinedQuantity };
             currentCart.items[existingItemIndex].subtotal = (
                 parseFloat(currentCart.items[existingItemIndex].price) *
                 currentCart.items[existingItemIndex].quantity
             ).toFixed(2);
         } else {
+            if (quantity < (newItem.moq || 1)) throw new Error(`Minimum quantity is ${newItem.moq}`);
             currentCart.items.push(newItem);
         }
+        const addedItem = currentCart.items.find(item => item.productVariantId === newItem.productVariantId);
+        const slab = [...(addedItem.pricingSlabs || [])].sort((a,b) => b.minQty-a.minQty).find(s => addedItem.quantity >= s.minQty && (s.maxQty == null || addedItem.quantity <= s.maxQty));
+        addedItem.price = slab ? Number(slab.price) : Number(addedItem.basePrice ?? addedItem.price);
+        addedItem.subtotal = (addedItem.price * addedItem.quantity).toFixed(2);
 
         // Recalculate cart totals
         currentCart.subtotal = currentCart.items
@@ -157,6 +171,7 @@ export const addToGuestCart = async (productVariantId, quantity = 1) => {
 
 // Update guest cart item quantity
 export const updateGuestCartItem = (cartItemId, quantity) => {
+    if (!Number.isInteger(quantity) || quantity < 0) throw new Error("Quantity must be a whole number");
     const currentCart = getGuestCart();
     const itemIndex = currentCart.items.findIndex(
         (item) => item.id === cartItemId
@@ -168,6 +183,11 @@ export const updateGuestCartItem = (cartItemId, quantity) => {
         // Remove item if quantity is 0 or negative
         currentCart.items.splice(itemIndex, 1);
     } else {
+        const item = currentCart.items[itemIndex];
+        if (quantity < (item.moq || 1)) throw new Error(`Minimum quantity is ${item.moq}`);
+        if (item.stock != null && quantity > item.stock) throw new Error(`Only ${item.stock} left in stock`);
+        const slab = [...(item.pricingSlabs || [])].sort((a,b) => b.minQty-a.minQty).find(s => quantity >= s.minQty && (s.maxQty == null || quantity <= s.maxQty));
+        item.price = slab ? Number(slab.price) : Number(item.basePrice ?? item.price);
         // Update quantity
         currentCart.items[itemIndex].quantity = quantity;
         currentCart.items[itemIndex].subtotal = (
@@ -289,6 +309,14 @@ export const mergeGuestCartWithUserCart = async () => {
 
         // Wait for all merge operations to complete
         const results = await Promise.all(mergePromises);
+        // Restore only failed items so a failed checkout/login merge cannot lose a product.
+        const failedItems = results.filter(result => !result.success).map(result => result.item);
+        if (failedItems.length) saveGuestCart({
+            items: failedItems,
+            subtotal: failedItems.reduce((sum, item) => sum + Number(item.subtotal || 0), 0).toFixed(2),
+            itemCount: failedItems.length,
+            totalQuantity: failedItems.reduce((sum, item) => sum + item.quantity, 0),
+        });
 
         // Count successful and failed merges
         const mergedCount = results.filter((result) => result.success).length;

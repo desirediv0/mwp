@@ -1,5 +1,6 @@
 import { clsx } from "clsx";
 import { twMerge } from "tailwind-merge"
+import { fetchWithNetworkRetry } from "./api-request";
 
 export function cn(...inputs) {
   return twMerge(clsx(inputs));
@@ -73,7 +74,7 @@ async function performFetch(url, options) {
     // Add timestamp to prevent caching
     const urlWithTimestamp =
       url + (url.includes("?") ? "&" : "?") + "_t=" + Date.now();
-    let response = await fetch(urlWithTimestamp, config);
+    let response = await fetchWithNetworkRetry(urlWithTimestamp, config);
 
     // Handle token expiration
     if (
@@ -154,16 +155,16 @@ export function getAuthToken() {
 }
 
 // Format currency
-export function formatCurrency(amount) {
+export function formatCurrency(amount, currency = "USD") {
   // Ensure we have a valid number and properly format with 2 decimal places
   const parseAmount =
     amount !== undefined && amount !== null ? parseFloat(amount) : 0;
   // Use toFixed(2) before passing to NumberFormat to ensure 2 decimal places
-  const fixedAmount = parseFloat(parseAmount.toFixed(2));
+  const fixedAmount = Number.isFinite(parseAmount) ? parseFloat(parseAmount.toFixed(2)) : 0;
 
-  return new Intl.NumberFormat("en-IN", {
+  return new Intl.NumberFormat("en-US", {
     style: "currency",
-    currency: "INR",
+    currency,
     minimumFractionDigits: 2,
     maximumFractionDigits: 2,
   }).format(fixedAmount);

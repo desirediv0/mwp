@@ -239,7 +239,7 @@ const NEWSLETTER_TEMPLATE = `<!DOCTYPE html>
         <p><strong>📖 Behind the Scenes:</strong> Learn the story behind our most popular pieces.</p>
       </div>
       <div class="highlight">
-        <p><strong>🎁 Special Offer:</strong> Enjoy free shipping on orders over ₹999 this week only.</p>
+        <p><strong>🎁 Special Offer:</strong> Enjoy free shipping on orders over $75 this week only.</p>
       </div>
       <div style="text-align: center; margin: 32px 0;">
         <a href="{{SHOP_URL}}" class="button">Read More</a>

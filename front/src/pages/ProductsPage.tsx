@@ -2313,7 +2313,7 @@ export function ProductForm({
                   <Label htmlFor="price">{t("products.form.labels.price")} *</Label>
                   <div className="relative">
                     <span className="absolute left-2 top-1/2 transform -translate-y-1/2 text-muted-foreground">
-                      ₹
+                      $
                     </span>
                     <Input
                       id="price"
@@ -2334,7 +2334,7 @@ export function ProductForm({
                   <Label htmlFor="salePrice">{t("products.form.labels.sale_price_optional")}</Label>
                   <div className="relative">
                     <span className="absolute left-2 top-1/2 transform -translate-y-1/2 text-muted-foreground">
-                      ₹
+                      $
                     </span>
                     <Input
                       id="salePrice"
@@ -4102,15 +4102,15 @@ function ProductsList() {
                           {hasSale ? (
                             <div className="flex flex-col items-end">
                               <span className="  text-[#1F2937]">
-                                ₹{basePrice}
+                                ${basePrice}
                               </span>
                               <span className="text-xs line-through text-[#9CA3AF]">
-                                ₹{regularPrice}
+                                ${regularPrice}
                               </span>
                             </div>
                           ) : (
                             <span className="  text-[#1F2937]">
-                              ₹{basePrice}
+                              ${basePrice}
                             </span>
                           )}
                         </div>

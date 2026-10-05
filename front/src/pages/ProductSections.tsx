@@ -768,15 +768,15 @@ export default function ProductSectionsPage() {
                                     {item.product.salePrice ? (
                                       <div className="flex flex-col items-end">
                                         <span className="  text-[#1F2937]">
-                                          ₹{item.product.salePrice}
+                                          ${item.product.salePrice}
                                         </span>
                                         <span className="text-xs line-through text-[#9CA3AF]">
-                                          ₹{item.product.price}
+                                          ${item.product.price}
                                         </span>
                                       </div>
                                     ) : (
                                       <span className="  text-[#1F2937]">
-                                        ₹{item.product.price || 0}
+                                        ${item.product.price || 0}
                                       </span>
                                     )}
                                   </div>
@@ -1206,15 +1206,15 @@ export default function ProductSectionsPage() {
                           {product.salePrice ? (
                             <div className="flex flex-col items-end">
                               <span className="  text-[#1F2937]">
-                                ₹{product.salePrice}
+                                ${product.salePrice}
                               </span>
                               <span className="text-xs line-through text-[#9CA3AF]">
-                                ₹{product.price}
+                                ${product.price}
                               </span>
                             </div>
                           ) : (
                             <span className="  text-[#1F2937]">
-                              ₹{product.price || 0}
+                              ${product.price || 0}
                             </span>
                           )}
                         </div>

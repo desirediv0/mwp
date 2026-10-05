@@ -85,7 +85,7 @@ export const getRelatedProducts = (product, limit = 4) => {
 export const formatPrice = (price) => {
     return new Intl.NumberFormat('en-IN', {
         style: 'currency',
-        currency: 'INR',
+        currency: 'USD',
         maximumFractionDigits: 0,
     }).format(price);
 };

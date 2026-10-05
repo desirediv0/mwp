@@ -183,11 +183,11 @@ export default function OrderDetailPage() {
             <div className="divide-y divide-line">
               {/* Regular items */}
               {order.items?.map((item) => {
-                const productImage = item.variant?.images?.[0] || item.product?.images?.[0];
+                const productImage = item.productImage || item.productSnapshot?.image || item.variant?.images?.find(image => image.isPrimary) || item.variant?.images?.[0] || item.product?.images?.find(image => image.isPrimary) || item.product?.images?.[0];
                 return (
                   <div key={item.id} className="p-5 flex gap-4">
                     <div className="relative w-20 h-20 flex-shrink-0 bg-ivory overflow-hidden">
-                      <Image src={getImageUrl(productImage)} alt={item.productName || item.product?.name || "Product"} fill className="object-cover" />
+                      <Image src={getImageUrl(productImage)} alt={item.productName || item.product?.name || "Product"} fill className="object-contain p-1" />
                     </div>
                     <div className="flex-1 min-w-0">
                       <Link href={`/products/${item.product?.slug || "#"}`}

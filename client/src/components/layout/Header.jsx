@@ -36,12 +36,14 @@ import { useCompare } from "@/lib/compare-context";
 import { useLanguage } from "@/lib/language-context";
 
 const PRODUCT_MENU = [
-  { href: "/products?search=Ultra%20Pro", label: "MWP Ultra Pro", tag: "The Quiet Miracle", image: "/mwp-tile-ultra-pro.png" },
-  { href: "/products?search=Power%20Max", label: "MWP Power Max", tag: "Unlock Your Miracle", image: "/mwp-tile-power-max.png" },
-  { href: "/products?search=Rapid%20Boost", label: "MWP Rapid Boost", tag: "Fast Action. Real Results.", image: "/mwp-tile-rapid-boost.png" },
-  { href: "/products?search=Her%20Power", label: "MWP Her Power", tag: "Her Inner Miracle", image: "/mwp-tile-her-power.png" },
-  { href: "/products?search=Her%20Energy", label: "MWP Her Energy", tag: "Keeps Up With Her", image: "/mwp-tile-her-energy.png" },
-  { href: "/products?search=Daily%20Vitality", label: "MWP Daily Vitality", tag: "Age Is A Number", image: "/mwp-tile-daily-vitality.png" },
+  { slug: "ultra-pro", href: "/products/ultra-pro", label: "MWP Ultra Pro", tag: "The Quiet Miracle" },
+  { slug: "power-max", href: "/products/power-max", label: "MWP Power Max", tag: "Unlock Your Miracle" },
+  { slug: "rapid-boost", href: "/products/rapid-boost", label: "MWP Rapid Boost", tag: "Fast Action. Real Results." },
+  { slug: "her-power", href: "/products/her-power", label: "MWP Her Power", tag: "Her Inner Miracle" },
+  { slug: "her-energy", href: "/products/her-energy", label: "MWP Her Energy", tag: "Keeps Up With Her" },
+  { slug: "daily-vitality", href: "/products/daily-vitality", label: "MWP Daily Vitality", tag: "Age Is A Number" },
+  { slug: "alpha-prime", href: "/products/alpha-prime", label: "MWP Alpha Prime", tag: "Strength. Focus. Performance." },
+  { slug: "titan-force", href: "/products/titan-force", label: "MWP Titan Force", tag: "Power For Your Everyday." },
 ];
 
 const NAV_LINKS = [
@@ -53,11 +55,11 @@ const NAV_LINKS = [
 ];
 
 const ANNOUNCEMENTS = [
-  "FREE PAN-INDIA EXPRESS SHIPPING ON ORDERS ABOVE ₹999 | 100% CLINICAL POTENCY FORMULAS",
+  "DISCOVER ALL EIGHT MWP FORMULAS | SHIPPING CONFIRMED AT CHECKOUT",
 ];
 
 const getImg = (p) => {
-  const raw = p.image || p.images?.[0]?.url;
+  const raw = p.images?.find(image => image.isPrimary)?.url || p.image || p.images?.[0]?.url;
   if (!raw) return "/placeholder.jpg";
   if (raw.startsWith("http") || raw.startsWith("/")) return raw;
   return `https://desirediv-storage.blr1.digitaloceanspaces.com/${raw}`;
@@ -86,10 +88,25 @@ export function Navbar() {
   const [categories, setCategories] = useState([]);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [isProductsOpen, setIsProductsOpen] = useState(false);
+  const [menuProducts, setMenuProducts] = useState([]);
   const [scrolled, setScrolled] = useState(false);
 
   const catCloseTimer = useRef(null);
   const headerRef = useRef(null);
+
+  useEffect(() => {
+    if (!isProductsOpen) return;
+    let alive = true;
+    fetchApi("/public/products?limit=100")
+      .then(res => { if (alive) setMenuProducts(res.data?.products || []); })
+      .catch(() => {});
+    return () => { alive = false; };
+  }, [isProductsOpen]);
+
+  const productMenu = PRODUCT_MENU.map(item => {
+    const product = menuProducts.find(product => product.slug === item.slug);
+    return { ...item, image: product ? getImg(product) : null };
+  });
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 15);
@@ -255,7 +272,7 @@ export function Navbar() {
                         </span>
                       </div>
                       <div className="p-3 grid grid-cols-2 gap-1.5 max-h-[420px] overflow-y-auto">
-                        {PRODUCT_MENU.map((item) => {
+                        {productMenu.map((item) => {
                           const active = pathname === item.href;
                           return (
                             <Link
@@ -273,7 +290,7 @@ export function Navbar() {
                                     src={item.image}
                                     alt={item.label}
                                     fill
-                                    className="object-cover"
+                                    className="object-contain p-1"
                                     sizes="56px"
                                   />
                                 )}
@@ -452,18 +469,18 @@ function SearchDialog({ open, onOpenChange, categories }) {
   const [searchQuery, setSearchQuery] = useState("");
   const [results, setResults] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [suggestedProducts, setSuggestedProducts] = useState([]);
   const searchInputRef = useRef(null);
   const debRef = useRef(null);
 
-  const POPULAR_SEARCHES = [
-    "Ultra Pro",
-    "Power Max",
-    "Rapid Boost",
-    "Her Power",
-    "Shilajit",
-    "Testosterone",
-    "Pre Workout",
-  ];
+  useEffect(() => {
+    if (!open) return;
+    let alive = true;
+    fetchApi("/public/products?limit=8")
+      .then(res => { if (alive) setSuggestedProducts(res?.data?.products || []); })
+      .catch(() => { if (alive) setSuggestedProducts([]); });
+    return () => { alive = false; };
+  }, [open]);
 
   useEffect(() => {
     if (open) {
@@ -483,19 +500,20 @@ function SearchDialog({ open, onOpenChange, categories }) {
       return;
     }
     setLoading(true);
+    let cancelled = false;
     debRef.current = setTimeout(async () => {
       try {
         const res = await fetchApi(
           `/public/products?search=${encodeURIComponent(term)}&limit=6`
         );
-        setResults(res?.data?.products || []);
+        if (!cancelled) setResults(res?.data?.products || []);
       } catch {
-        setResults([]);
+        if (!cancelled) setResults([]);
       } finally {
-        setLoading(false);
+        if (!cancelled) setLoading(false);
       }
     }, 200);
-    return () => debRef.current && clearTimeout(debRef.current);
+    return () => { cancelled = true; if (debRef.current) clearTimeout(debRef.current); };
   }, [searchQuery]);
 
   const handleSearch = (e) => {
@@ -517,7 +535,8 @@ function SearchDialog({ open, onOpenChange, categories }) {
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="w-[94vw] sm:max-w-[600px] max-h-[85vh] bg-white text-neutral-900 p-0 overflow-hidden border border-neutral-200 shadow-[0_24px_70px_rgba(20,35,28,0.18)] rounded-xl">
+      <DialogContent className="mwp-search w-[calc(100%-24px)] sm:max-w-[600px] max-h-[85dvh] bg-white text-neutral-900 p-0 overflow-hidden border border-neutral-200 shadow-[0_24px_70px_rgba(20,35,28,0.18)] rounded-2xl">
+        <div className="px-5 pt-4 text-sm font-semibold text-neutral-900">Search MWP</div>
         {/* Search Input Bar */}
         <form onSubmit={handleSearch} className="relative border-b border-neutral-200 p-3.5 sm:p-5">
           <div className="relative flex items-center">
@@ -528,7 +547,7 @@ function SearchDialog({ open, onOpenChange, categories }) {
               placeholder="Search products, ingredients, protocols…"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full h-11 sm:h-12 pl-10 sm:pl-11 pr-20 sm:pr-24 bg-neutral-50 border border-neutral-200 rounded-lg text-[13px] sm:text-[14px] text-neutral-900 placeholder:text-neutral-500 focus:outline-none focus:border-emerald-600 focus:bg-white transition-all"
+              className="w-full h-12 sm:h-14 pl-10 sm:pl-11 pr-20 sm:pr-24 bg-white border border-neutral-300 rounded-xl text-[16px] text-neutral-900 placeholder:text-neutral-500 focus:outline-none focus:border-neutral-900 transition-all"
             />
             <div className="absolute right-2 flex items-center gap-1 sm:gap-1.5">
               {searchQuery && (
@@ -543,7 +562,7 @@ function SearchDialog({ open, onOpenChange, categories }) {
               )}
               <button
                 type="submit"
-                className="px-2.5 sm:px-3 py-1.5 bg-emerald-700 hover:bg-emerald-800 text-white text-[10px] sm:text-[11px] font-bold uppercase tracking-wider rounded-lg transition-colors"
+                className="px-3 sm:px-4 py-2 bg-neutral-900 hover:bg-neutral-700 text-white text-[12px] font-medium rounded-full transition-colors"
               >
                 Search
               </button>
@@ -568,7 +587,7 @@ function SearchDialog({ open, onOpenChange, categories }) {
                     No products found for &ldquo;{searchQuery}&rdquo;
                   </p>
                   <p className="text-xs text-neutral-500 mt-1">
-                    Try searching for Shilajit, Ultra Pro, or browse all products.
+                    Try another formula name, or browse all products.
                   </p>
                   <Link
                     href="/products"
@@ -594,7 +613,7 @@ function SearchDialog({ open, onOpenChange, categories }) {
                             src={getImg(p)}
                             alt={p.name || "Product"}
                             fill
-                            className="object-cover"
+                            className="object-contain p-1"
                             sizes="48px"
                           />
                         </span>
@@ -610,7 +629,7 @@ function SearchDialog({ open, onOpenChange, categories }) {
                             )}
                             {p.price && (
                               <span className="text-xs font-bold text-emerald-700 shrink-0">
-                                ₹{Number(p.price).toLocaleString("en-IN")}
+                                ${Number(p.price).toLocaleString("en-IN")}
                               </span>
                             )}
                           </div>
@@ -638,14 +657,14 @@ function SearchDialog({ open, onOpenChange, categories }) {
                   Popular Searches
                 </p>
                 <div className="flex flex-wrap gap-1.5 sm:gap-2">
-                  {POPULAR_SEARCHES.map((term) => (
+                  {suggestedProducts.map((product) => (
                     <button
-                      key={term}
+                      key={product.id}
                       type="button"
-                      onClick={() => handleTagClick(term)}
+                      onClick={() => handleTagClick(product.name)}
                       className="px-2.5 sm:px-3 py-1.5 bg-neutral-50 hover:bg-emerald-50 hover:text-emerald-900 border border-neutral-200 text-[11px] sm:text-xs font-medium text-neutral-700 rounded-full transition-colors"
                     >
-                      {term}
+                      {product.name}
                     </button>
                   ))}
                 </div>

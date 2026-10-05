@@ -32,6 +32,14 @@ const getPasswordStrength = (password) => {
 
 const strengthLabels = ["", "Weak", "Fair", "Good", "Strong"];
 const strengthColors = ["", "text-neutral-600", "text-orange-500", "text-neutral-800", "text-green-600"];
+const safeReturnPath = (value) => {
+  try {
+    const path = decodeURIComponent(value || "");
+    return path.startsWith("/") && !path.startsWith("//") ? path : "/account";
+  } catch {
+    return "/account";
+  }
+};
 
 /* ─── Auth Form ─────────────────────────────────────────── */
 function AuthForm() {
@@ -40,13 +48,13 @@ function AuthForm() {
   const { isAuthenticated } = useAuth();
 
   const tabFromUrl = searchParams.get("tab") || "login";
-  const redirect = searchParams.get("redirect");
+  const redirect = searchParams.get("redirect") || searchParams.get("returnUrl");
   const [activeTab, setActiveTab] = useState(tabFromUrl);
 
   useEffect(() => { setActiveTab(tabFromUrl); }, [tabFromUrl]);
   useEffect(() => {
     if (isAuthenticated) {
-      router.push(redirect ? decodeURIComponent(redirect) : "/");
+      router.push(safeReturnPath(redirect));
     }
   }, [isAuthenticated, router, redirect]);
 
@@ -58,16 +66,11 @@ function AuthForm() {
   };
 
   return (
-    <div className="min-h-screen bg-white flex flex-col lg:flex-row overflow-x-hidden">
+    <div className="mwp-auth min-h-screen bg-white flex flex-col lg:flex-row overflow-x-hidden">
 
       {/* ── Left Panel — Branding (Desktop) ──────────────── */}
-      <div className="hidden lg:flex lg:w-[46%] lg:shrink-0 relative overflow-hidden bg-[#0A0A0A]">
-        {/* Background image */}
-        <img
-          src="/auth-hero.jpg"
-          alt=""
-          className="absolute inset-0 w-full h-full object-cover"
-        />
+      <div className="mwp-auth-side hidden lg:flex lg:w-[46%] lg:shrink-0 relative overflow-hidden bg-[#faf2e6]">
+        {/* Bottle artwork is provided by the shared auth panel style. */}
         <div className="absolute inset-0 bg-gradient-to-r from-black/85 via-black/45 to-black/70" />
         <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-transparent to-black/40" />
 
@@ -75,7 +78,7 @@ function AuthForm() {
         <div className="relative z-10 flex flex-col justify-between gap-8 p-8 sm:p-12 xl:p-16 w-full min-h-full overflow-y-auto">
           {/* Logo */}
           <Link href="/" className="inline-block">
-            <img src="/logo.png" alt="MWP SUPPLEMENTS" className="h-11 w-auto object-contain" />
+            <span className="text-lg font-semibold tracking-tight">MWP Supplements</span>
           </Link>
 
           {/* Center text */}
@@ -87,19 +90,19 @@ function AuthForm() {
               </span>
             </div>
             <h1 className="font-extrabold text-3xl xl:text-[3.25rem] text-white tracking-tight mb-5 leading-[1.05] uppercase">
-              Fuel Your
+              Your routine,
               <br />
-              <span className="text-white/70">Next Personal Best</span>
+              <span className="text-white/70">in one place.</span>
             </h1>
             <span className="block h-1 w-16 rounded-full bg-gradient-to-r from-white/50 to-transparent mb-6" />
             <p className="text-white/70 text-[15px] font-normal leading-relaxed max-w-sm">
-              Create your MWP account for faster checkout, order tracking, exclusive
-              stack discounts, and evidence-based training protocols.
+              Create an account to save your details, track your orders, and manage
+              your addresses in one place.
             </p>
             <div className="mt-8 flex flex-wrap gap-x-6 gap-y-2.5 text-[12px] font-semibold text-white/60">
-              <span className="inline-flex items-center gap-1.5"><IconCheck className="h-4 w-4 text-white/70" /> 3rd-party lab tested</span>
-              <span className="inline-flex items-center gap-1.5"><IconCheck className="h-4 w-4 text-white/70" /> GMP &amp; FSSAI certified</span>
-              <span className="inline-flex items-center gap-1.5"><IconCheck className="h-4 w-4 text-white/70" /> Free shipping ₹999+</span>
+              <span className="inline-flex items-center gap-1.5"><IconCheck className="h-4 w-4 text-white/70" /> Track your orders</span>
+              <span className="inline-flex items-center gap-1.5"><IconCheck className="h-4 w-4 text-white/70" /> Save your addresses</span>
+              <span className="inline-flex items-center gap-1.5"><IconCheck className="h-4 w-4 text-white/70" /> Faster checkout</span>
             </div>
           </div>
 
@@ -200,7 +203,7 @@ function LoginForm({ onSwitch, redirect }) {
       sessionStorage.setItem("justLoggedIn", "true");
       toast.success("Welcome back!");
       const returnUrl = searchParams.get("returnUrl") || searchParams.get("redirect");
-      setTimeout(() => router.push(returnUrl ? decodeURIComponent(returnUrl) : "/"), 300);
+      setTimeout(() => router.push(safeReturnPath(returnUrl)), 300);
     } catch (error) {
       const msg = error.message || "Login failed.";
       setErrorMsg(msg);

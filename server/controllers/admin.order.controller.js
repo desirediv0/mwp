@@ -592,8 +592,8 @@ export const updateOrderStatus = asyncHandler(async (req, res, next) => {
 
               console.log(
                 `Created delayed commission for partner ${couponPartner.partner.name
-                }: ₹${commissionAmount.toFixed(2)} (${couponPartner.commission
-                }% of final order ₹${finalOrderAmount.toFixed(2)})`
+                }: $${commissionAmount.toFixed(2)} (${couponPartner.commission
+                }% of final order $${finalOrderAmount.toFixed(2)})`
               );
             }
           }
@@ -1089,7 +1089,7 @@ export const processPayment = asyncHandler(async (req, res, next) => {
         data: {
           orderId,
           amount: order.total,
-          currency: "INR",
+          currency: order.currency,
           razorpayOrderId: `MANUAL-${Date.now()}`,
           razorpayPaymentId: `MANUAL-PAYMENT-${Date.now()}`,
           status: "CAPTURED",

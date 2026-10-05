@@ -236,7 +236,7 @@ const getShippingPolicy = asyncHandler(async (req, res) => {
       new ApiResponsive(200, {
         title: "Shipping Policy",
         content:
-          "<h2>Delivery Information</h2><p>At MWP SUPPLEMENTS, we ensure your supplements reach you fresh, tamper-proof, and fast. All orders are packed in secure sealed packaging to guarantee product integrity.</p><h2>Shipping Rates</h2><ul><li><strong>Free Express Shipping:</strong> On all orders above ₹999 across India.</li><li><strong>Standard Shipping:</strong> ₹99 for orders below ₹999.</li><li><strong>Dispatch Timeline:</strong> Dispatched within 24-48 hours with real-time tracking.</li></ul>",
+          "<h2>Delivery Information</h2><p>At MWP SUPPLEMENTS, we ensure your supplements reach you fresh, tamper-proof, and fast. All orders are packed in secure sealed packaging to guarantee product integrity.</p><h2>Shipping Rates</h2><p>Shipping availability and any charges are confirmed at checkout in US dollars. Delivery timelines depend on the destination; tracking is provided when your order ships.</p>",
         metaTitle: "Shipping Policy | MWP SUPPLEMENTS",
         metaDescription: "Fast Pan-India shipping and delivery policy for MWP SUPPLEMENTS.",
       })

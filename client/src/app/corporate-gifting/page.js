@@ -61,19 +61,19 @@ export default function CorporateGiftingPage() {
   // Pricing Data from PDF
   const pricingData = {
     bottle: [
-      { size: "30 ML", u50: "₹375", u100: "₹343.50", u500: "₹316", u1000: "₹293", u2000: "₹268" },
-      { size: "50 ML", u50: "₹400", u100: "₹368.50", u500: "₹340", u1000: "₹317", u2000: "₹292.50" },
-      { size: "100 ML", u50: "₹481", u100: "₹448", u500: "₹419.50", u1000: "₹395.50", u2000: "₹367.50" }
+      { size: "30 ML", u50: "$375", u100: "$343.50", u500: "$316", u1000: "$293", u2000: "$268" },
+      { size: "50 ML", u50: "$400", u100: "$368.50", u500: "$340", u1000: "$317", u2000: "$292.50" },
+      { size: "100 ML", u50: "$481", u100: "$448", u500: "$419.50", u1000: "$395.50", u2000: "$367.50" }
     ],
     package: [
-      { size: "30 ML", u50: "₹17,175", u100: "₹34,350", u500: "₹1,58,000", u1000: "₹2,93,000", u2000: "₹5,36,000" },
-      { size: "50 ML", u50: "₹20,000", u100: "₹36,850", u500: "₹1,70,000", u1000: "₹3,17,000", u2000: "₹5,85,000" },
-      { size: "100 ML", u50: "₹24,050", u100: "₹44,800", u500: "₹2,09,750", u1000: "₹3,95,500", u2000: "₹7,35,000" }
+      { size: "30 ML", u50: "$17,175", u100: "$34,350", u500: "$1,58,000", u1000: "$2,93,000", u2000: "$5,36,000" },
+      { size: "50 ML", u50: "$20,000", u100: "$36,850", u500: "$1,70,000", u1000: "$3,17,000", u2000: "$5,85,000" },
+      { size: "100 ML", u50: "$24,050", u100: "$44,800", u500: "$2,09,750", u1000: "$3,95,500", u2000: "$7,35,000" }
     ],
     gst: [
-      { size: "30 ML", u50: "₹20,275", u100: "₹40,533", u500: "₹1,86,440", u1000: "₹3,45,740", u2000: "₹6,32,480" },
-      { size: "50 ML", u50: "₹23,600", u100: "₹43,543", u500: "₹2,00,600", u1000: "₹3,74,060", u2000: "₹6,90,300" },
-      { size: "100 ML", u50: "₹28,379", u100: "₹52,864", u500: "₹2,47,505", u1000: "₹4,67,090", u2000: "₹8,67,300" }
+      { size: "30 ML", u50: "$20,275", u100: "$40,533", u500: "$1,86,440", u1000: "$3,45,740", u2000: "$6,32,480" },
+      { size: "50 ML", u50: "$23,600", u100: "$43,543", u500: "$2,00,600", u1000: "$3,74,060", u2000: "$6,90,300" },
+      { size: "100 ML", u50: "$28,379", u100: "$52,864", u500: "$2,47,505", u1000: "$4,67,090", u2000: "$8,67,300" }
     ]
   };
 
@@ -456,7 +456,7 @@ export default function CorporateGiftingPage() {
               {
                 day: "DAY 3",
                 title: "Sampling & Approval",
-                points: ["Physical scent samples dispatched", "Lead Time: 5–6 Days Pan India", "Sampling cost ₹5,000 (100% Redeemable)"]
+                points: ["Physical scent samples dispatched", "Lead Time: 5–6 Days Pan India", "Sampling cost $5,000 (100% Redeemable)"]
               },
               {
                 day: "DAY 10+",
@@ -496,7 +496,7 @@ export default function CorporateGiftingPage() {
               <div className="bg-white p-8 rounded-3xl border border-[#B8976A]/40 shadow-md space-y-3">
                 <span className="text-xs uppercase tracking-widest text-[#B8976A] font-bold block">SAMPLING PROGRAM</span>
                 <div className="flex items-baseline gap-3">
-                  <span className="font-serif text-3xl font-bold text-[#240E42]">₹5,000</span>
+                  <span className="font-serif text-3xl font-bold text-[#240E42]">$5,000</span>
                   <span className="text-xs text-[#634E7D] font-light">(Fully Redeemable on orders above 500 bottles)</span>
                 </div>
                 <p className="text-xs text-[#5C4D73] leading-relaxed">

@@ -221,7 +221,7 @@ export default function NonApprovedPartnersTab() {
                                     {partner.status === "PENDING" ? t("reviews.status.pending") : t("reviews.status.rejected")}
                                 </Badge>
                             </TableCell>
-                            <TableCell>₹0.00</TableCell>
+                            <TableCell>$0.00</TableCell>
                             <TableCell>
                                 <div className="flex gap-2">
                                     <Button

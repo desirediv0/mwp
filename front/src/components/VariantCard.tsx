@@ -940,7 +940,7 @@ export default function VariantCard({
 
             <div className="space-y-1">
               <Label htmlFor={`price-${index}`} className="text-xs">
-                Price (₹)
+                Price ($)
               </Label>
               <Input
                 id={`price-${index}`}
@@ -956,7 +956,7 @@ export default function VariantCard({
 
             <div className="space-y-1">
               <Label htmlFor={`salePrice-${index}`} className="text-xs">
-                Sale Price (₹)
+                Sale Price ($)
               </Label>
               <Input
                 id={`salePrice-${index}`}
@@ -1053,7 +1053,7 @@ export default function VariantCard({
                         <span className="text-gray-600">
                           {slab.minQty}-{slab.maxQty || "∞"} {t("variant_card.pricing_slabs.pieces")}
                         </span>
-                        <span className="font-medium text-green-600">₹{slab.price}</span>
+                        <span className="font-medium text-green-600">${slab.price}</span>
                       </div>
                       <div className="flex items-center gap-1">
                         <Button

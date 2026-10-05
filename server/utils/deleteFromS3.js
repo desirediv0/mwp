@@ -31,6 +31,7 @@ export const deleteFromS3 = async (fileUrl) => {
 
 export const getFileUrl = (filename) => {
   if (!filename) return null;
+  if (/^https?:\/\//i.test(filename)) return filename;
   // Check if we have a CDN URL configured, otherwise use the direct bucket URL
   if (process.env.SPACES_CDN_URL) {
     return `${process.env.SPACES_CDN_URL}/${filename}`;

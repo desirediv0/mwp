@@ -138,7 +138,7 @@ export default function MwpJourneyTimeline({
   mutedTextColor = "#6b6b6b",
   activeColor = "#C9A227",
   backgroundColor = "#ffffff",
-  imageUrl = "/mwp-tile-ultra-pro.png",
+  imageUrl = "/products/cutouts/ultra-pro.webp",
   imageAlt = "MWP Supplements formulation",
   duration,
   scrollDuration = 1.2,

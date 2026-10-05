@@ -90,7 +90,7 @@ export default function TermsPage() {
                             </p>
                             <ul className="space-y-2 pl-5 list-disc text-xs md:text-sm text-slate-600">
                                 <li>We accept major Credit Cards, Debit Cards, Net Banking, UPI, and authorized Wallets.</li>
-                                <li>All payments are billed in Indian Rupees (INR). You agree to pay the complete price listed at checkout, including any shipping fees.</li>
+                                <li>All payments are billed in US dollars (USD). You agree to pay the complete price listed at checkout, including any shipping fees.</li>
                                 <li>In the event of payment failure or technical error, the transaction may be rolled back, and any debited amount will be refunded directly within 5–7 business days.</li>
                             </ul>
                         </div>

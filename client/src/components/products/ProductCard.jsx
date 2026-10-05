@@ -30,12 +30,14 @@ const parsePrice = (value) => {
 };
 
 const PRODUCT_ARTWORK = {
-  "ultra-pro": { image: "/mwp-tile-ultra-pro.png", background: "#f2ead4" },
-  "power-max": { image: "/mwp-tile-power-max.png", background: "#e8edf8" },
-  "rapid-boost": { image: "/mwp-tile-rapid-boost.png", background: "#f4e4d4" },
-  "her-power": { image: "/mwp-tile-her-power.png", background: "#f4e2dd" },
-  "her-energy": { image: "/mwp-tile-her-energy.png", background: "#eee5f7" },
-  "daily-vitality": { image: "/mwp-tile-daily-vitality.png", background: "#e9eee9" },
+  "ultra-pro": { background: "#f2ead4" },
+  "power-max": { background: "#e8edf8" },
+  "rapid-boost": { background: "#f4e4d4" },
+  "her-power": { background: "#f4e2dd" },
+  "her-energy": { background: "#eee5f7" },
+  "daily-vitality": { background: "#e9eee9" },
+  "alpha-prime": { background: "#f0dfc9" },
+  "titan-force": { background: "#eedbc7" },
 };
 
 export const ProductCard = ({ product, viewMode = "grid" }) => {
@@ -84,7 +86,6 @@ export const ProductCard = ({ product, viewMode = "grid" }) => {
     product.variants?.forEach((v) => v.images?.forEach(push));
     product.images?.forEach(push);
     if (images.length === 0 && product.image) push(product.image);
-    if (images.length === 0 && PRODUCT_ARTWORK[product.slug]) push(PRODUCT_ARTWORK[product.slug].image);
     if (images.length === 0) images.push("/placeholder.jpg");
     return images;
   }, [product]);
@@ -299,7 +300,7 @@ export const ProductCard = ({ product, viewMode = "grid" }) => {
   /* ── GRID MODE ── */
   return (
     <div
-      className="group relative flex flex-col h-full overflow-hidden rounded-lg border border-black/[0.06] bg-white transition-all duration-300 hover:-translate-y-1 hover:border-black/[0.12] hover:shadow-[0_18px_42px_-20px_rgba(0,0,0,0.24)]"
+      className="group relative flex flex-col h-full overflow-hidden rounded-2xl border border-neutral-200 bg-white transition-colors hover:border-neutral-500"
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
@@ -307,7 +308,7 @@ export const ProductCard = ({ product, viewMode = "grid" }) => {
       <div
         className="relative overflow-hidden"
         style={{
-          aspectRatio: "1/1",
+          aspectRatio: "4/5",
           backgroundColor: PRODUCT_ARTWORK[product.slug]?.background || "#f5f5f7",
         }}
       >
@@ -316,7 +317,7 @@ export const ProductCard = ({ product, viewMode = "grid" }) => {
             src={getAllProductImages[currentImageIndex] || "/placeholder.jpg"}
             alt={product.name}
             fill
-            className="object-contain p-7 sm:p-9 transition-transform duration-500 ease-out group-hover:scale-[1.04]"
+            className="object-contain p-2 sm:p-3 transition-transform duration-300 ease-out group-hover:scale-[1.025]"
             sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
           />
         </Link>

@@ -133,7 +133,7 @@ export default function CustomPerfumeOrdersPage() {
         <div className="bg-white p-5 rounded-xl border border-slate-200 shadow-sm space-y-1">
           <span className="text-xs font-bold uppercase tracking-wider text-green-600">Paid Revenue</span>
           <p className="text-2xl font-extrabold text-slate-900">
-            ₹{orders.filter(o => o.paymentStatus === "PAID").reduce((sum, o) => sum + Number(o.amount), 0).toLocaleString()}
+            ${orders.filter(o => o.paymentStatus === "PAID").reduce((sum, o) => sum + Number(o.amount), 0).toLocaleString()}
           </p>
         </div>
         <div className="bg-white p-5 rounded-xl border border-slate-200 shadow-sm space-y-1">
@@ -201,7 +201,7 @@ export default function CustomPerfumeOrdersPage() {
                     <td className="py-3.5 px-4 text-slate-700 italic">
                       {order.monogramEngraving && order.monogramEngraving !== "None" ? order.monogramEngraving : "-"}
                     </td>
-                    <td className="py-3.5 px-4 font-bold text-slate-900">₹{Number(order.amount).toLocaleString()}</td>
+                    <td className="py-3.5 px-4 font-bold text-slate-900">${Number(order.amount).toLocaleString()}</td>
                     <td className="py-3.5 px-4">
                       <span className={`px-2 py-0.5 rounded-md font-bold text-[10px] uppercase ${order.paymentStatus === "PAID" ? "bg-green-100 text-green-800" : "bg-yellow-100 text-yellow-800"
                         }`}>
@@ -266,7 +266,7 @@ export default function CustomPerfumeOrdersPage() {
               <div className="space-y-1 p-3 bg-slate-50 rounded-xl border">
                 <span className="font-bold text-slate-900 block">Payment & Cancellation Info:</span>
                 <p>Status: <strong className="text-green-700">{selectedOrder.paymentStatus}</strong></p>
-                <p>Amount: <strong>₹{Number(selectedOrder.amount).toLocaleString()}</strong></p>
+                <p>Amount: <strong>${Number(selectedOrder.amount).toLocaleString()}</strong></p>
                 {selectedOrder.razorpayPaymentId && <p className="font-mono text-[10px] text-slate-500">PayID: {selectedOrder.razorpayPaymentId}</p>}
                 {selectedOrder.cancelReason && (
                   <p className="text-red-600 font-bold text-xs pt-1">

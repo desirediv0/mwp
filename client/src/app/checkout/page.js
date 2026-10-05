@@ -35,18 +35,19 @@ const getImageUrl = (image) => {
 };
 
 export default function CheckoutPage() {
-    const { isAuthenticated, user } = useAuth();
+    const { isAuthenticated, user, loading: authLoading } = useAuth();
     const router = useRouter();
-    const { cart, coupon, getCartTotals, clearCart } = useCart();
+    const { cart, coupon, getCartTotals, clearCart, loading: cartLoading, mergeProgress } = useCart();
     const [addresses, setAddresses] = useState([]);
     const [selectedAddressId, setSelectedAddressId] = useState("");
     const [loadingAddresses, setLoadingAddresses] = useState(true);
     const [paymentSettings, setPaymentSettings] = useState({
         cashEnabled: false,
-        razorpayEnabled: true,
+        razorpayEnabled: false,
         codCharge: 0,
     });
-    const [paymentMethod, setPaymentMethod] = useState("RAZORPAY");
+    const [paymentMethod, setPaymentMethod] = useState("");
+    const [loadingPaymentSettings, setLoadingPaymentSettings] = useState(true);
     const [processing, setProcessing] = useState(false);
     const [orderCreated, setOrderCreated] = useState(false);
     const [orderId, setOrderId] = useState("");
@@ -60,18 +61,20 @@ export default function CheckoutPage() {
     const [confettiCannon, setConfettiCannon] = useState(false);
 
     const totals = getCartTotals();
+    const codCharge = paymentMethod === "CASH" ? Number(paymentSettings.codCharge || 0) : 0;
+    const checkoutTotal = totals.total + codCharge;
 
     useEffect(() => {
-        if (!isAuthenticated) {
+        if (!authLoading && !isAuthenticated) {
             router.push("/auth?redirect=checkout");
         }
-    }, [isAuthenticated, router]);
+    }, [isAuthenticated, authLoading, router]);
 
     useEffect(() => {
-        if (isAuthenticated && cart.items?.length === 0 && !orderCreated) {
+        if (!cartLoading && !mergeProgress && isAuthenticated && cart.items?.length === 0 && !orderCreated) {
             router.push("/cart");
         }
-    }, [isAuthenticated, cart, router, orderCreated]);
+    }, [isAuthenticated, cart, cartLoading, mergeProgress, router, orderCreated]);
 
     useEffect(() => {
         const fetchPaymentSettings = async () => {
@@ -79,17 +82,22 @@ export default function CheckoutPage() {
                 const response = await fetchApi("/payment/settings", { credentials: "include" });
                 if (response.success) {
                     setPaymentSettings({
-                        cashEnabled: false,
-                        razorpayEnabled: response.data.razorpayEnabled ?? true,
+                        cashEnabled: !!response.data.cashEnabled,
+                        razorpayEnabled: !!response.data.razorpayEnabled,
                         codCharge: response.data.codCharge ?? 0,
                     });
-                    if (response.data.razorpayEnabled ?? true) {
+                    if (response.data.razorpayEnabled) {
                         setPaymentMethod("RAZORPAY");
+                    } else if (response.data.cashEnabled) {
+                        setPaymentMethod("CASH");
                     }
                 }
             } catch (error) {
                 console.error("Error fetching payment settings:", error);
-                setPaymentMethod("RAZORPAY");
+                setPaymentMethod("");
+                setError("Payment options could not be loaded. Please refresh and try again.");
+            } finally {
+                setLoadingPaymentSettings(false);
             }
         };
         fetchPaymentSettings();
@@ -130,8 +138,8 @@ export default function CheckoutPage() {
                 console.error("Error fetching Razorpay key:", error);
             }
         };
-        if (isAuthenticated) fetchRazorpayKey();
-    }, [isAuthenticated]);
+        if (isAuthenticated && paymentSettings.razorpayEnabled) fetchRazorpayKey();
+    }, [isAuthenticated, paymentSettings.razorpayEnabled]);
 
     const handleAddressSelect = (id) => setSelectedAddressId(id);
     const handlePaymentMethodSelect = (method) => setPaymentMethod(method);
@@ -176,6 +184,7 @@ export default function CheckoutPage() {
     };
 
     const handleCheckout = async () => {
+        if (processing || loadingPaymentSettings || !paymentMethod) return;
         if (!selectedAddressId) {
             toast.error("Please select a shipping address");
             return;
@@ -189,7 +198,7 @@ export default function CheckoutPage() {
             const amount = Math.max(parseFloat(calculatedAmount.toFixed(2)), 1);
 
             if (calculatedAmount < 1) {
-                toast.info("Minimum order amount is ₹1. Your total has been adjusted.");
+                toast.info("Minimum order amount is $1. Your total has been adjusted.");
             }
 
             if (paymentMethod === "CASH") {
@@ -236,7 +245,7 @@ export default function CheckoutPage() {
                     credentials: "include",
                     body: JSON.stringify({
                         amount,
-                        currency: "INR",
+                        currency: "USD",
                         paymentGateway: "RAZORPAY",
                         couponCode: coupon?.code || null,
                         couponId: coupon?.id || null,
@@ -545,6 +554,8 @@ export default function CheckoutPage() {
                             </div>
                         </div>
 
+                        {!loadingPaymentSettings && !paymentSettings.cashEnabled && !paymentSettings.razorpayEnabled && <p className="text-sm text-neutral-600">Checkout is temporarily unavailable. Please contact us for help.</p>}
+
                         {/* Recommended products */}
                         <CheckoutRecommendations title="Add to Your Order" />
                     </div>
@@ -573,7 +584,7 @@ export default function CheckoutPage() {
                                     return (
                                         <div key={item.id} className="flex items-center gap-3">
                                             <div className="relative w-10 h-12 bg-black/[0.02] border border-black/5 rounded-md overflow-hidden flex-shrink-0">
-                                                <Image src={getImageUrl(img)} alt="" fill className="object-cover" />
+                                                <Image src={getImageUrl(img)} alt="" fill className="object-contain p-1" />
                                                 {isBundle && (
                                                     <div className="absolute top-0 left-0 bg-neutral-900 text-white text-[5px] font-bold px-1 py-0.5 rounded-br-sm">
                                                         BUNDLE
@@ -625,7 +636,7 @@ export default function CheckoutPage() {
                                 )}
                                 <div className="flex justify-between">
                                     <span className="text-black/40 uppercase tracking-wider">Tax (0%)</span>
-                                    <span className="font-medium text-black">₹0.00</span>
+                                    <span className="font-medium text-black">$0.00</span>
                                 </div>
                                 <div className="flex justify-between">
                                     <span className="text-black/40 uppercase tracking-wider">Shipping</span>
@@ -640,19 +651,20 @@ export default function CheckoutPage() {
                                 )}
                             </div>
 
+                            {codCharge > 0 && <div className="flex justify-between text-[12px] mb-3"><span>Cash on delivery fee</span><span>{formatCurrency(codCharge)}</span></div>}
                             {/* Total */}
                             <div className="flex justify-between items-baseline mb-5">
                                 <span className="text-[11px] uppercase tracking-[0.15em] text-black/50 font-medium">Total</span>
-                                <span className="text-xl font-light text-black">{formatCurrency(totals.total)}</span>
+                                <span className="text-xl font-light text-black">{formatCurrency(checkoutTotal)}</span>
                             </div>
 
                             {/* Pay Button */}
                             <button
                                 onClick={handleCheckout}
-                                disabled={processing || !selectedAddressId}
+                                disabled={processing || !selectedAddressId || loadingPaymentSettings || !paymentMethod || cartLoading || !!mergeProgress}
                                 className="w-full bg-gradient-to-r from-neutral-900 to-neutral-800 text-white text-[12px] uppercase tracking-[0.15em] font-bold py-4 rounded-xl hover:from-neutral-800 hover:to-neutral-900 shadow-lg shadow-neutral-900/25 transition-all disabled:opacity-40 active:scale-[0.99]"
                             >
-                                {processing ? "Processing…" : `Pay ${formatCurrency(totals.total)}`}
+                                {processing ? "Processing…" : loadingPaymentSettings ? "Loading payment options…" : paymentMethod === "CASH" ? `Place Order · ${formatCurrency(checkoutTotal)}` : `Pay ${formatCurrency(checkoutTotal)}`}
                             </button>
 
                             <p className="text-[9px] text-black/20 text-center mt-3">

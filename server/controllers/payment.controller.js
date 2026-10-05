@@ -1,4 +1,5 @@
 import crypto from "crypto";
+import { getUsdPaymentError } from "../utils/usd-payment.js";
 import Razorpay from "razorpay";
 import { prisma } from "../config/db.js";
 import { ApiError } from "../utils/ApiError.js";
@@ -7,12 +8,14 @@ import { asyncHandler } from "../utils/asyncHandler.js";
 import sendEmail from "../utils/sendEmail.js";
 import { getOrderConfirmationTemplate, getAdminNewOrderTemplate, getOrderCancelledTemplate, getAdminOrderCancelledTemplate } from "../email/temp/EmailTemplate.js";
 import { getFileUrl } from "../utils/deleteFromS3.js";
+import { getPrimaryProductImage } from "../utils/product-image.js";
 import { processReferralReward } from "./referral.controller.js";
 import { decrypt } from "../utils/encryption.js";
 import { processOrderForShipping } from "../utils/shiprocket.js";
 
 
 async function getPaymentGatewayConfig(userId = null, gateway = "RAZORPAY") {
+  if (gateway.toUpperCase() !== "RAZORPAY") throw new ApiError(400, "Please use a USD-supported payment method.");
 
   let paymentSettings;
 
@@ -147,7 +150,8 @@ export const getPaymentSettings = asyncHandler(async (req, res) => {
       {
         cashEnabled: paymentSettings.cashEnabled,
         razorpayEnabled: paymentSettings.razorpayEnabled && !!razorpaySettings,
-        phonepeEnabled: !!phonepeSettings,
+        phonepeEnabled: false, // This adapter charges INR, so it is unavailable for the USD catalog.
+        currency: "USD",
         codCharge: parseFloat(paymentSettings.codCharge) || 0,
       },
       "Payment settings fetched successfully"
@@ -178,8 +182,9 @@ export const getRazorpayKey = asyncHandler(async (req, res) => {
 
 // Create Razorpay order
 export const checkout = asyncHandler(async (req, res) => {
+  const currency = "USD";
+  if (req.body.currency && req.body.currency !== currency) throw new ApiError(400, "Checkout currency must be USD");
   const {
-    currency = "INR",
     couponCode,
     couponId,
     paymentGateway = "RAZORPAY",
@@ -458,6 +463,7 @@ export const paymentVerification = asyncHandler(async (req, res) => {
       include: {
         productVariant: {
           include: {
+            images: true,
             product: {
               include: {
                 images: {
@@ -713,7 +719,7 @@ export const paymentVerification = asyncHandler(async (req, res) => {
             // exact shipping amount that was charged to the customer
             if (razorpayOrderDetails.notes.shippingCost !== undefined) {
               shippingCost = parseFloat(razorpayOrderDetails.notes.shippingCost || 0);
-              console.log(`[Payment Verify] Using shippingCost from Razorpay notes: ₹${shippingCost}`);
+              console.log(`[Payment Verify] Using shippingCost from Razorpay notes: $${shippingCost}`);
             }
           }
         }
@@ -752,20 +758,11 @@ export const paymentVerification = asyncHandler(async (req, res) => {
     const razorpayPaymentDetails = await paymentConfig.razorpayInstance.payments.fetch(
       razorpay_payment_id
     );
+    if (razorpayPaymentDetails.currency !== "USD") throw new ApiError(400, "Payment currency does not match USD checkout");
     const paymentMethod = mapRazorpayMethod(razorpayPaymentDetails.method);
 
-    // ── RECONCILE: Trust Razorpay captured amount as source of truth ──────────
-    // If our recalculated total doesn't match what Razorpay actually captured,
-    // adjust shippingCost so the DB order total exactly equals what was charged.
-    const razorpayAmountINR = parseFloat((razorpayPaymentDetails.amount / 100).toFixed(2));
-    const ourCalculatedTotal = parseFloat((subTotal + shippingCost - discount).toFixed(2));
-    if (Math.abs(razorpayAmountINR - ourCalculatedTotal) > 0.5) {
-      // Razorpay captured a different amount — adjust shipping to match
-      const impliedShipping = Math.max(0, parseFloat((razorpayAmountINR - subTotal + discount).toFixed(2)));
-      console.warn(`[Payment Verify] Shipping mismatch: calculated=₹${ourCalculatedTotal}, Razorpay captured=₹${razorpayAmountINR}. Adjusting shippingCost ${shippingCost} → ${impliedShipping}`);
-      shippingCost = impliedShipping;
-    }
-    // ─────────────────────────────────────────────────────────────────────────
+    const paymentError = getUsdPaymentError(razorpayPaymentDetails, razorpay_order_id, subTotal + shippingCost - discount);
+    if (paymentError) throw new ApiError(400, paymentError);
 
     // Create order and process payment in a transaction
     const result = await prisma.$transaction(async (tx) => {
@@ -773,6 +770,7 @@ export const paymentVerification = asyncHandler(async (req, res) => {
       const order = await tx.order.create({
         data: {
           orderNumber,
+          currency: "USD",
           userId,
           subTotal: subTotal.toFixed(2),
           tax: tax.toFixed(2),
@@ -824,6 +822,7 @@ export const paymentVerification = asyncHandler(async (req, res) => {
         data: {
           orderId: order.id,
           amount: (subTotal + tax + shippingCost - discount).toFixed(2),
+          currency: razorpayPaymentDetails.currency,
           razorpayOrderId: razorpay_order_id,
           razorpayPaymentId: razorpay_payment_id,
           razorpaySignature: razorpay_signature,
@@ -888,11 +887,11 @@ export const paymentVerification = asyncHandler(async (req, res) => {
         const subtotal = price * item.quantity;
 
         // Create immutable product snapshot
-        const primaryImage = variant.images?.find(img => img.isPrimary) || variant.images?.[0];
+        const primaryImageUrl = getPrimaryProductImage(variant);
         const productSnapshot = {
           name: variant.product.name,
           slug: variant.product.slug,
-          image: primaryImage ? getFileUrl(primaryImage.url) : (variant.product.image ? getFileUrl(variant.product.image) : null),
+          image: primaryImageUrl ? getFileUrl(primaryImageUrl) : null,
           sku: variant.sku,
           brand: variant.product.brand ? { id: variant.product.brand.id, name: variant.product.brand.name } : null,
           categories: (variant.product.categories || []).map(pc => ({ id: pc.categoryId, name: pc.category?.name })),
@@ -1094,7 +1093,7 @@ export const paymentVerification = asyncHandler(async (req, res) => {
           if (adminEmail) {
             await sendEmail({
               email: adminEmail,
-              subject: `🔔 New Order #${result.order.orderNumber} - ₹${parseFloat(result.order.total).toFixed(2)}`,
+              subject: `🔔 New Order #${result.order.orderNumber} - $${parseFloat(result.order.total).toFixed(2)}`,
               html: getAdminNewOrderTemplate({
                 orderNumber: result.order.orderNumber,
                 customerName: user.name || "Guest",
@@ -1236,6 +1235,7 @@ export const getOrderHistory = asyncHandler(async (req, res) => {
     return {
       id: order.id,
       orderNumber: order.orderNumber,
+      currency: order.currency,
       date: order.createdAt,
       status: order.status,
       // Use the original stored total
@@ -1415,6 +1415,7 @@ export const getOrderDetails = asyncHandler(async (req, res) => {
   const formattedOrder = {
     id: order.id,
     orderNumber: order.orderNumber,
+      currency: order.currency,
     date: order.createdAt,
     status: order.status,
     cancelReason: order.cancelReason || null,
@@ -1632,6 +1633,7 @@ export const cancelOrder = asyncHandler(async (req, res) => {
         html: getOrderCancelledTemplate({
           userName: user.name || "Customer",
           orderNumber: order.orderNumber,
+      currency: order.currency,
           reason: reason || "Cancelled",
           refundAmount: order.razorpayPayment ? parseFloat(order.total) : null,
         }),
@@ -1647,6 +1649,7 @@ export const cancelOrder = asyncHandler(async (req, res) => {
         subject: `❌ Order #${order.orderNumber} Cancelled by Customer`,
         html: getAdminOrderCancelledTemplate({
           orderNumber: order.orderNumber,
+      currency: order.currency,
           customerName: user?.name || "Guest",
           customerEmail: user?.email || "No email",
           reason: reason || "No reason provided",
@@ -1715,7 +1718,8 @@ export const phonePeCallback = asyncHandler(async (req, res) => {
         include: {
           productVariant: {
             include: {
-              product: true,
+              product: { include: { images: true } },
+              images: true,
             },
           },
           bundleCampaign: {
@@ -1817,6 +1821,7 @@ export const phonePeCallback = asyncHandler(async (req, res) => {
             discount,
             total: (subTotal - discount).toFixed(2),
             paymentMethod: "PHONEPE",
+            currency: "INR",
             paymentGateway: orderData.paymentGateway,
             paymentMode: orderData.paymentMode,
             paymentOwnerId: orderData.paymentOwnerId,
@@ -1838,11 +1843,11 @@ export const phonePeCallback = asyncHandler(async (req, res) => {
           const price = parseFloat(variant.salePrice || variant.price);
 
           // Create immutable product snapshot
-          const primaryImage = variant.images?.find(img => img.isPrimary) || variant.images?.[0];
+          const primaryImageUrl = getPrimaryProductImage(variant);
           const productSnapshot = {
             name: variant.product.name,
             slug: variant.product.slug,
-            image: primaryImage ? getFileUrl(primaryImage.url) : (variant.product.image ? getFileUrl(variant.product.image) : null),
+            image: primaryImageUrl ? getFileUrl(primaryImageUrl) : null,
             sku: variant.sku,
             brand: variant.product.brand ? { id: variant.product.brand.id, name: variant.product.brand.name } : null,
             categories: (variant.product.categories || []).map(pc => ({ id: pc.categoryId, name: pc.category?.name })),
@@ -2016,6 +2021,7 @@ export const createCashOrder = asyncHandler(async (req, res) => {
       include: {
         productVariant: {
           include: {
+            images: true,
             product: {
               include: {
                 images: {
@@ -2318,6 +2324,7 @@ export const createCashOrder = asyncHandler(async (req, res) => {
       const order = await tx.order.create({
         data: {
           orderNumber,
+          currency: "USD",
           userId,
           subTotal: subTotal.toFixed(2),
           tax: tax.toFixed(2),
@@ -2368,11 +2375,11 @@ export const createCashOrder = asyncHandler(async (req, res) => {
         const variant = item.productVariant;
 
         // Create immutable product snapshot
-        const primaryImage = variant.images?.find(img => img.isPrimary) || variant.images?.[0];
+        const primaryImageUrl = getPrimaryProductImage(variant);
         const productSnapshot = {
           name: variant.product.name,
           slug: variant.product.slug,
-          image: primaryImage ? getFileUrl(primaryImage.url) : (variant.product.image ? getFileUrl(variant.product.image) : null),
+          image: primaryImageUrl ? getFileUrl(primaryImageUrl) : null,
           sku: variant.sku,
           brand: variant.product.brand ? { id: variant.product.brand.id, name: variant.product.brand.name } : null,
           categories: (variant.product.categories || []).map(pc => ({ id: pc.categoryId, name: pc.category?.name })),
@@ -2576,7 +2583,7 @@ export const createCashOrder = asyncHandler(async (req, res) => {
           if (adminEmail) {
             await sendEmail({
               email: adminEmail,
-              subject: `🔔 New COD Order #${result.order.orderNumber} - ₹${parseFloat(result.order.total).toFixed(2)}`,
+              subject: `🔔 New COD Order #${result.order.orderNumber} - $${parseFloat(result.order.total).toFixed(2)}`,
               html: getAdminNewOrderTemplate({
                 orderNumber: result.order.orderNumber,
                 customerName: user.name || "Guest",

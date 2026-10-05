@@ -88,7 +88,7 @@ function normalize(p) {
     id: p.id,
     name: p.name,
     slug: p.slug,
-    image: p.images?.[0]?.url || p.image || null,
+    image: p.images?.find(image => image.isPrimary)?.url || p.images?.[0]?.url || p.image || null,
     primaryCat,
     otherCats,
     subCats,
@@ -126,7 +126,7 @@ function normalize(p) {
     })),
     description: stripHtml(p.description || p.metaDescription || "").slice(0, 320),
     sections,
-    firstVariantId: variants[0]?.id,
+    firstVariantId: variants.find(v => (v.stock ?? v.quantity ?? 0) > 0)?.id,
   };
 }
 
@@ -137,16 +137,21 @@ export default function ComparePage() {
   const [loading, setLoading] = useState(true);
   const [adding, setAdding] = useState({});
   const [onlyDiff, setOnlyDiff] = useState(false);
+  const [fetchError, setFetchError] = useState(false);
+  const [partialLoad, setPartialLoad] = useState(false);
+  const [retry, setRetry] = useState(0);
 
   useEffect(() => {
     if (!ready) return;
     if (items.length === 0) {
       setProducts([]);
+      setPartialLoad(false);
       setLoading(false);
       return;
     }
     let alive = true;
     setLoading(true);
+    setFetchError(false);
     Promise.all(
       items.map((it) =>
         fetchApi(`/public/products/${it.slug}`)
@@ -157,14 +162,17 @@ export default function ComparePage() {
       if (!alive) return;
       // keep the order of `items`
       const byId = {};
-      res.filter(Boolean).forEach((p) => (byId[p.id] = normalize(p)));
+      const loaded = res.filter(Boolean);
+      loaded.forEach((p) => (byId[p.id] = normalize(p)));
       setProducts(items.map((it) => byId[it.id]).filter(Boolean));
+      setFetchError(loaded.length === 0);
+      setPartialLoad(loaded.length > 0 && loaded.length < items.length);
       setLoading(false);
     });
     return () => {
       alive = false;
     };
-  }, [items, ready]);
+  }, [items, ready, retry]);
 
   const handleAdd = async (row) => {
     if (!row.firstVariantId) {
@@ -185,18 +193,18 @@ export default function ComparePage() {
   /* ---------- empty state ---------- */
   if (ready && items.length === 0) {
     return (
-      <div className="min-h-[70vh] bg-white flex items-center justify-center px-5">
+      <div className="mwp-page min-h-[55vh] flex items-center justify-center px-5 py-16">
         <div className="text-center max-w-md">
           <div className="w-16 h-16 rounded-2xl bg-neutral-100 flex items-center justify-center mx-auto mb-5">
             <GitCompareArrows className="h-8 w-8 text-neutral-600" />
           </div>
-          <h1 className="text-2xl font-extrabold text-gray-900 mb-2">Nothing to compare yet</h1>
+          <h1 className="mwp-heading mb-2">See the difference.</h1>
           <p className="text-[14px] text-gray-500 mb-6">
             Add 2–5 products using the compare button on any product, then see them side by side here.
           </p>
           <Link
             href="/products"
-            className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-neutral-900 text-white text-[12px] uppercase tracking-wider font-bold hover:bg-neutral-900 transition-colors"
+            className="mwp-button"
           >
             Browse Products <ArrowRight className="h-4 w-4" />
           </Link>
@@ -212,7 +220,7 @@ export default function ComparePage() {
   };
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className="mwp-page">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 md:py-14">
         {/* Header */}
         <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4 mb-6">
@@ -221,8 +229,8 @@ export default function ComparePage() {
               <span className="h-px w-8 bg-neutral-800/50" />
               <span className="text-[10px] uppercase tracking-[0.3em] text-neutral-800 font-bold">Side by Side</span>
             </div>
-            <h1 className="text-3xl sm:text-4xl font-extrabold text-gray-900 tracking-tight">
-              Compare <span className="text-neutral-800">Products</span>
+            <h1 className="mwp-title">
+              Compare formulas.
             </h1>
             <p className="text-[14px] text-gray-500 mt-2">
               {items.length} product{items.length > 1 ? "s" : ""} selected
@@ -251,9 +259,14 @@ export default function ComparePage() {
           <div className="flex items-center justify-center py-24">
             <Loader2 className="h-8 w-8 animate-spin text-neutral-600" />
           </div>
+        ) : fetchError ? (
+          <div className="mwp-empty" role="alert"><h2>Comparison is unavailable</h2><p>We couldn&apos;t load your selected products. Please try again.</p><button className="mwp-button" onClick={() => setRetry(r => r + 1)}>Try again</button></div>
         ) : (
-          <div className="overflow-x-auto rounded-2xl border border-gray-200">
-            <table className="w-full border-collapse min-w-[760px]">
+          <div>
+          {partialLoad && <div className="mb-3 flex items-center justify-between gap-3 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-950"><span>Some selected formulas could not load.</span><button className="font-semibold underline underline-offset-2" onClick={() => setRetry(r => r + 1)}>Try again</button></div>}
+          {products.length > 1 && <p className="md:hidden mb-2 text-xs text-neutral-500">Swipe across to see each formula &rarr;</p>}
+          <div className="overflow-x-auto rounded-2xl border border-gray-200" role="region" aria-label="Product comparison table" tabIndex={0}>
+            <table className="w-full border-collapse" style={{ minWidth: 110 + products.length * 230 }}>
               <tbody>
                 {/* Product cards */}
                 <tr>
@@ -270,7 +283,7 @@ export default function ComparePage() {
                         </button>
                         <Link href={`/products/${p.slug}`} className="block">
                           <div className="relative aspect-square rounded-xl overflow-hidden bg-white border border-gray-200 mb-3">
-                            <Image src={img(p.image)} alt={p.name} fill className="object-cover" sizes="230px" />
+                            <Image src={img(p.image)} alt={p.name} fill className="object-contain p-2" sizes="230px" />
                             {p.discount > 0 && (
                               <span className="absolute top-2 left-2 bg-neutral-900 text-white text-[10px] font-extrabold px-1.5 py-0.5 rounded">
                                 −{p.discount}%
@@ -416,7 +429,7 @@ export default function ComparePage() {
 
                 {/* footer links */}
                 <tr className="border-t border-gray-100">
-                  <th className="p-4 bg-gray-50 sticky left-0 z-10" />
+                  <th className="p-4 bg-gray-50 sticky left-0 z-10 min-w-[110px] sm:min-w-[176px]" />
                   {products.map((p) => (
                     <td key={p.id} className="p-4 border-l border-gray-100">
                       <Link
@@ -431,6 +444,7 @@ export default function ComparePage() {
               </tbody>
             </table>
           </div>
+          </div>
         )}
       </div>
     </div>
@@ -440,7 +454,7 @@ export default function ComparePage() {
 /* ---------- small pieces ---------- */
 function Th({ children, className }) {
   return (
-    <th className={cn("p-4 text-left text-[11px] uppercase tracking-[0.15em] font-extrabold text-gray-500 bg-gray-50 sticky left-0 z-10 w-44", className)}>
+    <th className={cn("p-3 sm:p-4 text-left text-[11px] uppercase tracking-[0.15em] font-extrabold text-gray-500 bg-gray-50 sticky left-0 z-10 min-w-[110px] w-28 sm:min-w-[176px] sm:w-44", className)}>
       {children}
     </th>
   );
@@ -462,7 +476,7 @@ function Row({ label, products, render, pick, onlyDiff, differs }) {
   if (onlyDiff && !isDiff) return null;
   return (
     <tr className={cn("border-t border-gray-100", onlyDiff && isDiff && "bg-amber-50/40")}>
-      <th className="p-4 text-left text-[11px] uppercase tracking-[0.14em] font-extrabold text-gray-500 bg-gray-50 sticky left-0 z-10 align-top w-44">
+      <th className="p-3 sm:p-4 text-left text-[11px] uppercase tracking-[0.14em] font-extrabold text-gray-500 bg-gray-50 sticky left-0 z-10 align-top min-w-[110px] w-28 sm:min-w-[176px] sm:w-44">
         {label}
       </th>
       {products.map((p) => (

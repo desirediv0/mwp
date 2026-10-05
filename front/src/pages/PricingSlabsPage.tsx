@@ -408,7 +408,7 @@ export default function PricingSlabsPage() {
                                         </TableCell>
                                         <TableCell>{slab.minQty}</TableCell>
                                         <TableCell>{slab.maxQty || "∞"}</TableCell>
-                                        <TableCell>₹{parseFloat(slab.price.toString()).toFixed(2)}</TableCell>
+                                        <TableCell>${parseFloat(slab.price.toString()).toFixed(2)}</TableCell>
                                         <TableCell>
                                             <div className="flex gap-2">
                                                 <Button

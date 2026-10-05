@@ -43,7 +43,7 @@ function VerifyOtpContent() {
     try {
       await verifyOtp(email, otp);
       toast.success("Verified! Logging you in...");
-      setTimeout(() => router.push("/"), 500);
+      setTimeout(() => router.push("/account"), 500);
     } catch (err) {
       toast.error(err.message || "Failed to verify OTP");
     } finally {
@@ -81,12 +81,19 @@ function VerifyOtpContent() {
     }
   };
 
+  const handleOtpPaste = (e) => {
+    const digits = e.clipboardData.getData("text").replace(/\D/g, "").slice(0, 6);
+    if (!digits) return;
+    e.preventDefault();
+    setOtp(digits);
+    document.querySelector(`input[data-otp-index="${Math.min(digits.length, 5)}"]`)?.focus();
+  };
+
   return (
-    <div className="min-h-screen bg-white flex">
+    <div className="mwp-auth min-h-screen bg-white flex">
 
       {/* Left Panel — Branding */}
-      <div className="hidden lg:flex lg:w-[48%] relative overflow-hidden bg-[#0A0A0A]">
-        <img src="/auth-hero.jpg" alt="" className="absolute inset-0 w-full h-full object-cover" />
+      <div className="mwp-auth-side hidden lg:flex lg:w-[48%] relative overflow-hidden bg-[#faf2e6]">
         <div className="absolute inset-0 bg-gradient-to-b from-black/70 via-black/50 to-black/90" />
         <div className="relative z-10 flex flex-col justify-between p-12 xl:p-16 w-full">
           <Link href="/" className="inline-block">
@@ -151,10 +158,13 @@ function VerifyOtpContent() {
                     data-otp-index={i}
                     type="text"
                     inputMode="numeric"
+                    autoComplete={i === 0 ? "one-time-code" : "off"}
+                    aria-label={`Verification code digit ${i + 1}`}
                     maxLength={1}
                     value={otp[i] || ""}
                     onChange={(e) => handleOtpChange(i, e.target.value)}
                     onKeyDown={(e) => handleOtpKeyDown(i, e)}
+                    onPaste={handleOtpPaste}
                     className="w-full h-14 text-center text-xl text-gray-900 bg-gray-50 border border-gray-200 focus:outline-none focus:border-red-500 focus:ring-4 focus:ring-red-600/10 transition-all duration-500"
                   />
                 ))}

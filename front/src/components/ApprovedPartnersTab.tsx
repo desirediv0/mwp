@@ -165,7 +165,7 @@ export default function ApprovedPartnersTab() {
                                     <TableCell>
                                         <Badge variant="default">{t("partners_tab.approved.active")}</Badge>
                                     </TableCell>
-                                    <TableCell>₹{partner.monthlyEarnings?.toFixed(2) || '0.00'}</TableCell>
+                                    <TableCell>${partner.monthlyEarnings?.toFixed(2) || '0.00'}</TableCell>
                                     <TableCell>
                                         {isPaid ? (
                                             <Badge className="bg-green-600 hover:bg-green-700">Paid</Badge>
@@ -289,7 +289,7 @@ export default function ApprovedPartnersTab() {
                                         <h4 className="font-semibold mb-2">{t("partners_tab.approved.earnings")}:</h4>
                                         <div className="mb-3">
                                             <span className="text-lg  ">
-                                                {t("partners_tab.approved.total")}: ₹{selectedPartner.earnings?.total?.toFixed(2) || '0.00'}
+                                                {t("partners_tab.approved.total")}: ${selectedPartner.earnings?.total?.toFixed(2) || '0.00'}
                                             </span>
                                         </div>
                                         <div>
@@ -298,7 +298,7 @@ export default function ApprovedPartnersTab() {
                                                 {selectedPartner.earnings?.monthly && Object.entries(selectedPartner.earnings.monthly).map(([month, amount]) => (
                                                     <div key={month} className="bg-accent px-2 py-1 rounded">
                                                         <div className="font-semibold">{month}</div>
-                                                        <div>₹{amount.toFixed(2)}</div>
+                                                        <div>${amount.toFixed(2)}</div>
                                                     </div>
                                                 ))}
                                             </div>

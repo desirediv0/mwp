@@ -22,7 +22,7 @@ import {
   Calendar,
   CheckCircle,
   XCircle,
-  IndianRupee,
+  DollarSign,
   UserPlus,
   X,
 } from "lucide-react";
@@ -301,15 +301,15 @@ function CouponsList() {
                       </>
                     ) : (
                       <>
-                        <IndianRupee className="h-4 w-4 text-[#4CAF50]" />
+                        <DollarSign className="h-4 w-4 text-[#4CAF50]" />
                         <span className="font-semibold text-[#1F2937]">
-                          ₹{coupon.discountValue} {t('coupons.discount.off')}
+                          ${coupon.discountValue} {t('coupons.discount.off')}
                         </span>
                       </>
                     )}
                     {coupon.minOrderAmount && (
                       <span className="text-xs text-[#9CA3AF]">
-                        ({t('coupons.discount.min_order')} ₹{coupon.minOrderAmount})
+                        ({t('coupons.discount.min_order')} ${coupon.minOrderAmount})
                       </span>
                     )}
                   </div>
@@ -1170,7 +1170,7 @@ function CouponForm({
                     {formData.discountType === "PERCENTAGE" ? (
                       <PercentIcon className="h-4 w-4 text-[#9CA3AF]" />
                     ) : (
-                      <IndianRupee className="h-4 w-4 text-[#9CA3AF]" />
+                      <DollarSign className="h-4 w-4 text-[#9CA3AF]" />
                     )}
                   </div>
                   <Input
@@ -1204,7 +1204,7 @@ function CouponForm({
                 </Label>
                 <div className="flex">
                   <div className="flex items-center rounded-l-lg border border-r-0 border-[#E5E7EB] bg-[#F3F4F6] px-3">
-                    <IndianRupee className="h-4 w-4 text-[#9CA3AF]" />
+                    <DollarSign className="h-4 w-4 text-[#9CA3AF]" />
                   </div>
                   <Input
                     id="minOrderAmount"

@@ -428,7 +428,7 @@ export const addToCart = asyncHandler(async (req, res) => {
   }
 
   // Validate quantity
-  if (quantity < 1) {
+  if (!Number.isInteger(Number(quantity)) || Number(quantity) < 1) {
     throw new ApiError(400, "Quantity must be at least 1");
   }
 
@@ -637,7 +637,7 @@ export const updateCartItem = asyncHandler(async (req, res) => {
   const { cartItemId } = req.params;
   const { quantity } = req.body;
 
-  if (!quantity || quantity < 1) {
+  if (!Number.isInteger(Number(quantity)) || Number(quantity) < 1) {
     throw new ApiError(400, "Quantity must be at least 1");
   }
 

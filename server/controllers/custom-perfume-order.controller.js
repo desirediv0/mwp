@@ -59,7 +59,7 @@ export const createCustomPerfumeRazorpayOrder = asyncHandler(async (req, res) =>
   const { razorpay, keyId } = await getRazorpayInstance();
   const options = {
     amount: Math.round(numericAmount * 100), // amount in paise
-    currency: "INR",
+    currency: "USD",
     receipt: orderNumber,
     notes: {
       type: "CUSTOM_PERFUME",
@@ -125,7 +125,7 @@ async function sendCustomOrderEmails(order, type = "CONFIRMATION", extraData = {
 
           <div style="background: #faf6ff; padding: 16px; border-radius: 8px; margin: 16px 0; border: 1px solid #e8dafa;">
             <p style="margin: 4px 0;"><strong>Order Number:</strong> ${order.orderNumber}</p>
-            <p style="margin: 4px 0;"><strong>Amount Paid:</strong> ₹${Number(order.amount).toLocaleString()}</p>
+            <p style="margin: 4px 0;"><strong>Amount Paid:</strong> $${Number(order.amount).toLocaleString()}</p>
             <p style="margin: 4px 0;"><strong>Base Notes:</strong> ${baseList}</p>
             <p style="margin: 4px 0;"><strong>Heart Notes:</strong> ${heartList}</p>
             <p style="margin: 4px 0;"><strong>Top Notes:</strong> ${topList}</p>
@@ -152,7 +152,7 @@ async function sendCustomOrderEmails(order, type = "CONFIRMATION", extraData = {
 
       await sendEmail({
         email: adminEmail,
-        subject: `New Custom Perfume Order #${order.orderNumber} - ₹${order.amount}`,
+        subject: `New Custom Perfume Order #${order.orderNumber} - $${order.amount}`,
         html: htmlBody
       });
     } else if (type === "CANCELLED") {

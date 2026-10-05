@@ -723,7 +723,7 @@ export const settings = {
             storeEmail: "support@mwpsupplements.com",
             storePhone: "+91 76783 36268",
             storeAddress: "India",
-            currency: "INR",
+            currency: "USD",
             taxRate: 18,
             enableTax: true,
             shippingFee: 99,

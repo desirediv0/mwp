@@ -1,176 +1,40 @@
 "use client";
-
 import Link from "next/link";
-import { IconBook2, IconLeaf, IconFlame, IconHeart, IconSun } from "@tabler/icons-react";
-import { fetchApi } from "@/lib/utils";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
+import { IconBook2, IconSearch } from "@tabler/icons-react";
+import { fetchApi, formatDate } from "@/lib/utils";
+import { CollectionStillLife, PageBreadcrumb, PageNextSteps } from "@/components/layout/Editorial";
 
-const CATEGORIES = [
-  { slug: "mens-wellness", label: "Men's Wellness", Icon: IconFlame },
-  { slug: "womens-wellness", label: "Women's Wellness", Icon: IconHeart },
-  { slug: "ingredients", label: "Ingredients", Icon: IconLeaf },
-  { slug: "energy", label: "Energy", Icon: IconSun },
-  { slug: "healthy-lifestyle", label: "Healthy Lifestyle", Icon: IconBook2 },
-];
-
-export default function MwpUniversityPage() {
+export default function UniversityPage() {
   const [posts, setPosts] = useState([]);
-  const [cats, setCats] = useState([]);
+  const [categories, setCategories] = useState([]);
   const [active, setActive] = useState("all");
+  const [search, setSearch] = useState("");
   const [loading, setLoading] = useState(true);
-
+  const [error, setError] = useState("");
+  const [retry, setRetry] = useState(0);
   useEffect(() => {
-    Promise.all([
-      fetchApi("/content/blog?limit=24").catch(() => null),
-      fetchApi("/content/blog-categories").catch(() => null),
-    ])
-      .then(([postsRes, catsRes]) => {
-        setPosts(postsRes?.data?.posts || []);
-        const apiCats = Array.isArray(catsRes?.data)
-          ? catsRes.data
-          : catsRes?.data?.categories || [];
-        setCats(apiCats);
-      })
-      .finally(() => setLoading(false));
-  }, []);
-
-  useEffect(() => {
-    if (active === "all") return;
     let alive = true;
-    setLoading(true);
-    fetchApi(`/content/blog?limit=24&category=${active}`)
-      .then((res) => {
-        if (alive) setPosts(res?.data?.posts || []);
-      })
-      .catch(() => {})
-      .finally(() => alive && setLoading(false));
-    return () => {
-      alive = false;
-    };
-  }, [active]);
-
-  const filterCats = cats.length
-    ? cats.map((c) => ({ slug: c.slug, label: c.name }))
-    : CATEGORIES;
-
-  return (
-    <main className="min-h-screen bg-[#09090b] text-white">
-      <section className="relative overflow-hidden border-b border-white/10">
-        <div className="absolute inset-0 bg-gradient-to-br from-[#121216] via-[#0A0A0A] to-[#09090b]" />
-        <div className="absolute -top-24 left-1/2 -translate-x-1/2 w-[640px] h-[280px] bg-red-600/15 blur-[140px] rounded-full" />
-        <div className="relative max-w-7xl mx-auto px-5 md:px-8 lg:px-10 py-16 md:py-24">
-          <nav className="flex items-center gap-2 text-[11px] uppercase tracking-[0.18em] text-white/40 mb-6">
-            <Link href="/" className="hover:text-white">Home</Link>
-            <span>/</span>
-            <span className="text-white/80">MWP University</span>
-          </nav>
-          <p className="text-[11px] font-bold uppercase tracking-[0.3em] text-red-500 mb-4">
-            Education · Ingredients · Lifestyle
-          </p>
-          <h1 className="text-4xl md:text-6xl font-extrabold tracking-tight mb-4">
-            MWP <span className="text-red-500">University</span>
-          </h1>
-          <p className="text-white/60 max-w-2xl text-sm md:text-base leading-relaxed">
-            Clear, science-backed articles on men&apos;s wellness, women&apos;s wellness,
-            ingredients, energy and healthy living — so every formula choice is informed.
-          </p>
-        </div>
-      </section>
-
-      <div className="max-w-7xl mx-auto px-5 md:px-8 lg:px-10 py-10 md:py-14">
-        <div className="flex flex-wrap gap-2 mb-8">
-          <button
-            type="button"
-            onClick={() => setActive("all")}
-            className={
-              active === "all"
-                ? "px-4 py-2 text-[11px] font-bold uppercase tracking-wider bg-white text-black"
-                : "px-4 py-2 text-[11px] font-bold uppercase tracking-wider border border-white/15 text-white/70 hover:text-white hover:border-white/40"
-            }
-          >
-            All
-          </button>
-          {filterCats.map((c) => (
-            <button
-              key={c.slug}
-              type="button"
-              onClick={() => setActive(c.slug)}
-              className={
-                active === c.slug
-                  ? "px-4 py-2 text-[11px] font-bold uppercase tracking-wider bg-white text-black"
-                  : "px-4 py-2 text-[11px] font-bold uppercase tracking-wider border border-white/15 text-white/70 hover:text-white hover:border-white/40"
-              }
-            >
-              {c.label}
-            </button>
-          ))}
-        </div>
-
-        {loading ? (
-          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
-            {[...Array(6)].map((_, i) => (
-              <div key={i} className="rounded-xl overflow-hidden bg-white/[0.04] border border-white/10 animate-pulse">
-                <div className="aspect-video bg-white/5" />
-                <div className="p-5 space-y-3">
-                  <div className="h-3 w-24 bg-white/10 rounded" />
-                  <div className="h-4 w-3/4 bg-white/10 rounded" />
-                  <div className="h-3 w-full bg-white/5 rounded" />
-                </div>
-              </div>
-            ))}
-          </div>
-        ) : posts.length === 0 ? (
-          <div className="py-20 text-center border border-dashed border-white/15 rounded-xl">
-            <IconBook2 className="h-10 w-10 mx-auto text-white/30 mb-4" />
-            <p className="text-white/60 text-sm">No articles published yet. Check back soon.</p>
-          </div>
-        ) : (
-          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
-            {posts.map((post) => (
-              <Link
-                key={post.id}
-                href={`/university/${post.slug}`}
-                className="group rounded-xl overflow-hidden bg-white/[0.03] border border-white/10 hover:border-red-500/40 transition-all hover:-translate-y-1"
-              >
-                <div className="relative aspect-video bg-gradient-to-br from-[#141416] to-[#0A0A0A] overflow-hidden">
-                  {post.coverImageUrl ? (
-                    // eslint-disable-next-line @next/next/no-img-element
-                    <img
-                      src={post.coverImageUrl}
-                      alt={post.title}
-                      className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                    />
-                  ) : (
-                    <div className="absolute inset-0 flex items-center justify-center text-white/20">
-                      <IconBook2 className="h-10 w-10" />
-                    </div>
-                  )}
-                </div>
-                <div className="p-5">
-                  <div className="flex flex-wrap gap-1.5 mb-3">
-                    {(post.categories || []).map((c) => (
-                      <span
-                        key={c.id}
-                        className="text-[9px] uppercase tracking-widest font-bold px-2 py-1 bg-red-600/15 border border-red-500/25 text-red-400"
-                      >
-                        {c.name}
-                      </span>
-                    ))}
-                  </div>
-                  <h2 className="font-bold text-[15px] leading-snug group-hover:text-red-400 transition-colors mb-2">
-                    {post.title}
-                  </h2>
-                  {post.summary && (
-                    <p className="text-[13px] text-white/55 leading-relaxed line-clamp-3">
-                      {post.summary}
-                    </p>
-                  )}
-                </div>
-              </Link>
-            ))}
-          </div>
-        )}
-      </div>
-    </main>
-  );
+    fetchApi("/content/blog-categories").then(r => { if (alive) setCategories(Array.isArray(r?.data) ? r.data : r?.data?.categories || []); }).catch(() => {});
+    return () => { alive = false; };
+  }, []);
+  useEffect(() => {
+    let alive = true;
+    setLoading(true); setError("");
+    const query = new URLSearchParams({ limit: "24" });
+    if (active !== "all") query.set("category", active);
+    fetchApi(`/content/blog?${query}`).then(r => { if (alive) setPosts(r?.data?.posts || []); })
+      .catch(() => { if (alive) setError("We couldn't load the articles. Please try again."); })
+      .finally(() => { if (alive) setLoading(false); });
+    return () => { alive = false; };
+  }, [active, retry]);
+  const filtered = useMemo(() => posts.filter(p => `${p.title} ${p.summary || ""}`.toLowerCase().includes(search.trim().toLowerCase())), [posts, search]);
+  return <div className="mwp-page">
+    <div className="mwp-container"><PageBreadcrumb current="MWP University" /><section className="mwp-library-hero"><div><h1 className="mwp-title">A little knowledge.<br />A better daily routine.</h1><p className="mwp-lead">Welcome to MWP University. Explore ingredients, get to know your formulas, and make more informed choices about everyday wellness.</p><div className="mwp-actions"><a href="#articles" className="mwp-button">Browse articles</a><Link href="/ingredients" className="mwp-text-link">Explore ingredients</Link></div></div><CollectionStillLife /></section></div>
+    <section id="articles" className="mwp-section border-t border-neutral-200"><div className="mwp-container">
+      <div className="mwp-library-toolbar"><div><h2>The reading room</h2><p className="mt-2 text-sm text-neutral-500">Learn at your own pace.</p></div><div className="relative w-full sm:w-80"><IconSearch className="absolute left-4 top-4 h-4 w-4 text-neutral-500" /><input className="mwp-field !pl-11" type="search" value={search} onChange={e => setSearch(e.target.value)} placeholder="Search articles" aria-label="Search articles" /></div></div>
+      <div className="mwp-topic-list" aria-label="Article categories"><button className="mwp-chip" aria-pressed={active === "all"} onClick={() => setActive("all")}>All articles</button>{categories.map(c => <button key={c.id || c.slug} className="mwp-chip" aria-pressed={active === c.slug} onClick={() => setActive(c.slug)}>{c.name}</button>)}</div>
+      {loading ? <div className="mwp-article-grid" role="status" aria-label="Loading articles">{[0,1,2].map(i => <div className="mwp-skeleton" key={i} />)}</div> : error ? <div className="mwp-empty" role="alert"><h2>Articles are unavailable</h2><p>{error}</p><button className="mwp-button" onClick={() => setRetry(r => r + 1)}>Try again</button></div> : filtered.length === 0 ? <div className="mwp-empty"><IconBook2 className="mx-auto h-8 w-8 text-neutral-500" /><h2>{posts.length ? "No matching articles" : "More to learn, soon."}</h2><p>{posts.length ? "Try another search or browse all articles." : "New articles will appear here as they are published. In the meantime, get to know the ingredients in your formula."}</p>{posts.length ? <button className="mwp-button mwp-button-outline" onClick={() => { setSearch(""); setActive("all"); }}>Clear search & filters</button> : <Link className="mwp-button mwp-button-outline" href="/ingredients">Browse ingredients</Link>}</div> : <div className="mwp-article-grid">{filtered.map(post => <Link key={post.id} href={`/university/${post.slug}`} className="mwp-article-link"><div className="mwp-article-cover">{post.coverImageUrl ? /* eslint-disable-next-line @next/next/no-img-element */ <img src={post.coverImageUrl} alt={post.title} loading="lazy" /> : <div className="flex h-full items-center justify-center"><IconBook2 className="h-10 w-10 text-neutral-400" /></div>}</div><div className="mwp-article-meta">{post.categories?.slice(0,2).map(c => <span key={c.id}>{c.name}</span>)}{post.createdAt && <span>{formatDate(post.createdAt)}</span>}</div><h3>{post.title}</h3>{post.summary && <p className="line-clamp-3">{post.summary}</p>}<span className="mt-4 inline-block text-sm font-medium underline underline-offset-4">Read article</span></Link>)}</div>}
+    </div></section><PageNextSteps />
+  </div>;
 }

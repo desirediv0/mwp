@@ -253,7 +253,7 @@ export default function CustomPerfumePage() {
       const options = {
         key: keyId,
         amount: amount,
-        currency: currency || "INR",
+        currency: currency || "USD",
         name: "MWP SUPPLEMENTS Atelier",
         description: `Bespoke Custom Perfume Package (${orderNumber})`,
         image: "/logo.png",
@@ -725,7 +725,7 @@ export default function CustomPerfumePage() {
                           <div className="space-y-1">
                             <h4 className="font-serif text-lg text-[#240E42] font-semibold">{bottle.name}</h4>
                             <p className="text-xs text-[#5C4D73] font-light">{bottle.description}</p>
-                            <p className="text-sm font-bold text-[#4A2478] pt-1">₹{bottle.price.toLocaleString()}</p>
+                            <p className="text-sm font-bold text-[#4A2478] pt-1">${bottle.price.toLocaleString()}</p>
                           </div>
                         </div>
                       );
@@ -781,7 +781,7 @@ export default function CustomPerfumePage() {
                     className="px-8 py-4 bg-[#4A2478] hover:bg-[#38195E] text-white text-xs uppercase tracking-[0.15em] font-semibold rounded-full transition-colors flex items-center gap-2 shadow-xl cursor-pointer"
                   >
                     <IconCreditCard className="w-4 h-4 text-[#EAD5AB]" />
-                    Order Bespoke Package & Pay (₹{selectedBottle?.price?.toLocaleString()})
+                    Order Bespoke Package & Pay (${selectedBottle?.price?.toLocaleString()})
                   </button>
                 )}
               </div>
@@ -995,7 +995,7 @@ export default function CustomPerfumePage() {
                 <div className="p-4 bg-[#FAF6FF] rounded-2xl border border-[#E8DAFA] text-xs space-y-1">
                   <div className="flex justify-between font-bold text-[#240E42]">
                     <span>Bespoke 100ml Package ({selectedBottle?.name}):</span>
-                    <span className="text-[#4A2478]">₹{selectedBottle?.price?.toLocaleString()}</span>
+                    <span className="text-[#4A2478]">${selectedBottle?.price?.toLocaleString()}</span>
                   </div>
                   <p className="text-[11px] text-[#5C4D73] truncate">
                     Formula: {selectedBase.map(n => n.name).join(", ")} | {selectedHeart.map(n => n.name).join(", ")} | {selectedTop.map(n => n.name).join(", ")}
@@ -1091,7 +1091,7 @@ export default function CustomPerfumePage() {
                   ) : (
                     <>
                       <IconCreditCard className="w-4 h-4 text-[#EAD5AB]" />
-                      Pay ₹{selectedBottle?.price?.toLocaleString()} via Razorpay
+                      Pay ${selectedBottle?.price?.toLocaleString()} via Razorpay
                     </>
                   )}
                 </button>

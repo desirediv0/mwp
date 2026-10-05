@@ -296,7 +296,7 @@ export const processReferralReward = async (orderId, userId) => {
     });
 
     console.log(
-      `Referral reward processed: ₹${rewardAmount.toFixed(2)} for referrer ${referral.referrer.email}`
+      `Referral reward processed: $${rewardAmount.toFixed(2)} for referrer ${referral.referrer.email}`
     );
   } catch (error) {
     console.error("Error processing referral reward:", error);

@@ -242,7 +242,7 @@ export default function CustomPerfumeManagementPage() {
               </div>
             ) : (
               <div>
-                <label className="block text-xs font-semibold text-slate-700 mb-1">Price (₹) *</label>
+                <label className="block text-xs font-semibold text-slate-700 mb-1">Price ($) *</label>
                 <input
                   type="number"
                   required
@@ -326,7 +326,7 @@ export default function CustomPerfumeManagementPage() {
               </div>
               <div className="flex items-center justify-between">
                 <h3 className="font-bold text-slate-900 text-base">{bottle.name}</h3>
-                <span className="text-sm font-bold text-[#2E7D32]">₹{bottle.price}</span>
+                <span className="text-sm font-bold text-[#2E7D32]">${bottle.price}</span>
               </div>
               <p className="text-xs text-slate-500">{bottle.description}</p>
               <button

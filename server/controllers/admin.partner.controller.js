@@ -230,7 +230,7 @@ export const createCommissionsForExistingOrders = asyncHandler(async (req, res) 
                             });
 
                             commissionsCreated++;
-                            console.log(`Created commission for partner ${couponPartner.partner.name} on order ${order.orderNumber}: ₹${commissionAmount.toFixed(2)} (${couponPartner.commission}% of final order ₹${finalOrderAmount.toFixed(2)})`);
+                            console.log(`Created commission for partner ${couponPartner.partner.name} on order ${order.orderNumber}: $${commissionAmount.toFixed(2)} (${couponPartner.commission}% of final order $${finalOrderAmount.toFixed(2)})`);
                         }
                     }
                 }

@@ -373,7 +373,7 @@ export const verifyCoupon = asyncHandler(async (req, res) => {
 
   // Check minimum order amount
   if (coupon.minOrderAmount && applicableSubtotal < parseFloat(coupon.minOrderAmount)) {
-    throw new ApiError(400, `Minimum order amount of ₹${coupon.minOrderAmount} required`);
+    throw new ApiError(400, `Minimum order amount of $${coupon.minOrderAmount} required`);
   }
 
   // Check if maximum uses exceeded
@@ -519,7 +519,7 @@ export const applyCoupon = asyncHandler(async (req, res) => {
 
   // Check minimum order amount based on applicable subtotal
   if (coupon.minOrderAmount && applicableSubtotal < parseFloat(coupon.minOrderAmount)) {
-    throw new ApiError(400, `Minimum order amount of ₹${coupon.minOrderAmount} required`);
+    throw new ApiError(400, `Minimum order amount of $${coupon.minOrderAmount} required`);
   }
 
   // Calculate discount based on applicable subtotal

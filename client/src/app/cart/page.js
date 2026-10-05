@@ -86,7 +86,7 @@ const CartItem = React.memo(
                                 src={productImage}
                                 alt={productName}
                                 fill
-                                className="object-cover group-hover:scale-105 transition-transform duration-500"
+                                className="object-contain p-2 group-hover:scale-105 transition-transform duration-500"
                                 sizes="120px"
                             />
                             {isBundle && (
@@ -417,7 +417,7 @@ export default function CartPage() {
     const handleCheckout = useCallback(() => {
         const calculatedAmount = totals.subtotal - totals.discount;
         if (calculatedAmount < 1) {
-            toast.info("Minimum order amount is ₹1");
+            toast.info("Minimum order amount is $1");
             return;
         }
         if (!isAuthenticated) {
@@ -556,7 +556,7 @@ export default function CartPage() {
                                                     <p className="text-[10px] text-green-600 mt-0.5">
                                                         {coupon.discountType === "PERCENTAGE"
                                                             ? `${coupon.discountValue}% off`
-                                                            : `₹${coupon.discountValue} off`}
+                                                            : `$${coupon.discountValue} off`}
                                                     </p>
                                                 </div>
                                             </div>

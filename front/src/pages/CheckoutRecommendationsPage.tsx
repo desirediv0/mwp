@@ -223,7 +223,7 @@ export default function CheckoutRecommendationsPage() {
                     </p>
                     {typeof p.price === "number" && p.price > 0 && (
                       <p className="text-xs text-muted-foreground">
-                        ₹{p.price.toLocaleString("en-IN")}
+                        ${p.price.toLocaleString("en-IN")}
                       </p>
                     )}
                   </div>

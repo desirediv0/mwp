@@ -291,23 +291,23 @@ export const getOrderConfirmationTemplate = (data, storeConfig = null) => {
                         <td style="text-align:center;">${item.quantity}</td>
                         <td style="text-align:right;">
                             ${item.originalPrice && parseFloat(item.originalPrice) > parseFloat(item.price)
-                                ? `<div class="original-price">₹${parseFloat(item.originalPrice).toFixed(2)}</div>` : ""}
-                            <div class="sale-price">₹${parseFloat(item.price).toFixed(2)}</div>
+                                ? `<div class="original-price">$${parseFloat(item.originalPrice).toFixed(2)}</div>` : ""}
+                            <div class="sale-price">$${parseFloat(item.price).toFixed(2)}</div>
                         </td>
                     </tr>`).join("")}
                 </tbody>
             </table>
 
             <div class="info-box">
-                <div class="summary-row"><span style="color:#666;">Subtotal</span><span>₹${parseFloat(data.subtotal).toFixed(2)}</span></div>
-                ${hasDiscount ? `<div class="summary-row discount-row"><span>Discount ${hasCoupon ? `(${data.couponCode})` : ""}</span><span>-₹${parseFloat(data.discount).toFixed(2)}</span></div>` : ""}
-                <div class="summary-row"><span style="color:#666;">Shipping</span><span>${parseFloat(data.shipping) > 0 ? `₹${parseFloat(data.shipping).toFixed(2)}` : "FREE"}</span></div>
-                <div class="summary-row"><span style="color:#666;">Tax</span><span>₹${parseFloat(data.tax).toFixed(2)}</span></div>
-                ${parseFloat(data.codCharge) > 0 ? `<div class="summary-row"><span style="color:#666;">COD Surcharge</span><span>₹${parseFloat(data.codCharge).toFixed(2)}</span></div>` : ""}
-                <div class="summary-row total-row"><span>Total</span><span class="summary-value">₹${parseFloat(data.total).toFixed(2)}</span></div>
+                <div class="summary-row"><span style="color:#666;">Subtotal</span><span>$${parseFloat(data.subtotal).toFixed(2)}</span></div>
+                ${hasDiscount ? `<div class="summary-row discount-row"><span>Discount ${hasCoupon ? `(${data.couponCode})` : ""}</span><span>-$${parseFloat(data.discount).toFixed(2)}</span></div>` : ""}
+                <div class="summary-row"><span style="color:#666;">Shipping</span><span>${parseFloat(data.shipping) > 0 ? `$${parseFloat(data.shipping).toFixed(2)}` : "FREE"}</span></div>
+                <div class="summary-row"><span style="color:#666;">Tax</span><span>$${parseFloat(data.tax).toFixed(2)}</span></div>
+                ${parseFloat(data.codCharge) > 0 ? `<div class="summary-row"><span style="color:#666;">COD Surcharge</span><span>$${parseFloat(data.codCharge).toFixed(2)}</span></div>` : ""}
+                <div class="summary-row total-row"><span>Total</span><span class="summary-value">$${parseFloat(data.total).toFixed(2)}</span></div>
             </div>
 
-            ${hasDiscount ? `<div class="savings-box"><span class="savings-text">🎉 You saved ₹${parseFloat(data.discount).toFixed(2)} on this order!</span></div>` : ""}
+            ${hasDiscount ? `<div class="savings-box"><span class="savings-text">🎉 You saved $${parseFloat(data.discount).toFixed(2)} on this order!</span></div>` : ""}
 
             <div class="info-box">
                 <h3>Shipping Address</h3>
@@ -350,7 +350,7 @@ export const getFeeReceiptTemplate = (data) => {
             <p>Hi ${data.userName},</p>
             <p>Your payment has been received successfully.</p>
             <div class="info-box">
-                <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid #E5E7EB;"><strong>Amount:</strong> <span>₹${data.amount}</span></div>
+                <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid #E5E7EB;"><strong>Amount:</strong> <span>$${data.amount}</span></div>
                 <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid #E5E7EB;"><strong>Transaction ID:</strong> <span>${data.paymentId}</span></div>
                 <div style="display:flex;justify-content:space-between;padding:8px 0;"><strong>Date:</strong> <span>${new Date(data.date).toLocaleDateString()}</span></div>
             </div>
@@ -380,7 +380,7 @@ export const getFeeNotificationTemplate = (data) => {
             <h2>${data.title}</h2>
             <p>${data.description || `You have a new update regarding your recent order at ${store.storeName}.`}</p>
             <div class="info-box">
-                <p><strong>Amount:</strong> ₹${data.amount}</p>
+                <p><strong>Amount:</strong> $${data.amount}</p>
                 <p><strong>Due Date:</strong> ${new Date(data.dueDate).toLocaleDateString()}</p>
             </div>
             <p>Please check your dashboard for more details.</p>
@@ -409,7 +409,7 @@ export const getPaymentSuccessTemplate = (data) => {
             <p>Hi ${data.userName},</p>
             <p>Your order has been confirmed and payment processed successfully.</p>
             <div class="info-box">
-                <p><strong>Amount:</strong> ₹${data.amount}</p>
+                <p><strong>Amount:</strong> $${data.amount}</p>
                 <p><strong>Order ID:</strong> ${data.paymentId}</p>
                 <p><strong>Date:</strong> ${new Date(data.date).toLocaleString()}</p>
             </div>
@@ -472,7 +472,7 @@ export const getFeeUpdateTemplate = ({ name, feeTitle, oldAmount, newAmount, old
             <p>There has been an update to your order fee: <strong>${feeTitle}</strong></p>
             <div class="info-box">
                 <h3>Update Details</h3>
-                <p><strong>Amount:</strong> ₹${oldAmount} → ₹${newAmount}</p>
+                <p><strong>Amount:</strong> $${oldAmount} → $${newAmount}</p>
                 <p><strong>Due Date:</strong> ${oldDate} → ${newDate}</p>
                 <p><strong>Reason:</strong> ${reason}</p>
             </div>
@@ -762,7 +762,7 @@ export const getAdminNewOrderTemplate = (data, storeConfig = null) => {
                 ${data.customerPhone ? `<div style="margin-bottom:8px;"><strong>Phone:</strong> ${data.customerPhone}</div>` : ""}
                 <div style="margin-bottom:8px;"><strong>Order Date:</strong> ${new Date(data.orderDate).toLocaleDateString("en-IN", { year: "numeric", month: "long", day: "numeric", hour: "2-digit", minute: "2-digit" })}</div>
                 <div style="margin-bottom:8px;"><strong>Payment Method:</strong> ${data.paymentMethod}</div>
-                <div><strong>Total Amount:</strong> <span style="color: #D4AF37; font-size: 18px; font-weight: bold;">₹${parseFloat(data.total).toFixed(2)}</span></div>
+                <div><strong>Total Amount:</strong> <span style="color: #D4AF37; font-size: 18px; font-weight: bold;">$${parseFloat(data.total).toFixed(2)}</span></div>
             </div>
 
             <table class="order-table">
@@ -781,7 +781,7 @@ export const getAdminNewOrderTemplate = (data, storeConfig = null) => {
                             ${item.variant ? `<div style="font-size: 12px; color: #666;">${item.variant}</div>` : ""}
                         </td>
                         <td style="text-align:center;">${item.quantity}</td>
-                        <td style="text-align:right; font-weight: 600;">₹${parseFloat(item.price).toFixed(2)}</td>
+                        <td style="text-align:right; font-weight: 600;">$${parseFloat(item.price).toFixed(2)}</td>
                     </tr>`).join("")}
                 </tbody>
             </table>
@@ -853,11 +853,11 @@ export const getOrderCancelledTemplate = (data, storeConfig = null) => {
                 </div>` : ""}
                 ${data.refundAmount ? `<div class="detail-row">
                     <span class="detail-label">Refund Amount</span>
-                    <span class="detail-value" style="color: #22c55e;">₹${parseFloat(data.refundAmount).toFixed(2)}</span>
+                    <span class="detail-value" style="color: #22c55e;">$${parseFloat(data.refundAmount).toFixed(2)}</span>
                 </div>` : ""}
             </div>
 
-            ${data.refundAmount ? `<p style="color: #22c55e; font-weight: 600;">Your refund of ₹${parseFloat(data.refundAmount).toFixed(2)} will be processed within 5-7 business days.</p>` : ""}
+            ${data.refundAmount ? `<p style="color: #22c55e; font-weight: 600;">Your refund of $${parseFloat(data.refundAmount).toFixed(2)} will be processed within 5-7 business days.</p>` : ""}
 
             <p>If you have any questions, please contact our support team.</p>
             <div class="button-container">
@@ -895,7 +895,7 @@ export const getAdminOrderCancelledTemplate = (data, storeConfig = null) => {
                 <div style="margin-bottom:8px;"><strong>Email:</strong> ${data.customerEmail}</div>
                 <div style="margin-bottom:8px;"><strong>Cancelled On:</strong> ${new Date().toLocaleDateString("en-IN", { year: "numeric", month: "long", day: "numeric", hour: "2-digit", minute: "2-digit" })}</div>
                 ${data.reason ? `<div style="margin-bottom:8px;"><strong>Reason:</strong> ${data.reason}</div>` : ""}
-                <div><strong>Total Amount:</strong> ₹${parseFloat(data.total).toFixed(2)}</div>
+                <div><strong>Total Amount:</strong> $${parseFloat(data.total).toFixed(2)}</div>
             </div>
 
             <div class="button-container">

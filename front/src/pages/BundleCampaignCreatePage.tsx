@@ -912,7 +912,7 @@ export function BundleCampaignForm({
                       </div>
                       <div className="flex flex-col items-end text-right">
                         <span className="text-sm text-[#1F2937] font-semibold">
-                          ₹{product.variants?.[0]?.price || product.regularPrice || product.price || 0}
+                          ${product.variants?.[0]?.price || product.regularPrice || product.price || 0}
                         </span>
                         {product.variants?.[0]?.attributes && product.variants[0].attributes.length > 0 && (
                           <span className="text-[10px] text-gray-500 mt-0.5">
@@ -937,7 +937,7 @@ export function BundleCampaignForm({
                         key={product.id}
                         className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-[#F3F4F6] rounded-md text-xs text-[#1F2937] font-medium border border-[#E5E7EB]"
                       >
-                        <span>{product.name}{attrs} - ₹{price}</span>
+                        <span>{product.name}{attrs} - ${price}</span>
                         <button
                           type="button"
                           onClick={() => toggleProduct(product)}
@@ -966,8 +966,8 @@ export function BundleCampaignForm({
               </p>
               <div className="text-xs text-[#6B7280] mt-2 bg-[#F9FAFB] p-2.5 rounded border border-[#E5E7EB] max-w-xl">
                 <strong>Pricing Guide (Example):</strong> <br />
-                - Item Count: <strong>2</strong>, Price: <strong>1499</strong>, Label: <strong>"Buy any 2 for ₹1499"</strong><br />
-                - Item Count: <strong>3</strong>, Price: <strong>1999</strong>, Label: <strong>"Buy any 3 for ₹1999"</strong>
+                - Item Count: <strong>2</strong>, Price: <strong>1499</strong>, Label: <strong>"Buy any 2 for $1499"</strong><br />
+                - Item Count: <strong>3</strong>, Price: <strong>1999</strong>, Label: <strong>"Buy any 3 for $1999"</strong>
               </div>
             </div>
             <Button
@@ -1035,7 +1035,7 @@ export function BundleCampaignForm({
                     onChange={(e) =>
                       updatePricingSlab(index, "label", e.target.value)
                     }
-                    placeholder="e.g. Buy 3 for ₹999"
+                    placeholder="e.g. Buy 3 for $75"
                     className="border-[#E5E7EB] focus:border-primary"
                   />
                 </div>

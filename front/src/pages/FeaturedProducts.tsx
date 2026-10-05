@@ -384,7 +384,7 @@ export default function FeaturedProductsPage() {
                               </div>
                             </TableCell>
                             <TableCell>{getCategoryName(product)}</TableCell>
-                            <TableCell>₹{getProductPrice(product)}</TableCell>
+                            <TableCell>${getProductPrice(product)}</TableCell>
                             <TableCell>
                               {getVariantCount(product) > 0 ? (
                                 <Badge variant="outline">
@@ -484,7 +484,7 @@ export default function FeaturedProductsPage() {
                               </div>
                             </TableCell>
                             <TableCell>{getCategoryName(product)}</TableCell>
-                            <TableCell>₹{getProductPrice(product)}</TableCell>
+                            <TableCell>${getProductPrice(product)}</TableCell>
                             <TableCell>
                               {getVariantCount(product) > 0 ? (
                                 <Badge variant="outline">
