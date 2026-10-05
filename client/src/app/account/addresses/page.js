@@ -69,7 +69,7 @@ export default function AddressesPage() {
         <h2 className="text-xl text-gray-900 tracking-tight">My Addresses</h2>
         {!showAddForm && !editingAddress && (
           <button onClick={() => setShowAddForm(true)}
-            className="inline-flex items-center gap-2 px-5 h-10 bg-gray-900 text-white text-[11px] uppercase tracking-[0.15em] font-medium hover:bg-neutral-900 transition-all duration-500">
+            className="inline-flex items-center gap-2 px-5 h-10 bg-neutral-900 text-white text-[12px] font-semibold rounded-full hover:bg-neutral-800 transition-colors">
             <IconPlus className="h-3.5 w-3.5" stroke={1.5} /> Add New
           </button>
         )}
@@ -77,7 +77,7 @@ export default function AddressesPage() {
 
       {/* Add Form */}
       {showAddForm && (
-        <div className="bg-white border border-gray-200 p-6">
+        <div className="bg-white border border-[#e6ded2] rounded-2xl p-6">
           <h3 className="text-lg text-gray-900 tracking-tight mb-4">Add New Address</h3>
           <AddressForm onSuccess={handleFormSuccess} onCancel={() => setShowAddForm(false)} />
         </div>
@@ -85,7 +85,7 @@ export default function AddressesPage() {
 
       {/* Edit Form */}
       {editingAddress && (
-        <div className="bg-white border border-gray-200 p-6">
+        <div className="bg-white border border-[#e6ded2] rounded-2xl p-6">
           <h3 className="text-lg text-gray-900 tracking-tight mb-4">Edit Address</h3>
           <AddressForm existingAddress={editingAddress} onSuccess={handleFormSuccess} onCancel={() => setEditingAddress(null)} />
         </div>
@@ -93,12 +93,12 @@ export default function AddressesPage() {
 
       {/* Empty State */}
       {addresses.length === 0 && !showAddForm && !editingAddress && (
-        <div className="bg-white border border-gray-200 p-12 text-center">
+        <div className="bg-[#f6f2eb] border border-[#e6ded2] rounded-2xl p-12 text-center">
           <IconMapPin className="h-8 w-8 text-gray-500 mx-auto mb-4" stroke={1.2} />
           <h3 className="text-xl text-gray-900 mb-2">No Addresses Yet</h3>
           <p className="text-[13px] text-gray-500 font-light mb-6">Add a shipping address for your orders</p>
           <button onClick={() => setShowAddForm(true)}
-            className="inline-flex items-center gap-2 px-6 h-12 bg-gray-900 text-white text-[11px] uppercase tracking-[0.15em] font-medium hover:bg-neutral-900 transition-all duration-500">
+            className="inline-flex items-center gap-2 px-6 h-12 bg-neutral-900 text-white text-[12px] font-semibold rounded-full hover:bg-neutral-800 transition-colors">
             <IconPlus className="h-4 w-4" stroke={1.5} /> Add Address
           </button>
         </div>
@@ -108,9 +108,9 @@ export default function AddressesPage() {
       {addresses.length > 0 && (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {addresses.map((address) => (
-            <div key={address.id} className="bg-white border border-gray-200 p-5 relative">
+            <div key={address.id} className="bg-white border border-[#e6ded2] rounded-2xl p-5 relative">
               {address.isDefault && (
-                <span className="absolute top-4 right-4 text-[9px] uppercase tracking-[0.2em] text-neutral-800 font-medium bg-neutral-900/10 px-2 py-0.5 flex items-center gap-1">
+                <span className="absolute top-4 right-4 text-[10px] uppercase tracking-[0.12em] text-[#886b40] font-semibold bg-[#f6f2eb] border border-[#e6ded2] rounded-full px-2.5 py-1 flex items-center gap-1">
                   <IconCheck className="h-2.5 w-2.5" stroke={2} /> Default
                 </span>
               )}

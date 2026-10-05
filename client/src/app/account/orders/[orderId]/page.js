@@ -317,7 +317,7 @@ export default function OrderDetailPage() {
               </div>
               <div className="border-t border-line pt-3 mt-3 flex justify-between">
                 <span className="text-[13px] text-noir font-medium">Total</span>
-                <span className="font-display text-lg text-gold">{formatCurrency(order.total)}</span>
+                <span className="font-display text-lg text-[#886b40]">{formatCurrency(order.total)}</span>
               </div>
             </div>
           </div>

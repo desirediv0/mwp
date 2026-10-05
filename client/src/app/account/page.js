@@ -123,14 +123,14 @@ export default function AccountPage() {
                       <label className="block text-[10px] uppercase tracking-[0.2em] text-gray-500 font-medium mb-2">Full Name</label>
                       <input
                         name="name" type="text" value={formData.name} onChange={handleChange}
-                        className="w-full h-12 px-4 bg-gray-50 border border-gray-200 text-gray-900 text-[13px] font-light focus:outline-none focus:border-neutral-900 focus:ring-4 focus:ring-neutral-900/10 transition-all duration-500"
+                      className="w-full h-12 px-4 bg-white border border-[#e6ded2] rounded-xl text-gray-900 text-[13px] focus:outline-none focus:border-neutral-900 transition-colors"
                       />
                     </div>
                     <div>
                       <label className="block text-[10px] uppercase tracking-[0.2em] text-gray-500 font-medium mb-2">Phone</label>
                       <input
                         name="phone" type="tel" value={formData.phone} onChange={handleChange}
-                        className="w-full h-12 px-4 bg-gray-50 border border-gray-200 text-gray-900 text-[13px] font-light focus:outline-none focus:border-neutral-900 focus:ring-4 focus:ring-neutral-900/10 transition-all duration-500"
+                        className="w-full h-12 px-4 bg-white border border-[#e6ded2] rounded-xl text-gray-900 text-[13px] focus:outline-none focus:border-neutral-900 transition-colors"
                       />
                     </div>
                   </div>
@@ -140,7 +140,7 @@ export default function AccountPage() {
                       Cancel
                     </button>
                     <button type="submit" disabled={isSubmitting}
-                      className="px-6 h-10 bg-gray-900 text-white text-[11px] uppercase tracking-[0.15em] font-medium flex items-center gap-2 hover:bg-neutral-900 disabled:opacity-50 transition-all duration-500">
+                      className="px-6 h-10 bg-neutral-900 text-white text-[12px] font-semibold rounded-full flex items-center gap-2 hover:bg-neutral-800 disabled:opacity-50 transition-colors">
                       {isSubmitting ? <IconLoader2 className="h-3.5 w-3.5 animate-spin" stroke={1.5} /> : null}
                       Save Changes
                     </button>
@@ -189,7 +189,7 @@ export default function AccountPage() {
               {addresses.length > 0 ? (
                 <div className="space-y-3">
                   {addresses.slice(0, 2).map((address) => (
-                    <div key={address.id} className="flex items-start justify-between p-4 bg-gray-50 border border-gray-200">
+                    <div key={address.id} className="flex items-start justify-between p-4 bg-[#f6f2eb] border border-[#e6ded2] rounded-xl">
                       <div>
                         {address.isDefault && (
                           <span className="text-[9px] uppercase tracking-[0.2em] text-neutral-800 font-medium bg-neutral-900/10 px-2 py-0.5 mb-2 inline-block">Default</span>

@@ -398,7 +398,7 @@ export default function CheckoutPage() {
     }
 
     return (
-        <div className="min-h-screen bg-white pb-20 sm:pb-24">
+        <div className="mwp-checkout min-h-screen bg-white pb-20 sm:pb-24">
             {/* Processing Overlay */}
             {processing && (
                 <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center">
@@ -419,7 +419,7 @@ export default function CheckoutPage() {
                         <ArrowLeft className="h-3 w-3" strokeWidth={1.5} />
                         Back to Cart
                     </Link>
-                    <h1 className="text-2xl sm:text-3xl font-light text-black tracking-tight">Checkout</h1>
+                    <h1 className="text-3xl sm:text-4xl font-semibold text-black tracking-tight">Checkout</h1>
                     <p className="text-[11px] text-black/30 mt-1 uppercase tracking-widest">Secure · Encrypted · SSL</p>
                 </div>
 
@@ -437,7 +437,7 @@ export default function CheckoutPage() {
                     {/* Left Column */}
                     <div className="lg:col-span-8 space-y-5">
                         {/* Address */}
-                        <div className="bg-white border border-black/5 rounded-lg p-5 sm:p-6">
+                        <div className="bg-white border border-[#e6ded2] rounded-2xl p-5 sm:p-6">
                             <div className="flex items-center justify-between mb-5 pb-4 border-b border-black/5">
                                 <h2 className="text-sm uppercase tracking-[0.15em] text-black font-medium flex items-center gap-2">
                                     <MapPin className="h-4 w-4 text-black/40" strokeWidth={1.5} />
@@ -453,7 +453,7 @@ export default function CheckoutPage() {
                             </div>
 
                             {showAddressForm && (
-                                <div className="mb-5 p-5 border border-black/5 rounded-lg bg-black/[0.01]">
+                                <div className="mb-5 p-5 border border-[#e6ded2] rounded-2xl bg-[#f6f2eb]">
                                     <AddressForm
                                         onSuccess={handleAddressFormSuccess}
                                         onCancel={() => setShowAddressForm(false)}
@@ -508,7 +508,7 @@ export default function CheckoutPage() {
                         </div>
 
                         {/* Payment */}
-                        <div className="bg-white border border-black/5 rounded-lg p-5 sm:p-6">
+                        <div className="bg-white border border-[#e6ded2] rounded-2xl p-5 sm:p-6">
                             <h2 className="text-sm uppercase tracking-[0.15em] text-black font-medium mb-5 pb-4 border-b border-black/5">
                                 Payment Method
                             </h2>
@@ -562,7 +562,7 @@ export default function CheckoutPage() {
 
                     {/* Right Column - Summary */}
                     <div className="lg:col-span-4">
-                        <div className="bg-white border border-black/5 rounded-lg p-5 sm:p-6 sticky top-24">
+                        <div className="bg-[#f6f2eb] border border-[#e6ded2] rounded-2xl p-5 sm:p-6 sticky top-24">
                             <h2 className="text-sm uppercase tracking-[0.15em] text-black font-medium mb-5 pb-4 border-b border-black/5">
                                 Order Summary
                             </h2>
@@ -583,7 +583,7 @@ export default function CheckoutPage() {
 
                                     return (
                                         <div key={item.id} className="flex items-center gap-3">
-                                            <div className="relative w-10 h-12 bg-black/[0.02] border border-black/5 rounded-md overflow-hidden flex-shrink-0">
+                                            <div className="relative w-10 h-12 bg-white border border-[#e6ded2] rounded-md overflow-hidden flex-shrink-0">
                                                 <Image src={getImageUrl(img)} alt="" fill className="object-contain p-1" />
                                                 {isBundle && (
                                                     <div className="absolute top-0 left-0 bg-neutral-900 text-white text-[5px] font-bold px-1 py-0.5 rounded-br-sm">
@@ -662,7 +662,7 @@ export default function CheckoutPage() {
                             <button
                                 onClick={handleCheckout}
                                 disabled={processing || !selectedAddressId || loadingPaymentSettings || !paymentMethod || cartLoading || !!mergeProgress}
-                                className="w-full bg-gradient-to-r from-neutral-900 to-neutral-800 text-white text-[12px] uppercase tracking-[0.15em] font-bold py-4 rounded-xl hover:from-neutral-800 hover:to-neutral-900 shadow-lg shadow-neutral-900/25 transition-all disabled:opacity-40 active:scale-[0.99]"
+                                className="w-full bg-neutral-900 text-white text-[13px] font-semibold py-4 rounded-full hover:bg-neutral-800 transition-colors disabled:opacity-40 active:scale-[0.99]"
                             >
                                 {processing ? "Processing…" : loadingPaymentSettings ? "Loading payment options…" : paymentMethod === "CASH" ? `Place Order · ${formatCurrency(checkoutTotal)}` : `Pay ${formatCurrency(checkoutTotal)}`}
                             </button>

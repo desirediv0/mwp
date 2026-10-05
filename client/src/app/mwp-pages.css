@@ -135,5 +135,16 @@
 .mwp-account-nav a { min-height: 46px; }
 .mwp-account-nav a.bg-noir { background: #171717; color: #fff; }
 .mwp-account-nav a:not(.bg-noir):hover { background: #ecece7; }
+.mwp-cart, .mwp-checkout, .mwp-account, .mwp-auth { font-family: 'Neulis', sans-serif; color: var(--mwp-ink); }
+.mwp-cart :is(button,input):focus-visible, .mwp-checkout :is(button,input):focus-visible, .mwp-account :is(a,button,input):focus-visible, .mwp-auth :is(a,button,input):focus-visible { outline: 2px solid var(--mwp-ink); outline-offset: 3px; }
+.mwp-cart :is(input,select), .mwp-checkout :is(input,select), .mwp-account :is(input,select) { border-color: var(--mwp-line); background-color: #fff; color: var(--mwp-ink); }
+.mwp-cart :is(input,select):focus, .mwp-checkout :is(input,select):focus, .mwp-account :is(input,select):focus { border-color: var(--mwp-ink); box-shadow: none; }
+.mwp-account .bg-white.border { border-color: var(--mwp-line); border-radius: 18px; }
+.mwp-account :is(h2,h3) { letter-spacing: -.025em; font-weight: 600; }
+.mwp-account table thead { background: var(--mwp-cream); }
+.mwp-account table tbody tr:hover { background: #faf8f4; }
+.mwp-auth :is(input[type=email],input[type=password],input[type=text],input[type=tel]) { border-color: var(--mwp-line); }
+.mwp-auth form button[type=submit] { border-radius: 999px; }
+.mwp-auth > div:last-child { padding-bottom: 120px; }
 .mwp-search { gap: 0; }
 @media (max-width: 1023px) { .mwp-auth > div:last-child { min-height: auto; } .mwp-account-nav { padding-bottom: 4px; scrollbar-width: none; } .mwp-account-nav::-webkit-scrollbar { display: none; } }

@@ -81,7 +81,7 @@ const CartItem = React.memo(
                 <div className="flex gap-4 sm:gap-5">
                     {/* Image */}
                     <Link href={productSlug} className="flex-shrink-0">
-                        <div className="relative h-24 w-20 sm:h-32 sm:w-28 bg-black/[0.02] rounded-lg overflow-hidden border border-black/5 group">
+                        <div className="relative h-24 w-20 sm:h-32 sm:w-28 bg-[#f6f2eb] rounded-xl overflow-hidden border border-[#e6ded2] group">
                             <Image
                                 src={productImage}
                                 alt={productName}
@@ -446,18 +446,18 @@ export default function CartPage() {
 
     if ((!cart.items || cart.items.length === 0) && !error) {
         return (
-            <div className="min-h-screen bg-white flex flex-col items-center justify-center py-20 px-4">
-                <div className="text-center max-w-md mx-auto">
-                    <div className="w-16 h-16 mx-auto mb-6 border border-black/5 rounded-full flex items-center justify-center bg-black/[0.01]">
+            <div className="mwp-cart min-h-screen bg-white flex flex-col items-center justify-center py-20 px-4">
+                <div className="text-center max-w-md mx-auto rounded-3xl bg-[#f6f2eb] border border-[#e6ded2] px-8 py-12">
+                    <div className="w-16 h-16 mx-auto mb-6 border border-[#e6ded2] rounded-full flex items-center justify-center bg-white">
                         <ShoppingBag className="h-7 w-7 text-black/20" strokeWidth={1} />
                     </div>
-                    <h2 className="text-2xl font-light text-black mb-2 tracking-tight">Your bag is empty</h2>
+                    <h2 className="text-2xl font-semibold text-black mb-2 tracking-tight">Your bag is empty</h2>
                     <span className="block w-8 h-px bg-black/10 mx-auto my-4" />
                     <p className="text-[13px] text-black/40 font-light leading-relaxed mb-8">
-                        Discover our curated collection of luxury fragrances and accessories.
+                        Explore the MWP formulas and find what fits your routine.
                     </p>
                     <Link href="/products">
-                        <button className="bg-neutral-900 text-white text-[11px] uppercase tracking-[0.15em] font-bold px-8 py-3.5 rounded-xl hover:bg-neutral-900 shadow-lg shadow-neutral-900/20 transition-all">
+                        <button className="bg-neutral-900 text-white text-[12px] font-semibold px-8 py-3.5 rounded-full hover:bg-neutral-800 transition-colors">
                             Browse Collection
                         </button>
                     </Link>
@@ -467,7 +467,7 @@ export default function CartPage() {
     }
 
     return (
-        <div className="min-h-screen bg-white pb-20 sm:pb-24">
+        <div className="mwp-cart min-h-screen bg-white pb-20 sm:pb-24">
             <div className="max-w-6xl mx-auto px-4 sm:px-6 pt-10 sm:pt-16">
                 {/* Header */}
                 <div className="mb-8 sm:mb-12">
@@ -477,7 +477,7 @@ export default function CartPage() {
                     </Link>
                     <div className="flex items-baseline justify-between">
                         <div>
-                            <h1 className="text-2xl sm:text-3xl font-light text-black tracking-tight">Shopping Bag</h1>
+                            <h1 className="text-3xl sm:text-4xl font-semibold text-black tracking-tight">Shopping Bag</h1>
                             <p className="text-[11px] text-black/30 mt-1 uppercase tracking-widest">
                                 {itemCount} {itemCount === 1 ? "item" : "items"}
                                 {bundleCount > 0 && ` · ${bundleCount} bundle${bundleCount > 1 ? "s" : ""}`}
@@ -496,7 +496,7 @@ export default function CartPage() {
 
                 {/* Guest notice */}
                 {!isAuthenticated && cart.items.length > 0 && (
-                    <div className="bg-black/[0.02] border border-black/5 p-4 sm:p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6 sm:mb-8 rounded-lg">
+                    <div className="bg-[#f6f2eb] border border-[#e6ded2] p-4 sm:p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6 sm:mb-8 rounded-2xl">
                         <div>
                             <p className="text-xs text-black/60 font-medium">Sign in to save your cart and access express checkout</p>
                         </div>
@@ -519,7 +519,7 @@ export default function CartPage() {
                 <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8 items-start">
                     {/* Cart Items */}
                     <div className="lg:col-span-8 space-y-5">
-                        <div className="bg-white border border-black/5 rounded-lg overflow-hidden">
+                        <div className="bg-white border border-[#e6ded2] rounded-2xl overflow-hidden">
                             <div className="divide-y divide-black/[0.03]">
                                 {cart.items.map((item) => (
                                     <CartItem
@@ -539,7 +539,7 @@ export default function CartPage() {
 
                     {/* Summary */}
                     <div className="lg:col-span-4">
-                        <div className="bg-white border border-black/5 rounded-lg p-5 sm:p-6 sticky top-24">
+                        <div className="bg-[#f6f2eb] border border-[#e6ded2] rounded-2xl p-5 sm:p-6 sticky top-24">
                             <h2 className="text-sm uppercase tracking-[0.15em] text-black font-medium mb-5 pb-4 border-b border-black/5">
                                 Order Summary
                             </h2>
@@ -643,7 +643,7 @@ export default function CartPage() {
 
                             {/* Checkout */}
                             <button
-                                className="w-full bg-gradient-to-r from-neutral-900 to-neutral-800 text-white text-[12px] uppercase tracking-[0.15em] font-bold py-4 rounded-xl hover:from-neutral-800 hover:to-neutral-900 shadow-lg shadow-neutral-900/25 transition-all active:scale-[0.99]"
+                                className="w-full bg-neutral-900 text-white text-[13px] font-semibold py-4 rounded-full hover:bg-neutral-800 transition-colors active:scale-[0.99]"
                                 onClick={handleCheckout}
                             >
                                 {!isAuthenticated && hidePricesForGuests ? (

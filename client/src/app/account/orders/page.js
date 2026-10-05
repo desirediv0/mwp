@@ -66,12 +66,12 @@ export default function OrdersPage() {
 
       {/* Recent Order Highlight */}
       {orders.length > 0 && (
-        <div className="bg-gray-900 p-6 md:p-8">
+        <div className="bg-[#f6f2eb] border border-[#e6ded2] rounded-2xl p-6 md:p-8">
           <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
             <div>
-              <span className="text-[9px] uppercase tracking-[0.3em] text-neutral-800/70 block mb-2">Latest Order</span>
-              <p className="text-xl text-white tracking-tight">#{orders[0].orderNumber}</p>
-              <p className="text-[12px] text-white/40 font-light mt-1">
+              <span className="text-[10px] uppercase tracking-[0.2em] text-[#886b40] font-semibold block mb-2">Latest Order</span>
+              <p className="text-xl text-neutral-900 tracking-tight font-semibold">#{orders[0].orderNumber}</p>
+              <p className="text-[12px] text-neutral-600 mt-1">
                 {formatDate(orders[0].date)} &middot; {orders[0].items.length} {orders[0].items.length === 1 ? "item" : "items"} &middot; {formatCurrency(orders[0].total)}
               </p>
               <span className={`inline-block mt-2 px-3 py-1 text-[9px] uppercase tracking-[0.2em] font-medium border ${statusStyles[orders[0].status] || "bg-gray-50 text-gray-700 border-gray-200"}`}>
@@ -79,7 +79,7 @@ export default function OrdersPage() {
               </span>
             </div>
             <button onClick={() => router.push(`/account/orders/${orders[0].id}`)}
-              className="px-6 h-10 bg-neutral-900 text-gray-900 text-[11px] uppercase tracking-[0.15em] font-medium flex items-center gap-2 hover:bg-gray-50 transition-all duration-500">
+              className="px-6 h-10 bg-neutral-900 text-white text-[12px] font-semibold rounded-full flex items-center gap-2 hover:bg-neutral-800 transition-colors">
               <IconEye className="h-3.5 w-3.5" stroke={1.5} /> View Details
             </button>
           </div>
@@ -98,7 +98,7 @@ export default function OrdersPage() {
           <h3 className="text-xl text-gray-900 mb-2">No Orders Yet</h3>
           <p className="text-[13px] text-gray-500 font-light mb-6">Start shopping to see your orders here</p>
           <Link href="/products"
-            className="inline-flex items-center gap-2 px-6 h-12 bg-gray-900 text-white text-[11px] uppercase tracking-[0.15em] font-medium hover:bg-neutral-900 transition-all duration-500">
+            className="inline-flex items-center gap-2 px-6 h-12 bg-neutral-900 text-white text-[12px] font-semibold rounded-full hover:bg-neutral-800 transition-colors">
             Browse Collection <IconArrowRight className="h-4 w-4" stroke={1.5} />
           </Link>
         </div>
