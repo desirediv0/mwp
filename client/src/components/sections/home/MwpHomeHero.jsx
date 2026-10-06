@@ -5,6 +5,18 @@ import { useLanguage } from "@/lib/language-context";
 
 const PRODUCT_ALT = "MWP collection: Ultra Pro, Power Max, Rapid Boost, Her Power, Her Energy, Daily Vitality, Alpha Prime and Titan Force.";
 
+// Same order as the bottles in the banner image (left to right, top row then bottom row on mobile).
+const BANNER_PRODUCTS = [
+  { name: "Ultra Pro", href: "/products/ultra-pro" },
+  { name: "Power Max", href: "/products/power-max" },
+  { name: "Rapid Boost", href: "/products/rapid-boost" },
+  { name: "Her Power", href: "/products/her-power" },
+  { name: "Her Energy", href: "/products/her-energy" },
+  { name: "Daily Vitality", href: "/products/daily-vitality" },
+  { name: "Alpha Prime", href: "/products/alpha-prime" },
+  { name: "Titan Force", href: "/products/titan-force" },
+];
+
 export default function MwpHomeHero() {
   const { t } = useLanguage();
   return (
@@ -31,6 +43,7 @@ export default function MwpHomeHero() {
       </div>
       {/* Desktop framing trims extra studio background around the full lineup.
           The browser fetches only the matching hero asset. */}
+      <div className="relative mx-auto w-full">
       <picture
         className="relative mx-auto block w-full"
         style={{
@@ -52,6 +65,26 @@ export default function MwpHomeHero() {
           className="block h-auto w-full sm:h-[max(300px,34vw)] sm:object-cover sm:object-[center_70%]"
         />
       </picture>
+      {/* Invisible click areas, one per bottle in the banner image */}
+      <nav
+        aria-label="MWP products"
+        className="absolute inset-x-0 top-[8%] bottom-[8%] z-20 grid grid-cols-4 grid-rows-2 sm:inset-y-0 sm:grid-cols-8 sm:grid-rows-1"
+      >
+        {BANNER_PRODUCTS.map((p) => (
+          <Link
+            key={p.name}
+            href={p.href}
+            aria-label={`View ${p.name}`}
+            title={p.name}
+            className="group relative block cursor-pointer rounded-2xl transition-colors hover:bg-white/10 focus-visible:outline focus-visible:outline-2 focus-visible:-outline-offset-4 focus-visible:outline-neutral-900"
+          >
+            <span className="pointer-events-none absolute bottom-2 left-1/2 -translate-x-1/2 whitespace-nowrap rounded-full bg-neutral-900/90 px-3 py-1 text-[11px] font-medium text-white opacity-0 transition-opacity group-hover:opacity-100 group-focus-visible:opacity-100">
+              {p.name}
+            </span>
+          </Link>
+        ))}
+      </nav>
+      </div>
     </section>
   );
 }

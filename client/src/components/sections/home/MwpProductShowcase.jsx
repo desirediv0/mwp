@@ -16,7 +16,7 @@ const SLIDES = [
     name: "MWP Ultra Pro",
     headline: "The Quiet Miracle.",
     copy: "Advanced men's vitality formula for natural performance and stamina.",
-    href: "/products?search=Ultra%20Pro",
+    href: null,
     tint: "from-[#FBF7EE] to-[#F3ECD8]",
     glow: "#C9A227",
     image: "/products/cutouts/ultra-pro.webp",
@@ -28,7 +28,7 @@ const SLIDES = [
     name: "MWP Power Max",
     headline: "Unlock Your Miracle.",
     copy: "Herbal performance formula for strength, stamina and vitality.",
-    href: "/products?search=Power%20Max",
+    href: null,
     tint: "from-[#EEF2FB] to-[#E2E9F7]",
     glow: "#3B4E8A",
     image: "/products/cutouts/power-max.webp",
@@ -40,7 +40,7 @@ const SLIDES = [
     name: "MWP Rapid Boost",
     headline: "Fast Action. Real Results.",
     copy: "Fast-acting support formula for energy and confidence.",
-    href: "/products?search=Rapid%20Boost",
+    href: null,
     tint: "from-[#FBF2E9] to-[#F5E4D0]",
     glow: "#A15C2C",
     image: "/products/cutouts/rapid-boost.webp",
@@ -52,7 +52,7 @@ const SLIDES = [
     name: "MWP Her Power",
     headline: "Her Inner Miracle.",
     copy: "Women's wellness formula for balance and daily confidence.",
-    href: "/products?search=Her%20Power",
+    href: null,
     tint: "from-[#FBEFEC] to-[#F5DFD9]",
     glow: "#9C5A4A",
     image: "/products/cutouts/her-power.webp",
@@ -64,7 +64,7 @@ const SLIDES = [
     name: "MWP Her Energy",
     headline: "Keeps Up With Her.",
     copy: "Daily energy and focus formula for an active life.",
-    href: "/products?search=Her%20Energy",
+    href: null,
     tint: "from-[#F4EEFB] to-[#E9DEF5]",
     glow: "#6B4E92",
     image: "/products/cutouts/her-energy.webp",
@@ -76,7 +76,7 @@ const SLIDES = [
     name: "MWP Daily Vitality",
     headline: "Age Is A Number.",
     copy: "Complete daily wellness formula for everyday health.",
-    href: "/products?search=Daily%20Vitality",
+    href: null,
     tint: "from-[#F6F5F1] to-[#ECE9E1]",
     glow: "#5C5648",
     image: "/products/cutouts/daily-vitality.webp",
@@ -88,7 +88,7 @@ const SLIDES = [
     name: "MWP Alpha Prime",
     headline: "Strength. Focus. Performance.",
     copy: "Explore the Alpha Prime performance formula.",
-    href: "/products?search=Alpha%20Prime",
+    href: null,
     tint: "from-[#FBF2E9] to-[#F0DFC9]",
     glow: "#AA652B",
     image: "/products/cutouts/alpha-prime.webp",
@@ -100,7 +100,7 @@ const SLIDES = [
     name: "MWP Titan Force",
     headline: "Power For Your Everyday.",
     copy: "Discover the Titan Force performance formula.",
-    href: "/products?search=Titan%20Force",
+    href: null,
     tint: "from-[#F8F0E7] to-[#EEDBC7]",
     glow: "#AF6028",
     image: "/products/cutouts/titan-force.webp",
@@ -110,11 +110,18 @@ const SLIDES = [
 
 function ProductTile({ slide, index }) {
   const { t } = useLanguage();
+  const href = `/products/${slide.key}`;
   return (
     <div
       data-tile
       className={`group relative overflow-hidden  bg-gradient-to-br ${slide.tint} border border-black/[0.04] flex flex-col opacity-0`}
     >
+      {/* Whole card is one link; the text blocks below let clicks fall through to it */}
+      <Link
+        href={href}
+        aria-label={`View ${slide.name}`}
+        className="absolute inset-0 z-[5] cursor-pointer focus-visible:outline focus-visible:outline-2 focus-visible:-outline-offset-4 focus-visible:outline-neutral-900"
+      />
       {/* Shield-shaped ribbon badge, top-left corner — smaller on mobile, full size from sm: up */}
       {slide.badge && (
         <div className="pointer-events-none absolute top-0 left-4 sm:left-6 z-20 w-14 sm:w-20">
@@ -150,7 +157,7 @@ function ProductTile({ slide, index }) {
         style={{ background: slide.glow }}
       />
 
-      <div className="relative z-10 px-8 sm:px-10 pt-14 sm:pt-12 pb-2 text-center">
+      <div className="pointer-events-none relative z-10 px-8 sm:px-10 pt-14 sm:pt-12 pb-2 text-center">
         <p className="text-xl sm:text-4xl font-semibold tracking-tight text-neutral-900">
           {slide.name}
         </p>
@@ -163,14 +170,14 @@ function ProductTile({ slide, index }) {
 
         <div className="mt-4 flex items-center justify-center gap-4 text-[13px] sm:text-[14px]">
           <Link
-            href={slide.href}
-            className="text-white bg-neutral-900 hover:bg-neutral-800 transition-colors rounded-full px-4 py-1.5 font-medium"
+            href={href}
+            className="pointer-events-auto text-white bg-neutral-900 hover:bg-neutral-800 transition-colors rounded-full px-4 py-1.5 font-medium"
           >
             {t("discoverFormula")}
           </Link>
           <Link
-            href={slide.href}
-            className="text-neutral-900 hover:underline underline-offset-4 font-medium"
+            href={href}
+            className="pointer-events-auto text-neutral-900 hover:underline underline-offset-4 font-medium"
           >
             {t("shopNow")}
           </Link>
@@ -180,7 +187,7 @@ function ProductTile({ slide, index }) {
       {/* Product image — fills the tile edge-to-edge, no gap, gentle float on hover */}
       <div
         data-tile-image
-        className="relative z-10 mx-auto mt-5 mb-6 h-[320px] w-full max-w-[280px] sm:h-[380px] sm:max-w-[320px] transition-transform duration-500 ease-out group-hover:-translate-y-2 group-hover:scale-[1.03]"
+        className="pointer-events-none relative z-10 mx-auto mt-5 mb-6 h-[320px] w-full max-w-[280px] sm:h-[380px] sm:max-w-[320px] transition-transform duration-500 ease-out group-hover:-translate-y-2 group-hover:scale-[1.03]"
       >
         {slide.image ? (
           <Image

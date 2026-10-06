@@ -1,6 +1,5 @@
 import MwpHomeHero from "@/components/sections/home/MwpHomeHero";
 import MwpProductShowcase from "@/components/sections/home/MwpProductShowcase";
-import MwpJourneyTimeline from "@/components/sections/home/MwpJourneyTimeline";
 import MwpTrustReveal from "@/components/sections/home/MwpTrustReveal";
 
 export const metadata = {
@@ -17,7 +16,6 @@ export default function Home() {
       <MwpHomeHero />
       <MwpTrustReveal />
       <MwpProductShowcase />
-      <MwpJourneyTimeline />
     </>
   );
 }
