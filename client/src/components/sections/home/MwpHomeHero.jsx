@@ -40,11 +40,9 @@ export default function MwpHomeHero() {
   const [selected, setSelected] = useState(0);
   const reduceMotion = useReducedMotion();
   const [paused, setPaused] = useState(false);
-  const [hovered, setHovered] = useState(false);
-  const [focused, setFocused] = useState(false);
   const [pageVisible, setPageVisible] = useState(true);
   const dragged = useRef(false);
-  const autoPlaying = !paused && !hovered && !focused && !reduceMotion && pageVisible;
+  const autoPlaying = !paused && !reduceMotion && pageVisible;
   const active = FORMULAS[selected];
   const moveSlide = direction => setSelected(index => (index + direction + FORMULAS.length) % FORMULAS.length);
 
@@ -67,10 +65,6 @@ export default function MwpHomeHero() {
     <section
       aria-labelledby="mwp-hero-title"
       className="overflow-hidden bg-white text-neutral-900"
-      onFocusCapture={event => setFocused(!event.target.closest("[data-autoplay-control]"))}
-      onBlurCapture={event => {
-        if (!event.currentTarget.contains(event.relatedTarget)) setFocused(false);
-      }}
     >
       <div className="mx-auto max-w-[1440px] px-6 pb-8 pt-10 sm:px-10 sm:pt-14 lg:pt-12">
         <div className="grid items-center gap-10 lg:grid-cols-[1fr_1.1fr] lg:gap-12">
@@ -127,8 +121,6 @@ export default function MwpHomeHero() {
             <div
               className="relative isolate overflow-hidden h-[310px] sm:h-[390px] lg:h-[400px] xl:h-[430px]"
               aria-label={`${active.name} product showcase`}
-              onMouseEnter={() => setHovered(true)}
-              onMouseLeave={() => setHovered(false)}
             >
               <div aria-hidden="true" className="pointer-events-none absolute left-1/2 top-1/2 -z-10 h-[250px] w-[250px] -translate-x-1/2 -translate-y-1/2 rounded-full border border-neutral-200/70 sm:h-[330px] sm:w-[330px]" />
               <div aria-hidden="true" className="pointer-events-none absolute left-1/2 top-1/2 -z-10 h-[190px] w-[190px] -translate-x-1/2 -translate-y-1/2 rounded-full border border-neutral-100 sm:h-[260px] sm:w-[260px]" />
