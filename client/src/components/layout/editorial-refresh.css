@@ -110,7 +110,7 @@
 .mwp-contact .mwp-contact-form { background: #fff; border: 1px solid #e1e8d9; padding: 30px; border-radius: 24px; box-shadow: 0 15px 40px -30px #68864c66; }
 .mwp-contact-form-heading { border-bottom: 1px solid #ecefe7; padding-bottom: 24px; margin-bottom: 24px; }
 .mwp-contact .mwp-contact-form-heading h2 { font-size: 29px; letter-spacing: -.04em; }
-.mwp-contact .mwp-contact-form-heading p { font-size: 13px; color: #89957c; line-height: 1.7; margin-top: 8px; }
+.mwp-contact .mwp-contact-form-heading p:not(.mwp-editorial-kicker) { font-size: 13px; color: #89957c; line-height: 1.7; margin-top: 8px; }
 .mwp-contact .mwp-form-grid { gap: 18px; }
 .mwp-contact .mwp-form-wide .mwp-button { width: 100%; }
 .mwp-contact .mwp-faq-grid { grid-template-columns: 1fr 1.3fr; gap: 70px; border-top: 1px solid #e9ede3; padding-top: 38px; }
