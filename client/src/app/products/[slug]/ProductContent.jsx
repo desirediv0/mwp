@@ -49,7 +49,16 @@ const getImageUrl = (img) => {
 // Reviews display approved customer feedback; new submissions go through moderation.
 const SHOW_REVIEWS = true;
 
-const PRODUCT_THEME = { surface: "var(--mwp-cream)", accent: "var(--mwp-ink)" };
+const PRODUCT_THEMES = {
+  "ultra-pro": { background: "#f8f4e9", surface: "#f1e2b7", deep: "#c7ae6c", accent: "#806326", line: "#e5d9b8" },
+  "power-max": { background: "#f0f3f9", surface: "#cdd8ee", deep: "#8398bf", accent: "#405d91", line: "#d2dced" },
+  "rapid-boost": { background: "#fbefeb", surface: "#efc7bc", deep: "#ba7970", accent: "#a4483c", line: "#eed3ca" },
+  "her-power": { background: "#f7efeb", surface: "#e5c3b7", deep: "#a77b74", accent: "#a36855", line: "#ead3c9" },
+  "her-energy": { background: "#f5f0f9", surface: "#ded0eb", deep: "#a18ab7", accent: "#72568b", line: "#e0d3e9" },
+  "daily-vitality": { background: "#f4f4ed", surface: "#dddfc7", deep: "#a0a786", accent: "#657341", line: "#dce0cb" },
+  "alpha-prime": { background: "#f8f0e8", surface: "#e8ceb1", deep: "#b68b68", accent: "#8a5e37", line: "#e7d5c2" },
+  "titan-force": { background: "#faf1e9", surface: "#edcfb4", deep: "#ba855d", accent: "#975e32", line: "#ebd5c2" },
+};
 
 export default function ProductContent({ slug }) {
   const [product, setProduct] = useState(null);
@@ -381,7 +390,8 @@ export default function ProductContent({ slug }) {
   );
 
   const images = getImages();
-  const productTheme = PRODUCT_THEME;
+  const productTheme = PRODUCT_THEMES[slug] || PRODUCT_THEMES["ultra-pro"];
+  const benefitItems = (product.ingredientItems || []).filter(item => item.keyBenefit || item.description).slice(0, 4);
   const primary = mainImage && images.some((i) => i.url === mainImage.url) ? mainImage : (images.find((i) => i.isPrimary) || images[0]);
   // Read the real stock from the selected variant. `?? ` (not `||`) so a genuine 0 is respected
   // instead of falling through to a hardcoded 15, which used to keep "Add to Bag" enabled for
@@ -401,10 +411,16 @@ export default function ProductContent({ slug }) {
   const bundleTotal = bundleItems.reduce((sum, item) => sum + (bundleSelected[item.id] ? (item.price * (item.isMain ? quantity : 1)) : 0), 0);
 
   return (
-    <div className="mwp-product-detail min-h-screen bg-white">
+    <div className="mwp-product-detail min-h-screen" style={{
+      "--product-bg": productTheme.background,
+      "--product-surface": productTheme.surface,
+      "--product-deep": productTheme.deep,
+      "--product-accent": productTheme.accent,
+      "--product-line": productTheme.line,
+    }}>
 
       {/* Breadcrumb */}
-      <div className="max-w-6xl mx-auto px-6 lg:px-10 pt-6 pb-1">
+      <div className="mwp-product-breadcrumb max-w-6xl mx-auto px-6 lg:px-10 pt-6 pb-1">
         <nav className="flex items-center gap-2 text-[12px] text-neutral-500 flex-wrap" aria-label="Breadcrumb">
           <Link href="/" className="hover:text-neutral-900 transition-colors">Home</Link>
           <span>/</span>
@@ -416,14 +432,14 @@ export default function ProductContent({ slug }) {
       </div>
 
       {/* Product Hero */}
-      <div className="max-w-6xl mx-auto px-6 lg:px-10 py-6 md:py-10">
-        <div className="grid grid-cols-1 lg:grid-cols-[minmax(0,1.08fr)_minmax(0,0.92fr)] gap-10 lg:gap-16 items-start">
+      <div className="mwp-product-hero max-w-6xl mx-auto px-6 lg:px-10 py-6 md:py-10">
+        <div className="mwp-product-hero-grid grid grid-cols-1 lg:grid-cols-[minmax(0,1.08fr)_minmax(0,0.92fr)] gap-10 lg:gap-16 items-start">
 
           {/* Left: Gallery */}
-          <div className="flex flex-col-reverse lg:flex-row gap-4">
+          <div className="mwp-product-gallery flex flex-col-reverse gap-4">
             {/* Thumbnails */}
             {images.length > 1 && (
-              <div className="flex lg:flex-col gap-3 overflow-x-auto lg:overflow-y-auto lg:max-h-[600px] no-scrollbar pb-2 lg:pb-0">
+              <div className="flex gap-3 overflow-x-auto no-scrollbar pb-2">
                 {images.map((img, idx) => (
                   <button
                     key={idx}
@@ -443,8 +459,8 @@ export default function ProductContent({ slug }) {
 
             {/* Main Image */}
             <div
-              className="relative flex-1 aspect-square overflow-hidden group cursor-zoom-in select-none rounded-2xl"
-              style={{ backgroundColor: productTheme.surface }}
+              className="mwp-product-image relative overflow-hidden group cursor-zoom-in select-none rounded-2xl"
+              style={{ background: `linear-gradient(145deg, ${productTheme.surface}, ${productTheme.deep})` }}
               onMouseEnter={() => setIsHovered(true)}
               onMouseLeave={() => setIsHovered(false)}
               onMouseMove={handleMouseMove}
@@ -461,7 +477,7 @@ export default function ProductContent({ slug }) {
                   className="object-contain p-5 sm:p-7 lg:p-8 transition-transform duration-200 ease-out pointer-events-none"
                   style={{
                     transformOrigin: isHovered ? `${zoomPos.x}% ${zoomPos.y}%` : "center center",
-                    transform: isHovered ? "scale(2.2)" : "scale(1)",
+                    transform: isHovered ? "scale(1.06)" : "scale(1)",
                   }}
                   priority
                   sizes="(max-width: 1024px) 100vw, 50vw"
@@ -508,7 +524,7 @@ export default function ProductContent({ slug }) {
           </div>
 
           {/* Right: Product Info */}
-          <div className="flex flex-col lg:sticky lg:top-28 lg:self-start lg:pt-2">
+          <div className="mwp-product-info flex flex-col lg:self-start">
 
             {/* Brand */}
             {product.brand && (
@@ -521,8 +537,8 @@ export default function ProductContent({ slug }) {
                 {product.category.name}
               </span>
             )}
-            <div className="flex items-start gap-3 mb-5 flex-wrap">
-              <h1 className="text-3xl md:text-[2.75rem] font-semibold leading-[1.05] tracking-tight text-neutral-900">{product.name}</h1>
+            <div className="mwp-product-title-row flex items-start gap-3 mb-5 flex-wrap">
+              <h1 className="mwp-product-title text-neutral-900">{product.name}</h1>
               {product.gender && (
                 <Link
                   href={`/products?gender=${product.gender}`}
@@ -532,6 +548,10 @@ export default function ProductContent({ slug }) {
                 </Link>
               )}
             </div>
+
+            {(product.shortDescription || product.mainBenefits || product.metaDescription) && (
+              <p className="mwp-product-intro">{product.shortDescription || product.mainBenefits || product.metaDescription}</p>
+            )}
 
             {/* Rating — hidden for now, see SHOW_REVIEWS */}
             {SHOW_REVIEWS && (
@@ -565,21 +585,11 @@ export default function ProductContent({ slug }) {
             )}
 
             {/* Price */}
-            <div className="mb-7"><PriceDisplay /></div>
+            <div className="mwp-product-price mb-5"><PriceDisplay /></div>
 
-            {/* Short Description */}
-            {product.shortDescription && (
-              <p className="text-[15px] leading-relaxed mb-7 text-neutral-500">{product.shortDescription}</p>
-            )}
 
-            {/* Promise */}
-            <div className="mb-7 flex items-center gap-3 py-3">
-              <IconShieldCheck className="h-4.5 w-4.5 flex-shrink-0 text-neutral-400" stroke={1.6} />
-              <p className="text-[13px] leading-relaxed text-neutral-500">
-                <span className="font-medium text-neutral-800">MWP Performance Guarantee.</span> 100% authentic, GMP certified &amp; third-party lab verified.
-              </p>
-            </div>
-
+            <div className="mwp-product-purchase">
+              <p className="mwp-product-purchase-label">Choose your purchase option</p>
             {/* Attributes */}
             {product.attributeOptions?.map((attr) => {
               const values = getAvailableValues(attr.id);
@@ -629,7 +639,7 @@ export default function ProductContent({ slug }) {
                   <IconPlus className="h-3.5 w-3.5" stroke={2} />
                 </button>
               </div>
-              <button onClick={handleAddToCart} disabled={isAddingToCart || outOfStock}
+              <button onClick={() => handleAddToCart()} disabled={isAddingToCart || outOfStock}
                 className="flex-1 h-12 rounded-full text-[13px] font-medium flex items-center justify-center gap-2 transition-all disabled:opacity-40 text-white bg-neutral-900 hover:bg-neutral-800 active:scale-[0.99]">
                 {isAddingToCart ? <div className="h-4 w-4 border-2 border-current border-t-transparent rounded-full animate-spin" /> : outOfStock ? "Sold Out" : "Add to Cart"}
               </button>
@@ -639,6 +649,24 @@ export default function ProductContent({ slug }) {
               className="w-full h-12 mb-3 rounded-full border border-neutral-900 bg-white text-neutral-900 text-[13px] font-medium hover:bg-white disabled:opacity-40 transition-colors">
               {isAddingToCart ? "Adding…" : "Buy Now"}
             </button>
+
+            </div>
+
+            {benefitItems.length > 0 && (
+              <div className="mwp-product-benefits">
+                {benefitItems.map(item => (
+                  <div key={item.id || item.name} className="mwp-product-benefit">
+                    <p>{item.name}</p>
+                    <span>{(item.keyBenefit || item.description).replace(/<[^>]*>/g, "")}</span>
+                  </div>
+                ))}
+              </div>
+            )}
+            <div className="mwp-product-trust">
+              <span><IconShieldCheck size={14} /> Authentic formula</span>
+              <span><IconCheck size={14} /> Ingredient transparency</span>
+              <span><IconShieldCheck size={14} /> Secure checkout</span>
+            </div>
 
             {/* Wishlist + Compare row */}
             <div className="flex gap-2.5 mb-7">
@@ -665,6 +693,7 @@ export default function ProductContent({ slug }) {
               </button>
             </div>
 
+            <div className="mwp-product-details">
             {/* Delivery */}
             <div className="mb-6">
               <div className="flex items-center gap-3 py-2.5">
@@ -753,13 +782,16 @@ export default function ProductContent({ slug }) {
                 </button>
               </div>
             </div>
+            </div>
           </div>
         </div>
       </div>
 
+      <ProductFormulaSections product={product} />
+
       {/* Bundle */}
       {relatedProducts.length > 0 && (
-        <div className="max-w-6xl mx-auto px-6 lg:px-10 mb-16 md:mb-20">
+        <div className="mwp-product-section max-w-6xl mx-auto px-6 lg:px-10 mb-16 md:mb-20">
           <div className="p-6 sm:p-8 md:p-10 rounded-3xl bg-white">
             <div className="mb-8">
               <span className="text-[12px] font-medium text-neutral-400 block mb-2">Build your routine</span>
@@ -791,8 +823,6 @@ export default function ProductContent({ slug }) {
           </div>
         </div>
       )}
-
-      <ProductFormulaSections product={product} />
 
       {/* Accordion Sections */}
       <div className="max-w-6xl mx-auto px-6 lg:px-10 mb-16 md:mb-20">

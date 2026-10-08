@@ -3,12 +3,11 @@
 import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { IconShieldCheck } from "@tabler/icons-react";
+import { IconArrowUpRight, IconShieldCheck } from "@tabler/icons-react";
 import { useLanguage } from "@/lib/language-context";
 import { fetchApi } from "@/lib/utils";
 
-// Apple-style product grid — 8 equal tiles, 2 columns, light/white base with
-// a subtle per-product tint. Static content only (no API).
+// Eight tinted product tiles with catalog images and local cutout fallbacks.
 const SLIDES = [
   {
     n: "01",
@@ -108,13 +107,13 @@ const SLIDES = [
   },
 ];
 
-function ProductTile({ slide, index }) {
+function ProductTile({ slide }) {
   const { t } = useLanguage();
   const href = `/products/${slide.key}`;
   return (
     <div
       data-tile
-      className={`group relative overflow-hidden  bg-gradient-to-br ${slide.tint} border border-black/[0.04] flex flex-col opacity-0`}
+      className={`group relative flex flex-col overflow-hidden border border-black/[0.04] bg-gradient-to-br ${slide.tint}`}
     >
       {/* Whole card is one link; the text blocks below let clicks fall through to it */}
       <Link
@@ -153,49 +152,54 @@ function ProductTile({ slide, index }) {
 
       {/* Soft colored glow behind the product, brightens on hover */}
       <div
-        className="pointer-events-none absolute left-1/2 bottom-0 -translate-x-1/2 w-[70%] h-[55%] rounded-full blur-[60px] opacity-25 group-hover:opacity-45 transition-opacity duration-500"
+        data-tile-glow
+        className="pointer-events-none absolute left-1/2 bottom-0 -translate-x-1/2 w-[70%] h-[55%] rounded-full blur-[60px] opacity-25"
         style={{ background: slide.glow }}
       />
 
-      <div className="pointer-events-none relative z-10 px-8 sm:px-10 pt-14 sm:pt-12 pb-2 text-center">
-        <p className="text-xl sm:text-4xl font-semibold tracking-tight text-neutral-900">
+      <span aria-hidden="true" className="absolute right-5 top-6 text-[11px] tracking-[0.2em] text-neutral-600/60 sm:right-8 sm:top-8">
+        {slide.n} / 08
+      </span>
+
+      <div data-tile-copy className="pointer-events-none relative z-10 px-5 pt-[84px] pb-2 text-center sm:px-8 sm:pt-24 lg:px-12">
+        <h2 className="text-[28px] leading-[1.15] tracking-[-0.04em] text-neutral-900 sm:text-[32px] lg:text-[40px]">
           {slide.name}
-        </p>
-        <p className="mt-1.5 text-xl sm:text-2xl font-semibold tracking-tight text-neutral-800">
+        </h2>
+        <p className="mt-3 text-[17px] leading-snug tracking-tight text-neutral-800 sm:text-lg lg:text-xl">
           {slide.headline}
         </p>
-        <p className="mt-2 text-[12.5px] sm:text-[13px] text-neutral-500 max-w-xs mx-auto leading-relaxed">
+        <p className="mx-auto mt-3 max-w-[310px] min-h-[42px] text-[13px] leading-[1.6] text-neutral-600 sm:min-h-[46px] sm:text-sm">
           {slide.copy}
         </p>
 
-        <div className="mt-4 flex items-center justify-center gap-4 text-[13px] sm:text-[14px]">
+        <div className="mt-5 flex items-center justify-center gap-3 text-[12px] sm:gap-4 sm:text-[13px]">
           <Link
             href={href}
-            className="pointer-events-auto text-white bg-neutral-900 hover:bg-neutral-800 transition-colors rounded-full px-4 py-1.5 font-medium"
+            className="pointer-events-auto inline-flex min-h-11 items-center justify-center rounded-full bg-neutral-900 px-5 text-white transition-colors hover:bg-neutral-800 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-neutral-900"
           >
             {t("discoverFormula")}
           </Link>
           <Link
             href={href}
-            className="pointer-events-auto text-neutral-900 hover:underline underline-offset-4 font-medium"
+            className="pointer-events-auto inline-flex min-h-11 items-center justify-center gap-1.5 rounded-full px-3 text-neutral-900 transition-colors hover:bg-white/50 focus-visible:outline focus-visible:outline-2 focus-visible:outline-neutral-900"
           >
             {t("shopNow")}
+            <IconArrowUpRight size={15} stroke={1.5} aria-hidden="true" />
           </Link>
         </div>
       </div>
 
-      {/* Product image — fills the tile edge-to-edge, no gap, gentle float on hover */}
-      <div
-        data-tile-image
-        className="pointer-events-none relative z-10 mx-auto mt-5 mb-6 h-[320px] w-full max-w-[280px] sm:h-[380px] sm:max-w-[320px] transition-transform duration-500 ease-out group-hover:-translate-y-2 group-hover:scale-[1.03]"
-      >
+      {/* Equal-height bottle stages with a separate GSAP hover wrapper. */}
+      <div data-tile-stage className="pointer-events-none relative z-10 mx-auto mt-7 mb-9 flex h-[300px] w-full items-center justify-center sm:mt-8 sm:mb-12 sm:h-[330px] lg:h-[380px]">
+        <div data-tile-image className="relative flex h-full w-full items-center justify-center">
         {slide.image ? (
           <Image
             src={slide.image}
             alt={slide.name}
-            fill
-            sizes="(max-width: 640px) 280px, 320px"
-            className="object-contain drop-shadow-[0_18px_20px_rgba(0,0,0,0.16)]"
+            width={slide.key === "her-energy" ? 708 : 417}
+            height={1000}
+            sizes="(max-width: 640px) 220px, 280px"
+            className="h-full w-auto max-w-[90%] object-contain drop-shadow-[0_20px_18px_rgba(0,0,0,0.16)]"
           />
         ) : (
           <span
@@ -205,6 +209,7 @@ function ProductTile({ slide, index }) {
             {slide.n}
           </span>
         )}
+        </div>
       </div>
     </div>
   );
@@ -224,90 +229,73 @@ export default function MwpProductShowcase() {
 
   useEffect(() => {
     let ctx;
+    let media;
     let mounted = true;
 
     (async () => {
-      const gsapModule = await import("gsap");
-      const { ScrollTrigger } = await import("gsap/ScrollTrigger");
-      if (!mounted) return;
-      const gsap = gsapModule.default;
+      const [{ default: gsap }, { ScrollTrigger }] = await Promise.all([
+        import("gsap"),
+        import("gsap/ScrollTrigger"),
+      ]);
+      if (!mounted || !gridRef.current) return;
       gsap.registerPlugin(ScrollTrigger);
 
-      const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-      const tiles = gridRef.current?.querySelectorAll("[data-tile]");
-      if (!tiles || tiles.length === 0) return;
-
       ctx = gsap.context(() => {
-        if (reduceMotion) {
-          gsap.set(tiles, { opacity: 1, y: 0, scale: 1 });
-          return;
-        }
+        media = gsap.matchMedia();
+        media.add("(prefers-reduced-motion: no-preference)", () => {
+          const cleanups = [];
+          gridRef.current.querySelectorAll("[data-tile]").forEach((tile) => {
+            const copy = tile.querySelector("[data-tile-copy]");
+            const stage = tile.querySelector("[data-tile-stage]");
+            gsap.timeline({
+              scrollTrigger: { trigger: tile, start: "top 88%", once: true },
+              defaults: { ease: "power3.out" },
+            })
+              .from(copy, { y: 24, opacity: 0, duration: 0.7 })
+              .from(stage, { y: 40, opacity: 0, duration: 0.95 }, 0.12);
 
-        tiles.forEach((tile, i) => {
-          const fromLeft = i % 2 === 0;
-          gsap.fromTo(
-            tile,
-            {
-              opacity: 0,
-              y: 60,
-              x: fromLeft ? -30 : 30,
-              scale: 0.92,
-              rotateZ: fromLeft ? -1.5 : 1.5,
-            },
-            {
-              opacity: 1,
-              y: 0,
-              x: 0,
-              scale: 1,
-              rotateZ: 0,
-              duration: 0.9,
-              ease: "power3.out",
-              scrollTrigger: {
-                trigger: tile,
-                start: "top 88%",
-                toggleActions: "play none none reverse",
-              },
-            }
-          );
-
-          const img = tile.querySelector("[data-tile-image]");
-          if (img) {
-            gsap.fromTo(
-              img,
-              { y: 40, opacity: 0 },
-              {
-                y: 0,
-                opacity: 1,
-                duration: 1,
-                delay: 0.15,
-                ease: "power3.out",
-                scrollTrigger: {
-                  trigger: tile,
-                  start: "top 88%",
-                  toggleActions: "play none none reverse",
-                },
-              }
-            );
-          }
+            // A separate wrapper keeps reveal and hover transforms independent.
+            const hover = gsap.timeline({ paused: true, defaults: { duration: 0.55, ease: "power2.out" } })
+              .to(tile.querySelector("[data-tile-image]"), { y: -10, scale: 1.035 }, 0)
+              .to(tile.querySelector("[data-tile-glow]"), { opacity: 0.38, scale: 1.08 }, 0);
+            const enter = () => hover.play();
+            const leave = () => hover.reverse();
+            const pointerEnter = (event) => { if (event.pointerType === "mouse") enter(); };
+            const focusOut = (event) => { if (!tile.contains(event.relatedTarget)) leave(); };
+            tile.addEventListener("pointerenter", pointerEnter);
+            tile.addEventListener("pointerleave", leave);
+            tile.addEventListener("focusin", enter);
+            tile.addEventListener("focusout", focusOut);
+            cleanups.push(() => {
+              tile.removeEventListener("pointerenter", pointerEnter);
+              tile.removeEventListener("pointerleave", leave);
+              tile.removeEventListener("focusin", enter);
+              tile.removeEventListener("focusout", focusOut);
+            });
+          });
+          return () => cleanups.forEach(cleanup => cleanup());
         });
       }, gridRef);
-    })();
+    })().catch(() => {
+      // Content stays visible even if animation modules fail to load.
+      media?.revert();
+      ctx?.revert();
+    });
 
     return () => {
       mounted = false;
+      media?.revert();
       ctx?.revert();
     };
   }, []);
 
   return (
     <section className="overflow-hidden bg-white">
-      <div >
-        <div ref={gridRef} className="grid grid-cols-1 sm:grid-cols-2 ">
-          {SLIDES.map((slide, i) => (
-            <ProductTile key={slide.key} slide={{ ...slide, image: catalog.find(product => product.slug === slide.key)?.image || slide.image }} index={i} />
+        <div ref={gridRef} className="grid grid-cols-1 sm:grid-cols-2">
+          {SLIDES.map((slide) => (
+            <ProductTile key={slide.key} slide={{ ...slide, image: catalog.find(product => product.slug === slide.key)?.image || slide.image }} />
           ))}
         </div>
-      </div>
     </section>
   );
 }

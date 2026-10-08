@@ -53,15 +53,15 @@ export default function ProductFormulaSections({ product }) {
   if (items.length === 0 && infoCards.length === 0) return null;
 
   return (
-    <section className="max-w-6xl mx-auto px-6 lg:px-10 mb-16 md:mb-20 text-neutral-900">
+    <section className="mwp-product-formula max-w-6xl mx-auto px-6 lg:px-10 mb-16 md:mb-20 text-neutral-900">
       {items.length > 0 && (
-        <div className="rounded-3xl border border-[#e6ded2] bg-white p-6 md:p-10">
-          <div className="grid gap-10 lg:grid-cols-[1.4fr_1fr]">
+        <div className="mwp-formula-panel rounded-3xl border border-[#e6ded2] bg-white p-6 md:p-10">
+          <div className="grid gap-8 lg:grid-cols-2">
             <div>
               <h2 className="text-2xl md:text-3xl font-semibold tracking-tight text-neutral-900">
                 Inside the formula
               </h2>
-              <ul className="mt-6 grid gap-3 sm:grid-cols-2">
+              <ul className="mt-6 grid gap-2 sm:grid-cols-2">
                 {items.map((item) => (
                   <li
                     key={item.id}
@@ -75,7 +75,7 @@ export default function ProductFormulaSections({ product }) {
                         {[item.amount, item.source].filter(Boolean).join(" • ")}
                       </p>
                     )}
-                    <span className="mt-2 block text-[11px] text-neutral-500 group-open:hidden">View ingredient details +</span>
+                    <span className="mt-1 block text-[10px] text-neutral-500 group-open:hidden">Details +</span>
                     </summary>
                     <div className="mt-3 pt-3 border-t border-neutral-100 text-[13px] leading-relaxed text-neutral-600">
                       {item.scientificName && <p className="italic mb-2">{item.scientificName}</p>}
