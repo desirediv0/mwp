@@ -36,7 +36,7 @@ export default function ProductFormulaSections({ product }) {
   const infoCards = [
     { title: "How to use", body: howToUse },
     { title: "Shipping & returns", body: plain(product.shippingReturn) },
-    { title: "Quality & trust", body: plain(product.legalInfo) },
+    { title: "Made for trust", body: plain(product.legalInfo) || "Explore the listed ingredients, their amounts and available product documentation in one place." },
   ].filter((c) => c.body);
 
   const downloadFormula = () => {
@@ -61,7 +61,7 @@ export default function ProductFormulaSections({ product }) {
               <h2 className="text-2xl md:text-3xl font-semibold tracking-tight text-neutral-900">
                 Inside the formula
               </h2>
-              <ul className="mt-6 grid gap-2 sm:grid-cols-2">
+              <ul className="mt-6 grid gap-2 min-[380px]:grid-cols-2">
                 {items.map((item) => (
                   <li
                     key={item.id}

@@ -629,6 +629,7 @@ export default function ProductContent({ slug }) {
             )}
 
             {/* Quantity + Add to Cart */}
+            <div className="mwp-product-purchase-actions">
             <div className="flex gap-2.5 mb-3" id="main-add-to-cart-btn">
               <div className="flex items-center overflow-hidden h-12 bg-white rounded-full border border-[#d9d0c2]">
                 <button onClick={() => handleQuantityChange(-1)} disabled={quantity <= (selectedVariant?.moq || 1) || isAddingToCart} className="w-10 h-full flex items-center justify-center text-neutral-500 hover:bg-neutral-50 disabled:opacity-30 transition-colors" aria-label="Decrease quantity">
@@ -649,6 +650,7 @@ export default function ProductContent({ slug }) {
               className="w-full h-12 mb-3 rounded-full border border-neutral-900 bg-white text-neutral-900 text-[13px] font-medium hover:bg-white disabled:opacity-40 transition-colors">
               {isAddingToCart ? "Adding…" : "Buy Now"}
             </button>
+            </div>
 
             </div>
 
@@ -693,7 +695,8 @@ export default function ProductContent({ slug }) {
               </button>
             </div>
 
-            <div className="mwp-product-details">
+            <details className="mwp-product-details">
+            <summary className="cursor-pointer text-[13px] text-neutral-600">Delivery &amp; product details</summary>
             {/* Delivery */}
             <div className="mb-6">
               <div className="flex items-center gap-3 py-2.5">
@@ -782,7 +785,7 @@ export default function ProductContent({ slug }) {
                 </button>
               </div>
             </div>
-            </div>
+            </details>
           </div>
         </div>
       </div>
