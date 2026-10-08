@@ -462,7 +462,7 @@ function ResultsSection({ results, onRestart }) {
 
   return (
     <motion.section
-      className="min-h-screen bg-gradient-to-b from-[#FAF7FD] via-[#F4EBFD] to-[#FAF7FD] py-20"
+      className="min-h-screen bg-white py-20"
       initial="hidden"
       animate="visible"
       variants={stagger}

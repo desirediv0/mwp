@@ -249,10 +249,10 @@ export default function BecomePartnerPage() {
         }
       `}} />
 
-      <div className="partner-root min-h-screen bg-[#f8f7f4]">
+      <div className="partner-root min-h-screen bg-white">
 
         {/* ───── HERO ───── */}
-        <section className="relative bg-[#0f0f0f] text-white overflow-hidden">
+        <section className="relative bg-white text-neutral-900 overflow-hidden">
           {/* grid overlay */}
           <div className="absolute inset-0 hero-grid pointer-events-none" />
 
@@ -294,25 +294,25 @@ export default function BecomePartnerPage() {
             {/* CTA Buttons */}
             <div className="fade-up-4 flex flex-col sm:flex-row gap-4 justify-center items-center">
               <a href="#apply"
-                className="glow-btn inline-flex items-center gap-2.5 px-9 py-4 bg-primary text-white font-display   text-base rounded-xl shadow-2xl shadow-primary/30">
+                className="glow-btn inline-flex items-center gap-2.5 px-9 py-4 bg-primary text-neutral-900 font-display   text-base rounded-xl shadow-2xl shadow-primary/30">
                 {t.btn_apply}
                 <ArrowRight className="h-4 w-4" />
               </a>
               <a href={PARTNER_PORTAL_URL} target="_blank" rel="noopener noreferrer"
-                className="inline-flex items-center gap-2.5 px-9 py-4 rounded-xl font-medium text-base text-white/70 hover:text-white border border-white/10 hover:border-white/25 hover:bg-white/5 transition-all duration-300">
+                className="inline-flex items-center gap-2.5 px-9 py-4 rounded-xl font-medium text-base text-neutral-900 hover:text-neutral-900 border border-neutral-200 hover:border-neutral-200 hover:bg-white/5 transition-all duration-300">
                 {t.btn_login}
               </a>
             </div>
 
             {/* Quick stats strip */}
-            <div className="mt-20 grid grid-cols-2 md:grid-cols-4 gap-px rounded-2xl overflow-hidden border border-white/5 bg-white/5">
+            <div className="mt-20 grid grid-cols-2 md:grid-cols-4 gap-px rounded-2xl overflow-hidden border border-neutral-200 bg-white/5">
               {stats.map((s, i) => (
                 <div key={i} className="stat-card flex flex-col items-center gap-1 py-6 bg-transparent">
                   <s.icon className="h-5 w-5 text-primary mb-1" />
-                  <p className="font-display text-2xl   text-white">
+                  <p className="font-display text-2xl   text-neutral-900">
                     <Counter to={s.value} suffix={s.suffix} />
                   </p>
-                  <p className="text-xs text-white/40 tracking-wide">{s.label}</p>
+                  <p className="text-xs text-neutral-900 tracking-wide">{s.label}</p>
                 </div>
               ))}
             </div>
@@ -356,13 +356,13 @@ export default function BecomePartnerPage() {
         </section>
 
         {/* ───── HOW IT WORKS (new section) ───── */}
-        <section className="py-20 px-6 bg-[#0f0f0f] overflow-hidden relative">
+        <section className="py-20 px-6 bg-white overflow-hidden relative">
           <div className="absolute inset-0 hero-grid opacity-50 pointer-events-none" />
           <div className="relative max-w-4xl mx-auto text-center">
             <span className="inline-block text-xs   tracking-widest uppercase text-primary mb-3">
               ✦ Process ✦
             </span>
-            <h2 className="font-display text-4xl md:text-5xl   text-white mb-14">
+            <h2 className="font-display text-4xl md:text-5xl   text-neutral-900 mb-14">
               3 Steps to Start Earning
             </h2>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
@@ -371,7 +371,7 @@ export default function BecomePartnerPage() {
                 { step: "02", title: "Get Approved", desc: "Our team reviews your application within 2-3 business days." },
                 { step: "03", title: "Start Earning", desc: "Receive your exclusive coupon and start earning commissions immediately." },
               ].map((s, i) => (
-                <div key={i} className="relative text-left p-7 rounded-2xl border border-white/8 bg-white/4 hover:bg-white/7 transition-colors">
+                <div key={i} className="relative text-left p-7 rounded-2xl border border-neutral-200 bg-white/4 hover:bg-white/7 transition-colors">
                   <p className="font-display text-6xl   leading-none mb-4"
                     style={{ color: "rgba(24,97,160,0.18)" }}>
                     {s.step}
@@ -379,8 +379,8 @@ export default function BecomePartnerPage() {
                   <div className="absolute top-7 right-7 h-8 w-8 rounded-full bg-primary/10 flex items-center justify-center">
                     <div className="h-2 w-2 rounded-full bg-primary" />
                   </div>
-                  <h3 className="font-display text-xl   text-white mb-2">{s.title}</h3>
-                  <p className="text-white/50 text-sm leading-relaxed">{s.desc}</p>
+                  <h3 className="font-display text-xl   text-neutral-900 mb-2">{s.title}</h3>
+                  <p className="text-neutral-900 text-sm leading-relaxed">{s.desc}</p>
                   {i < 2 && (
                     <ArrowRight className="hidden md:block absolute -right-5 top-1/2 -translate-y-1/2 z-10 h-5 w-5 text-primary/40" />
                   )}
@@ -391,7 +391,7 @@ export default function BecomePartnerPage() {
         </section>
 
         {/* ───── APPLICATION FORM ───── */}
-        <section id="apply" className="py-24 px-6 bg-[#f8f7f4]">
+        <section id="apply" className="py-24 px-6 bg-white">
           <div className="max-w-2xl mx-auto">
             {success ? (
               <div className="text-center py-16">
@@ -401,7 +401,7 @@ export default function BecomePartnerPage() {
                 <h2 className="font-display text-3xl   text-[#0f0f0f] mb-3">{t.success_title}</h2>
                 <p className="text-gray-500 mb-10 max-w-sm mx-auto leading-relaxed">{t.success_msg}</p>
                 <Link href="/"
-                  className="glow-btn inline-flex items-center gap-2 px-8 py-3.5 bg-primary text-white font-display   rounded-xl shadow-lg shadow-primary/25">
+                  className="glow-btn inline-flex items-center gap-2 px-8 py-3.5 bg-primary text-neutral-900 font-display   rounded-xl shadow-lg shadow-primary/25">
                   {t.success_back}
                 </Link>
               </div>
@@ -473,10 +473,10 @@ export default function BecomePartnerPage() {
                     </div>
 
                     <button type="submit" disabled={loading}
-                      className="glow-btn w-full py-4 bg-primary hover:bg-primary-dark disabled:opacity-60 text-white font-display   text-base rounded-xl transition-all duration-300 shadow-lg shadow-primary/25 flex items-center justify-center gap-2.5">
+                      className="glow-btn w-full py-4 bg-primary hover:bg-primary-dark disabled:opacity-60 text-neutral-900 font-display   text-base rounded-xl transition-all duration-300 shadow-lg shadow-primary/25 flex items-center justify-center gap-2.5">
                       {loading ? (
                         <>
-                          <span className="h-5 w-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                          <span className="h-5 w-5 border-2 border-neutral-200 border-t-transparent rounded-full animate-spin" />
                           {t.form_submitting}
                         </>
                       ) : (

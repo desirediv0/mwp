@@ -51,11 +51,19 @@
   font-display: swap;
 }
 
+/* Keep all storefront text regular, including utilities and inline styles. */
+html body,
+html body *,
+html body *::before,
+html body *::after {
+  font-weight: 400 !important;
+}
+
 @layer base {
   :root {
     --mwp-ink: #171717;
-    --mwp-cream: #f6f2eb;
-    --mwp-cream-deep: #eee5d7;
+    --mwp-cream: #ffffff;
+    --mwp-cream-deep: #ffffff;
     --mwp-gold: #886b40;
     --mwp-muted: #656561;
     --mwp-line: #e6ded2;
@@ -514,7 +522,7 @@
   }
 
   .bg-section-light {
-    background-color: var(--ivory);
+    background-color: #ffffff;
   }
 
   .bg-section-white {
@@ -522,15 +530,15 @@
   }
 
   .bg-hero-gradient {
-    background: #FAFAFA;
+    background: #ffffff;
   }
 
   .bg-hero-brand {
-    background: #FAFAFA;
+    background: #ffffff;
   }
 
   .bg-hero-dark {
-    background: #111111;
+    background: #ffffff;
   }
 
   ::-webkit-scrollbar {

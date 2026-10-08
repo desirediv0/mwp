@@ -66,7 +66,7 @@ export default function OrdersPage() {
 
       {/* Recent Order Highlight */}
       {orders.length > 0 && (
-        <div className="bg-[#f6f2eb] border border-[#e6ded2] rounded-2xl p-6 md:p-8">
+        <div className="bg-white border border-[#e6ded2] rounded-2xl p-6 md:p-8">
           <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
             <div>
               <span className="text-[10px] uppercase tracking-[0.2em] text-[#886b40] font-semibold block mb-2">Latest Order</span>

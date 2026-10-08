@@ -86,7 +86,7 @@ const CartItem = React.memo(
                 <div className="flex gap-4 sm:gap-5">
                     {/* Image */}
                     <Link href={productHref} className="flex-shrink-0">
-                        <div className="relative h-24 w-20 sm:h-32 sm:w-28 bg-[#f6f2eb] rounded-xl overflow-hidden border border-[#e6ded2] group">
+                        <div className="relative h-24 w-20 sm:h-32 sm:w-28 bg-white rounded-xl overflow-hidden border border-[#e6ded2] group">
                             <Image
                                 src={productImage}
                                 alt={productName}
@@ -452,7 +452,7 @@ export default function CartPage() {
     if ((!cart.items || cart.items.length === 0) && !error) {
         return (
             <div className="mwp-cart min-h-screen bg-white flex flex-col items-center justify-center py-20 px-4">
-                <div className="text-center max-w-md mx-auto rounded-3xl bg-[#f6f2eb] border border-[#e6ded2] px-8 py-12">
+                <div className="text-center max-w-md mx-auto rounded-3xl bg-white border border-[#e6ded2] px-8 py-12">
                     <div className="w-16 h-16 mx-auto mb-6 border border-[#e6ded2] rounded-full flex items-center justify-center bg-white">
                         <ShoppingBag className="h-7 w-7 text-black/20" strokeWidth={1} />
                     </div>
@@ -501,7 +501,7 @@ export default function CartPage() {
 
                 {/* Guest notice */}
                 {!isAuthenticated && cart.items.length > 0 && (
-                    <div className="bg-[#f6f2eb] border border-[#e6ded2] p-4 sm:p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6 sm:mb-8 rounded-2xl">
+                    <div className="bg-white border border-[#e6ded2] p-4 sm:p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6 sm:mb-8 rounded-2xl">
                         <div>
                             <p className="text-xs text-black/60 font-medium">Sign in to save your cart and access express checkout</p>
                         </div>
@@ -544,7 +544,7 @@ export default function CartPage() {
 
                     {/* Summary */}
                     <div className="lg:col-span-4">
-                        <div className="bg-[#f6f2eb] border border-[#e6ded2] rounded-2xl p-5 sm:p-6 sticky top-24">
+                        <div className="bg-white border border-[#e6ded2] rounded-2xl p-5 sm:p-6 sticky top-24">
                             <h2 className="text-sm uppercase tracking-[0.15em] text-black font-medium mb-5 pb-4 border-b border-black/5">
                                 Order Summary
                             </h2>

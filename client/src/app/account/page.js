@@ -189,7 +189,7 @@ export default function AccountPage() {
               {addresses.length > 0 ? (
                 <div className="space-y-3">
                   {addresses.slice(0, 2).map((address) => (
-                    <div key={address.id} className="flex items-start justify-between p-4 bg-[#f6f2eb] border border-[#e6ded2] rounded-xl">
+                    <div key={address.id} className="flex items-start justify-between p-4 bg-white border border-[#e6ded2] rounded-xl">
                       <div>
                         {address.isDefault && (
                           <span className="text-[9px] uppercase tracking-[0.2em] text-neutral-800 font-medium bg-neutral-900/10 px-2 py-0.5 mb-2 inline-block">Default</span>

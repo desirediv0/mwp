@@ -11,7 +11,7 @@ export const PageHero = ({
   const variants = {
     default: "bg-hero-brand",
     gradient: "bg-hero-gradient",
-    dark: "bg-hero-dark",
+    dark: "bg-white",
     white: "bg-white",
   };
 
@@ -21,13 +21,13 @@ export const PageHero = ({
     lg: "py-14 md:py-16 ",
   };
 
-  const isDark = variant === "dark";
+  const isDark = false;
 
   return (
     <section className={`${variants[variant]} ${sizes[size]} border-b border-line/60 relative overflow-hidden`}>
       {/* Ghost serif backdrop */}
       <span
-        className={`pointer-events-none select-none absolute -bottom-10 right-0 font-display italic text-[10rem] leading-none hidden lg:block ${isDark ? "text-hollow" : "text-hollow-dark"}`}
+        className={`pointer-events-none select-none absolute -bottom-10 right-0 font-display italic text-[10rem] leading-none hidden lg:block text-hollow-dark`}
         aria-hidden="true"
       >
         {typeof title === "string" ? title.split(" ")[0] : ""}
@@ -39,22 +39,22 @@ export const PageHero = ({
           <nav className="flex items-center gap-2 text-[10px] uppercase tracking-[0.25em] mb-7">
             <Link
               href="/"
-              className={`transition-colors ${isDark ? "text-white/50 hover:text-gold-light" : "text-stone hover:text-gold-dark"}`}
+              className={`transition-colors text-stone hover:text-gold-dark`}
             >
               Home
             </Link>
             {breadcrumbs.map((crumb, index) => (
               <span key={index} className="flex items-center gap-2">
-                <span className={isDark ? "text-gold-light/60" : "text-gold-dark/70"}>·</span>
+                <span className="text-gold-dark/70">·</span>
                 {crumb.href ? (
                   <Link
                     href={crumb.href}
-                    className={`transition-colors ${isDark ? "text-white/50 hover:text-gold-light" : "text-stone hover:text-gold-dark"}`}
+                    className={`transition-colors text-stone hover:text-gold-dark`}
                   >
                     {crumb.label}
                   </Link>
                 ) : (
-                  <span className={isDark ? "text-white/90" : "text-noir"}>
+                  <span className="text-noir">
                     {crumb.label}
                   </span>
                 )}
@@ -64,7 +64,7 @@ export const PageHero = ({
         )}
 
         {/* Title */}
-        <h1 className={`font-display text-4xl md:text-5xl lg:text-6xl font-medium tracking-tight mb-5 max-w-4xl ${isDark ? "text-ivory" : "text-noir"}`}>
+        <h1 className={`font-display text-4xl md:text-5xl lg:text-6xl font-medium tracking-tight mb-5 max-w-4xl text-noir`}>
           {title}
         </h1>
 
@@ -73,7 +73,7 @@ export const PageHero = ({
 
         {/* Description */}
         {description && (
-          <p className={`text-base md:text-lg font-light tracking-wide max-w-3xl leading-relaxed ${isDark ? "text-white/60" : "text-stone-dark"}`}>
+          <p className={`text-base md:text-lg font-light tracking-wide max-w-3xl leading-relaxed text-stone-dark`}>
             {description}
           </p>
         )}

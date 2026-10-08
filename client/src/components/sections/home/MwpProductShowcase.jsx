@@ -300,7 +300,7 @@ export default function MwpProductShowcase() {
   }, []);
 
   return (
-    <section className="bg-white">
+    <section className="overflow-hidden bg-white">
       <div >
         <div ref={gridRef} className="grid grid-cols-1 sm:grid-cols-2 ">
           {SLIDES.map((slide, i) => (

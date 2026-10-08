@@ -55,7 +55,7 @@ export default function ProductFormulaSections({ product }) {
   return (
     <section className="max-w-6xl mx-auto px-6 lg:px-10 mb-16 md:mb-20 text-neutral-900">
       {items.length > 0 && (
-        <div className="rounded-3xl border border-[#e6ded2] bg-[#f6f2eb] p-6 md:p-10">
+        <div className="rounded-3xl border border-[#e6ded2] bg-white p-6 md:p-10">
           <div className="grid gap-10 lg:grid-cols-[1.4fr_1fr]">
             <div>
               <h2 className="text-2xl md:text-3xl font-semibold tracking-tight text-neutral-900">

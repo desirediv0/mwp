@@ -60,33 +60,22 @@ export const Footer = () => {
 
   return (
     <footer className="relative bg-white text-neutral-900 overflow-hidden border-t border-neutral-200">
-      {/* Dotted background pattern */}
-      <div
-        className="absolute inset-0 pointer-events-none select-none"
-        style={{
-          backgroundImage: "radial-gradient(#d4d4d8 1px, transparent 1px)",
-          backgroundSize: "22px 22px",
-          maskImage: "linear-gradient(to bottom, black, black, transparent)",
-          WebkitMaskImage: "linear-gradient(to bottom, black, black, transparent)",
-        }}
-      />
-
       {/* Brand + link columns */}
-      <div className="relative z-10 max-w-7xl mx-auto px-5 md:px-8 lg:px-10 pt-16 pb-10">
-        <div className="grid grid-cols-1 lg:grid-cols-[1.3fr_1fr_1fr_1fr_1fr] gap-10 lg:gap-8">
-          <div>
+      <div className="relative z-10 max-w-[1440px] mx-auto px-6 md:px-10 py-14 sm:py-20">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-[1.2fr_0.85fr_0.95fr_0.85fr_1.2fr] gap-x-10 gap-y-12 xl:gap-x-12">
+          <div className="sm:col-span-2 lg:col-span-4 xl:col-span-1">
             <Image
               src="/logo.png"
               alt="MWP SUPPLEMENTS"
               width={160}
               height={64}
-              className="h-12 w-auto object-contain mb-4"
+              className="h-14 w-auto object-contain mb-6"
             />
-            <p className="text-[13px] text-neutral-500 max-w-xs leading-relaxed">
+            <p className="text-[13px] text-neutral-500 max-w-sm xl:max-w-xs leading-7">
               MWP connects performance, wellness and trust — clinically dosed
               formulas for men and women, engineered for everyday results.
             </p>
-            <div className="mt-6 flex items-center gap-3">
+            <div className="mt-7 flex items-center gap-4">
               {socials.map(({ href, Icon, label }) => (
                 <a
                   key={label}
@@ -100,7 +89,7 @@ export const Footer = () => {
                 </a>
               ))}
             </div>
-            <p className="mt-6 text-[10px] uppercase tracking-[0.3em] text-neutral-400 font-semibold">
+            <p className="mt-7 text-[10px] uppercase tracking-[0.3em] text-neutral-400 font-semibold">
               Men &bull; Women &bull; Power
             </p>
           </div>
@@ -125,22 +114,22 @@ export const Footer = () => {
 
           <FooterCol title="Let's Connect">
             <li>
-              <a href="mailto:support@mwpsupplements.com" className="text-[13px] text-neutral-500 hover:text-neutral-900 transition-colors break-all">
+              <a href="mailto:support@mwpsupplements.com" className="inline-block py-1 text-[13px] leading-6 text-neutral-500 hover:text-neutral-900 transition-colors whitespace-nowrap">
                 support@mwpsupplements.com
               </a>
             </li>
             <li>
-              <a href={`https://wa.me/${WHATSAPP_NUMBER}`} target="_blank" rel="noopener noreferrer" className="text-[13px] text-neutral-500 hover:text-neutral-900 transition-colors">
+              <a href={`https://wa.me/${WHATSAPP_NUMBER}`} target="_blank" rel="noopener noreferrer" className="inline-block py-1 text-[13px] leading-6 text-neutral-500 hover:text-neutral-900 transition-colors">
                 WhatsApp
               </a>
             </li>
             <li>
-              <a href="tel:+917678336268" className="text-[13px] text-neutral-500 hover:text-neutral-900 transition-colors">
+              <a href="tel:+917678336268" className="inline-block py-1 text-[13px] leading-6 text-neutral-500 hover:text-neutral-900 transition-colors whitespace-nowrap">
                 +91 76783 36268
               </a>
             </li>
             <li>
-              <Link href="/contact" className="text-[13px] text-neutral-500 hover:text-neutral-900 transition-colors inline-flex items-center gap-1">
+              <Link href="/contact" className="py-1 text-[13px] leading-6 text-neutral-500 hover:text-neutral-900 transition-colors inline-flex items-center gap-2">
                 Contact Us <span aria-hidden>&rarr;</span>
               </Link>
             </li>
@@ -150,9 +139,9 @@ export const Footer = () => {
 
       {/* Trust strip */}
       <div className="relative z-10 border-t border-neutral-200">
-        <div className="max-w-7xl mx-auto px-5 md:px-8 lg:px-10 py-6 flex flex-wrap items-center justify-center gap-x-10 gap-y-3">
+        <div className="max-w-[1440px] mx-auto px-6 md:px-10 py-8 grid grid-cols-1 min-[400px]:grid-cols-2 md:flex md:flex-wrap items-center justify-center gap-x-12 gap-y-5">
           {TRUST.map(({ icon: Icon, label }) => (
-            <div key={label} className="flex items-center gap-2 text-neutral-500">
+            <div key={label} className="flex items-center justify-center gap-3 text-neutral-500">
               <Icon className="h-4 w-4 shrink-0" stroke={1.75} />
               <span className="text-[11px] font-medium tracking-wide">{label}</span>
             </div>
@@ -161,13 +150,13 @@ export const Footer = () => {
       </div>
 
       {/* Bottom bar */}
-      <div className="relative z-10 border-t border-neutral-200 py-6">
-        <div className="max-w-7xl mx-auto px-5 md:px-8 lg:px-10 flex flex-col md:flex-row items-center justify-between gap-4">
+      <div className="relative z-10 border-t border-neutral-200 pt-8 pb-24">
+        <div className="max-w-[1440px] mx-auto px-6 md:px-10 flex flex-col md:flex-row items-center justify-between gap-6">
           <p className="text-[11px] text-neutral-400 tracking-wide text-center md:text-left">
             &copy; {new Date().getFullYear()} MWP Supplements. All rights reserved.
           </p>
-          <div className="flex items-center gap-4">
-            <div className="flex items-center gap-3">
+          <div className="flex flex-col sm:flex-row flex-wrap items-center justify-center gap-x-8 gap-y-5">
+            <div className="flex items-center gap-4">
               {[
                 { name: "Visa", src: "/visa.png" },
                 { name: "Mastercard", src: "/mc.png" },
@@ -182,7 +171,7 @@ export const Footer = () => {
                 </div>
               ))}
             </div>
-            <div className="flex items-center gap-4 text-[11px] text-neutral-400">
+            <div className="flex flex-wrap items-center justify-center gap-x-6 gap-y-3 text-[11px] leading-6 text-neutral-400">
               <Link href="/privacy-policy" className="hover:text-neutral-900 transition-colors">Privacy Policy</Link>
               <Link href="/terms" className="hover:text-neutral-900 transition-colors">Terms &amp; Conditions</Link>
             </div>
@@ -195,8 +184,8 @@ export const Footer = () => {
 
 function FooterCol({ title, children }) {
   return (
-    <div>
-      <h4 className="text-[12px] font-semibold text-neutral-900 mb-5">{title}</h4>
+    <div className="min-w-0">
+      <h4 className="text-[13px] font-semibold text-neutral-900 mb-6">{title}</h4>
       <ul className="space-y-3">{children}</ul>
     </div>
   );
@@ -207,7 +196,7 @@ function FooterLink({ href, children }) {
     <li>
       <Link
         href={href}
-        className="text-[13px] text-neutral-500 hover:text-neutral-900 transition-colors duration-200 inline-block"
+        className="text-[13px] leading-6 text-neutral-500 hover:text-neutral-900 transition-colors duration-200 inline-block py-1"
       >
         {children}
       </Link>

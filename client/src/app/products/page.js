@@ -466,7 +466,7 @@ function ProductsContent() {
     <div className="mwp-page">
 
       {/* Shop Header */}
-      <div className="bg-[#f6f2eb]" style={{ borderBottom: "1px solid var(--mwp-line)" }}>
+      <div className="bg-white" style={{ borderBottom: "1px solid var(--mwp-line)" }}>
         <div className="max-w-7xl mx-auto px-5 md:px-8 lg:px-10 py-8 md:py-10 lg:py-12 relative overflow-hidden">
           <div className="pointer-events-none absolute right-4 bottom-0 hidden h-full w-[36%] md:block" style={{ maskImage: "linear-gradient(to right, transparent, black 18%, black 88%, transparent)" }}><Image src="/mwp-eight-products-desktop.webp" alt="" fill priority className="object-cover object-[center_70%]" sizes="36vw" /></div>
           <div className="relative flex flex-col md:flex-row md:items-end md:justify-between gap-6">
@@ -528,7 +528,7 @@ function ProductsContent() {
 
           {/* Desktop Sidebar */}
           <aside className="hidden lg:block lg:col-span-3">
-            <div className="sticky top-28 rounded-2xl border border-[#e6ded2] bg-[#f6f2eb] p-5">
+            <div className="sticky top-28 rounded-2xl border border-[#e6ded2] bg-white p-5">
               <div className="flex items-center justify-between mb-6 pb-4" style={{ borderBottom: "2px solid #111111" }}>
                 <h3 className="text-[10px] uppercase tracking-[0.3em] font-medium text-gray-900">
                   Refine
@@ -598,7 +598,7 @@ function ProductsContent() {
 
               <div className="flex items-center gap-4">
                 {/* View Toggle */}
-                <div className="hidden md:flex items-center gap-1 rounded-full bg-[#f6f2eb] p-1">
+                <div className="hidden md:flex items-center gap-1 rounded-full bg-white p-1">
                   {[2, 3, 4].map((c) => (
                     <button
                       key={c}

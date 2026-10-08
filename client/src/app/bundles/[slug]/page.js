@@ -149,7 +149,7 @@ export default function BundleDetailPage({ params }) {
   const savings = actualPrice - bundlePrice;
 
   return (
-    <div className="min-h-screen bg-ivory">
+    <div className="min-h-screen bg-white">
       {/* Hero Banner */}
       <div className="relative h-64 md:h-80">
         {bundle.banner ? (

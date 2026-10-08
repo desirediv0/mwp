@@ -58,7 +58,7 @@ export default function WishlistPage() {
       <div className="min-h-screen bg-white">
 
         {/* Hero */}
-        <section className="relative py-14 md:py-20 overflow-hidden bg-[#f6f2eb] border-b border-[#e6ded2]">
+        <section className="relative py-14 md:py-20 overflow-hidden bg-white border-b border-[#e6ded2]">
           <div className="relative z-10 max-w-7xl mx-auto px-5 text-center">
             <div className="flex items-center justify-center gap-2 text-[11px] text-neutral-500 mb-7">
               <Link href="/" className="hover:text-neutral-900 transition-colors">Home</Link>
@@ -100,7 +100,7 @@ export default function WishlistPage() {
             </div>
           ) : wishlistItems.length === 0 ? (
             /* Empty State */
-            <div className="bg-[#f6f2eb] border border-[#e6ded2] rounded-2xl p-12 md:p-16 text-center max-w-lg mx-auto">
+            <div className="bg-white border border-[#e6ded2] rounded-2xl p-12 md:p-16 text-center max-w-lg mx-auto">
               <IconHeart className="h-8 w-8 text-gray-500 mx-auto mb-4" stroke={1.2} />
               <h3 className="text-2xl text-gray-900 mb-3">Wishlist is Empty</h3>
               <p className="text-gray-500 text-[13px] font-light leading-relaxed mb-8 max-w-xs mx-auto">

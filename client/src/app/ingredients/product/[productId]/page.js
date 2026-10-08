@@ -129,9 +129,9 @@ export default function ProductIngredientsPage() {
   const productImg = product ? img(product.image) : null;
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-white">
       {/* Hero — big product image + info */}
-      <section className="relative overflow-hidden bg-[#0A0A0A] text-white">
+      <section className="relative overflow-hidden bg-white text-neutral-900">
         <div className="absolute inset-0 bg-gradient-to-br from-[#141416] via-[#0f0f12] to-[#0A0A0A]" />
         <div className="absolute -top-24 left-1/2 -translate-x-1/2 w-[700px] h-[340px] bg-red-600/20 blur-[150px] rounded-full pointer-events-none" />
 

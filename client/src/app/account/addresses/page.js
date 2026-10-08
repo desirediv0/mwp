@@ -93,7 +93,7 @@ export default function AddressesPage() {
 
       {/* Empty State */}
       {addresses.length === 0 && !showAddForm && !editingAddress && (
-        <div className="bg-[#f6f2eb] border border-[#e6ded2] rounded-2xl p-12 text-center">
+        <div className="bg-white border border-[#e6ded2] rounded-2xl p-12 text-center">
           <IconMapPin className="h-8 w-8 text-gray-500 mx-auto mb-4" stroke={1.2} />
           <h3 className="text-xl text-gray-900 mb-2">No Addresses Yet</h3>
           <p className="text-[13px] text-gray-500 font-light mb-6">Add a shipping address for your orders</p>
@@ -110,7 +110,7 @@ export default function AddressesPage() {
           {addresses.map((address) => (
             <div key={address.id} className="bg-white border border-[#e6ded2] rounded-2xl p-5 relative">
               {address.isDefault && (
-                <span className="absolute top-4 right-4 text-[10px] uppercase tracking-[0.12em] text-[#886b40] font-semibold bg-[#f6f2eb] border border-[#e6ded2] rounded-full px-2.5 py-1 flex items-center gap-1">
+                <span className="absolute top-4 right-4 text-[10px] uppercase tracking-[0.12em] text-[#886b40] font-semibold bg-white border border-[#e6ded2] rounded-full px-2.5 py-1 flex items-center gap-1">
                   <IconCheck className="h-2.5 w-2.5" stroke={2} /> Default
                 </span>
               )}

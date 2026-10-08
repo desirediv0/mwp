@@ -598,8 +598,8 @@ export default function ProductContent({ slug }) {
                         type="button"
                         aria-pressed={selId === v.id}
                         className={`min-w-[48px] min-h-11 px-4 py-2 text-[13px] font-medium rounded-full border bg-white text-neutral-900 transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-neutral-900 ${selId === v.id
-                          ? "border-neutral-900 bg-[#f6f2eb]"
-                          : "border-neutral-300 hover:border-neutral-900 hover:bg-[#f6f2eb]"
+                          ? "border-neutral-900 bg-white"
+                          : "border-neutral-300 hover:border-neutral-900 hover:bg-white"
                           }`}
                       >
                         {v.value}
@@ -636,7 +636,7 @@ export default function ProductContent({ slug }) {
             </div>
 
             <button type="button" onClick={() => handleAddToCart(true)} disabled={isAddingToCart || outOfStock || quantity > stock}
-              className="w-full h-12 mb-3 rounded-full border border-neutral-900 bg-white text-neutral-900 text-[13px] font-medium hover:bg-[#f6f2eb] disabled:opacity-40 transition-colors">
+              className="w-full h-12 mb-3 rounded-full border border-neutral-900 bg-white text-neutral-900 text-[13px] font-medium hover:bg-white disabled:opacity-40 transition-colors">
               {isAddingToCart ? "Adding…" : "Buy Now"}
             </button>
 
@@ -760,7 +760,7 @@ export default function ProductContent({ slug }) {
       {/* Bundle */}
       {relatedProducts.length > 0 && (
         <div className="max-w-6xl mx-auto px-6 lg:px-10 mb-16 md:mb-20">
-          <div className="p-6 sm:p-8 md:p-10 rounded-3xl bg-[#f6f2eb]">
+          <div className="p-6 sm:p-8 md:p-10 rounded-3xl bg-white">
             <div className="mb-8">
               <span className="text-[12px] font-medium text-neutral-400 block mb-2">Build your routine</span>
               <h3 className="text-2xl md:text-3xl font-semibold text-neutral-900 tracking-tight">Frequently bought together</h3>

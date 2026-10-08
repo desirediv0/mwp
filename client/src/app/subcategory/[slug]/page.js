@@ -104,7 +104,7 @@ export default function SubCategoryPage() {
   return (
     <div className="min-h-screen bg-white">
       {/* Hero */}
-      <section className="relative py-10 md:py-14 bg-gradient-to-b from-gray-50 to-white overflow-hidden">
+      <section className="relative py-10 md:py-14 bg-white overflow-hidden">
         <div className="absolute inset-0 opacity-30">
           <div className="absolute top-10 right-20 w-60 h-60 bg-primary/10 rounded-full blur-3xl" />
         </div>

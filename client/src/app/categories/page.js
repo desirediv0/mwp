@@ -42,13 +42,12 @@ function CategoryCard({ category }) {
               </span>
             </div>
           )}
-          <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/5 to-transparent" />
-          <span className="absolute top-3 right-3 w-9 h-9 rounded-full bg-white/15 backdrop-blur-sm border border-white/25 flex items-center justify-center text-white opacity-0 translate-y-1 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-300">
+          <span className="absolute top-3 right-3 w-9 h-9 rounded-full bg-white/15 backdrop-blur-sm border border-neutral-200 flex items-center justify-center text-neutral-900 opacity-0 translate-y-1 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-300">
             <IconArrowUpRight className="h-4 w-4" stroke={2} />
           </span>
           <div className="absolute inset-x-0 bottom-0 p-4">
-            <h3 className="text-white font-bold text-[15px] leading-tight line-clamp-1">{category.name}</h3>
-            <p className="text-white/70 text-[11px] font-medium mt-0.5">
+            <h3 className="text-neutral-900 font-bold text-[15px] leading-tight line-clamp-1">{category.name}</h3>
+            <p className="text-neutral-900 text-[11px] font-medium mt-0.5">
               {count > 0 ? `${count} ${count === 1 ? "product" : "products"}` : "Explore"}
             </p>
           </div>
@@ -135,24 +134,22 @@ export default function CategoriesPage() {
   const total = pagination?.total ?? categories.length;
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-white">
       {/* Hero */}
-      <section className="relative overflow-hidden bg-[#0A0A0A] text-white">
-        <div className="absolute inset-0 bg-gradient-to-br from-[#141416] via-[#0f0f12] to-[#0A0A0A]" />
-        <div className="absolute -top-24 left-1/2 -translate-x-1/2 w-[600px] h-[300px] bg-white/[0.05] blur-[140px] rounded-full pointer-events-none" />
+      <section className="relative overflow-hidden bg-white text-neutral-900">
         <div className="relative z-10 max-w-7xl mx-auto px-5 md:px-8 lg:px-10 py-16 md:py-24 text-center">
-          <nav className="flex items-center justify-center gap-2 text-[11px] uppercase tracking-[0.15em] text-white/40 mb-6">
-            <Link href="/" className="hover:text-white transition-colors">Home</Link>
+          <nav className="flex items-center justify-center gap-2 text-[11px] uppercase tracking-[0.15em] text-neutral-900 mb-6">
+            <Link href="/" className="hover:text-neutral-900 transition-colors">Home</Link>
             <span>/</span>
-            <span className="text-white/80">Categories</span>
+            <span className="text-neutral-900">Categories</span>
           </nav>
-          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/[0.06] border border-white/15 text-white/70 text-[10px] font-bold uppercase tracking-[0.2em] mb-5">
+          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/[0.06] border border-neutral-200 text-neutral-900 text-[10px] font-bold uppercase tracking-[0.2em] mb-5">
             {total} {total === 1 ? "Category" : "Categories"}
           </div>
           <h1 className="text-4xl md:text-6xl font-extrabold tracking-tight mb-4">
-            Shop by <span className="text-white/50">Category</span>
+            Shop by <span className="text-neutral-900">Category</span>
           </h1>
-          <p className="text-white/60 max-w-lg mx-auto text-[14px] md:text-base leading-relaxed">
+          <p className="text-neutral-900 max-w-lg mx-auto text-[14px] md:text-base leading-relaxed">
             Targeted nutritional protocols for strength, hormone balance, endurance, recovery, and daily wellness.
           </p>
         </div>

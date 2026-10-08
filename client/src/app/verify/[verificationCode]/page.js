@@ -77,7 +77,7 @@ const STATUS_META = {
 
 function IngredientRow({ ing }) {
   return (
-    <div className="rounded-2xl border border-[#e7ddc8] bg-[#FBF6EA] p-4 sm:p-5">
+    <div className="rounded-2xl border border-[#e7ddc8] bg-white p-4 sm:p-5">
       <div className="flex items-start justify-between gap-3">
         <p className="font-serif text-[15px] sm:text-base text-[#1a1a1a] leading-snug">{ing.name}</p>
         {ing.amount && (
@@ -104,7 +104,7 @@ function TapCard({ label, value, onClick, href }) {
     </>
   );
   const className =
-    "rounded-2xl border border-[#e7ddc8] bg-[#FBF6EA] hover:border-[#c9a44c] hover:bg-white transition-colors p-5 text-center cursor-pointer";
+    "rounded-2xl border border-[#e7ddc8] bg-white hover:border-[#c9a44c] hover:bg-white transition-colors p-5 text-center cursor-pointer";
   if (href) {
     return (
       <a href={href} target="_blank" rel="noopener noreferrer" className={className}>
@@ -146,7 +146,7 @@ export default function VerifyPage() {
   /* -------------------- loading -------------------- */
   if (loading) {
     return (
-      <div className="min-h-screen bg-[#F7F2E7] flex items-center justify-center px-5">
+      <div className="min-h-screen bg-white flex items-center justify-center px-5">
         <div className="w-full max-w-md space-y-4 animate-pulse">
           <div className="h-8 w-40 bg-[#e7ddc8] rounded mx-auto" />
           <div className="h-48 w-full bg-[#e7ddc8] rounded-2xl mx-auto" />
@@ -160,7 +160,7 @@ export default function VerifyPage() {
   /* -------------------- api failure -------------------- */
   if (error) {
     return (
-      <div className="min-h-screen bg-[#F7F2E7] flex items-center justify-center px-5">
+      <div className="min-h-screen bg-white flex items-center justify-center px-5">
         <div className="text-center max-w-sm">
           <IconAlertTriangle className="h-10 w-10 text-amber-600 mx-auto mb-4" />
           <h1 className="font-serif text-2xl text-[#1a1a1a] mb-2">Verification Service Temporarily Unavailable</h1>
@@ -179,7 +179,7 @@ export default function VerifyPage() {
   /* -------------------- not found -------------------- */
   if (!data) {
     return (
-      <div className="min-h-screen bg-[#F7F2E7] flex items-center justify-center px-5">
+      <div className="min-h-screen bg-white flex items-center justify-center px-5">
         <div className="text-center max-w-sm">
           <div className="w-16 h-16 rounded-full bg-[#fbe9e9] flex items-center justify-center mx-auto mb-5">
             <IconCircleX className="h-8 w-8 text-red-600" />
@@ -206,7 +206,7 @@ export default function VerifyPage() {
   const ingredients = Array.isArray(data.ingredients) ? data.ingredients : [];
 
   return (
-    <div className="min-h-screen bg-[#F7F2E7] py-6 md:py-10 px-4 sm:px-6">
+    <div className="min-h-screen bg-white py-6 md:py-10 px-4 sm:px-6">
       <div className="max-w-5xl mx-auto rounded-3xl bg-white border border-[#e7ddc8] shadow-[0_20px_60px_-25px_rgba(13,27,42,0.15)] overflow-hidden">
         {/* Header */}
         <header className="flex items-center justify-between px-6 md:px-10 py-6 border-b border-[#f0ead8]">
@@ -349,7 +349,7 @@ export default function VerifyPage() {
           {(data.manufacturingDate || data.expiryDate || data.origin) && (
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-3.5 mt-3.5">
               {data.manufacturingDate && (
-                <div className="rounded-2xl border border-[#e7ddc8] bg-[#FBF6EA] p-5 text-center">
+                <div className="rounded-2xl border border-[#e7ddc8] bg-white p-5 text-center">
                   <div className="flex items-center justify-center gap-1.5 text-[#8a6d1f] mb-1.5">
                     <IconCalendar className="h-3.5 w-3.5" />
                     <span className="text-[11px] uppercase tracking-[0.16em] font-bold">Manufactured</span>
@@ -358,7 +358,7 @@ export default function VerifyPage() {
                 </div>
               )}
               {data.expiryDate && (
-                <div className="rounded-2xl border border-[#e7ddc8] bg-[#FBF6EA] p-5 text-center">
+                <div className="rounded-2xl border border-[#e7ddc8] bg-white p-5 text-center">
                   <div className="flex items-center justify-center gap-1.5 text-[#8a6d1f] mb-1.5">
                     <IconCalendar className="h-3.5 w-3.5" />
                     <span className="text-[11px] uppercase tracking-[0.16em] font-bold">Expiry</span>
@@ -367,7 +367,7 @@ export default function VerifyPage() {
                 </div>
               )}
               {data.origin && (
-                <div className="rounded-2xl border border-[#e7ddc8] bg-[#FBF6EA] p-5 text-center">
+                <div className="rounded-2xl border border-[#e7ddc8] bg-white p-5 text-center">
                   <div className="flex items-center justify-center gap-1.5 text-[#8a6d1f] mb-1.5">
                     <IconMapPin className="h-3.5 w-3.5" />
                     <span className="text-[11px] uppercase tracking-[0.16em] font-bold">Origin</span>

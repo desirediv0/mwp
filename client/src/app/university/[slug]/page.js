@@ -46,7 +46,7 @@ export default function UniversityPostPage() {
 
   return (
     <main className="mwp-page pb-20">
-      <section className="border-b border-neutral-200 bg-[#f6f2eb]">
+      <section className="border-b border-neutral-200 bg-white">
         <div className="relative max-w-3xl mx-auto px-5 md:px-8 pt-12 pb-10">
           <Link
             href="/university"
@@ -104,7 +104,7 @@ export default function UniversityPostPage() {
               <Link
                 key={r.id}
                 href={`/university/${r.slug}`}
-                className="group p-5 rounded-2xl bg-[#f6f2eb] border border-[#e6ded2] hover:border-neutral-900 transition-colors"
+                className="group p-5 rounded-2xl bg-white border border-[#e6ded2] hover:border-neutral-900 transition-colors"
               >
                 <h3 className="text-base font-medium group-hover:underline transition-colors line-clamp-3">
                   {r.title}

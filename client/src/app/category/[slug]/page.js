@@ -90,27 +90,27 @@ export default function CategoryPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-white">
       {/* ---------- Hero ---------- */}
-      <section className="relative overflow-hidden bg-[#0A0A0A] text-white flex items-end" style={{ minHeight: "clamp(300px, 38vw, 420px)" }}>
+      <section className="relative overflow-hidden bg-white text-neutral-900 flex items-end" style={{ minHeight: "clamp(300px, 38vw, 420px)" }}>
         {category?.image ? (
           <Image src={getImageUrl(category.image)} alt={category.name || ""} fill priority sizes="100vw" className="object-cover" />
         ) : (
-          <div className="absolute inset-0 bg-gradient-to-br from-[#141416] via-[#0f0f12] to-[#0A0A0A]" />
+          <div className="absolute inset-0 bg-white" />
         )}
-        <div className="absolute inset-0 bg-gradient-to-t from-[#0A0A0A] via-black/55 to-black/30" />
+        {category?.image && <div className="absolute inset-0 bg-white/90" />}
         <div className="absolute -top-20 right-0 w-72 h-72 rounded-full opacity-20 pointer-events-none blur-2xl bg-white/10" />
 
         <div className="relative z-10 w-full max-w-7xl mx-auto px-5 md:px-8 lg:px-10 pb-10 md:pb-14 pt-24">
-          <nav className="flex items-center gap-2 text-[11px] uppercase tracking-[0.15em] text-white/50 mb-5">
-            <Link href="/" className="hover:text-white transition-colors">Home</Link>
+          <nav className="flex items-center gap-2 text-[11px] uppercase tracking-[0.15em] text-neutral-900 mb-5">
+            <Link href="/" className="hover:text-neutral-900 transition-colors">Home</Link>
             <span>/</span>
-            <Link href="/categories" className="hover:text-white transition-colors">Categories</Link>
+            <Link href="/categories" className="hover:text-neutral-900 transition-colors">Categories</Link>
             <span>/</span>
-            <span className="text-white/80">{category?.name}</span>
+            <span className="text-neutral-900">{category?.name}</span>
           </nav>
 
-          <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/[0.06] border border-white/15 text-white/70 text-[10px] font-bold uppercase tracking-[0.2em] mb-4">
+          <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/[0.06] border border-neutral-200 text-neutral-900 text-[10px] font-bold uppercase tracking-[0.2em] mb-4">
             <Package className="w-3.5 h-3.5" />
             {pagination.total} Product{pagination.total === 1 ? "" : "s"}
           </div>
@@ -118,7 +118,7 @@ export default function CategoryPage() {
             {category?.name}
           </h1>
           {category?.description && (
-            <p className="text-white/70 max-w-2xl text-[14px] md:text-[15px] leading-relaxed">
+            <p className="text-neutral-900 max-w-2xl text-[14px] md:text-[15px] leading-relaxed">
               {category.description}
             </p>
           )}

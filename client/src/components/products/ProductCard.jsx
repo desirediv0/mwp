@@ -225,7 +225,7 @@ export const ProductCard = ({ product, viewMode = "grid" }) => {
       >
         <Link
           href={`/products/${product.slug}`}
-          className="relative flex-shrink-0 overflow-hidden bg-[#f6f2eb]"
+          className="relative flex-shrink-0 overflow-hidden bg-white"
           style={{
             width: "180px",
             minHeight: "180px",

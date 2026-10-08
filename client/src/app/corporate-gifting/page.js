@@ -78,10 +78,10 @@ export default function CorporateGiftingPage() {
   };
 
   return (
-    <main className="bg-[#FAF6FF] min-h-screen text-[#26153B] font-sans selection:bg-[#D6C2F7] selection:text-[#240E42]">
+    <main className="bg-white min-h-screen text-[#26153B] font-sans selection:bg-white selection:text-[#240E42]">
 
       {/* ── 1. TOP HERO SECTION (Lavender Shades & Metallic Gold Accents) ── */}
-      <section className="relative min-h-[90vh] pt-28 pb-20 flex items-center overflow-hidden bg-gradient-to-br from-[#FDFBFF] via-[#F3EAFC] to-[#E9D9F8]">
+      <section className="relative min-h-[90vh] pt-28 pb-20 flex items-center overflow-hidden bg-white ">
         
         {/* Background Floating Lavender Orbs & Accents */}
         <div 
@@ -183,7 +183,7 @@ export default function CorporateGiftingPage() {
             {/* Right Column: Floating Corporate Gifting Visual */}
             <div className="lg:col-span-5 relative flex justify-center w-full">
               <Reveal delay={0.2} className="w-full flex justify-center">
-                <div className="relative w-full max-w-[540px] aspect-[16/11] rounded-3xl overflow-hidden p-3 sm:p-4 bg-white/90 border border-white shadow-2xl backdrop-blur-md">
+                <div className="relative w-full max-w-[540px] aspect-[16/11] rounded-3xl overflow-hidden p-3 sm:p-4 bg-white/90 border border-neutral-200 shadow-2xl backdrop-blur-md">
                   <div className="relative w-full h-full rounded-2xl overflow-hidden shadow-inner group">
                     <Image
                       src="/corporate.jpeg"
@@ -194,10 +194,9 @@ export default function CorporateGiftingPage() {
                       priority
                       unoptimized
                     />
-                    <div className="absolute inset-0 bg-gradient-to-t from-[#3C1A60]/50 via-transparent to-transparent pointer-events-none" />
                     
                     {/* Bottom floating badge */}
-                    <div className="absolute bottom-3 left-3 right-3 p-3 rounded-xl bg-white/90 backdrop-blur-md border border-white/80 shadow-lg text-center z-10">
+                    <div className="absolute bottom-3 left-3 right-3 p-3 rounded-xl bg-white/90 backdrop-blur-md border border-neutral-200 shadow-lg text-center z-10">
                       <span className="text-[10px] uppercase tracking-[0.25em] text-[#B8976A] font-bold block mb-0.5">
                         Atelier Bespoke Perfumery
                       </span>
@@ -216,7 +215,7 @@ export default function CorporateGiftingPage() {
 
 
       {/* ── 2. OUR STORY SECTION (Creative Dual Card Layout from PDF Image 1) ── */}
-      <section className="py-20 md:py-28 bg-[#F5EEFE] border-t border-[#E8DAFA] relative">
+      <section className="py-20 md:py-28 bg-white border-t border-[#E8DAFA] relative">
         <div className="max-w-7xl mx-auto px-5 sm:px-8 lg:px-16">
 
           <Reveal>
@@ -310,7 +309,7 @@ export default function CorporateGiftingPage() {
         </div>
       </section>
       {/* ── 3. OUR USP & OFFERINGS (From PDF Image 2) ── */}
-      <section className="py-20 md:py-28 bg-[#FAF5FF] relative border-t border-[#ECE0FA]">
+      <section className="py-20 md:py-28 bg-white relative border-t border-[#ECE0FA]">
         <div className="max-w-7xl mx-auto px-5 sm:px-8 lg:px-16 space-y-16">
 
           <Reveal>
@@ -422,7 +421,7 @@ export default function CorporateGiftingPage() {
 
 
       {/* ── 4. THE MWP SUPPLEMENTS PROCESS (Interactive Timeline from PDF Image 3) ── */}
-      <section className="py-20 md:py-28 bg-[#F4ECFC] border-t border-[#E4D5F8]">
+      <section className="py-20 md:py-28 bg-white border-t border-[#E4D5F8]">
         <div className="max-w-7xl mx-auto px-5 sm:px-8 lg:px-16 space-y-16">
 
           <Reveal>
@@ -530,7 +529,7 @@ export default function CorporateGiftingPage() {
 
 
       {/* ── 5. PACKAGING FORMAT SELECTION (From PDF Image 4) ── */}
-      <section className="py-20 md:py-28 bg-[#FAF5FF] border-t border-[#E8DAFA]">
+      <section className="py-20 md:py-28 bg-white border-t border-[#E8DAFA]">
         <div className="max-w-7xl mx-auto px-5 sm:px-8 lg:px-16 space-y-16">
 
           <Reveal>
@@ -579,8 +578,8 @@ export default function CorporateGiftingPage() {
 
             {/* 50 ML */}
             <Reveal delay={0.2}>
-              <div className="bg-gradient-to-b from-white to-[#F8F2FF] p-8 rounded-3xl border-2 border-[#B8976A] shadow-lg relative space-y-6 h-full flex flex-col justify-between">
-                <span className="absolute -top-3.5 left-1/2 -translate-x-1/2 bg-[#B8976A] text-white text-[10px] uppercase tracking-widest px-4 py-1 rounded-full font-bold shadow">
+              <div className="bg-gradient-to-b from-neutral-900 to-[#F8F2FF] p-8 rounded-3xl border-2 border-[#B8976A] shadow-lg relative space-y-6 h-full flex flex-col justify-between">
+                <span className="absolute -top-3.5 left-1/2 -translate-x-1/2 bg-[#B8976A] text-neutral-900 text-[10px] uppercase tracking-widest px-4 py-1 rounded-full font-bold shadow">
                   Most Preferred Choice
                 </span>
                 <div className="space-y-4 pt-2">
@@ -658,7 +657,7 @@ export default function CorporateGiftingPage() {
 
 
       {/* ── 6. CORPORATE PRICING TABLES (From PDF Pages 5 & 6) ── */}
-      <section id="pricing-section" className="py-20 md:py-28 bg-[#F3EAFB] border-t border-[#E2D2FA]">
+      <section id="pricing-section" className="py-20 md:py-28 bg-white border-t border-[#E2D2FA]">
         <div className="max-w-7xl mx-auto px-5 sm:px-8 lg:px-16 space-y-12">
 
           <Reveal>
@@ -746,7 +745,7 @@ export default function CorporateGiftingPage() {
 
 
       {/* ── 7. INQUIRY FORM SECTION ── */}
-      <section ref={formRef} className="py-20 md:py-28 bg-[#F6EEFD] border-t border-[#E5D5FA]">
+      <section ref={formRef} className="py-20 md:py-28 bg-white border-t border-[#E5D5FA]">
         <div className="max-w-4xl mx-auto px-5 sm:px-8">
           <div className="bg-white rounded-3xl p-8 sm:p-14 border border-[#E0D0FA] shadow-2xl">
             <div className="text-center mb-10 space-y-3">
@@ -878,7 +877,7 @@ export default function CorporateGiftingPage() {
 
 
       {/* ── 8. UNTIL WE MEET AGAIN (Footer Banner from PDF Image 6) ── */}
-      <section className="py-20 bg-[#240E42] text-white relative overflow-hidden">
+      <section className="py-20 bg-white text-neutral-900 relative overflow-hidden">
         <div className="max-w-5xl mx-auto px-5 text-center space-y-6 relative z-10">
           <Image src="/logo.png" alt="MWP SUPPLEMENTS" width={140} height={45} className="h-10 w-auto brightness-0 invert mx-auto opacity-90" />
           
@@ -886,28 +885,28 @@ export default function CorporateGiftingPage() {
             UNTIL WE MEET AGAIN.
           </h2>
 
-          <p className="text-sm sm:text-base text-white/70 max-w-md mx-auto font-light leading-relaxed">
+          <p className="text-sm sm:text-base text-neutral-900 max-w-md mx-auto font-light leading-relaxed">
             Every fragrance begins with a memory. Thank you for being a part of ours.
           </p>
 
           <div className="w-16 h-px bg-[#B8976A] mx-auto my-6" />
 
           <div className="flex flex-col sm:flex-row items-center justify-center gap-8 text-xs text-[#EAD5AB] tracking-widest font-semibold pt-4">
-            <a href="tel:7678336268" className="flex items-center gap-2 hover:text-white transition-colors">
+            <a href="tel:7678336268" className="flex items-center gap-2 hover:text-neutral-900 transition-colors">
               <IconPhone className="w-4 h-4 text-[#B8976A]" />
               7678336268
             </a>
-            <a href="https://www.mwpsupplements.com" target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 hover:text-white transition-colors">
+            <a href="https://www.mwpsupplements.com" target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 hover:text-neutral-900 transition-colors">
               <IconWorld className="w-4 h-4 text-[#B8976A]" />
               www.mwpsupplements.com
             </a>
-            <a href="mailto:support@mwpsupplements.com" className="flex items-center gap-2 hover:text-white transition-colors">
+            <a href="mailto:support@mwpsupplements.com" className="flex items-center gap-2 hover:text-neutral-900 transition-colors">
               <IconMail className="w-4 h-4 text-[#B8976A]" />
               support@mwpsupplements.com
             </a>
           </div>
 
-          <p className="text-[11px] text-white/40 tracking-[0.2em] uppercase pt-8">
+          <p className="text-[11px] text-neutral-900 tracking-[0.2em] uppercase pt-8">
             Crafted in India. Shared with the World. ❤️
           </p>
         </div>

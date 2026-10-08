@@ -453,7 +453,7 @@ export default function CheckoutPage() {
                             </div>
 
                             {showAddressForm && (
-                                <div className="mb-5 p-5 border border-[#e6ded2] rounded-2xl bg-[#f6f2eb]">
+                                <div className="mb-5 p-5 border border-[#e6ded2] rounded-2xl bg-white">
                                     <AddressForm
                                         onSuccess={handleAddressFormSuccess}
                                         onCancel={() => setShowAddressForm(false)}
@@ -562,7 +562,7 @@ export default function CheckoutPage() {
 
                     {/* Right Column - Summary */}
                     <div className="lg:col-span-4">
-                        <div className="bg-[#f6f2eb] border border-[#e6ded2] rounded-2xl p-5 sm:p-6 sticky top-24">
+                        <div className="bg-white border border-[#e6ded2] rounded-2xl p-5 sm:p-6 sticky top-24">
                             <h2 className="text-sm uppercase tracking-[0.15em] text-black font-medium mb-5 pb-4 border-b border-black/5">
                                 Order Summary
                             </h2>

@@ -34,7 +34,7 @@ const LockedLanding = () => (
   <div className="min-h-screen bg-white">
 
     {/* Hero */}
-    <section className="relative py-20 md:py-28 overflow-hidden bg-noir luxe-grain luxe-aurora">
+    <section className="relative py-20 md:py-28 overflow-hidden bg-white ">
       <span
         className="pointer-events-none select-none absolute -bottom-10 left-1/2 -translate-x-1/2 font-display italic whitespace-nowrap text-[9rem] leading-none text-hollow opacity-40 hidden lg:block"
         aria-hidden="true"
@@ -42,12 +42,12 @@ const LockedLanding = () => (
         Exclusive
       </span>
       <div className="relative z-10 max-w-7xl mx-auto px-5 text-center">
-        <div className="flex items-center justify-center gap-2 text-[10px] uppercase tracking-[0.3em] text-white/40 mb-7">
+        <div className="flex items-center justify-center gap-2 text-[10px] uppercase tracking-[0.3em] text-neutral-900 mb-7">
           <Link href="/" className="hover:text-gold-light transition-colors">Home</Link>
           <span className="text-gold">·</span>
-          <span className="text-white/80">Secret Collection</span>
+          <span className="text-neutral-900">Secret Collection</span>
         </div>
-        <div className="inline-flex items-center gap-2 mb-5 px-4 py-2 border border-white/10 bg-white/5 backdrop-blur-sm">
+        <div className="inline-flex items-center gap-2 mb-5 px-4 py-2 border border-neutral-200 bg-white/5 backdrop-blur-sm">
           <IconLock className="h-3.5 w-3.5 text-gold" stroke={1.5} />
           <span className="text-[10px] uppercase tracking-[0.3em] text-gold font-medium">
             Members Only
@@ -57,7 +57,7 @@ const LockedLanding = () => (
           The <em className="luxe-italic text-gradient-light">Secret</em> Collection
         </h1>
         <span className="mx-auto block h-px w-24 bg-gradient-to-r from-transparent via-gold to-transparent mb-6" />
-        <p className="text-white/50 max-w-lg mx-auto text-sm md:text-base font-light leading-relaxed">
+        <p className="text-neutral-900 max-w-lg mx-auto text-sm md:text-base font-light leading-relaxed">
           Exclusive access reserved for members of MWP SUPPLEMENTS.
           <br className="hidden sm:block" />
           Discover rare fragrances crafted for those who appreciate timeless luxury.
@@ -78,9 +78,8 @@ const LockedLanding = () => (
               fill
               className="w-full h-full object-cover"
             />
-            <div className="absolute inset-0 bg-gradient-to-t from-noir/40 via-transparent to-transparent" />
             <div className="absolute bottom-6 left-6 right-6">
-              <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-noir/70 backdrop-blur-md text-white text-[9px] uppercase tracking-[0.25em]">
+              <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-noir/70 backdrop-blur-md text-neutral-900 text-[9px] uppercase tracking-[0.25em]">
                 <IconSparkles className="h-3 w-3 text-gold" stroke={1.5} />
                 Invitation Only
               </div>
@@ -213,9 +212,9 @@ export default function SecretCollectionPage() {
   if (!hasSecretAccess) {
     return (
       <div className="min-h-screen bg-white">
-        <section className="relative py-20 md:py-28 overflow-hidden bg-noir luxe-grain luxe-aurora">
+        <section className="relative py-20 md:py-28 overflow-hidden bg-white ">
           <div className="relative z-10 max-w-7xl mx-auto px-5 text-center">
-            <div className="inline-flex items-center gap-2 mb-5 px-4 py-2 border border-white/10 bg-white/5 backdrop-blur-sm">
+            <div className="inline-flex items-center gap-2 mb-5 px-4 py-2 border border-neutral-200 bg-white/5 backdrop-blur-sm">
               <IconLock className="h-3.5 w-3.5 text-gold" stroke={1.5} />
               <span className="text-[10px] uppercase tracking-[0.3em] text-gold font-medium">Invitation Required</span>
             </div>
@@ -223,7 +222,7 @@ export default function SecretCollectionPage() {
               The <em className="luxe-italic text-gradient-light">Secret</em> Collection
             </h1>
             <span className="mx-auto block h-px w-24 bg-gradient-to-r from-transparent via-gold to-transparent mb-6" />
-            <p className="text-white/50 max-w-lg mx-auto text-sm md:text-base font-light leading-relaxed">
+            <p className="text-neutral-900 max-w-lg mx-auto text-sm md:text-base font-light leading-relaxed">
               This collection is available only to invited clients. Please check your email for an access link, or contact support.
             </p>
           </div>
@@ -236,10 +235,10 @@ export default function SecretCollectionPage() {
               You need a personal invitation to access the Secret Collection. Check your email for an activation link.
             </p>
             <div className="space-y-3">
-              <Link href="/auth" className="block w-full py-3 bg-noir text-white font-display text-sm tracking-wide hover:bg-noir/90 transition-colors">
+              <Link href="/auth" className="block w-full py-3 bg-noir text-neutral-900 font-display text-sm tracking-wide hover:bg-noir/90 transition-colors">
                 Sign In
               </Link>
-              <Link href="/auth?tab=register" className="block w-full py-3 border border-noir text-noir font-display text-sm tracking-wide hover:bg-noir hover:text-white transition-colors">
+              <Link href="/auth?tab=register" className="block w-full py-3 border border-noir text-noir font-display text-sm tracking-wide hover:bg-noir hover:text-neutral-900 transition-colors">
                 Create Account
               </Link>
             </div>
@@ -253,7 +252,7 @@ export default function SecretCollectionPage() {
     <div className="min-h-screen bg-white">
 
       {/* ── Hero ──────────────────────────────────────── */}
-      <section className="relative py-20 md:py-28 overflow-hidden bg-noir luxe-grain luxe-aurora">
+      <section className="relative py-20 md:py-28 overflow-hidden bg-white ">
         <span
           className="pointer-events-none select-none absolute -bottom-10 left-1/2 -translate-x-1/2 font-display italic whitespace-nowrap text-[9rem] leading-none text-hollow opacity-40 hidden lg:block"
           aria-hidden="true"
@@ -261,13 +260,13 @@ export default function SecretCollectionPage() {
           Exclusive
         </span>
         <div className="relative z-10 max-w-7xl mx-auto px-5 text-center">
-          <div className="flex items-center justify-center gap-2 text-[10px] uppercase tracking-[0.3em] text-white/40 mb-7">
+          <div className="flex items-center justify-center gap-2 text-[10px] uppercase tracking-[0.3em] text-neutral-900 mb-7">
             <Link href="/" className="hover:text-gold-light transition-colors">Home</Link>
             <span className="text-gold">·</span>
-            <span className="text-white/80">Secret Collection</span>
+            <span className="text-neutral-900">Secret Collection</span>
           </div>
           <Reveal>
-            <div className="inline-flex items-center gap-2 mb-5 px-4 py-2 border border-white/10 bg-white/5 backdrop-blur-sm">
+            <div className="inline-flex items-center gap-2 mb-5 px-4 py-2 border border-neutral-200 bg-white/5 backdrop-blur-sm">
               <IconLock className="h-3.5 w-3.5 text-gold" stroke={1.5} />
               <span className="text-[10px] uppercase tracking-[0.3em] text-gold font-medium">
                 Private Access
@@ -277,7 +276,7 @@ export default function SecretCollectionPage() {
               The <em className="luxe-italic text-gradient-light">Secret</em> Collection
             </h1>
             <span className="mx-auto block h-px w-24 bg-gradient-to-r from-transparent via-gold to-transparent mb-6" />
-            <p className="text-white/50 max-w-lg mx-auto text-sm md:text-base font-light leading-relaxed">
+            <p className="text-neutral-900 max-w-lg mx-auto text-sm md:text-base font-light leading-relaxed">
               An exclusive curation of rare and limited-edition fragrances,
               reserved for those who seek the extraordinary.
             </p>

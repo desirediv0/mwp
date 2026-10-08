@@ -319,7 +319,7 @@ export default function CustomPerfumePage() {
     (selectedTop.length > 0 ? 100 : 75);
 
   return (
-    <main className="bg-[#FAF7FD] min-h-screen text-noir pt-24 pb-24 font-sans selection:bg-gold/20">
+    <main className="bg-white min-h-screen text-noir pt-24 pb-24 font-sans selection:bg-gold/20">
 
       {/* Global loading bar while real atelier options load */}
       {optionsLoading && (

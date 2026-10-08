@@ -58,15 +58,13 @@ export default function FindYourFormulaPage() {
   };
 
   return (
-    <main className="min-h-screen bg-[#09090b] text-white">
-      <section className="relative overflow-hidden border-b border-white/10">
-        <div className="absolute inset-0 bg-gradient-to-br from-[#121216] via-[#0A0A0A] to-[#0A0508]" />
-        <div className="absolute -top-24 left-1/2 -translate-x-1/2 w-[640px] h-[280px] bg-red-600/15 blur-[140px] rounded-full" />
+    <main className="min-h-screen bg-white text-neutral-900">
+      <section className="relative overflow-hidden border-b border-neutral-200">
         <div className="relative max-w-3xl mx-auto px-5 md:px-8 py-16 md:py-24 text-center">
-          <nav className="flex items-center justify-center gap-2 text-[11px] uppercase tracking-[0.18em] text-white/40 mb-6">
-            <Link href="/" className="hover:text-white">Home</Link>
+          <nav className="flex items-center justify-center gap-2 text-[11px] uppercase tracking-[0.18em] text-neutral-900 mb-6">
+            <Link href="/" className="hover:text-neutral-900">Home</Link>
             <span>/</span>
-            <span className="text-white/80">Find Your Formula</span>
+            <span className="text-neutral-900">Find Your Formula</span>
           </nav>
           <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-red-600/15 border border-red-500/30 text-red-400 text-[10px] font-bold uppercase tracking-[0.2em] mb-5">
             <IconTarget className="h-3.5 w-3.5" /> Find Your MWP Formula
@@ -74,7 +72,7 @@ export default function FindYourFormulaPage() {
           <h1 className="text-3xl md:text-5xl font-extrabold tracking-tight mb-4">
             One Question. <span className="text-red-500">Right Formula.</span>
           </h1>
-          <p className="text-white/60 max-w-xl mx-auto text-sm md:text-base leading-relaxed">
+          <p className="text-neutral-900 max-w-xl mx-auto text-sm md:text-base leading-relaxed">
             A short quiz that recommends the correct MWP product based on your goal — built for
             fast, confident buying decisions.
           </p>
@@ -90,7 +88,7 @@ export default function FindYourFormulaPage() {
             <h2 className="text-2xl md:text-4xl font-extrabold tracking-tight">
               {t("findYourFormula")}
             </h2>
-            <p className="text-white/55 max-w-md mx-auto text-sm">
+            <p className="text-neutral-900 max-w-md mx-auto text-sm">
               Tell us your primary goal. We&apos;ll match you with the MWP formula designed for it.
             </p>
             <button
@@ -119,7 +117,7 @@ export default function FindYourFormulaPage() {
                     key={g.id}
                     type="button"
                     onClick={() => answer(g.id)}
-                    className="group text-left p-6 rounded-xl bg-white/[0.03] border border-white/12 hover:border-red-500/50 hover:bg-white/[0.06] transition-all hover:-translate-y-1"
+                    className="group text-left p-6 rounded-xl bg-white/[0.03] border border-neutral-200 hover:border-red-500/50 hover:bg-white/[0.06] transition-all hover:-translate-y-1"
                   >
                     <div className="w-11 h-11 rounded-lg bg-red-600/10 border border-red-500/25 flex items-center justify-center text-red-500 mb-4 group-hover:scale-105 transition-transform">
                       <Icon className="h-5.5 w-5.5" stroke={2} />
@@ -128,7 +126,7 @@ export default function FindYourFormulaPage() {
                       <span className="font-extrabold uppercase tracking-wide text-sm">
                         {t(g.labelKey)}
                       </span>
-                      <IconArrowRight className="h-4 w-4 text-white/30 group-hover:text-red-400 transition-colors" />
+                      <IconArrowRight className="h-4 w-4 text-neutral-900 group-hover:text-red-400 transition-colors" />
                     </div>
                   </button>
                 );
@@ -138,7 +136,7 @@ export default function FindYourFormulaPage() {
               <button
                 type="button"
                 onClick={() => setPhase("hero")}
-                className="text-[11px] uppercase tracking-widest text-white/40 hover:text-white font-bold inline-flex items-center gap-1.5"
+                className="text-[11px] uppercase tracking-widest text-neutral-900 hover:text-neutral-900 font-bold inline-flex items-center gap-1.5"
               >
                 <IconRefresh className="h-3.5 w-3.5" /> Back
               </button>
@@ -151,7 +149,7 @@ export default function FindYourFormulaPage() {
             <p className="text-[11px] uppercase tracking-[0.28em] text-red-500 font-bold text-center mb-3">
               {t("recommendedForYou")}
             </p>
-            <div className="rounded-2xl border border-white/12 bg-white/[0.03] overflow-hidden">
+            <div className="rounded-2xl border border-neutral-200 bg-white/[0.03] overflow-hidden">
               <div className="p-7 md:p-10 text-center">
                 <p
                   className="text-[11px] font-black uppercase tracking-[0.25em] mb-3"
@@ -162,20 +160,20 @@ export default function FindYourFormulaPage() {
                 <h2 className="text-3xl md:text-4xl font-extrabold mb-3">
                   {recommended.core.name}
                 </h2>
-                <p className="text-white/60 max-w-xl mx-auto text-sm leading-relaxed mb-6">
+                <p className="text-neutral-900 max-w-xl mx-auto text-sm leading-relaxed mb-6">
                   {recommended.core.focus}
                 </p>
                 <div className="flex flex-wrap justify-center gap-2 mb-8">
                   {recommended.core.benefits.map((b) => (
                     <span
                       key={b}
-                      className="text-[11px] font-semibold px-3 py-1.5 rounded-full border border-white/15 bg-white/[0.04] text-white/75"
+                      className="text-[11px] font-semibold px-3 py-1.5 rounded-full border border-neutral-200 bg-white/[0.04] text-neutral-900"
                     >
                       {b}
                     </span>
                   ))}
                 </div>
-                <p className="text-[12px] text-white/45 mb-8">
+                <p className="text-[12px] text-neutral-900 mb-8">
                   Signature ingredients: {recommended.core.signature}
                 </p>
                 <div className="flex flex-wrap justify-center gap-3">
@@ -191,14 +189,14 @@ export default function FindYourFormulaPage() {
                   </Link>
                   <Link
                     href="/products"
-                    className="inline-flex items-center gap-2 h-12 px-7 border border-white/30 text-[12px] font-black uppercase tracking-[0.16em] hover:bg-white hover:text-black transition-colors"
+                    className="inline-flex items-center gap-2 h-12 px-7 border border-neutral-200 text-[12px] font-black uppercase tracking-[0.16em] hover:bg-white hover:text-black transition-colors"
                   >
                     {t("viewAll")}
                   </Link>
                   <button
                     type="button"
                     onClick={start}
-                    className="inline-flex items-center gap-2 h-12 px-7 text-[12px] font-black uppercase tracking-[0.16em] text-white/60 hover:text-white transition-colors"
+                    className="inline-flex items-center gap-2 h-12 px-7 text-[12px] font-black uppercase tracking-[0.16em] text-neutral-900 hover:text-neutral-900 transition-colors"
                   >
                     <IconRefresh className="h-4 w-4" /> {t("retake")}
                   </button>
@@ -207,7 +205,7 @@ export default function FindYourFormulaPage() {
             </div>
 
             <div className="mt-8">
-              <p className="text-[11px] uppercase tracking-[0.22em] text-white/40 font-bold mb-4 text-center">
+              <p className="text-[11px] uppercase tracking-[0.22em] text-neutral-900 font-bold mb-4 text-center">
                 Also consider
               </p>
               <div className="grid sm:grid-cols-3 gap-3">
@@ -224,7 +222,7 @@ export default function FindYourFormulaPage() {
                       <Link
                         key={key}
                         href={api?.slug ? `/products/${api.slug}` : "/products"}
-                        className="p-4 rounded-lg bg-white/[0.03] border border-white/10 hover:border-red-500/40 transition-colors text-center"
+                        className="p-4 rounded-lg bg-white/[0.03] border border-neutral-200 hover:border-red-500/40 transition-colors text-center"
                       >
                         <p className="text-[10px] uppercase tracking-widest font-bold mb-1" style={{ color: core.accent }}>
                           {core.headline}

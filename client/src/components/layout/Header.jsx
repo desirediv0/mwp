@@ -9,7 +9,7 @@ import { useRouter, usePathname } from "next/navigation";
 import { fetchApi, cn, sortCategories } from "@/lib/utils";
 import { ClientOnly } from "@/components/client-only";
 import { motion, AnimatePresence } from "framer-motion";
-import { Dialog, DialogContent } from "@/components/ui/dialog";
+import * as DialogPrimitive from "@radix-ui/react-dialog";
 import { toast } from "sonner";
 import {
   IconSearch,
@@ -22,6 +22,7 @@ import {
   IconBrandInstagram,
   IconBrandFacebook,
   IconArrowUpRight,
+  IconArrowRight,
   IconChevronDown,
   IconChevronRight,
   IconShieldCheck,
@@ -76,6 +77,26 @@ function AvatarCircle({ name, size = "sm" }) {
   );
 }
 
+function FormulaMenuCard({ item, active, onClick }) {
+  return (
+    <Link
+      href={item.href}
+      onClick={onClick}
+      aria-current={active ? "page" : undefined}
+      className={cn("group flex min-h-[96px] items-center gap-3 rounded-2xl border bg-white p-3 transition-colors sm:gap-4", active ? "border-[#886b40]" : "border-neutral-200 hover:border-[#886b40]")}
+    >
+      <span className="relative h-[72px] w-10 shrink-0 sm:w-12">
+        <Image src={item.image || `/products/cutouts/${item.slug}.webp`} alt="" fill sizes="48px" className="object-contain" />
+      </span>
+      <span className="min-w-0 flex-1">
+        <span className="block text-[12px] leading-5 text-neutral-900 sm:text-sm">{item.label.replace(/^MWP /, "")}</span>
+        <span className="mt-1 block text-[10px] leading-4 text-neutral-500 sm:text-[11px]">{item.tag}</span>
+      </span>
+      <IconArrowUpRight className="hidden h-4 w-4 shrink-0 text-neutral-400 transition-colors group-hover:text-[#886b40] sm:block" stroke={1.5} />
+    </Link>
+  );
+}
+
 export function Navbar() {
   const { user, isAuthenticated, logout } = useAuth();
   const { count: compareCount } = useCompare();
@@ -89,10 +110,10 @@ export function Navbar() {
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [isProductsOpen, setIsProductsOpen] = useState(false);
   const [menuProducts, setMenuProducts] = useState([]);
-  const [scrolled, setScrolled] = useState(false);
 
   const catCloseTimer = useRef(null);
-  const headerRef = useRef(null);
+  const menuTriggerRef = useRef(null);
+  const productMenuRef = useRef(null);
 
   useEffect(() => {
     if (!isProductsOpen) return;
@@ -105,47 +126,8 @@ export function Navbar() {
 
   const productMenu = PRODUCT_MENU.map(item => {
     const product = menuProducts.find(product => product.slug === item.slug);
-    return { ...item, image: product ? getImg(product) : null };
+    return { ...item, image: product ? getImg(product) : `/products/cutouts/${item.slug}.webp` };
   });
-
-  useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 15);
-    onScroll();
-    window.addEventListener("scroll", onScroll, { passive: true });
-    return () => window.removeEventListener("scroll", onScroll);
-  }, []);
-
-  // One-time GSAP entrance on first mount (App Router persists this layout
-  // across client-side navigations, so this never replays mid-session).
-  useEffect(() => {
-    let mounted = true;
-    (async () => {
-      const gsapModule = await import("gsap");
-      if (!mounted) return;
-      const gsap = gsapModule.default;
-      const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-      if (reduceMotion || !headerRef.current) return;
-
-      gsap.fromTo(
-        headerRef.current.querySelector("[data-header-logo]"),
-        { opacity: 0, x: -12 },
-        { opacity: 1, x: 0, duration: 0.6, ease: "power3.out", delay: 0.1 }
-      );
-      gsap.fromTo(
-        headerRef.current.querySelectorAll("[data-header-navitem]"),
-        { opacity: 0, y: -8 },
-        { opacity: 1, y: 0, duration: 0.5, stagger: 0.05, ease: "power3.out", delay: 0.2 }
-      );
-      gsap.fromTo(
-        headerRef.current.querySelectorAll("[data-header-action]"),
-        { opacity: 0, scale: 0.9 },
-        { opacity: 1, scale: 1, duration: 0.45, stagger: 0.04, ease: "back.out(2)", delay: 0.35 }
-      );
-    })();
-    return () => {
-      mounted = false;
-    };
-  }, []);
 
   const openProducts = () => {
     if (catCloseTimer.current) clearTimeout(catCloseTimer.current);
@@ -154,6 +136,25 @@ export function Navbar() {
   const closeProductsSoon = () => {
     catCloseTimer.current = setTimeout(() => setIsProductsOpen(false), 150);
   };
+
+  useEffect(() => {
+    if (!isProductsOpen) return;
+    const onPointerDown = event => {
+      if (!productMenuRef.current?.contains(event.target)) setIsProductsOpen(false);
+    };
+    document.addEventListener("pointerdown", onPointerDown);
+    return () => document.removeEventListener("pointerdown", onPointerDown);
+  }, [isProductsOpen]);
+
+  useEffect(() => {
+    const desktop = window.matchMedia("(min-width: 1280px)");
+    const onResize = () => { if (desktop.matches) setIsMenuOpen(false); };
+    desktop.addEventListener("change", onResize);
+    return () => {
+      desktop.removeEventListener("change", onResize);
+      if (catCloseTimer.current) clearTimeout(catCloseTimer.current);
+    };
+  }, []);
 
   useEffect(() => {
     setIsMenuOpen(false);
@@ -177,74 +178,58 @@ export function Navbar() {
 
   return (
     <>
-      <header
-        ref={headerRef}
-        className={cn(
-          "sticky top-0 left-0 right-0 z-50 w-full text-neutral-900 transition-all duration-300",
-          scrolled
-            ? "bg-white/95 backdrop-blur-md shadow-[0_8px_30px_rgba(30,50,40,0.08)] border-b border-neutral-200/80"
-            : "bg-white border-b border-neutral-200"
-        )}
-      >
-        {/* Announcement bar — collapses smoothly on scroll, flat and quiet */}
-        <div
-          className={cn(
-            "overflow-hidden bg-[#f6f2eb] border-b border-neutral-200 transition-all duration-300",
-            scrolled ? "max-h-0 opacity-0" : "max-h-7 opacity-100"
-          )}
-        >
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-center h-7 text-[11px] text-neutral-600">
-            <span className="truncate tracking-wide text-center px-2">
-              {ANNOUNCEMENTS[0]}
+      <header className="sticky top-0 left-0 right-0 z-50 w-full bg-white text-neutral-900 border-b border-neutral-200/80 shadow-[0_2px_16px_rgba(0,0,0,0.025)]">
+        {/* Keep header geometry constant so scrolling cannot toggle its height. */}
+        <div className="h-8 overflow-hidden bg-white border-b border-neutral-100">
+          <div className="max-w-[1440px] mx-auto px-5 sm:px-8 flex items-center justify-center lg:justify-between h-8 gap-6 text-[9px] sm:text-[10px] text-neutral-500">
+            <span className="flex min-w-0 items-center gap-2 tracking-[0.08em]">
+              <span className="h-1 w-1 shrink-0 rounded-full bg-[#886b40]" />
+              <span className="sm:hidden">Eight formulas. One everyday routine.</span>
+              <span className="hidden sm:block truncate">{ANNOUNCEMENTS[0]}</span>
             </span>
+            <span className="hidden lg:inline-flex shrink-0 items-center gap-2 text-green-700"><IconShieldCheck className="h-3.5 w-3.5" stroke={1.5} /> Lab Tested · QR Verified</span>
           </div>
         </div>
 
         {/* Main Header Bar — Logo on left, Menu in center, Actions on right (NEVER hides on scroll) */}
-        <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8">
-          <div
-            className={cn(
-              "flex items-center justify-between gap-2 sm:gap-4 transition-all duration-300",
-              scrolled ? "h-16 sm:h-[72px]" : "h-[76px] sm:h-[88px]"
-            )}
-          >
+        <div className="max-w-[1440px] mx-auto px-5 sm:px-8">
+          <div className="flex h-[72px] sm:h-[80px] items-center justify-between gap-3 sm:gap-5">
             {/* 1. Left — Brand Logo (chrome logo needs a dark backing to stay legible on white) */}
             <Link
               href="/"
-              data-header-logo
-              className="flex items-center shrink-0 focus-visible:outline-none focus:outline-none rounded-xl bg-neutral-950 transition-all duration-300 px-4"
+              aria-label="MWP home"
+              className="flex items-center shrink-0 rounded-xl bg-neutral-950 px-3 py-2 focus-visible:outline-offset-4"
             >
               <Image
                 src="/logo.png"
                 alt="MWP SUPPLEMENTS"
                 width={200}
                 height={72}
-                className={cn(
-                  "w-auto object-contain transition-all duration-300 focus-visible:outline-none focus:outline-none",
-                  scrolled ? "h-11 sm:h-12" : "h-12 sm:h-14 md:h-16"
-                )}
+                className="h-9 sm:h-11 w-auto object-contain"
                 priority
               />
             </Link>
 
             {/* 2. Center — Navigation Menu (Desktop & Laptop) */}
-            <nav className="hidden xl:flex flex-1 min-w-0 items-center justify-center gap-1 xl:gap-2">
+            <nav aria-label="Main navigation" className="hidden xl:flex flex-1 min-w-0 items-center justify-center gap-0.5 2xl:gap-1">
               {/* ALL PRODUCTS dropdown */}
               <div
-                data-header-navitem
+                ref={productMenuRef}
                 className="relative"
                 onMouseEnter={openProducts}
                 onMouseLeave={closeProductsSoon}
+                onKeyDown={event => { if (event.key === "Escape") setIsProductsOpen(false); }}
               >
                 <button
-                  onClick={() => setIsProductsOpen((v) => !v)}
+                  onClick={event => setIsProductsOpen(value => event.detail === 0 ? !value : true)}
                   className={cn(
-                    "flex items-center gap-1 px-3 py-2 text-[13px] font-medium tracking-tight transition-all rounded-full whitespace-nowrap",
+                    "flex h-10 items-center gap-2 px-4 text-[12px] transition-colors rounded-full whitespace-nowrap border",
                     isProductsOpen || pathname === "/products"
-                      ? "bg-[#f6f2eb] text-neutral-900"
-                      : "text-neutral-600 hover:text-neutral-950 hover:bg-neutral-100"
+                      ? "bg-neutral-900 border-neutral-900 text-white"
+                      : "border-neutral-300 text-neutral-900 hover:border-neutral-900"
                   )}
                   aria-haspopup="true"
+                  aria-controls="desktop-product-links"
                   aria-expanded={isProductsOpen}
                 >
                   {t("allProducts")}
@@ -260,66 +245,32 @@ export function Navbar() {
                 <AnimatePresence>
                   {isProductsOpen && (
                     <motion.div
+                      id="desktop-product-links"
                       initial={{ opacity: 0, y: 8, scale: 0.98 }}
                       animate={{ opacity: 1, y: 0, scale: 1 }}
                       exit={{ opacity: 0, y: 8, scale: 0.98 }}
                       transition={{ duration: 0.16, ease: [0.22, 1, 0.36, 1] }}
-                      className="absolute left-1/2 -translate-x-1/2 top-full mt-3 w-[560px] max-w-[92vw] bg-white border border-neutral-200 rounded-2xl shadow-[0_24px_60px_-24px_rgba(20,35,28,0.24)] overflow-hidden z-[70]"
+                      className="absolute left-0 top-full mt-4 flex max-h-[calc(100dvh-144px)] w-[720px] max-w-[90vw] flex-col bg-white border border-neutral-200 rounded-3xl shadow-[0_24px_60px_-24px_rgba(20,35,28,0.24)] overflow-hidden z-[70]"
                     >
-                      <div className="px-6 pt-5 pb-1">
-                        <span className="text-[10px] uppercase tracking-[0.28em] text-[#886b40] font-bold">
+                      <div className="flex shrink-0 items-center justify-between gap-6 px-6 py-5 border-b border-neutral-100">
+                        <div><span className="text-[9px] uppercase tracking-[0.2em] text-[#886b40]">
                           {t("allProducts")}
                         </span>
+                        <p className="mt-1.5 text-xl tracking-tight">Find your everyday formula.</p></div>
+                        <span className="rounded-full border border-neutral-200 px-3 py-1.5 text-[11px] text-neutral-500">08 formulas</span>
                       </div>
-                      <div className="p-3 grid grid-cols-2 gap-1.5 max-h-[420px] overflow-y-auto">
-                        {productMenu.map((item) => {
-                          const active = pathname === item.href;
-                          return (
-                            <Link
-                              key={item.href}
-                              href={item.href}
-                              onClick={() => setIsProductsOpen(false)}
-                              className={cn(
-                                "group flex items-center gap-3 p-2.5 rounded-xl transition-all",
-                                active ? "bg-[#f6f2eb]" : "hover:bg-neutral-50"
-                              )}
-                            >
-                              <span className="relative w-14 h-14 shrink-0 rounded-lg overflow-hidden bg-[#f6f2eb]">
-                                {item.image && (
-                                  <Image
-                                    src={item.image}
-                                    alt={item.label}
-                                    fill
-                                    className="object-contain p-1"
-                                    sizes="56px"
-                                  />
-                                )}
-                              </span>
-                              <span className="min-w-0">
-                                <span
-                                  className={cn(
-                                    "block text-[13px] font-semibold truncate transition-colors",
-                                    active ? "text-neutral-950" : "text-neutral-700 group-hover:text-[#886b40]"
-                                  )}
-                                >
-                                  {item.label}
-                                </span>
-                                <span className="block text-[11px] text-neutral-500 truncate mt-0.5">
-                                  {item.tag}
-                                </span>
-                              </span>
-                            </Link>
-                          );
-                        })}
+                      <div className="min-h-0 overflow-y-auto overscroll-contain p-4 grid grid-cols-2 gap-3">
+                        {productMenu.map(item => <FormulaMenuCard key={item.href} item={item} active={pathname === item.href} onClick={() => setIsProductsOpen(false)} />)}
                       </div>
-                      <div className="px-4 py-3 border-t border-neutral-200">
+                      <div className="flex shrink-0 items-center justify-between px-6 py-4 border-t border-neutral-200">
                         <Link
                           href="/products"
                           onClick={() => setIsProductsOpen(false)}
-                          className="text-[10px] uppercase tracking-[0.15em] text-neutral-600 hover:text-[#886b40] transition-colors inline-flex items-center gap-1"
+                          className="rounded-full bg-neutral-900 px-4 py-2.5 text-xs text-white hover:bg-neutral-700 transition-colors inline-flex items-center gap-3"
                         >
                           {t("viewAll")} <IconArrowUpRight className="h-3 w-3" />
                         </Link>
+                        <Link href="/quiz" onClick={() => setIsProductsOpen(false)} className="inline-flex items-center gap-2 text-xs text-green-700">{t("findYourFormula")} <IconArrowUpRight className="h-3.5 w-3.5" /></Link>
                       </div>
                     </motion.div>
                   )}
@@ -332,17 +283,16 @@ export function Navbar() {
                   <Link
                     key={href}
                     href={href}
-                    data-header-navitem
                     className={cn(
-                      "relative px-3 py-2 text-[13px] font-medium tracking-tight transition-all rounded-full whitespace-nowrap",
+                      "relative px-2.5 py-3 text-[12px] transition-colors whitespace-nowrap",
                       active
-                        ? "text-neutral-900 bg-[#f6f2eb]"
-                        : "text-neutral-600 hover:text-neutral-950 hover:bg-neutral-100"
+                        ? "text-neutral-900 bg-white"
+                        : "text-neutral-500 hover:text-neutral-950"
                     )}
                   >
                     {t(labelKey)}
                     {active && (
-                      <span className="absolute bottom-0.5 left-3 right-3 h-[2px] bg-neutral-900 rounded-full" />
+                      <span className="absolute bottom-1 left-2.5 right-2.5 h-px bg-[#886b40]" />
                     )}
                   </Link>
                 );
@@ -350,12 +300,11 @@ export function Navbar() {
             </nav>
 
             {/* 3. Right — Action Buttons */}
-            <div className="flex items-center gap-0.5 sm:gap-1 shrink-0 pl-2">
+            <div className="flex items-center gap-1 sm:gap-1.5 shrink-0 xl:border-l xl:border-neutral-200 xl:pl-4">
               {/* Search button — opens interactive live search dialog */}
               <button
                 onClick={() => setIsSearchOpen(true)}
-                data-header-action
-                className="flex items-center justify-center w-9 h-9 sm:w-9 sm:h-9 text-neutral-600 hover:text-neutral-950 hover:bg-neutral-100 active:scale-95 transition-all rounded-full"
+                className="flex items-center justify-center w-9 h-10 sm:w-10 text-neutral-600 hover:text-neutral-950 hover:bg-neutral-100 transition-colors rounded-xl"
                 aria-label="Search"
                 title="Search products"
               >
@@ -366,7 +315,6 @@ export function Navbar() {
                 {isAuthenticated ? (
                   <Link
                     href="/account"
-                    data-header-action
                     className="hidden sm:flex items-center justify-center w-9 h-9 hover:bg-neutral-100 transition-colors rounded-full"
                     aria-label="Account"
                   >
@@ -375,7 +323,6 @@ export function Navbar() {
                 ) : (
                   <Link
                     href="/auth"
-                    data-header-action
                     className="hidden sm:flex items-center justify-center w-9 h-9 text-neutral-600 hover:text-neutral-950 hover:bg-neutral-100 transition-colors rounded-full"
                     aria-label="Login"
                   >
@@ -386,7 +333,6 @@ export function Navbar() {
 
               <Link
                 href="/compare"
-                data-header-action
                 className="hidden xl:flex relative items-center justify-center w-9 h-9 text-neutral-600 hover:text-neutral-950 hover:bg-neutral-100 transition-colors rounded-full"
                 aria-label="Compare"
               >
@@ -400,7 +346,6 @@ export function Navbar() {
 
               <Link
                 href="/wishlist"
-                data-header-action
                 className="hidden xl:flex items-center justify-center w-9 h-9 text-neutral-600 hover:text-neutral-950 hover:bg-neutral-100 transition-colors rounded-full"
                 aria-label="Wishlist"
               >
@@ -410,8 +355,7 @@ export function Navbar() {
               <ClientOnly>
                 <Link
                   href="/cart"
-                  data-header-action
-                  className="relative flex items-center justify-center w-9 h-9 bg-[#f6f2eb] border border-[#e6ded2] text-neutral-900 hover:bg-neutral-900 hover:text-white hover:border-neutral-900 active:scale-95 transition-all rounded-full"
+                  className="relative flex items-center justify-center w-10 h-10 sm:w-11 bg-neutral-900 border border-neutral-900 text-white hover:bg-neutral-700 transition-colors rounded-xl"
                   aria-label="Cart"
                 >
                   <IconShoppingBag className="h-4.5 w-4.5 sm:h-5 sm:w-5" stroke={2} />
@@ -425,10 +369,12 @@ export function Navbar() {
 
               {/* Mobile Menu Button with clear tap target */}
               <button
+                ref={menuTriggerRef}
                 onClick={() => setIsMenuOpen(true)}
-                data-header-action
-                className="xl:hidden flex items-center justify-center w-9 h-9 bg-white border border-neutral-200 text-neutral-700 hover:bg-neutral-100 active:scale-95 transition-all rounded-full ml-0.5"
+                className="xl:hidden flex items-center justify-center w-10 h-10 bg-white border border-neutral-200 text-neutral-700 hover:border-neutral-900 transition-colors rounded-xl ml-1"
                 aria-label="Toggle Menu"
+                aria-expanded={isMenuOpen}
+                aria-haspopup="dialog"
               >
                 <IconMenu2 className="h-5 w-5" stroke={2} />
               </button>
@@ -448,6 +394,7 @@ export function Navbar() {
       <MobileMenu
         isOpen={isMenuOpen}
         onClose={() => setIsMenuOpen(false)}
+        triggerRef={menuTriggerRef}
         user={user}
         isAuthenticated={isAuthenticated}
         categories={categories}
@@ -484,17 +431,17 @@ function SearchDialog({ open, onOpenChange, categories }) {
 
   useEffect(() => {
     if (open) {
-      setTimeout(() => searchInputRef.current?.focus(), 100);
-    } else {
-      setSearchQuery("");
-      setResults([]);
+      const timer = setTimeout(() => searchInputRef.current?.focus(), 100);
+      return () => clearTimeout(timer);
     }
+    setSearchQuery("");
+    setResults([]);
   }, [open]);
 
   useEffect(() => {
     if (debRef.current) clearTimeout(debRef.current);
     const term = searchQuery.trim();
-    if (term.length < 2) {
+    if (!open || term.length < 2) {
       setResults([]);
       setLoading(false);
       return;
@@ -503,9 +450,7 @@ function SearchDialog({ open, onOpenChange, categories }) {
     let cancelled = false;
     debRef.current = setTimeout(async () => {
       try {
-        const res = await fetchApi(
-          `/public/products?search=${encodeURIComponent(term)}&limit=6`
-        );
+        const res = await fetchApi(`/public/products?search=${encodeURIComponent(term)}&limit=6`);
         if (!cancelled) setResults(res?.data?.products || []);
       } catch {
         if (!cancelled) setResults([]);
@@ -514,193 +459,90 @@ function SearchDialog({ open, onOpenChange, categories }) {
       }
     }, 200);
     return () => { cancelled = true; if (debRef.current) clearTimeout(debRef.current); };
-  }, [searchQuery]);
+  }, [searchQuery, open]);
 
-  const handleSearch = (e) => {
-    e?.preventDefault();
+  const handleSearch = event => {
+    event?.preventDefault();
     const term = searchQuery.trim();
     if (!term) return;
     onOpenChange(false);
     router.push(`/products?search=${encodeURIComponent(term)}`);
   };
 
-  const handleSelectProduct = (slug) => {
+  const handleSelectProduct = slug => {
     onOpenChange(false);
     router.push(`/products/${slug}`);
   };
 
-  const handleTagClick = (term) => {
+  const handleTagClick = term => {
     setSearchQuery(term);
+    searchInputRef.current?.focus();
   };
 
+  const popularProducts = suggestedProducts.length ? suggestedProducts : PRODUCT_MENU.map(item => ({
+    id: item.slug,
+    slug: item.slug,
+    name: item.label,
+    image: `/products/cutouts/${item.slug}.webp`,
+    category: { name: item.tag },
+  }));
+
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="mwp-search w-[calc(100%-24px)] sm:max-w-[600px] max-h-[85dvh] bg-white text-neutral-900 p-0 overflow-hidden border border-neutral-200 shadow-[0_24px_70px_rgba(20,35,28,0.18)] rounded-2xl">
-        <div className="px-5 pt-4 text-sm font-semibold text-neutral-900">Search MWP</div>
-        {/* Search Input Bar */}
-        <form onSubmit={handleSearch} className="relative border-b border-neutral-200 p-3.5 sm:p-5">
-          <div className="relative flex items-center">
-            <IconSearch className="absolute left-3.5 h-4.5 w-4.5 sm:h-5 sm:w-5 text-neutral-500" stroke={2.2} />
-            <input
-              ref={searchInputRef}
-              type="text"
-              placeholder="Search products, ingredients, protocols…"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full h-12 sm:h-14 pl-10 sm:pl-11 pr-20 sm:pr-24 bg-white border border-neutral-300 rounded-xl text-[16px] text-neutral-900 placeholder:text-neutral-500 focus:outline-none focus:border-neutral-900 transition-all"
-            />
-            <div className="absolute right-2 flex items-center gap-1 sm:gap-1.5">
-              {searchQuery && (
-                <button
-                  type="button"
-                  onClick={() => setSearchQuery("")}
-                  className="p-1 text-neutral-500 hover:text-neutral-950 rounded"
-                  aria-label="Clear search"
-                >
-                  <IconX className="h-4 w-4" />
-                </button>
-              )}
-              <button
-                type="submit"
-                className="px-3 sm:px-4 py-2 bg-neutral-900 hover:bg-neutral-700 text-white text-[12px] font-medium rounded-full transition-colors"
-              >
-                Search
-              </button>
-            </div>
+    <DialogPrimitive.Root open={open} onOpenChange={onOpenChange}>
+      <DialogPrimitive.Portal>
+        <DialogPrimitive.Overlay className="fixed inset-0 z-[90] bg-neutral-950/40 backdrop-blur-sm data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=open]:fade-in-0 data-[state=closed]:fade-out-0 motion-reduce:animate-none" />
+      <DialogPrimitive.Content aria-describedby="mwp-search-description" className="mwp-search fixed left-1/2 top-1/2 z-[100] -translate-x-1/2 -translate-y-1/2 flex w-[calc(100%-24px)] max-w-[760px] max-h-[88dvh] flex-col gap-0 bg-white text-neutral-900 p-0 overflow-hidden border border-neutral-200 shadow-[0_24px_70px_rgba(20,35,28,0.18)] rounded-3xl sm:rounded-3xl">
+        <div className="shrink-0 px-5 pt-6 pb-4 sm:px-7 sm:pt-7">
+          <p className="mb-2 text-[9px] uppercase tracking-[0.2em] text-[#886b40]">Discover your everyday</p>
+          <DialogPrimitive.Title className="pr-8 text-2xl tracking-tight sm:text-3xl">Search MWP</DialogPrimitive.Title>
+          <p id="mwp-search-description" className="mt-2 text-xs leading-5 text-neutral-500 sm:text-sm">Find a formula, explore an ingredient, or shop by your goal.</p>
+        </div>
+        <form onSubmit={handleSearch} className="shrink-0 px-5 pb-5 sm:px-7">
+          <div className="flex min-h-14 items-center gap-2 rounded-2xl border border-neutral-300 bg-white px-3 transition-shadow focus-within:border-neutral-800 focus-within:ring-2 focus-within:ring-neutral-900/10 sm:gap-3 sm:px-4">
+            <IconSearch className="h-5 w-5 shrink-0 text-neutral-400" stroke={1.5} />
+            <input ref={searchInputRef} type="search" aria-label="Search formulas and ingredients" placeholder="Search formulas..." value={searchQuery} onChange={e => setSearchQuery(e.target.value)} className="min-w-0 flex-1 border-0 bg-transparent py-4 text-[16px] text-neutral-900 placeholder:text-neutral-400 focus:!outline-none focus-visible:!outline-none [&::-webkit-search-cancel-button]:hidden" />
+            {searchQuery && <button type="button" onClick={() => setSearchQuery("")} className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-neutral-500 hover:text-neutral-900" aria-label="Clear search"><IconX className="h-4 w-4" /></button>}
+            <button type="submit" aria-label="Search" className="flex h-10 w-10 shrink-0 items-center justify-center gap-2 rounded-xl bg-neutral-900 text-xs text-white transition-colors hover:bg-neutral-700 sm:w-auto sm:px-4"><span className="hidden sm:inline">Search</span><IconArrowUpRight className="h-4 w-4" stroke={1.5} /></button>
           </div>
         </form>
-
-        {/* Content area: Live Results or Suggestions */}
-        <div className="max-h-[60vh] sm:max-h-[420px] overflow-y-auto p-3.5 sm:p-5">
+        <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain border-t border-neutral-100 px-5 py-5 sm:px-7 sm:py-6">
           {searchQuery.trim().length >= 2 ? (
             <div>
-              <div className="flex items-center justify-between mb-3 text-[11px] uppercase tracking-wider text-neutral-500 font-semibold">
-                <span>Search Results</span>
-                {loading && <span className="text-[#886b40] animate-pulse">Searching…</span>}
-              </div>
-
+              <div className="mb-4 flex items-center justify-between text-[10px] uppercase tracking-[0.15em] text-neutral-500"><span>Search results</span>{!loading && <span>{results.length} matches</span>}</div>
               {loading ? (
-                <div className="py-8 text-center text-sm text-neutral-500">Loading products…</div>
+                <div role="status" className="flex min-h-[160px] items-center justify-center gap-3 text-sm text-neutral-500"><span className="h-4 w-4 animate-spin rounded-full border border-neutral-200 border-t-neutral-800" />Searching formulas...</div>
               ) : results.length === 0 ? (
-                <div className="py-8 text-center">
-                  <p className="text-sm text-neutral-800 font-medium">
-                    No products found for &ldquo;{searchQuery}&rdquo;
-                  </p>
-                  <p className="text-xs text-neutral-500 mt-1">
-                    Try another formula name, or browse all products.
-                  </p>
-                  <Link
-                    href="/products"
-                    onClick={() => onOpenChange(false)}
-                    className="inline-block mt-4 px-4 py-2 bg-[#f6f2eb] hover:bg-[#eee5d7] text-neutral-900 text-xs font-bold uppercase tracking-wider rounded-lg transition-colors"
-                  >
-                    View All Products
-                  </Link>
-                </div>
+                <div className="rounded-2xl border border-neutral-200 px-5 py-9 text-center"><IconSearch className="mx-auto mb-4 h-7 w-7 text-neutral-400" stroke={1.5} /><p className="text-base text-neutral-900">No matches for &ldquo;{searchQuery.trim()}&rdquo;</p><p className="mt-2 text-xs leading-5 text-neutral-500">Try a different name or explore the full collection.</p><Link href="/products" onClick={() => onOpenChange(false)} className="mt-5 inline-flex items-center gap-3 rounded-full bg-neutral-900 px-5 py-3 text-xs text-white">Browse all formulas <IconArrowUpRight className="h-4 w-4" /></Link></div>
               ) : (
-                <div className="space-y-1.5">
-                  {results.map((p) => {
+                <div className="space-y-2">
+                  {results.map(p => {
                     const cat = p.category?.name || p.categories?.[0]?.category?.name;
-                    return (
-                      <button
-                        key={p.id || p.slug}
-                        type="button"
-                        onClick={() => handleSelectProduct(p.slug)}
-                        className="w-full flex items-center gap-3 p-2 rounded-lg hover:bg-neutral-50 transition-colors text-left group"
-                      >
-                        <span className="relative w-11 h-11 sm:w-12 sm:h-12 overflow-hidden bg-neutral-100 rounded-lg border border-neutral-200 shrink-0">
-                          <Image
-                            src={getImg(p)}
-                            alt={p.name || "Product"}
-                            fill
-                            className="object-contain p-1"
-                            sizes="48px"
-                          />
-                        </span>
-                        <div className="min-w-0 flex-1">
-                          <div className="text-xs sm:text-sm font-semibold text-neutral-900 group-hover:text-[#886b40] truncate">
-                            {p.name}
-                          </div>
-                          <div className="flex items-center gap-2 mt-0.5">
-                            {cat && (
-                              <span className="text-[9px] sm:text-[10px] uppercase tracking-wider text-neutral-500 font-medium truncate">
-                                {cat}
-                              </span>
-                            )}
-                            {p.price && (
-                              <span className="text-xs font-bold text-[#886b40] shrink-0">
-                                ${Number(p.price).toLocaleString("en-IN")}
-                              </span>
-                            )}
-                          </div>
-                        </div>
-                        <IconArrowUpRight className="h-4 w-4 text-neutral-400 group-hover:text-[#886b40] transition-colors shrink-0" />
-                      </button>
-                    );
+                    return <button key={p.id || p.slug} type="button" onClick={() => handleSelectProduct(p.slug)} className="group flex w-full items-center gap-4 rounded-2xl border border-neutral-200 p-3 text-left transition-colors hover:border-[#886b40]"><span className="relative h-16 w-12 shrink-0"><Image src={getImg(p)} alt="" fill sizes="48px" className="object-contain" /></span><span className="min-w-0 flex-1"><span className="block text-sm leading-5 text-neutral-900">{p.name}</span>{cat && <span className="mt-1 block text-[11px] leading-5 text-neutral-500">{cat}</span>}{p.price && <span className="mt-1 block text-xs text-[#886b40]">$ {Number(p.price).toLocaleString("en-IN")}</span>}</span><IconArrowUpRight className="h-4 w-4 shrink-0 text-neutral-400 group-hover:text-[#886b40]" /></button>;
                   })}
-
-                  <button
-                    type="button"
-                    onClick={handleSearch}
-                    className="w-full mt-3 py-2.5 text-center text-xs font-bold uppercase tracking-wider text-neutral-700 hover:text-[#886b40] hover:bg-[#f6f2eb] rounded-lg border border-neutral-200 transition-colors"
-                  >
-                    View all results for &ldquo;{searchQuery.trim()}&rdquo; &rarr;
-                  </button>
+                  <button type="button" onClick={handleSearch} className="!mt-4 flex w-full items-center justify-between rounded-xl border border-neutral-200 px-4 py-3.5 text-xs text-neutral-700 hover:border-neutral-900">View all results <IconArrowRight className="h-4 w-4" /></button>
                 </div>
               )}
             </div>
           ) : (
-            <div className="space-y-4 sm:space-y-5">
-              {/* Popular Searches */}
-              <div>
-                <p className="text-[10px] sm:text-[11px] uppercase tracking-wider font-bold text-neutral-500 mb-2">
-                  Popular Searches
-                </p>
-                <div className="flex flex-wrap gap-1.5 sm:gap-2">
-                  {suggestedProducts.map((product) => (
-                    <button
-                      key={product.id}
-                      type="button"
-                      onClick={() => handleTagClick(product.name)}
-                      className="px-2.5 sm:px-3 py-1.5 bg-neutral-50 hover:bg-[#f6f2eb] hover:text-[#886b40] border border-neutral-200 text-[11px] sm:text-xs font-medium text-neutral-700 rounded-full transition-colors"
-                    >
-                      {product.name}
-                    </button>
-                  ))}
-                </div>
-              </div>
-
-              {/* Categories */}
-              {categories.length > 0 && (
-                <div>
-                  <p className="text-[10px] sm:text-[11px] uppercase tracking-wider font-bold text-neutral-500 mb-2">
-                    Browse Categories
-                  </p>
-                  <div className="flex flex-wrap gap-1.5 sm:gap-2">
-                    {categories.slice(0, 8).map((c) => (
-                      <Link
-                        key={c.id}
-                        href={`/category/${c.slug}`}
-                        onClick={() => onOpenChange(false)}
-                        className="px-2.5 sm:px-3 py-1.5 bg-white hover:bg-[#f6f2eb] border border-neutral-200 text-[11px] sm:text-xs font-medium text-neutral-700 hover:text-[#886b40] rounded-lg transition-colors"
-                      >
-                        {c.name}
-                      </Link>
-                    ))}
-                  </div>
-                </div>
-              )}
+            <div className="space-y-6">
+              <div><p className="mb-3 text-[10px] uppercase tracking-[0.15em] text-neutral-500">Popular searches</p><div className="flex flex-wrap gap-2">{popularProducts.slice(0,8).map(product => <button key={product.id || product.slug} type="button" onClick={() => handleTagClick(product.name.replace(/[\u2122\u00ae]/g,""))} className="min-h-10 rounded-full border border-neutral-200 px-3.5 text-xs text-neutral-600 transition-colors hover:border-neutral-900 hover:text-neutral-900">{product.name.replace(/[\u2122\u00ae]/g,"").replace(/^MWP /,"")}</button>)}</div></div>
+              {categories.length > 0 && <div><p className="mb-3 text-[10px] uppercase tracking-[0.15em] text-neutral-500">Shop by goal</p><div className="grid grid-cols-1 gap-2 min-[380px]:grid-cols-2">{categories.slice(0,8).map(c => <Link key={c.id || c.slug} href={"/category/" + c.slug} onClick={() => onOpenChange(false)} className="flex min-h-12 items-center justify-between gap-3 rounded-xl border border-neutral-200 px-4 py-3 text-xs leading-5 text-neutral-700 transition-colors hover:border-[#886b40]"><span>{c.name}</span><IconArrowUpRight className="h-3.5 w-3.5 shrink-0 text-[#886b40]" /></Link>)}</div></div>}
+              <div><p className="mb-3 text-[10px] uppercase tracking-[0.15em] text-neutral-500">Explore the collection</p><div className="grid grid-cols-1 gap-2 sm:grid-cols-2">{popularProducts.slice(0,4).map(p => <button key={p.id || p.slug} type="button" onClick={() => handleSelectProduct(p.slug)} className="flex min-h-20 items-center gap-3 rounded-2xl border border-neutral-200 p-3 text-left transition-colors hover:border-[#886b40]"><span className="relative h-14 w-9 shrink-0"><Image src={getImg(p)} alt="" fill sizes="36px" className="object-contain" /></span><span className="min-w-0 flex-1 text-xs leading-5 text-neutral-900">{p.name.replace(/[\u2122\u00ae]/g,"").replace(/^MWP /,"")}</span><IconArrowUpRight className="h-3.5 w-3.5 shrink-0 text-neutral-400" /></button>)}</div></div>
             </div>
           )}
         </div>
-      </DialogContent>
-    </Dialog>
+        <div className="flex shrink-0 items-center justify-between gap-3 border-t border-neutral-100 px-5 py-4 sm:px-7"><span className="text-[10px] text-neutral-500">Eight formulas. Find your fit.</span><Link href="/products" onClick={() => onOpenChange(false)} className="inline-flex items-center gap-2 text-xs text-green-700">Browse all <IconArrowUpRight className="h-3.5 w-3.5" /></Link></div>
+        <DialogPrimitive.Close aria-label="Close search" className="absolute right-3 top-3 flex h-10 w-10 items-center justify-center rounded-full text-neutral-500 transition-colors hover:bg-neutral-100 hover:text-neutral-900"><IconX className="h-4 w-4" /></DialogPrimitive.Close>
+      </DialogPrimitive.Content>
+      </DialogPrimitive.Portal>
+    </DialogPrimitive.Root>
   );
 }
 
 function MobileMenu({
   isOpen,
   onClose,
+  triggerRef,
   user,
   isAuthenticated,
   categories,
@@ -714,28 +556,17 @@ function MobileMenu({
   const [productsExpanded, setProductsExpanded] = useState(true);
 
   return (
-    <AnimatePresence>
-      {isOpen && (
-        <div className="fixed inset-0 z-50 xl:hidden">
-          {/* Backdrop */}
-          <motion.div
-            className="fixed inset-0 bg-neutral-950/35 backdrop-blur-sm"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            onClick={onClose}
-          />
-
-          {/* Drawer Body */}
-          <motion.div
-            className="absolute left-0 top-0 bottom-0 w-[85vw] max-w-[360px] bg-white border-r border-neutral-200 shadow-[0_24px_60px_-20px_rgba(15,23,42,0.24)] flex flex-col text-neutral-900 z-50 overflow-hidden"
-            initial={{ x: "-100%" }}
-            animate={{ x: 0 }}
-            exit={{ x: "-100%" }}
-            transition={{ duration: 0.28, ease: [0.22, 1, 0.36, 1] }}
-          >
+    <DialogPrimitive.Root open={isOpen} onOpenChange={open => { if (!open) onClose(); }}>
+      <DialogPrimitive.Portal>
+        <DialogPrimitive.Overlay className="fixed inset-0 z-[70] bg-neutral-950/30 backdrop-blur-sm data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=open]:fade-in-0 data-[state=closed]:fade-out-0 duration-300 motion-reduce:animate-none" />
+        <DialogPrimitive.Content
+          aria-describedby={undefined}
+          onCloseAutoFocus={event => { event.preventDefault(); triggerRef.current?.focus(); }}
+          className="fixed right-0 top-0 z-[80] flex h-[100dvh] w-[calc(100%-20px)] max-w-[420px] flex-col overflow-hidden rounded-l-3xl border-l border-neutral-200 bg-white text-neutral-900 shadow-2xl data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=open]:slide-in-from-right data-[state=closed]:slide-out-to-right duration-300 motion-reduce:animate-none"
+        >
+            <DialogPrimitive.Title className="sr-only">MWP navigation menu</DialogPrimitive.Title>
             {/* 1. Header with Logo & Close button */}
-            <div className="flex items-center justify-between px-4 py-3.5 border-b border-neutral-200 bg-[#f6f2eb]">
+            <div className="flex items-center justify-between px-6 py-5 border-b border-neutral-100 bg-white">
               <div className="rounded-lg bg-neutral-950 px-3 py-2 flex items-center">
                 <Image
                   src="/logo.png"
@@ -747,7 +578,7 @@ function MobileMenu({
               </div>
               <button
                 onClick={onClose}
-                className="p-1.5 text-neutral-500 hover:text-neutral-950 hover:bg-neutral-200/70 active:scale-90 transition-all rounded-md"
+                className="flex h-10 w-10 items-center justify-center border border-neutral-200 text-neutral-500 hover:text-neutral-950 hover:border-neutral-900 transition-colors rounded-full"
                 aria-label="Close menu"
               >
                 <IconX className="h-5 w-5" />
@@ -755,21 +586,21 @@ function MobileMenu({
             </div>
 
             {/* 2. Quick Search & Quick Actions Bar */}
-            <div className="p-3 border-b border-neutral-200 bg-white">
+            <div className="px-6 pt-5 pb-4 border-b border-neutral-100 bg-white">
               <button
                 onClick={onOpenSearch}
-                className="w-full flex items-center gap-2.5 px-3 py-2.5 bg-neutral-50 border border-neutral-200 rounded-lg text-xs text-neutral-600 hover:text-neutral-950 hover:bg-[#f6f2eb] transition-all"
+                className="w-full flex items-center gap-3 px-4 py-3.5 bg-white border border-neutral-300 rounded-2xl text-xs text-neutral-500 hover:text-neutral-950 hover:border-neutral-900 transition-colors"
               >
                 <IconSearch className="h-4 w-4 text-neutral-400" />
                 <span>Search supplements, ingredients…</span>
               </button>
 
               {/* Quick links: Compare & Wishlist on mobile */}
-              <div className="grid grid-cols-2 gap-2 mt-2">
+              <div className="grid grid-cols-2 gap-3 mt-3">
                 <Link
                   href="/wishlist"
                   onClick={onClose}
-                  className="flex items-center justify-center gap-1.5 py-2 px-2 bg-white border border-neutral-200 rounded-lg text-[11px] font-semibold text-neutral-700 hover:text-[#886b40] hover:bg-[#f6f2eb] transition-colors"
+                  className="flex items-center justify-center gap-1.5 py-2 px-2 bg-white border border-neutral-200 rounded-lg text-[11px] font-semibold text-neutral-700 hover:text-[#886b40] hover:bg-white transition-colors"
                 >
                   <IconHeart className="h-3.5 w-3.5 text-neutral-400" />
                   <span>Wishlist</span>
@@ -777,7 +608,7 @@ function MobileMenu({
                 <Link
                   href="/compare"
                   onClick={onClose}
-                  className="flex items-center justify-center gap-1.5 py-2 px-2 bg-white border border-neutral-200 rounded-lg text-[11px] font-semibold text-neutral-700 hover:text-[#886b40] hover:bg-[#f6f2eb] transition-colors relative"
+                  className="flex items-center justify-center gap-1.5 py-2 px-2 bg-white border border-neutral-200 rounded-lg text-[11px] font-semibold text-neutral-700 hover:text-[#886b40] hover:bg-white transition-colors relative"
                 >
                   <IconGitCompare className="h-3.5 w-3.5 text-neutral-400" />
                   <span>Compare</span>
@@ -791,7 +622,7 @@ function MobileMenu({
             </div>
 
             {/* 3. User Authentication Box */}
-            <div className="p-3.5 border-b border-neutral-200 bg-[#f6f2eb]">
+            <div className="px-6 py-4 border-b border-neutral-100 bg-white">
               <ClientOnly>
                 {isAuthenticated ? (
                   <div className="flex items-center justify-between">
@@ -808,7 +639,7 @@ function MobileMenu({
                       <Link
                         href="/account"
                         onClick={onClose}
-                        className="px-2.5 py-1.5 bg-[#f6f2eb] hover:bg-[#eee5d7] text-neutral-900 text-[11px] font-bold rounded-lg uppercase transition-colors"
+                        className="px-2.5 py-1.5 bg-white hover:bg-white text-neutral-900 text-[11px] font-bold rounded-lg uppercase transition-colors"
                       >
                         Account
                       </Link>
@@ -842,13 +673,15 @@ function MobileMenu({
             </div>
 
             {/* 4. Scrollable Navigation */}
-            <div className="flex-1 overflow-y-auto p-3.5 space-y-4">
+            <div className="flex-1 min-h-0 overflow-y-auto overscroll-contain px-6 py-5 space-y-6">
               {/* ALL PRODUCTS group */}
               <div className="space-y-1">
                 <button
                   type="button"
                   onClick={() => setProductsExpanded((v) => !v)}
-                  className="w-full flex items-center justify-between px-2 mb-1.5 text-[10px] uppercase tracking-widest font-extrabold text-neutral-500"
+                  aria-expanded={productsExpanded}
+                  aria-controls="mobile-product-links"
+                  className="w-full flex items-center justify-between mb-4 text-[11px] uppercase tracking-[0.16em] text-neutral-500"
                 >
                   <span>{t("allProducts")}</span>
                   <IconChevronDown
@@ -858,30 +691,14 @@ function MobileMenu({
                     )}
                   />
                 </button>
-                {productsExpanded &&
-                  PRODUCT_MENU.map(({ href, label }) => {
-                    const active = pathname === href;
-                    return (
-                      <Link
-                        key={href}
-                        href={href}
-                        onClick={onClose}
-                        className={cn(
-                          "flex items-center justify-between py-2.5 px-3 text-xs font-bold uppercase tracking-wider transition-colors rounded-lg",
-                          active
-                            ? "text-neutral-900 bg-[#f6f2eb] font-extrabold"
-                            : "text-neutral-700 hover:text-neutral-950 hover:bg-neutral-100"
-                        )}
-                      >
-                        <span className="truncate">{label}</span>
-                        <IconChevronRight className="h-3.5 w-3.5 opacity-40" />
-                      </Link>
-                    );
-                  })}
+                {productsExpanded && <div id="mobile-product-links" className="grid grid-cols-1 min-[360px]:grid-cols-2 gap-2">
+                  {PRODUCT_MENU.map(item => <FormulaMenuCard key={item.href} item={item} active={pathname === item.href} onClick={onClose} />)}
+                </div>}
+                <Link href="/products" onClick={onClose} className="!mt-3 flex items-center justify-between rounded-xl border border-neutral-200 px-4 py-3 text-xs text-neutral-700 hover:border-neutral-900">{t("viewAll")} {t("products")} <IconArrowUpRight className="h-4 w-4" /></Link>
               </div>
 
               {/* Primary nav */}
-              <div className="space-y-1 pt-2 border-t border-neutral-200">
+              <div className="space-y-1 pt-5 border-t border-neutral-200">
                 <p className="text-[10px] uppercase tracking-widest font-extrabold text-neutral-500 px-2 mb-1.5">
                   Menu
                 </p>
@@ -893,9 +710,9 @@ function MobileMenu({
                       href={href}
                       onClick={onClose}
                       className={cn(
-                        "flex items-center justify-between py-2.5 px-3 text-xs font-bold uppercase tracking-wider transition-colors rounded-lg",
+                        "flex min-h-12 items-center justify-between py-3 px-2 text-[13px] transition-colors rounded-xl",
                         active
-                          ? "text-neutral-900 bg-[#f6f2eb] font-extrabold"
+                          ? "text-neutral-900 bg-white font-extrabold"
                           : "text-neutral-700 hover:text-neutral-950 hover:bg-neutral-100"
                       )}
                     >
@@ -939,7 +756,7 @@ function MobileMenu({
                           className={cn(
                             "flex items-center justify-between py-2.5 px-3 text-xs rounded-lg transition-colors",
                             active
-                              ? "bg-[#f6f2eb] text-neutral-900 font-bold"
+                              ? "bg-white text-neutral-900 font-bold"
                               : "text-neutral-600 hover:text-neutral-950 hover:bg-neutral-100"
                           )}
                         >
@@ -958,7 +775,7 @@ function MobileMenu({
             </div>
 
             {/* 5. Mobile Drawer Footer */}
-            <div className="p-3.5 border-t border-neutral-200 bg-[#f6f2eb] space-y-2">
+            <div className="px-6 pt-5 pb-[max(20px,env(safe-area-inset-bottom))] border-t border-neutral-100 bg-white space-y-3">
               <div className="flex items-center justify-center gap-4 text-neutral-500">
                 <a
                   href="https://www.instagram.com/mwpsupplements"
@@ -987,10 +804,9 @@ function MobileMenu({
                 MEN | WOMEN | POWER &bull; MWP SUPPLEMENTS
               </p>
             </div>
-          </motion.div>
-        </div>
-      )}
-    </AnimatePresence>
+        </DialogPrimitive.Content>
+      </DialogPrimitive.Portal>
+    </DialogPrimitive.Root>
   );
 }
 

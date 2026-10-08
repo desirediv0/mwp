@@ -102,7 +102,7 @@ export default function IndustriesPage() {
             </section>
 
             {/* CTA */}
-            <section className="bg-muted/30 section-padding">
+            <section className="bg-white section-padding">
                 <div className="section-container">
                     <div className="max-w-3xl mx-auto text-center">
                         <h2 className="font-display text-3xl   text-foreground mb-4">

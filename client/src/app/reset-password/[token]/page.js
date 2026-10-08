@@ -52,7 +52,7 @@ export default function ResetPasswordPage() {
   return (
     <div className="mwp-auth min-h-screen bg-white flex">
       {/* Left Panel */}
-      <div className="mwp-auth-side hidden lg:flex lg:w-[48%] relative overflow-hidden bg-[#f6f2eb]">
+      <div className="mwp-auth-side hidden lg:flex lg:w-[48%] relative overflow-hidden bg-white">
         <div className="absolute inset-0 bg-gradient-to-b from-black/70 via-black/50 to-black/90" />
 
         <div className="relative z-10 flex flex-col justify-between p-12 xl:p-16 w-full">

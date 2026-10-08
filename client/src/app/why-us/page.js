@@ -83,7 +83,7 @@ export default function WhyUsPage() {
   return (
     <div className="min-h-screen bg-white text-gray-900">
       {/* ── Hero Section ── */}
-      <section className="relative overflow-hidden bg-[#0A0A0A] text-white">
+      <section className="relative overflow-hidden bg-white text-neutral-900">
         <Image
           src="/why-us-hero.jpg"
           alt=""
@@ -144,7 +144,7 @@ export default function WhyUsPage() {
       </section>
 
       {/* ── Comparison Table ── */}
-      <section className="py-20 bg-[#fafafa] border-y border-gray-100">
+      <section className="py-20 bg-white border-y border-gray-100">
         <div className="max-w-4xl mx-auto px-6">
           <div className="text-center mb-12">
             <h2 className="text-2xl md:text-3xl font-extrabold text-gray-900 mb-2">
@@ -226,7 +226,7 @@ export default function WhyUsPage() {
       </section>
 
       {/* ── Premium CTA ── */}
-      <section className="py-20 bg-gradient-to-t from-[#fafafa] to-white border-t border-gray-100 text-center">
+      <section className="py-20 bg-white border-t border-gray-100 text-center">
         <div className="max-w-4xl mx-auto px-6 space-y-6">
           <h2 className="text-3xl md:text-5xl font-extrabold text-gray-900 tracking-tight">
             Unleash Your Full Performance

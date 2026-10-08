@@ -49,7 +49,7 @@ const sections = [
           When you access MWP SUPPLEMENTS or order formulations, we collect necessary data to
           process orders safely:
         </p>
-        <ul className="mt-3 space-y-2 pl-5 list-disc marker:text-neutral-400">
+        <ul className="mt-3 space-y-2 pl-5 list-disc marker:text-neutral-600">
           <li>
             <strong className="text-neutral-900">Identity &amp; Demographics:</strong> Full name,
             telephone numbers, shipping coordinates, billing addresses, and active email contacts.
@@ -75,7 +75,7 @@ const sections = [
           To ensure the highest level of security for your financial transactions, we integrate
           secure payment processing:
         </p>
-        <ul className="mt-3 space-y-2 pl-5 list-disc marker:text-neutral-400">
+        <ul className="mt-3 space-y-2 pl-5 list-disc marker:text-neutral-600">
           <li>All online transactions are encrypted using industry-standard 256-bit SSL certificates.</li>
           <li>
             Payment information (such as credit/debit card numbers, UPI PINs, net banking
@@ -96,7 +96,7 @@ const sections = [
     body: (
       <>
         <p>Collected data is processed exclusively for order processing and delivery:</p>
-        <ul className="mt-3 space-y-2 pl-5 list-disc marker:text-neutral-400">
+        <ul className="mt-3 space-y-2 pl-5 list-disc marker:text-neutral-600">
           <li>To dispatch supplement orders, performance stacks, and nutrition essentials to your designated address.</li>
           <li>
             To share shipping logs (recipient name, address, phone number) with verified courier
@@ -125,22 +125,20 @@ export default function PrivacyPolicyPage() {
   return (
     <div className="min-h-screen bg-white">
       {/* Hero */}
-      <section className="relative overflow-hidden bg-[#0A0A0A] text-white">
-        <div className="absolute inset-0 bg-gradient-to-br from-[#141416] via-[#0f0f12] to-[#0A0A0A]" />
-        <div className="absolute -top-24 left-1/2 -translate-x-1/2 w-[600px] h-[300px] bg-neutral-800/30 blur-[140px] rounded-full pointer-events-none" />
+      <section className="relative overflow-hidden bg-white text-neutral-900">
         <div className="relative z-10 max-w-5xl mx-auto px-5 md:px-8 lg:px-10 py-16 md:py-24 text-center">
-          <nav className="flex items-center justify-center gap-2 text-[11px] uppercase tracking-[0.15em] text-white/40 mb-6">
-            <Link href="/" className="hover:text-white transition-colors">Home</Link>
+          <nav className="flex items-center justify-center gap-2 text-[11px] uppercase tracking-[0.15em] text-neutral-900 mb-6">
+            <Link href="/" className="hover:text-neutral-900 transition-colors">Home</Link>
             <span>/</span>
-            <span className="text-white/80">Privacy Policy</span>
+            <span className="text-neutral-900">Privacy Policy</span>
           </nav>
-          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/10 border border-white/15 text-white/70 text-[10px] font-bold uppercase tracking-[0.2em] mb-5">
+          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/10 border border-neutral-200 text-neutral-900 text-[10px] font-bold uppercase tracking-[0.2em] mb-5">
             <IconShieldCheck className="h-3.5 w-3.5" /> Your Data, Protected
           </div>
           <h1 className="text-4xl md:text-6xl font-extrabold tracking-tight mb-4">
-            Privacy <span className="text-white/50">Policy</span>
+            Privacy <span className="text-neutral-900">Policy</span>
           </h1>
-          <p className="text-white/60 max-w-xl mx-auto text-[14px] md:text-base leading-relaxed">
+          <p className="text-neutral-900 max-w-xl mx-auto text-[14px] md:text-base leading-relaxed">
             Our guidelines for securing customer accounts, order details, and secure payment
             transactions.
           </p>

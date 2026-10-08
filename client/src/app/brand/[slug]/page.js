@@ -303,7 +303,7 @@ function BrandPageContent({ slug }) {
 ───────────────────────────────────────────── */
 export default function BrandPage({ params }) {
     return (
-        <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50/30">
+        <div className="min-h-screen bg-white ">
             <div className="max-w-7xl mx-auto px-4 py-8 pb-16">
                 <ClientOnly fallback={<div className="h-64 flex items-center justify-center"><div className="w-10 h-10 border-4 border-primary border-t-transparent rounded-full animate-spin" /></div>}>
                     <Suspense fallback={<div className="h-64 flex items-center justify-center"><div className="w-10 h-10 border-4 border-primary border-t-transparent rounded-full animate-spin" /></div>}>
