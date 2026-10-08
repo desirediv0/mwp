@@ -13,10 +13,13 @@ import {
   Minus,
   ArrowRight,
   Star,
+  Plus,
 } from "lucide-react";
 import { fetchApi, formatCurrency, cn } from "@/lib/utils";
 import { useCompare } from "@/lib/compare-context";
 import { useCart } from "@/lib/cart-context";
+import { productPalette } from "@/lib/product-palette";
+import "./compare.css";
 
 const stripHtml = (html) =>
   typeof html === "string"
@@ -114,6 +117,7 @@ function normalize(p) {
     tags: p.tags || [],
     keywords: p.keywords || "",
     notes: (p.notes || []).map((n) => n.title).filter(Boolean),
+    ingredientItems: (p.ingredientItems || []).map(item => ({ name: item.name, amount: item.amount })),
     variants: variants.map((v) => ({
       id: v.id,
       label:
@@ -131,7 +135,7 @@ function normalize(p) {
 }
 
 export default function ComparePage() {
-  const { items, removeFromCompare, clearCompare, ready } = useCompare();
+  const { items, removeFromCompare, clearCompare, ready, max } = useCompare();
   const { addToCart } = useCart();
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -140,6 +144,7 @@ export default function ComparePage() {
   const [fetchError, setFetchError] = useState(false);
   const [partialLoad, setPartialLoad] = useState(false);
   const [retry, setRetry] = useState(0);
+  const [showPicker, setShowPicker] = useState(false);
 
   useEffect(() => {
     if (!ready) return;
@@ -193,21 +198,25 @@ export default function ComparePage() {
   /* ---------- empty state ---------- */
   if (ready && items.length === 0) {
     return (
-      <div className="mwp-page min-h-[55vh] flex items-center justify-center px-5 py-16">
-        <div className="text-center max-w-md">
-          <div className="w-16 h-16 rounded-2xl bg-neutral-100 flex items-center justify-center mx-auto mb-5">
-            <GitCompareArrows className="h-8 w-8 text-neutral-600" />
+      <div className="mwp-compare-page">
+        <div className="mwp-compare-shell">
+          <div className="mwp-compare-welcome">
+            <div>
+              <p className="mwp-compare-eyebrow"><GitCompareArrows size={16} /> FIND YOUR EVERYDAY FORMULA</p>
+              <h1>A little clarity.<br /><span>A better fit.</span></h1>
+              <p>See what makes each formula different. Compare benefits, ingredients and daily routines in one place.</p>
+              <a href="#choose-formulas" className="mwp-compare-primary">Choose your formulas <ArrowRight size={17} /></a>
+              <span className="mwp-compare-note">Select 2 to {max} formulas to get started.</span>
+            </div>
+            <div className="mwp-compare-welcome-bottles" aria-hidden="true">
+              {["ultra-pro", "her-power", "power-max"].map((slug, i) => (
+                <div key={slug} style={{ background: productPalette(slug).background, transform: i === 1 ? "translateY(-16px)" : undefined }}>
+                  <Image src={`/products/cutouts/${slug}.webp`} alt="" width={100} height={240} className="object-contain" />
+                </div>
+              ))}
+            </div>
           </div>
-          <h1 className="mwp-heading mb-2">See the difference.</h1>
-          <p className="text-[14px] text-gray-500 mb-6">
-            Add 2–5 products using the compare button on any product, then see them side by side here.
-          </p>
-          <Link
-            href="/products"
-            className="mwp-button"
-          >
-            Browse Products <ArrowRight className="h-4 w-4" />
-          </Link>
+          <FormulaPicker onSelect={() => setShowPicker(true)} />
         </div>
       </div>
     );
@@ -220,23 +229,23 @@ export default function ComparePage() {
   };
 
   return (
-    <div className="mwp-page">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 md:py-14">
+    <div className="mwp-compare-page">
+      <div className="mwp-compare-shell">
         {/* Header */}
-        <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4 mb-6">
+        <div className="mwp-compare-header flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4 mb-6">
           <div>
             <div className="flex items-center gap-2.5 mb-2">
               <span className="h-px w-8 bg-neutral-800/50" />
               <span className="text-[10px] uppercase tracking-[0.3em] text-neutral-800 font-bold">Side by Side</span>
             </div>
-            <h1 className="mwp-title">
-              Compare formulas.
+            <h1 className="mwp-compare-title">
+              Find the formula for you.
             </h1>
             <p className="text-[14px] text-gray-500 mt-2">
-              {items.length} product{items.length > 1 ? "s" : ""} selected
+              Compare {items.length} selected formula{items.length > 1 ? "s" : ""}. Benefits, ingredients and routines at a glance.
             </p>
           </div>
-          <div className="flex items-center gap-3">
+          <div className="mwp-compare-controls flex items-center gap-3">
             <label className="flex items-center gap-2 text-[12px] font-semibold text-gray-600 cursor-pointer select-none">
               <input
                 type="checkbox"
@@ -244,7 +253,7 @@ export default function ComparePage() {
                 onChange={(e) => setOnlyDiff(e.target.checked)}
                 className="w-4 h-4 rounded accent-neutral-900"
               />
-              Highlight differences
+              Show differences only
             </label>
             <button
               onClick={clearCompare}
@@ -254,6 +263,17 @@ export default function ComparePage() {
             </button>
           </div>
         </div>
+
+        <div className="mwp-compare-toolbar">
+          <div className="mwp-compare-tabs">
+            <a href="#compare-quick-compare">Daily routine</a>
+            <a href="#compare-pricing">Price</a>
+            <a href="#compare-product-details">Formula details</a>
+          </div>
+          <button className="mwp-compare-add" onClick={() => setShowPicker(value => !value)} aria-expanded={showPicker}><Plus size={16} /> {showPicker ? "Close selector" : "Add a formula"}</button>
+        </div>
+        {showPicker && <FormulaPicker />}
+        {items.length === 1 && <p className="mwp-compare-hint">One formula selected. Add another to see what makes them different.</p>}
 
         {loading ? (
           <div className="flex items-center justify-center py-24">
@@ -265,35 +285,41 @@ export default function ComparePage() {
           <div>
           {partialLoad && <div className="mb-3 flex items-center justify-between gap-3 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-950"><span>Some selected formulas could not load.</span><button className="font-semibold underline underline-offset-2" onClick={() => setRetry(r => r + 1)}>Try again</button></div>}
           {products.length > 1 && <p className="md:hidden mb-2 text-xs text-neutral-500">Swipe across to see each formula &rarr;</p>}
-          <div className="overflow-x-auto rounded-2xl border border-gray-200" role="region" aria-label="Product comparison table" tabIndex={0}>
-            <table className="w-full border-collapse" style={{ minWidth: 110 + products.length * 230 }}>
+          <div className="mwp-compare-table overflow-x-auto rounded-2xl border border-gray-200" role="region" aria-label="Product comparison table" tabIndex={0}>
+            <table className="w-full border-collapse" style={{ minWidth: 176 + products.length * 230 }}>
+              <caption className="sr-only">Selected formulas compared by price, benefits, daily routine and product details</caption>
+              <colgroup>
+                <col className="mwp-compare-label-column" />
+                {products.map(product => <col key={product.id} />)}
+              </colgroup>
               <tbody>
                 {/* Product cards */}
                 <tr>
-                  <Th className="align-bottom">Product</Th>
+                  <Th className="align-bottom"><GitCompareArrows size={20} className="mb-3 text-green-700" /><span>Meet your formulas</span><p className="mt-2 text-[11px] normal-case tracking-normal text-neutral-400">Swipe across to explore.</p></Th>
                   {products.map((p) => (
-                    <td key={p.id} className="p-4 align-top border-l border-gray-100 bg-gray-50/60" style={{ minWidth: 230 }}>
+                    <td key={p.id} className="mwp-compare-product p-4 align-top border-l border-gray-100" style={{ minWidth: 230 }}>
                       <div className="relative">
                         <button
                           onClick={() => removeFromCompare(p.id)}
                           className="absolute -top-2 -right-2 z-10 w-7 h-7 rounded-full bg-white border border-gray-200 shadow-sm flex items-center justify-center text-gray-400 hover:text-neutral-800 hover:border-neutral-300 transition-colors"
-                          aria-label="Remove"
+                          aria-label={"Remove " + p.name + " from comparison"}
                         >
                           <X className="h-3.5 w-3.5" />
                         </button>
                         <Link href={`/products/${p.slug}`} className="block">
-                          <div className="relative aspect-square rounded-xl overflow-hidden bg-white border border-gray-200 mb-3">
-                            <Image src={img(p.image)} alt={p.name} fill className="object-contain p-2" sizes="230px" />
+                          <div className="mwp-compare-product-image relative aspect-square rounded-xl overflow-hidden mb-3" style={{ background: productPalette(p.slug).background }}>
+                            <Image src={img(p.image)} alt={p.name} fill className="object-contain p-5" sizes="230px" />
                             {p.discount > 0 && (
                               <span className="absolute top-2 left-2 bg-neutral-900 text-white text-[10px] font-extrabold px-1.5 py-0.5 rounded">
                                 −{p.discount}%
                               </span>
                             )}
                           </div>
-                          <h3 className="text-[14px] font-bold text-gray-900 leading-snug line-clamp-2 hover:text-neutral-800 transition-colors">
+                          <h3 className="text-[20px] tracking-tight text-neutral-900 leading-snug hover:text-green-700 transition-colors">
                             {p.name}
                           </h3>
                         </Link>
+                        <p className="mt-1 text-[11px]" style={{ color: productPalette(p.slug).accent }}>{p.primaryCat}</p>
                         <div className="mt-1.5 flex items-baseline gap-2 flex-wrap">
                           <span className="text-[16px] font-extrabold text-gray-900">
                             {p.minPrice != null ? formatCurrency(p.minPrice) : "—"}
@@ -320,7 +346,7 @@ export default function ComparePage() {
                   ))}
                 </tr>
 
-                <SectionHead>Pricing</SectionHead>
+                <SectionHead columns={products.length + 1}>Pricing</SectionHead>
                 <Row label="Best Price" products={products} onlyDiff={onlyDiff} differs={differs} pick={(p) => p.minPrice}
                   render={(p) => <span className="text-[15px] font-extrabold text-gray-900">{p.minPrice != null ? formatCurrency(p.minPrice) : "—"}</span>} />
                 <Row label="MRP" products={products} onlyDiff={onlyDiff} differs={differs} pick={(p) => p.maxReg}
@@ -330,7 +356,7 @@ export default function ComparePage() {
                     ? <span className="inline-block bg-neutral-900 text-white text-[11px] font-extrabold px-2 py-0.5 rounded">−{p.discount}%</span>
                     : <Dash />} />
 
-                <SectionHead>Quick Compare</SectionHead>
+                <SectionHead columns={products.length + 1}>Quick Compare</SectionHead>
                 <Row label="Best For" products={products} onlyDiff={onlyDiff} differs={differs} pick={(p) => p.bestFor || p.primaryCat}
                   render={(p) => <span className="text-[13px] font-semibold text-gray-800">{p.bestFor || p.primaryCat || "—"}</span>} />
                 <Row label="Main Benefits" products={products} onlyDiff={onlyDiff} differs={differs} pick={(p) => p.mainBenefits}
@@ -343,11 +369,13 @@ export default function ComparePage() {
                   render={(p) => <span className="text-[13px] font-semibold text-gray-800">{p.servingSize || "—"}</span>} />
                 <Row label="When To Take" products={products} onlyDiff={onlyDiff} differs={differs} pick={(p) => p.whenToTake}
                   render={(p) => <p className="text-[12.5px] text-gray-600 leading-relaxed">{p.whenToTake || "—"}</p>} />
+                <Row label="Ingredients & amounts" products={products} onlyDiff={onlyDiff} differs={differs} pick={(p) => p.ingredientItems}
+                  render={(p) => p.ingredientItems.length ? <ul className="space-y-2">{p.ingredientItems.map(item => <li key={item.name} className="text-[12px] text-neutral-700">{item.name}<span className="mt-0.5 block text-[11px] text-neutral-400">{item.amount}</span></li>)}</ul> : <Dash />} />
                 <Row label="Pack Options" products={products} onlyDiff={onlyDiff} differs={differs}
                   pick={(p) => p.variants.map((v) => v.label)}
                   render={(p) => p.variants.length ? <ChipList items={p.variants.map((v) => v.label)} /> : <Dash />} />
 
-                <SectionHead>Classification</SectionHead>
+                <SectionHead columns={products.length + 1}>Classification</SectionHead>
                 <Row label="Primary Category" products={products} onlyDiff={onlyDiff} differs={differs} pick={(p) => p.primaryCat}
                   render={(p) => <span className="text-[13px] font-semibold text-gray-800">{p.primaryCat}</span>} />
                 <Row label="Also In" products={products} onlyDiff={onlyDiff} differs={differs} pick={(p) => p.otherCats}
@@ -359,7 +387,7 @@ export default function ComparePage() {
                 <Row label="MWP Original" products={products} onlyDiff={onlyDiff} differs={differs} pick={(p) => p.ourProduct}
                   render={(p) => p.ourProduct ? <YesTag /> : <NoTag />} />
 
-                <SectionHead>Variants &amp; Options</SectionHead>
+                <SectionHead columns={products.length + 1}>Variants &amp; Options</SectionHead>
                 <Row label="Has Variants" products={products} onlyDiff={onlyDiff} differs={differs} pick={(p) => p.hasVariants}
                   render={(p) => p.hasVariants ? <YesTag label={`Yes · ${p.variants.length}`} /> : <NoTag label="No · single" />} />
                 <Row label="Options" products={products} onlyDiff={onlyDiff} differs={differs} pick={(p) => p.attributeOptions}
@@ -394,7 +422,7 @@ export default function ComparePage() {
                     </ul>
                   ) : <Dash />} />
 
-                <SectionHead>Availability</SectionHead>
+                <SectionHead columns={products.length + 1}>Availability</SectionHead>
                 <Row label="Stock" products={products} onlyDiff={onlyDiff} differs={differs} pick={(p) => p.inStock}
                   render={(p) => p.inStock
                     ? <span className="inline-flex items-center gap-1.5 text-[12px] font-bold text-emerald-600"><Check className="h-4 w-4" /> In Stock ({p.stock})</span>
@@ -413,7 +441,7 @@ export default function ComparePage() {
                     </span>
                   )} />
 
-                <SectionHead>Product Details</SectionHead>
+                <SectionHead columns={products.length + 1}>Product Details</SectionHead>
                 <Row label="Overview" products={products} onlyDiff={onlyDiff} differs={differs} pick={(p) => p.description}
                   render={(p) => <p className="text-[12.5px] text-gray-600 leading-relaxed">{p.description || "—"}</p>} />
                 {DETAIL_SECTIONS.filter(({ key }) => products.some((p) => p.sections[key])).map(({ key, label }) => (
@@ -460,10 +488,10 @@ function Th({ children, className }) {
   );
 }
 
-function SectionHead({ children }) {
+function SectionHead({ children, columns }) {
   return (
-    <tr>
-      <td colSpan={99} className="bg-gray-900 text-white px-4 py-2.5 text-[11px] uppercase tracking-[0.2em] font-extrabold sticky left-0">
+    <tr id={"compare-" + String(children).toLowerCase().replace(/[^a-z0-9]+/g, "-")}>
+      <td colSpan={columns} className="bg-gray-900 text-white px-4 py-2.5 text-[11px] uppercase tracking-[0.2em] font-extrabold sticky left-0">
         {children}
       </td>
     </tr>
@@ -473,9 +501,10 @@ function SectionHead({ children }) {
 function Row({ label, products, render, pick, onlyDiff, differs }) {
   const values = products.map(pick);
   const isDiff = differs(values);
+  if (values.every(v => v == null || v === "" || (Array.isArray(v) && v.length === 0))) return null;
   if (onlyDiff && !isDiff) return null;
   return (
-    <tr className={cn("border-t border-gray-100", onlyDiff && isDiff && "bg-amber-50/40")}>
+    <tr className={cn("mwp-compare-row border-t border-gray-100", onlyDiff && isDiff && "mwp-compare-difference")}>
       <th className="p-3 sm:p-4 text-left text-[11px] uppercase tracking-[0.14em] font-extrabold text-gray-500 bg-gray-50 sticky left-0 z-10 align-top min-w-[110px] w-28 sm:min-w-[176px] sm:w-44">
         {label}
       </th>
@@ -512,3 +541,46 @@ const NoTag = ({ label = "No" }) => (
     <Minus className="h-3.5 w-3.5" /> {label}
   </span>
 );
+
+function FormulaPicker({ onSelect }) {
+  const { items, max, addToCompare, removeFromCompare } = useCompare();
+  const [catalog, setCatalog] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [failed, setFailed] = useState(false);
+  const [retry, setRetry] = useState(0);
+  useEffect(() => {
+    let alive = true;
+    setLoading(true);
+    setFailed(false);
+    fetchApi("/public/products?limit=100")
+      .then(response => { if (alive) setCatalog(response.data?.products || []); })
+      .catch(() => { if (alive) setFailed(true); })
+      .finally(() => { if (alive) setLoading(false); });
+    return () => { alive = false; };
+  }, [retry]);
+  return (
+    <section className="mwp-compare-picker" id="choose-formulas" aria-label="Choose formulas to compare">
+      <div className="mwp-compare-picker-heading">
+        <div><p className="mwp-compare-eyebrow">YOUR COLLECTION</p><h2>Which formulas are you considering?</h2></div>
+        <span>{items.length} / {max} selected</span>
+      </div>
+      {loading ? <p className="flex items-center gap-2 py-8 text-sm text-neutral-500"><Loader2 size={18} className="animate-spin" /> Loading formulas...</p>
+        : failed ? <div className="py-6 text-sm text-neutral-600">Formulas could not load. <button onClick={() => setRetry(value => value + 1)} className="underline">Try again</button></div>
+        : catalog.length === 0 ? <p className="py-6 text-sm text-neutral-500">No formulas available. <Link href="/products" className="underline">Browse products</Link></p>
+        : <div className="mwp-compare-picker-grid">
+          {catalog.map(product => {
+            const selected = items.some(item => item.id === product.id);
+            const image = product.image || product.images?.[0]?.url;
+            return (
+              <button key={product.id} type="button" aria-pressed={selected} disabled={!selected && items.length >= max} onClick={() => { onSelect?.(); selected ? removeFromCompare(product.id) : addToCompare(product); }} className="mwp-compare-pick" style={{ background: productPalette(product.slug).background }}>
+                <span className="mwp-compare-pick-check">{selected ? <Check size={15} /> : <Plus size={15} />}</span>
+                <Image src={img(image)} alt="" width={74} height={130} className="object-contain" />
+                <span className="mwp-compare-pick-name">{product.name}</span>
+                <span className="mwp-compare-pick-label">{selected ? "Selected" : "Add to comparison"}</span>
+              </button>
+            );
+          })}
+        </div>}
+    </section>
+  );
+}
