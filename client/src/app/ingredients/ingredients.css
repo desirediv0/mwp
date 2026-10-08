@@ -154,3 +154,12 @@
  .mwp-ingredient-card:hover, .mwp-ingredient-card:hover .mwp-ingredient-photo-wrap { transform: none; }
  .mwp-ingredient-dialog, .mwp-ingredient-dialog-overlay { animation: none; }
 }
+.mwp-ingredients-specimen-1 .mwp-ingredient-photo,
+.mwp-ingredients-specimen-2 .mwp-ingredient-photo { width: 72px; }
+@media (max-width: 539px) {
+ .mwp-ingredients-specimen-1 .mwp-ingredient-photo,
+ .mwp-ingredients-specimen-2 .mwp-ingredient-photo { width: 68px; }
+ .mwp-ingredients-specimen-1 { top: 34px; }
+ .mwp-ingredients-specimen-2 { bottom: 25px; }
+ .mwp-ingredients-art-foot { left: 20px; bottom: 14px; font-size: 10px; }
+}
