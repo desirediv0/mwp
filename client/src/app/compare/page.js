@@ -27,6 +27,8 @@ const stripHtml = (html) =>
     : "";
 
 const img = (raw) => {
+  if (raw && typeof raw === "object") raw = raw.url || raw.image;
+  if (typeof raw !== "string") return "/placeholder.jpg";
   if (!raw) return "/placeholder.jpg";
   if (raw.startsWith("http") || raw.startsWith("/")) return raw;
   return `https://desirediv-storage.blr1.digitaloceanspaces.com/${raw}`;
@@ -359,7 +361,7 @@ export default function ComparePage() {
                 <SectionHead columns={products.length + 1}>Quick Compare</SectionHead>
                 <Row label="Best For" products={products} onlyDiff={onlyDiff} differs={differs} pick={(p) => p.bestFor || p.primaryCat}
                   render={(p) => <span className="text-[13px] font-semibold text-gray-800">{p.bestFor || p.primaryCat || "—"}</span>} />
-                <Row label="Main Benefits" products={products} onlyDiff={onlyDiff} differs={differs} pick={(p) => p.mainBenefits}
+                <Row label="Main Benefits" products={products} onlyDiff={onlyDiff} differs={differs} pick={(p) => p.mainBenefits || p.description}
                   render={(p) => <p className="text-[12.5px] text-gray-600 leading-relaxed">{p.mainBenefits || p.description || "—"}</p>} />
                 <Row label="For" products={products} onlyDiff={onlyDiff} differs={differs} pick={(p) => p.gender}
                   render={(p) => <span className="text-[13px] font-semibold text-gray-800">{p.gender}</span>} />

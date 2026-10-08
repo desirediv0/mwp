@@ -1,7 +1,8 @@
 .mwp-product-detail {
   color: #211c1b;
   background: var(--product-bg, #f7efeb);
-  font-family: 'Neulis', sans-serif;
+  font-family: inherit;
+  font-weight: 400;
   padding-bottom: 1px;
 }
 .mwp-product-detail :is(.mwp-product-breadcrumb, .mwp-product-hero, .mwp-product-formula, .mwp-product-section) {
@@ -20,9 +21,9 @@
 }
 .mwp-product-image > img { padding: 48px 34px; }
 .mwp-product-title {
-  font-family: Georgia, 'Times New Roman', serif;
-  font-size: clamp(52px, 5.4vw, 80px);
-  line-height: .95;
+  font-family: inherit;
+  font-size: clamp(46px, 4.6vw, 66px);
+  line-height: 1.05;
   letter-spacing: -.045em;
   max-width: 9ch;
   overflow-wrap: normal;
@@ -34,7 +35,7 @@
 .mwp-product-info > .flex.items-center.gap-2\.5 { margin-bottom: 18px; }
 .mwp-product-info .text-neutral-900 > svg, .mwp-product-info .flex.gap-0\.5 > svg { color: var(--product-accent); }
 .mwp-product-price { margin-bottom: 16px; }
-.mwp-product-price span:first-child { font-family: Georgia, 'Times New Roman', serif; font-size: 34px; }
+.mwp-product-price span:first-child { font-family: inherit; font-size: 34px; }
 .mwp-product-discount { color: var(--product-accent); background: var(--product-surface); border-color: var(--product-line); }
 .mwp-product-purchase { border: 1px solid var(--product-line); background: #fffdfc; padding: 18px; border-radius: 20px; box-shadow: 0 10px 24px -18px var(--product-deep); margin-bottom: 18px; }
 .mwp-product-purchase-label { font-size: 10px; letter-spacing: .14em; text-transform: uppercase; color: var(--product-accent); margin-bottom: 16px; }
@@ -59,7 +60,7 @@
 .mwp-product-details .text-neutral-400 { color: #85756f; }
 .mwp-product-formula { margin-bottom: 40px; }
 .mwp-formula-panel { background: #fffbf8; border-color: var(--product-line); padding: 30px; }
-.mwp-product-detail :is(.mwp-product-formula, .mwp-product-section) :is(h2, h3) { font-family: Georgia, 'Times New Roman', serif; letter-spacing: -.025em; }
+.mwp-product-detail :is(.mwp-product-formula, .mwp-product-section) :is(h2, h3) { font-family: inherit; letter-spacing: -.025em; }
 .mwp-product-formula h2 { font-size: 30px; line-height: 1.2; }
 .mwp-product-formula li { border-color: var(--product-line); border-radius: 10px; }
 .mwp-product-formula li summary p:first-child { font-size: 12px; }
@@ -76,7 +77,7 @@
 }
 @media (max-width: 1023px) {
   .mwp-product-hero-grid { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 26px; }
-  .mwp-product-title { font-size: 55px; }
+  .mwp-product-title { font-size: 46px; }
   .mwp-product-image { position: sticky; top: 120px; }
   .mwp-product-intro { font-size: 14px; }
   .mwp-product-benefits { grid-template-columns: 1fr; }
@@ -88,7 +89,7 @@
   .mwp-product-hero-grid { grid-template-columns: minmax(0, 1fr); gap: 28px; }
   .mwp-product-image { position: relative; top: auto; aspect-ratio: 1 / 1.12; border-radius: 22px; }
   .mwp-product-image > img { padding: 32px; }
-  .mwp-product-title { font-size: clamp(46px, 13vw, 64px); max-width: none; }
+  .mwp-product-title { font-size: clamp(38px, 11.5vw, 52px); max-width: none; }
   .mwp-product-kicker { margin-bottom: 12px; }
   .mwp-product-title-row { gap: 8px; }
   .mwp-product-intro { font-size: 15px; }

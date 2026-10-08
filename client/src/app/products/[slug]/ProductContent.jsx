@@ -326,7 +326,7 @@ export default function ProductContent({ slug }) {
       return (
         <div>
           <p className="text-xl text-neutral-500">Sign in to view price</p>
-          <Link href={`/auth?redirect=/products/${slug}`} className="mt-2 inline-block text-[13px] font-medium text-neutral-900 hover:underline underline-offset-4">Sign in →</Link>
+          <Link href={`/auth?redirect=/products/${slug}`} className="mt-2 inline-block text-[13px] font-normal text-neutral-900 hover:underline underline-offset-4">Sign in →</Link>
         </div>
       );
     if (product?.flashSale?.isActive) {
@@ -334,9 +334,9 @@ export default function ProductContent({ slug }) {
       const rp = parseFloat(product.basePrice);
       return (
         <div className="flex items-baseline gap-3 flex-wrap">
-          <span className="text-3xl md:text-[2.4rem] font-semibold text-neutral-900 tracking-tight">{formatCurrency(fp)}</span>
+          <span className="text-3xl md:text-[2.4rem] font-normal text-neutral-900 tracking-tight">{formatCurrency(fp)}</span>
           <span className="text-base line-through text-neutral-400">{formatCurrency(rp)}</span>
-          <span className="mwp-product-discount px-2.5 py-1 text-[11px] font-semibold rounded-full">−{product.flashSale.discountPercentage}%</span>
+          <span className="mwp-product-discount px-2.5 py-1 text-[11px] font-normal rounded-full">−{product.flashSale.discountPercentage}%</span>
         </div>
       );
     }
@@ -349,8 +349,8 @@ export default function ProductContent({ slug }) {
       const disc = hasDiff ? Math.round(((mrp - sp) / mrp) * 100) : 0;
       return (
         <div className="flex items-baseline gap-3 flex-wrap">
-          <span className="text-3xl md:text-[2.4rem] font-semibold text-neutral-900 tracking-tight">{formatCurrency(sp)}</span>
-          {hasDiff && <><span className="text-base line-through text-neutral-400">{formatCurrency(mrp)}</span><span className="mwp-product-discount px-2.5 py-1 text-[11px] font-semibold rounded-full">{disc}% off</span></>}
+          <span className="text-3xl md:text-[2.4rem] font-normal text-neutral-900 tracking-tight">{formatCurrency(sp)}</span>
+          {hasDiff && <><span className="text-base line-through text-neutral-400">{formatCurrency(mrp)}</span><span className="mwp-product-discount px-2.5 py-1 text-[11px] font-normal rounded-full">{disc}% off</span></>}
         </div>
       );
     }
@@ -361,15 +361,15 @@ export default function ProductContent({ slug }) {
     const disc = op ? Math.round(((op - cp) / op) * 100) : 0;
     return (
       <div className="flex items-baseline gap-3 flex-wrap">
-        <span className="text-3xl md:text-[2.4rem] font-semibold text-neutral-900 tracking-tight">{formatCurrency(cp)}</span>
-        {op && <><span className="text-base line-through text-neutral-400">{formatCurrency(op)}</span><span className="mwp-product-discount px-2.5 py-1 text-[11px] font-semibold rounded-full">{disc}% off</span></>}
+        <span className="text-3xl md:text-[2.4rem] font-normal text-neutral-900 tracking-tight">{formatCurrency(cp)}</span>
+        {op && <><span className="text-base line-through text-neutral-400">{formatCurrency(op)}</span><span className="mwp-product-discount px-2.5 py-1 text-[11px] font-normal rounded-full">{disc}% off</span></>}
       </div>
     );
   };
 
   if (loading) return (
     <div className="min-h-screen flex flex-col items-center justify-center gap-6 bg-white">
-      <span className="text-lg font-medium text-neutral-300 tracking-tight">MWP Supplements</span>
+      <span className="text-lg font-normal text-neutral-300 tracking-tight">MWP Supplements</span>
       <span className="block h-px w-32 overflow-hidden relative bg-neutral-100">
         <span className="absolute inset-y-0 left-0 w-1/3 bg-neutral-900 animate-marquee-x" />
       </span>
@@ -381,9 +381,9 @@ export default function ProductContent({ slug }) {
       <div className="w-16 h-16 flex items-center justify-center mb-7 rounded-full bg-neutral-100">
         <IconAlertCircle className="h-7 w-7 text-neutral-400" stroke={1.5} />
       </div>
-      <h2 className="text-2xl font-semibold mb-2.5 text-neutral-900 tracking-tight">Product Not Found</h2>
+      <h2 className="text-2xl font-normal mb-2.5 text-neutral-900 tracking-tight">Product Not Found</h2>
       <p className="mb-8 text-[15px] text-neutral-500">{error || "This product is no longer available."}</p>
-      <Link href="/products" className="inline-flex items-center gap-2 px-6 py-3 text-[13px] font-medium rounded-full bg-neutral-900 text-white hover:bg-neutral-800 transition-colors">
+      <Link href="/products" className="inline-flex items-center gap-2 px-6 py-3 text-[13px] font-normal rounded-full bg-neutral-900 text-white hover:bg-neutral-800 transition-colors">
         Back to Shop
       </Link>
     </div>
@@ -495,12 +495,12 @@ export default function ProductContent({ slug }) {
               {/* Badges */}
               <div className="absolute top-5 left-5 z-20 flex flex-col gap-2 pointer-events-none">
                 {product.flashSale?.isActive && (
-                  <span className="px-3.5 py-1.5 text-[11px] font-semibold rounded-full bg-neutral-900 text-white">
+                  <span className="px-3.5 py-1.5 text-[11px] font-normal rounded-full bg-neutral-900 text-white">
                     −{product.flashSale.discountPercentage}% Flash Sale
                   </span>
                 )}
                 {outOfStock && (
-                  <span className="px-3.5 py-1.5 text-[11px] font-semibold rounded-full bg-neutral-500 text-white">Sold Out</span>
+                  <span className="px-3.5 py-1.5 text-[11px] font-normal rounded-full bg-neutral-500 text-white">Sold Out</span>
                 )}
               </div>
 
@@ -528,7 +528,7 @@ export default function ProductContent({ slug }) {
 
             {/* Brand */}
             {product.brand && (
-              <span className="text-[12px] font-medium text-neutral-400 mb-3">{product.brand.name}</span>
+              <span className="text-[12px] font-normal text-neutral-400 mb-3">{product.brand.name}</span>
             )}
 
             {/* Category eyebrow + Title */}
@@ -542,7 +542,7 @@ export default function ProductContent({ slug }) {
               {product.gender && (
                 <Link
                   href={`/products?gender=${product.gender}`}
-                  className="mt-1.5 inline-flex items-center px-3 py-1 text-[11px] font-medium rounded-full bg-neutral-100 text-neutral-600 hover:bg-neutral-200 transition-colors"
+                  className="mt-1.5 inline-flex items-center px-3 py-1 text-[11px] font-normal rounded-full bg-neutral-100 text-neutral-600 hover:bg-neutral-200 transition-colors"
                 >
                   {product.gender}
                 </Link>
@@ -564,7 +564,7 @@ export default function ProductContent({ slug }) {
             {/* Product Notes */}
             {product.notes && product.notes.length > 0 && (
               <div className="mb-7">
-                <p className="text-[12px] font-medium text-neutral-400 mb-3.5">Notes</p>
+                <p className="text-[12px] font-normal text-neutral-400 mb-3.5">Notes</p>
                 <div className="flex flex-wrap gap-4">
                   {product.notes.map((note) => (
                     <div key={note.id} className="flex flex-col items-center gap-2">
@@ -597,7 +597,7 @@ export default function ProductContent({ slug }) {
               const selVal = values.find((v) => v.id === selId);
               return (
                 <div key={attr.id} className="mb-6">
-                <p className="text-[13px] font-medium mb-3 text-neutral-800">
+                <p className="text-[13px] font-normal mb-3 text-neutral-800">
                     {attr.name} {selVal && <span className="font-normal text-neutral-400">— {selVal.value}</span>}
                   </p>
                   <div className="flex flex-wrap gap-2">
@@ -607,7 +607,7 @@ export default function ProductContent({ slug }) {
                         onClick={() => handleAttributeChange(attr.id, v.id)}
                         type="button"
                         aria-pressed={selId === v.id}
-                        className={`min-w-[48px] min-h-11 px-4 py-2 text-[13px] font-medium rounded-full border bg-white text-neutral-900 transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-neutral-900 ${selId === v.id
+                        className={`min-w-[48px] min-h-11 px-4 py-2 text-[13px] font-normal rounded-full border bg-white text-neutral-900 transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-neutral-900 ${selId === v.id
                           ? "border-neutral-900 bg-white"
                           : "border-neutral-300 hover:border-neutral-900 hover:bg-white"
                           }`}
@@ -623,7 +623,7 @@ export default function ProductContent({ slug }) {
 
             {/* Success */}
             {cartSuccess && (
-              <div className="flex items-center gap-2.5 px-4 py-3 text-[13px] font-medium mb-5 rounded-xl bg-neutral-50 text-neutral-700">
+              <div className="flex items-center gap-2.5 px-4 py-3 text-[13px] font-normal mb-5 rounded-xl bg-neutral-50 text-neutral-700">
                 <IconCircleCheck className="h-4.5 w-4.5 flex-shrink-0" stroke={1.6} /> Added to your bag
               </div>
             )}
@@ -635,19 +635,19 @@ export default function ProductContent({ slug }) {
                 <button onClick={() => handleQuantityChange(-1)} disabled={quantity <= (selectedVariant?.moq || 1) || isAddingToCart} className="w-10 h-full flex items-center justify-center text-neutral-500 hover:bg-neutral-50 disabled:opacity-30 transition-colors" aria-label="Decrease quantity">
                   <IconMinus className="h-3.5 w-3.5" stroke={2} />
                 </button>
-                <span className="w-9 text-center text-[15px] font-medium text-neutral-900">{quantity}</span>
+                <span className="w-9 text-center text-[15px] font-normal text-neutral-900">{quantity}</span>
                 <button onClick={() => handleQuantityChange(1)} disabled={quantity >= stock || isAddingToCart} className="w-10 h-full flex items-center justify-center text-neutral-500 hover:bg-neutral-50 disabled:opacity-30 transition-colors" aria-label="Increase quantity">
                   <IconPlus className="h-3.5 w-3.5" stroke={2} />
                 </button>
               </div>
               <button onClick={() => handleAddToCart()} disabled={isAddingToCart || outOfStock}
-                className="flex-1 h-12 rounded-full text-[13px] font-medium flex items-center justify-center gap-2 transition-all disabled:opacity-40 text-white bg-neutral-900 hover:bg-neutral-800 active:scale-[0.99]">
+                className="flex-1 h-12 rounded-full text-[13px] font-normal flex items-center justify-center gap-2 transition-all disabled:opacity-40 text-white bg-neutral-900 hover:bg-neutral-800 active:scale-[0.99]">
                 {isAddingToCart ? <div className="h-4 w-4 border-2 border-current border-t-transparent rounded-full animate-spin" /> : outOfStock ? "Sold Out" : "Add to Cart"}
               </button>
             </div>
 
             <button type="button" onClick={() => handleAddToCart(true)} disabled={isAddingToCart || outOfStock || quantity > stock}
-              className="w-full h-12 mb-3 rounded-full border border-neutral-900 bg-white text-neutral-900 text-[13px] font-medium hover:bg-white disabled:opacity-40 transition-colors">
+              className="w-full h-12 mb-3 rounded-full border border-neutral-900 bg-white text-neutral-900 text-[13px] font-normal hover:bg-white disabled:opacity-40 transition-colors">
               {isAddingToCart ? "Adding…" : "Buy Now"}
             </button>
             </div>
@@ -675,7 +675,7 @@ export default function ProductContent({ slug }) {
               <button
                 onClick={handleWishlist}
                 disabled={isAddingToWishlist}
-                className={`mwp-product-utility flex-1 h-11 rounded-full border text-[12.5px] font-medium flex items-center justify-center gap-2 transition-colors ${isInWishlist
+                className={`mwp-product-utility flex-1 h-11 rounded-full border text-[12.5px] font-normal flex items-center justify-center gap-2 transition-colors ${isInWishlist
                   ? "border-neutral-300 bg-neutral-50 text-neutral-900"
                   : "border-neutral-200 text-neutral-500 hover:border-neutral-400 hover:text-neutral-900"
                   }`}
@@ -685,7 +685,7 @@ export default function ProductContent({ slug }) {
               </button>
               <button
                 onClick={() => toggleCompare(product)}
-                className={`mwp-product-utility flex-1 h-11 rounded-full border text-[12.5px] font-medium flex items-center justify-center gap-2 transition-colors ${isInCompare(product?.id)
+                className={`mwp-product-utility flex-1 h-11 rounded-full border text-[12.5px] font-normal flex items-center justify-center gap-2 transition-colors ${isInCompare(product?.id)
                   ? "border-neutral-300 bg-neutral-50 text-neutral-900"
                   : "border-neutral-200 text-neutral-500 hover:border-neutral-400 hover:text-neutral-900"
                   }`}
@@ -702,7 +702,7 @@ export default function ProductContent({ slug }) {
               <div className="flex items-center gap-3 py-2.5">
                 <IconTruck className="h-4.5 w-4.5 flex-shrink-0 text-neutral-400" stroke={1.6} />
                 <div>
-                  <p className="text-[13px] font-medium text-neutral-800">Delivery</p>
+                  <p className="text-[13px] font-normal text-neutral-800">Delivery</p>
                   <p className="text-[12px] mt-0.5 text-neutral-400">5–7 business days</p>
                 </div>
               </div>
@@ -710,7 +710,7 @@ export default function ProductContent({ slug }) {
 
             {/* Delivery Date */}
             <div className="flex items-center gap-2 text-[13px] mb-6 text-neutral-500">
-              <span className="font-medium text-neutral-800">Est. delivery</span>
+              <span className="font-normal text-neutral-800">Est. delivery</span>
               <span>{getDeliveryDates()}</span>
             </div>
 
@@ -721,7 +721,7 @@ export default function ProductContent({ slug }) {
                   <span className="w-24 text-neutral-400">Category</span>
                   <Link
                     href={`/category/${product.category.slug}`}
-                    className="text-neutral-800 hover:text-neutral-900 transition-colors font-medium hover:underline underline-offset-4"
+                    className="text-neutral-800 hover:text-neutral-900 transition-colors font-normal hover:underline underline-offset-4"
                   >
                     {product.category.name}
                   </Link>
@@ -732,7 +732,7 @@ export default function ProductContent({ slug }) {
                   <span className="w-24 text-neutral-400">Brand</span>
                   <Link
                     href={`/brand/${product.brand.slug}`}
-                    className="text-neutral-800 hover:text-neutral-900 transition-colors font-medium hover:underline underline-offset-4"
+                    className="text-neutral-800 hover:text-neutral-900 transition-colors font-normal hover:underline underline-offset-4"
                   >
                     {product.brand.name}
                   </Link>
@@ -742,7 +742,7 @@ export default function ProductContent({ slug }) {
 
             {/* Share */}
             <div className="flex items-center gap-4 mt-6 pt-6 border-t border-neutral-100">
-              <span className="flex items-center gap-2 text-[12px] font-medium text-neutral-400">
+              <span className="flex items-center gap-2 text-[12px] font-normal text-neutral-400">
                 <IconShare className="h-3.5 w-3.5" stroke={1.5} /> Share
               </span>
               <div className="flex items-center gap-2">
@@ -797,8 +797,8 @@ export default function ProductContent({ slug }) {
         <div className="mwp-product-section max-w-6xl mx-auto px-6 lg:px-10 mb-16 md:mb-20">
           <div className="p-6 sm:p-8 md:p-10 rounded-3xl bg-white">
             <div className="mb-8">
-              <span className="text-[12px] font-medium text-neutral-400 block mb-2">Build your routine</span>
-              <h3 className="text-2xl md:text-3xl font-semibold text-neutral-900 tracking-tight">Frequently bought together</h3>
+              <span className="text-[12px] font-normal text-neutral-400 block mb-2">Build your routine</span>
+              <h3 className="text-2xl md:text-3xl font-normal text-neutral-900 tracking-tight">Frequently bought together</h3>
             </div>
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
               <div className="lg:col-span-8 space-y-2">
@@ -809,16 +809,16 @@ export default function ProductContent({ slug }) {
                       <Image src={getImageUrl(item.image)} alt="" fill className="object-contain p-1" sizes="56px" />
                     </div>
                     <div className="flex-1 min-w-0">
-                      <p className="text-[13.5px] truncate font-medium text-neutral-900">{item.isMain && <span className="text-[11px] text-neutral-400 mr-2">This formula</span>}{item.name}</p>
+                      <p className="text-[13.5px] truncate font-normal text-neutral-900">{item.isMain && <span className="text-[11px] text-neutral-400 mr-2">This formula</span>}{item.name}</p>
                     </div>
-                    <span className="text-[13.5px] font-semibold text-neutral-900">{formatCurrency(item.price)}</span>
+                    <span className="text-[13.5px] font-normal text-neutral-900">{formatCurrency(item.price)}</span>
                   </div>
                 ))}
               </div>
               <div className="lg:col-span-4 p-7 sm:p-8 text-center rounded-2xl bg-white">
-                <span className="text-[12px] font-medium text-neutral-400 block mb-2">Bundle total</span>
-                <span className="text-3xl sm:text-4xl font-semibold block mb-5 text-neutral-900 tracking-tight">{formatCurrency(bundleTotal)}</span>
-                <button onClick={handleAddBundleToCart} disabled={isAddingBundle || !Object.values(bundleSelected).some(Boolean)} className="w-full h-12 text-[13px] font-medium transition-all duration-300 disabled:opacity-40 rounded-full text-white bg-neutral-900 hover:bg-neutral-800">
+                <span className="text-[12px] font-normal text-neutral-400 block mb-2">Bundle total</span>
+                <span className="text-3xl sm:text-4xl font-normal block mb-5 text-neutral-900 tracking-tight">{formatCurrency(bundleTotal)}</span>
+                <button onClick={handleAddBundleToCart} disabled={isAddingBundle || !Object.values(bundleSelected).some(Boolean)} className="w-full h-12 text-[13px] font-normal transition-all duration-300 disabled:opacity-40 rounded-full text-white bg-neutral-900 hover:bg-neutral-800">
                   {isAddingBundle ? "Adding…" : "Add Bundle to Bag"}
                 </button>
               </div>
@@ -832,7 +832,7 @@ export default function ProductContent({ slug }) {
         {/* Description - always visible */}
         {product.description && (
           <div className="mb-10 max-w-3xl">
-            <p className="text-[12px] font-medium text-neutral-400 mb-4">About this formula</p>
+            <p className="text-[12px] font-normal text-neutral-400 mb-4">About this formula</p>
             <div className="text-[15px] leading-relaxed text-neutral-600" dangerouslySetInnerHTML={{ __html: product.description }} />
           </div>
         )}
@@ -857,7 +857,7 @@ export default function ProductContent({ slug }) {
                   onClick={() => setOpenSections((prev) => ({ ...prev, [key]: !prev[key] }))}
                   className="flex items-center justify-between w-full py-5 text-left transition-colors"
                 >
-                  <span className="text-[14px] font-medium text-neutral-900">{label}</span>
+                  <span className="text-[14px] font-normal text-neutral-900">{label}</span>
                   <IconChevronRight
                     className="h-4 w-4 transition-transform duration-300 text-neutral-400"
                     style={{ transform: isOpen ? "rotate(90deg)" : "rotate(0deg)" }}
@@ -882,7 +882,7 @@ export default function ProductContent({ slug }) {
                                 sizes="80px"
                               />
                             </div>
-                            <span className="text-[11px] font-medium text-neutral-700">{note.title}</span>
+                            <span className="text-[11px] font-normal text-neutral-700">{note.title}</span>
                           </div>
                         ))}
                       </div>
@@ -903,7 +903,7 @@ export default function ProductContent({ slug }) {
                 onClick={() => setOpenSections((prev) => ({ ...prev, ingredients: !prev.ingredients }))}
                 className="flex items-center justify-between w-full py-5 text-left transition-colors"
               >
-                <span className="text-[14px] font-medium text-neutral-900">
+                <span className="text-[14px] font-normal text-neutral-900">
                   Ingredients ({product.ingredients.length})
                 </span>
                 <IconChevronRight
@@ -929,7 +929,7 @@ export default function ProductContent({ slug }) {
                         </div>
                       )}
                       <div className="min-w-0">
-                        <p className="text-[13.5px] font-medium text-neutral-900 leading-snug">{ing.name}</p>
+                        <p className="text-[13.5px] font-normal text-neutral-900 leading-snug">{ing.name}</p>
                         <p className="text-[12.5px] text-neutral-500 leading-relaxed mt-0.5">{ing.benefit}</p>
                       </div>
                     </div>
@@ -937,7 +937,7 @@ export default function ProductContent({ slug }) {
                 </div>
                 <Link
                   href="/ingredients"
-                  className="mt-4 inline-flex items-center gap-1.5 text-[12.5px] font-medium text-neutral-900 hover:underline underline-offset-4"
+                  className="mt-4 inline-flex items-center gap-1.5 text-[12.5px] font-normal text-neutral-900 hover:underline underline-offset-4"
                 >
                   See all MWP ingredients
                   <IconChevronRight className="h-3.5 w-3.5" stroke={2} />
@@ -953,7 +953,7 @@ export default function ProductContent({ slug }) {
                 onClick={() => setOpenSections((prev) => ({ ...prev, videos: !prev.videos }))}
                 className="flex items-center justify-between w-full py-5 text-left transition-colors"
               >
-                <span className="text-[14px] font-medium text-neutral-900">Videos</span>
+                <span className="text-[14px] font-normal text-neutral-900">Videos</span>
                 <IconChevronRight
                   className="h-4 w-4 transition-transform duration-300 text-neutral-400"
                   style={{ transform: openSections.videos ? "rotate(90deg)" : "rotate(0deg)" }}
@@ -977,7 +977,7 @@ export default function ProductContent({ slug }) {
                       </div>
                       {video.title && (
                         <div className="px-4 py-3">
-                          <p className="text-[13.5px] font-medium text-neutral-800">{video.title}</p>
+                          <p className="text-[13.5px] font-normal text-neutral-800">{video.title}</p>
                         </div>
                       )}
                     </div>
@@ -1028,10 +1028,10 @@ export default function ProductContent({ slug }) {
         <div className="max-w-6xl mx-auto px-6 lg:px-10 pb-20">
           <div className="flex items-end justify-between mb-9">
             <div>
-              <span className="text-[12px] font-medium text-neutral-400 block mb-2.5">Keep exploring</span>
-              <h2 className="text-2xl md:text-3xl font-semibold text-neutral-900 tracking-tight">You may also like</h2>
+              <span className="text-[12px] font-normal text-neutral-400 block mb-2.5">Keep exploring</span>
+              <h2 className="text-2xl md:text-3xl font-normal text-neutral-900 tracking-tight">You may also like</h2>
             </div>
-            <Link href="/products" className="text-[13px] font-medium text-neutral-900 shrink-0 hover:underline underline-offset-4">View all →</Link>
+            <Link href="/products" className="text-[13px] font-normal text-neutral-900 shrink-0 hover:underline underline-offset-4">View all →</Link>
           </div>
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5">
             {relatedProducts.map((p) => <ProductCard key={p.id} product={p} />)}
@@ -1048,8 +1048,8 @@ export default function ProductContent({ slug }) {
                 <Image src={getImageUrl(primary?.url)} alt="" fill className="object-cover" sizes="44px" />
               </div>
               <div className="min-w-0">
-                <h4 className="text-[13.5px] font-medium text-neutral-900 truncate">{product.name}</h4>
-                <p className="text-[14px] font-semibold text-neutral-900 mt-0.5">
+                <h4 className="text-[13.5px] font-normal text-neutral-900 truncate">{product.name}</h4>
+                <p className="text-[14px] font-normal text-neutral-900 mt-0.5">
                   {formatCurrency(selectedVariant ? (effectivePriceInfo?.price || selectedVariant.price) : (product.basePrice || product.regularPrice))}
                 </p>
               </div>
@@ -1075,7 +1075,7 @@ export default function ProductContent({ slug }) {
               <button
                 onClick={handleAddToCart}
                 disabled={isAddingToCart || outOfStock}
-                className="px-6 sm:px-8 h-11 rounded-full text-[12.5px] font-medium flex items-center justify-center gap-2 text-white bg-neutral-900 hover:bg-neutral-800 disabled:opacity-40 transition-all"
+                className="px-6 sm:px-8 h-11 rounded-full text-[12.5px] font-normal flex items-center justify-center gap-2 text-white bg-neutral-900 hover:bg-neutral-800 disabled:opacity-40 transition-all"
               >
                 {isAddingToCart ? "Adding…" : outOfStock ? "Sold Out" : "Add to Cart"}
               </button>
@@ -1090,7 +1090,7 @@ export default function ProductContent({ slug }) {
           {/* Header Controls */}
           <div className="flex items-center justify-between z-10 text-white border-b border-white/10 pb-4">
             <div className="flex items-center gap-3">
-              <span className="text-xs font-medium text-white/80">{product.name}</span>
+              <span className="text-xs font-normal text-white/80">{product.name}</span>
               {images.length > 1 && (
                 <span className="text-xs text-white/40">
                   ({activeThumb + 1} of {images.length})
@@ -1110,7 +1110,7 @@ export default function ProductContent({ slug }) {
                 </button>
                 <button
                   onClick={() => setLightboxScale(1)}
-                  className="px-2 py-1 text-xs font-mono font-medium text-white/70 hover:bg-white/10 rounded-full transition-colors"
+                  className="px-2 py-1 text-xs font-normal font-normal text-white/70 hover:bg-white/10 rounded-full transition-colors"
                   title="Reset Zoom"
                 >
                   {Math.round(lightboxScale * 100)}%

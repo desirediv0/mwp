@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import { fetchApi } from "@/lib/utils";
 
-const outlineButton = "inline-flex min-h-11 items-center justify-center rounded-full border border-neutral-900 bg-white px-5 py-2 text-[13px] font-medium text-neutral-900 transition-colors hover:bg-neutral-50 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-neutral-900";
+const outlineButton = "inline-flex min-h-11 items-center justify-center rounded-full border border-neutral-900 bg-white px-5 py-2 text-[13px] font-normal text-neutral-900 transition-colors hover:bg-neutral-50 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-neutral-900";
 
 // Data-driven "Inside the formula" block. Everything shown here comes from the
 // product record (ingredientItems, servingSize, whenToTake, shippingReturn,
@@ -58,7 +58,7 @@ export default function ProductFormulaSections({ product }) {
         <div className="mwp-formula-panel rounded-3xl border border-[#e6ded2] bg-white p-6 md:p-10">
           <div className="grid gap-8 lg:grid-cols-2">
             <div>
-              <h2 className="text-2xl md:text-3xl font-semibold tracking-tight text-neutral-900">
+              <h2 className="text-2xl md:text-3xl font-normal tracking-tight text-neutral-900">
                 Inside the formula
               </h2>
               <ul className="mt-6 grid gap-2 min-[380px]:grid-cols-2">
@@ -69,7 +69,7 @@ export default function ProductFormulaSections({ product }) {
                   >
                     <details className="group px-4 py-3">
                     <summary className="cursor-pointer list-none focus-visible:outline-neutral-900">
-                    <p className="text-[14px] font-medium text-neutral-900">{item.name}</p>
+                    <p className="text-[14px] font-normal text-neutral-900">{item.name}</p>
                     {(item.amount || item.source) && (
                       <p className="mt-0.5 text-[12px] text-neutral-500">
                         {[item.amount, item.source].filter(Boolean).join(" • ")}
@@ -89,7 +89,7 @@ export default function ProductFormulaSections({ product }) {
             </div>
 
             <div>
-              <h2 className="text-2xl md:text-3xl font-semibold tracking-tight text-neutral-900">
+              <h2 className="text-2xl md:text-3xl font-normal tracking-tight text-neutral-900">
                 Why transparency matters
               </h2>
               <p className="mt-4 text-[14px] leading-relaxed text-neutral-600">
@@ -124,7 +124,7 @@ export default function ProductFormulaSections({ product }) {
         <div className="mt-4 grid gap-4 md:grid-cols-3">
           {infoCards.map((card) => (
             <div key={card.title} className="rounded-2xl border border-[#e6ded2] bg-white p-5">
-              <h3 className="text-[16px] font-semibold text-neutral-900">{card.title}</h3>
+              <h3 className="text-[16px] font-normal text-neutral-900">{card.title}</h3>
               <p className="mt-2 text-[13px] leading-relaxed text-neutral-500">
                 {card.body}
               </p>

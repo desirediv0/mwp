@@ -9,6 +9,8 @@ import { useCompare } from "@/lib/compare-context";
 import { productPalette } from "@/lib/product-palette";
 
 const imageUrl = raw => {
+  if (raw && typeof raw === "object") raw = raw.url || raw.image;
+  if (typeof raw !== "string") return "/placeholder.jpg";
   if (!raw) return "/placeholder.jpg";
   if (raw.startsWith("http") || raw.startsWith("/")) return raw;
   return `https://desirediv-storage.blr1.digitaloceanspaces.com/${raw}`;
