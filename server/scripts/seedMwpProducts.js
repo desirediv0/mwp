@@ -22,7 +22,7 @@ const MWP_PRODUCTS = [
       <ul>
         <li>100% Transparent Label - No Proprietary Blends</li>
         <li>Zero Banned Substances, Third-Party Lab Tested</li>
-        <li>GMP & FSSAI Compliant Manufacturing</li>
+        <li>cGMP-Compliant, FDA-Registered Facility Manufacturing</li>
       </ul>
     `,
     metaTitle: "ULTRA PRO Men's Performance | Natural Testosterone Booster - MWP",

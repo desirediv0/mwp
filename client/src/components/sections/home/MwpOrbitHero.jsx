@@ -22,12 +22,12 @@ import {
   IconFlask,
   IconPlayerPause,
   IconPlayerPlay,
-  IconQrcode,
   IconShieldCheck,
 } from "@tabler/icons-react";
 import { useLanguage } from "@/lib/language-context";
 import { CORE_PRODUCTS } from "@/lib/mwp-content";
 import { productPalette } from "@/lib/product-palette";
+import { TRUST_CLAIMS } from "@/lib/trustClaims";
 import "./mwp-orbit-hero.css";
 
 // WebGL stage is client-only and streams in after hydration; the DOM bottle covers first paint.
@@ -59,11 +59,10 @@ const FORMULAS = [
   };
 });
 
-const TRUST = [
-  { label: "GMP Certified", icon: IconShieldCheck },
-  { label: "Lab Tested", icon: IconFlask },
-  { label: "QR Verified", icon: IconQrcode },
-];
+const TRUST = TRUST_CLAIMS.map((label) => ({
+  label,
+  icon: /lab tested/i.test(label) ? IconFlask : IconShieldCheck,
+}));
 
 const TITLE_LINES = ["Your everyday.", "Your kind of", "power."];
 
@@ -118,7 +117,7 @@ function OrbitSeal({ rotate }) {
         </defs>
         <text>
           <textPath href={`#${pathId}`} textLength="292" lengthAdjust="spacing">
-            Lab tested • QR verified • GMP certified •
+            cGMP • Vegan • Non-GMO • Lab tested •
           </textPath>
         </text>
       </svg>

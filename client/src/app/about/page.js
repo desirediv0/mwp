@@ -89,7 +89,7 @@ export default function AboutPage() {
                 THE MWP PURITY &amp; POTENCY PLEDGE
               </h2>
               <p className="mt-4 text-neutral-600 text-sm sm:text-base leading-relaxed">
-                Every batch produced for MWP SUPPLEMENTS is manufactured in certified GMP and FSSAI-compliant facilities under strict quality oversight. We conduct independent third-party laboratory assays to ensure heavy metal safety, absence of banned stimulants, and 100% active dose verification.
+                Every batch produced for MWP SUPPLEMENTS is manufactured in cGMP-compliant facilities registered with the U.S. FDA under strict quality oversight. We conduct independent third-party laboratory assays to ensure heavy metal safety, absence of banned stimulants, and 100% active dose verification.
               </p>
 
               <div className="mt-8 grid grid-cols-2 sm:grid-cols-3 gap-4">
@@ -107,11 +107,11 @@ export default function AboutPage() {
                 </div>
                 <div className="flex items-center gap-2 text-xs font-semibold text-neutral-600">
                   <IconCheck className="h-5 w-5 text-red-500 shrink-0" />
-                  <span>GMP Certified</span>
+                  <span>Manufactured in a cGMP-Compliant Facility</span>
                 </div>
                 <div className="flex items-center gap-2 text-xs font-semibold text-neutral-600">
                   <IconCheck className="h-5 w-5 text-red-500 shrink-0" />
-                  <span>FSSAI Compliant</span>
+                  <span>FDA-Registered Facility</span>
                 </div>
                 <div className="flex items-center gap-2 text-xs font-semibold text-neutral-600">
                   <IconCheck className="h-5 w-5 text-red-500 shrink-0" />

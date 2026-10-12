@@ -16,7 +16,7 @@ export default function MwpQualitySection() {
     },
     {
       icon: IconCertificate,
-      title: "GMP & FSSAI Certified",
+      title: "cGMP & FDA-Registered Facility",
       desc: "Manufactured in state-of-the-art facilities compliant with Good Manufacturing Practices and audited under stringent food safety norms.",
     },
     {

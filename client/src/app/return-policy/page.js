@@ -1,192 +1,137 @@
-import Link from "next/link";
-import { RefreshCw, Video, ShieldAlert, Mail } from "lucide-react";
+import PolicyLayout, { P, UL, Note, Steps } from "@/components/layout/PolicyLayout";
+import { SITE_CONTACT } from "@/lib/siteContact";
 
 export const metadata = {
-  title: "Returns & Refund Policy | MWP SUPPLEMENTS",
-  description: "Review MWP SUPPLEMENTS Returns, Replacement & Quality Guarantee terms, unboxing verification guidelines, and hygiene protocols.",
+  title: "Returns & Replacement Policy | MWP SUPPLEMENTS",
+  description:
+    "How MWP Supplements handles damaged or incorrect orders, replacements, refunds and cancellations, and why opened supplement containers cannot be returned.",
 };
 
-const returnSteps = [
+const link = "font-semibold text-[#8f6f3a] underline underline-offset-4";
+
+const sections = [
   {
-    step: 1,
-    title: "Unboxing Video",
-    description: "Record uninterrupted unboxing video showing outer label and tamper seal before opening."
+    id: "how-it-works",
+    title: "Replacement and claim process",
+    body: (
+      <>
+        <P>If something is wrong with your order, here is exactly what to do:</P>
+        <Steps
+          steps={[
+            { title: "Record an unboxing video", text: "Film the parcel and the unopened product in one continuous video, starting before you open the box." },
+            { title: "Report within 48 hours", text: `Email the video and your order number to ${SITE_CONTACT.email} within 48 hours of delivery.` },
+            { title: "Quality review", text: "Our team checks for transit damage, a broken seal or a fulfillment mistake." },
+            { title: "Priority replacement", text: "Approved replacements are shipped as a priority." },
+          ]}
+        />
+      </>
+    ),
   },
   {
-    step: 2,
-    title: "Report Within 48 Hours",
-    description: "Submit video and order ID to support@mwpsupplements.com."
+    id: "free-replacement",
+    title: "When we replace your order free of charge",
+    body: (
+      <>
+        <P>We send a fresh replacement at no cost if:</P>
+        <UL
+          items={[
+            "Your shipment arrived damaged, crushed or leaking.",
+            "The tamper-evident safety seal was broken when it arrived.",
+            "We sent the wrong product or formula.",
+          ]}
+        />
+        <Note>All damage or wrong-item requests must be reported within 48 hours of delivery, with unboxing video proof.</Note>
+      </>
+    ),
   },
   {
-    step: 3,
-    title: "Quality Review",
-    description: "Our QA laboratory evaluates transit damage, broken seals, or dispatch issues."
+    id: "unboxing-video",
+    title: "What the unboxing video must show",
+    body: (
+      <>
+        <P>
+          To protect against tampering in transit and to verify product integrity, we need one continuous, uncut video that shows:
+        </P>
+        <UL
+          items={[
+            "The shipping label, with your name, address and tracking number, before the box is opened.",
+            "The outside of the parcel from all sides before any tape is cut.",
+            "Unbroken recording until the bottle and its safety seal are clearly visible.",
+          ]}
+        />
+      </>
+    ),
   },
   {
-    step: 4,
-    title: "Priority Replacement",
-    description: "Approved replacements are expedited with priority air express courier."
-  }
+    id: "hygiene",
+    title: "Hygiene and safety: opened products",
+    body: (
+      <>
+        <P>
+          MWP formulas are ingestible products packed under cGMP-compliant standards. For health and safety reasons,{" "}
+          <strong className="text-neutral-900">opened, unsealed or partially used containers cannot be returned.</strong>
+        </P>
+        <P>We cannot accept returns for:</P>
+        <UL
+          items={[
+            "Change of mind, or taste and flavor preference.",
+            "Choosing the wrong product or pack size.",
+            "Opened, unsealed or partially used containers.",
+            "Items bought in a final-sale or clearance promotion.",
+            "Products not stored in a cool, dry place as directed.",
+          ]}
+        />
+      </>
+    ),
+  },
+  {
+    id: "refunds",
+    title: "Refunds",
+    body: (
+      <P>
+        If an approved replacement is out of stock or cannot be delivered, we refund 100% of the item to your original
+        payment method, normally within 5–7 business days of approval. Your bank may take extra time to show it.
+      </P>
+    ),
+  },
+  {
+    id: "cancellations",
+    title: "Cancelling an order",
+    body: (
+      <P>
+        You can cancel for free before your order has been packed and shipped. Email{" "}
+        <a className={link} href={`mailto:${SITE_CONTACT.email}`}>{SITE_CONTACT.email}</a> with your order number as
+        soon as possible. Once it has shipped, it can no longer be cancelled.
+      </P>
+    ),
+  },
+  {
+    id: "fraud",
+    title: "Protecting every customer",
+    body: (
+      <P>
+        We may decline a replacement request that has no valid video verification or that shows signs of deliberate
+        tampering, and we review unusual claim patterns. This keeps the process fair and fast for everyone else.
+      </P>
+    ),
+  },
 ];
 
 export default function ReturnPolicyPage() {
   return (
-    <div className="min-h-screen bg-white text-neutral-900">
-      {/* ── Banner Header ── */}
-      <section className="relative py-14 md:py-20 overflow-hidden border-b border-neutral-200 bg-white ">
-        <div className="relative z-10 max-w-5xl mx-auto px-6">
-          <div className="flex items-center gap-2 text-xs text-neutral-900 mb-4">
-            <Link href="/" className="hover:text-neutral-900 transition-colors">Home</Link>
-            <span>/</span>
-            <span className="text-red-500 font-medium">Returns Policy</span>
-          </div>
-          <div className="inline-block px-3 py-1 mb-3 rounded-full bg-red-600/10 border border-red-500/30 text-red-500 text-xs font-bold tracking-wider uppercase">
-            CLINICAL INTEGRITY &amp; HYGIENE STANDARDS
-          </div>
-          <h1 className="text-3xl md:text-5xl font-extrabold tracking-tight mb-2 text-neutral-900">
-            Returns &amp; Replacement Policy
-          </h1>
-          <p className="text-sm text-neutral-600 max-w-xl">
-            Because MWP supplements are high-potency nutritional consumables, strict safety protocols protect all athletes and customers.
-          </p>
-        </div>
-      </section>
-
-      {/* ── Policy Content ── */}
-      <section className="py-12 md:py-16 px-6 font-sans">
-        <div className="max-w-4xl mx-auto space-y-8">
-
-          {/* Return Workflow Grid */}
-          <div className="bg-[#121212] rounded-3xl p-8 border border-neutral-200 shadow-2xl">
-            <h2 className="text-xl md:text-2xl text-neutral-900 mb-6 text-center flex items-center justify-center gap-2 font-bold">
-              <RefreshCw className="w-5 h-5 text-red-500" /> Replacement &amp; Claim Process
-            </h2>
-            <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
-              {returnSteps.map((item) => (
-                <div key={item.step} className="text-center relative bg-white/[0.02] border border-neutral-200 p-4 rounded-2xl">
-                  <div className="w-10 h-10 bg-red-600/10 text-red-500 border border-red-500/30 rounded-full flex items-center justify-center mx-auto mb-3 font-bold text-base">
-                    {item.step}
-                  </div>
-                  <h3 className="text-neutral-900 text-xs font-bold mb-1">{item.title}</h3>
-                  <p className="text-neutral-600 text-[11px] leading-relaxed">{item.description}</p>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          {/* Policy Prose Body */}
-          <div className="bg-[#121212] border border-neutral-200 rounded-3xl p-8 md:p-14 shadow-2xl space-y-8 text-neutral-600">
-
-            <div className="border-b border-neutral-200 pb-6">
-              <p className="text-sm md:text-base leading-relaxed text-neutral-600">
-                At <strong className="text-neutral-900 font-bold">MWP SUPPLEMENTS</strong>, every bottle of Ultra Pro, Power Max, Rapid Boost, Her Power, Her Energy, and Daily Boost is packaged under strict clean-room GMP standards. Due to the ingestible nature of health supplements, government health regulations, and hygiene considerations, we follow an uncompromising safety policy.
-              </p>
-            </div>
-
-            {/* Non-Returnable Category */}
-            <div className="space-y-3">
-              <h2 className="text-lg md:text-xl font-bold text-neutral-900">
-                Hygiene &amp; Safety Notice
-              </h2>
-              <p className="text-sm font-semibold text-red-400 bg-red-950/40 p-3.5 rounded-xl border border-red-800/40">
-                For health and food safety reasons under FSSAI consumer protection norms, opened or unsealed dietary supplement containers are non-returnable.
-              </p>
-              <p className="text-xs text-neutral-600 font-medium">Returns are NOT accepted for:</p>
-              <ul className="grid sm:grid-cols-2 gap-2 text-xs text-neutral-600 bg-white/[0.02] p-4 rounded-2xl border border-neutral-200">
-                <li>• Change of mind or taste/flavor preference</li>
-                <li>• Personal fitness routine adjustments</li>
-                <li>• Incorrect product variant chosen by customer</li>
-                <li>• Opened, unsealed, or partially consumed containers</li>
-                <li>• Products purchased during special clearance sales</li>
-                <li>• Failure to store in recommended cool, dry conditions</li>
-              </ul>
-            </div>
-
-            {/* Replacements */}
-            <div className="space-y-3 pt-4 border-t border-neutral-200">
-              <h2 className="text-lg md:text-xl font-bold text-neutral-900">
-                When Do We Replace Free of Cost?
-              </h2>
-              <p className="text-sm text-neutral-600">We immediately dispatch a fresh replacement if:</p>
-              <ul className="space-y-1 text-xs text-neutral-600 list-disc pl-5 font-medium">
-                <li>The shipment arrived damaged, crushed, or leaking during transit.</li>
-                <li>The factory tamper-evident safety seal was compromised upon initial delivery.</li>
-                <li>An incorrect product or formula variant was dispatched by our warehouse.</li>
-              </ul>
-              <div className="p-3 bg-amber-500/10 border border-amber-500/30 rounded-xl text-xs text-amber-300 font-semibold">
-                All damage or wrong item replacement requests must be reported within 48 hours of delivery along with unboxing video proof.
-              </div>
-            </div>
-
-            {/* Mandatory Unboxing Video */}
-            <div className="space-y-3 pt-4 border-t border-neutral-200 p-5 bg-white/[0.03] border border-neutral-200 rounded-2xl">
-              <h2 className="text-lg font-bold text-neutral-900 flex items-center gap-2">
-                <Video className="w-5 h-5 text-red-500" />
-                Mandatory Unboxing Video
-              </h2>
-              <p className="text-xs text-neutral-600 leading-relaxed">
-                To eliminate fraudulent courier tampering and verify product integrity, a continuous, uncut unboxing video is required.
-              </p>
-              <p className="text-xs text-red-400 font-bold">The video must show:</p>
-              <ul className="space-y-1.5 text-xs text-neutral-600 list-disc pl-5">
-                <li>The shipping label with AWB and recipient address prior to box opening.</li>
-                <li>Full 360-degree view of outer parcel condition before cutting any tape.</li>
-                <li>Unbroken recording until the product bottle and safety seal are clearly visible.</li>
-              </ul>
-            </div>
-
-            {/* Refunds */}
-            <div className="grid md:grid-cols-2 gap-6 pt-4 border-t border-neutral-200">
-              <div className="space-y-2">
-                <h3 className="font-bold text-neutral-900 text-base">Refund Policy</h3>
-                <p className="text-xs text-neutral-600 leading-relaxed">
-                  Where an approved replacement item is temporarily out of stock or transit is unfulfillable, a 100% refund is initiated back to your original payment mode within 5–7 business days.
-                </p>
-              </div>
-              <div className="space-y-2">
-                <h3 className="font-bold text-neutral-900 text-base">Order Cancellations</h3>
-                <p className="text-xs text-neutral-600 leading-relaxed">
-                  Orders may be cancelled free of charge prior to warehouse packaging and AWB generation by contacting support@mwpsupplements.com immediately.
-                </p>
-              </div>
-            </div>
-
-            {/* Fraud Prevention */}
-            <div className="space-y-2 pt-4 border-t border-neutral-200 p-4 bg-red-950/30 border border-red-800/40 rounded-2xl">
-              <h3 className="font-bold text-red-300 text-sm flex items-center gap-1.5">
-                <ShieldAlert className="w-4 h-4 text-red-500" />
-                Anti-Fraud Safeguards
-              </h3>
-              <p className="text-xs text-red-200/80 leading-relaxed">
-                MWP SUPPLEMENTS reserves the right to deny replacement requests that lack valid video verification or show signs of intentional tampering. Suspicious claim patterns will be referred to our logistics audit team.
-              </p>
-            </div>
-
-            {/* Support Concierge */}
-            <div className="pt-6 border-t border-neutral-200 bg-white/[0.02] p-6 rounded-2xl flex flex-col md:flex-row md:items-center justify-between gap-4">
-              <div>
-                <h3 className="font-bold text-neutral-900 text-base mb-1 flex items-center gap-2">
-                  <Mail className="w-4 h-4 text-red-500" />
-                  Have Questions Regarding A Replacement?
-                </h3>
-                <p className="text-xs text-neutral-600">
-                  Our customer support team will assist you through claim filing and replacement tracking.
-                </p>
-                <p className="text-xs font-medium text-neutral-600 mt-1">
-                  Email: <a href="mailto:support@mwpsupplements.com" className="text-red-400 underline">support@mwpsupplements.com</a>
-                </p>
-              </div>
-              <a
-                href="mailto:support@mwpsupplements.com"
-                className="px-6 py-3 bg-red-600 hover:bg-red-500 text-white text-xs uppercase tracking-widest font-bold rounded-xl transition-all text-center shrink-0 shadow-lg shadow-red-900/30"
-              >
-                File A Claim
-              </a>
-            </div>
-
-          </div>
-        </div>
-      </section>
-    </div>
+    <PolicyLayout
+      kicker="Integrity & hygiene standards"
+      title="Returns &"
+      accent="Replacements"
+      intro="Supplements are consumables, so we protect every customer with clear safety rules. If something arrives wrong, we make it right."
+      updated="October 2026"
+      highlights={[
+        { title: "Report in 48 hours", text: "Damaged or wrong item? Send us your order number and an unboxing video within 48 hours." },
+        { title: "Free replacements", text: "Approved damage or fulfillment mistakes are replaced at no cost, as a priority." },
+        { title: "Sealed for your safety", text: "Opened or unsealed containers cannot be returned, for health and safety." },
+      ]}
+      sections={sections}
+      contactTitle="Need to file a claim or ask about one?"
+    />
   );
 }

@@ -156,20 +156,11 @@ export const Footer = () => {
             &copy; {new Date().getFullYear()} MWP Supplements. All rights reserved.
           </p>
           <div className="flex flex-col sm:flex-row flex-wrap items-center justify-center gap-x-8 gap-y-5">
-            <div className="flex items-center gap-4">
-              {[
-                { name: "Visa", src: "/visa.png" },
-                { name: "Mastercard", src: "/mc.png" },
-                { name: "UPI", src: "/upi.png" },
-              ].map((item) => (
-                <div
-                  key={item.name}
-                  className="px-2 py-1 bg-neutral-50 border border-neutral-200 rounded-md flex items-center justify-center h-6 min-w-[36px]"
-                  title={item.name}
-                >
-                  <Image src={item.src} alt={item.name} width={26} height={14} className="h-3.5 w-auto object-contain max-w-[26px]" />
-                </div>
-              ))}
+            <div
+              className="flex h-9 items-center justify-center overflow-hidden rounded-md border border-neutral-200 bg-white px-2"
+              title="Payments powered by Stripe"
+            >
+              <Image src="/stripe.png" alt="Stripe" width={800} height={380} className="h-9 w-auto object-contain" />
             </div>
             <div className="flex flex-wrap items-center justify-center gap-x-6 gap-y-3 text-[11px] leading-6 text-neutral-400">
               <Link href="/privacy-policy" className="hover:text-neutral-900 transition-colors">Privacy Policy</Link>

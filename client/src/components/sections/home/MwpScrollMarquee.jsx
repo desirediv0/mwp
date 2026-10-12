@@ -13,10 +13,11 @@ import {
   useVelocity,
 } from "framer-motion";
 import { INGREDIENT_LIBRARY } from "@/lib/ingredient-library";
+import { TRUST_CLAIMS } from "@/lib/trustClaims";
 
 // Tilted band under the hero: proof points and real ingredient origins drift sideways and
 // speed up / reverse / skew with scroll velocity.
-const PROOF = ["Clinically dosed", "GMP certified", "Lab tested", "QR verified", "Eight formulas", "Men · Women · Power"];
+const PROOF = ["Clinically dosed", ...TRUST_CLAIMS, "Eight formulas", "Men · Women · Power"];
 const INGREDIENTS = INGREDIENT_LIBRARY.slice(0, 16).map(item => `${item.name} — ${item.origin}`);
 
 const wrap = (min, max, value) => {

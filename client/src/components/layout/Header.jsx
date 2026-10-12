@@ -32,6 +32,7 @@ import {
   IconSchool,
   IconWriting,
   IconCertificate,
+  IconHome,
 } from "@tabler/icons-react";
 import { useCompare } from "@/lib/compare-context";
 import { useLanguage } from "@/lib/language-context";
@@ -48,6 +49,7 @@ const PRODUCT_MENU = [
 ];
 
 const NAV_LINKS = [
+  { href: "/", label: "Home", icon: IconHome },
   { href: "/ingredients", labelKey: "ingredients", icon: IconLeaf },
   { href: "/university", labelKey: "university", icon: IconSchool },
   { href: "/founder", labelKey: "founderLetter", icon: IconWriting },
@@ -187,7 +189,7 @@ export function Navbar() {
               <span className="sm:hidden">Eight formulas. One everyday routine.</span>
               <span className="hidden sm:block truncate">{ANNOUNCEMENTS[0]}</span>
             </span>
-            <span className="hidden lg:inline-flex shrink-0 items-center gap-2 text-green-700"><IconShieldCheck className="h-3.5 w-3.5" stroke={1.5} /> Lab Tested · QR Verified</span>
+            <span className="hidden lg:inline-flex shrink-0 items-center gap-2 text-green-700"><IconShieldCheck className="h-3.5 w-3.5" stroke={1.5} /> Third-Party Lab Tested · Non-GMO · Vegan</span>
           </div>
         </div>
 
@@ -277,7 +279,7 @@ export function Navbar() {
                 </AnimatePresence>
               </div>
 
-              {NAV_LINKS.map(({ href, labelKey }) => {
+              {NAV_LINKS.map(({ href, labelKey, label }) => {
                 const active = pathname === href;
                 return (
                   <Link
@@ -290,7 +292,7 @@ export function Navbar() {
                         : "text-neutral-500 hover:text-neutral-950"
                     )}
                   >
-                    {t(labelKey)}
+                    {label || t(labelKey)}
                     {active && (
                       <span className="absolute bottom-1 left-2.5 right-2.5 h-px bg-[#886b40]" />
                     )}
@@ -702,7 +704,7 @@ function MobileMenu({
                 <p className="text-[10px] uppercase tracking-widest font-extrabold text-neutral-500 px-2 mb-1.5">
                   Menu
                 </p>
-                {NAV_LINKS.map(({ href, labelKey, icon: Icon }) => {
+                {NAV_LINKS.map(({ href, labelKey, label, icon: Icon }) => {
                   const active = pathname === href;
                   return (
                     <Link
@@ -720,7 +722,7 @@ function MobileMenu({
                         {Icon && (
                           <Icon className="h-4 w-4 text-[#886b40]" stroke={2} />
                         )}
-                        <span>{t(labelKey)}</span>
+                        <span>{label || t(labelKey)}</span>
                       </div>
                       <IconChevronRight className="h-3.5 w-3.5 opacity-40" />
                     </Link>

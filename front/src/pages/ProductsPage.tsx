@@ -169,6 +169,10 @@ function useCategories() {
 }
 
 // Export ProductForm for reuse in other components
+// Extra product-form sections (notes, videos, lifestyle, brand, MOQ, product types...) are not used by the storefront design.
+// Flip to true to bring the old fields back.
+const SHOW_ADVANCED = false;
+
 export function ProductForm({
   mode,
   productId,
@@ -293,6 +297,19 @@ export function ProductForm({
   const editorRef = useRef<any>(null);
   const [editorContent, setEditorContent] = useState<string>("");
   const hasInitializedEditor = useRef(false);
+
+  // Benefit cards shown under the price on the product page (up to 4 rows)
+  const [highlights, setHighlights] = useState<{ title: string; text: string }[]>(
+    Array.from({ length: 4 }, () => ({ title: "", text: "" }))
+  );
+
+  // Optional product-page text overrides (empty = default text is shown)
+  const [pageContent, setPageContent] = useState({
+    trustBadges: "",
+    transparencyTitle: "",
+    transparencyText: "",
+    footerNote: "",
+  });
 
   // Section editors state
   const [sectionContents, setSectionContents] = useState<Record<string, string>>({
@@ -745,6 +762,21 @@ export function ProductForm({
               servingSize: productData.servingSize || "",
               whenToTake: productData.whenToTake || "",
             });
+            setPageContent({
+              trustBadges: productData.pageContent?.trustBadges || "",
+              transparencyTitle: productData.pageContent?.transparencyTitle || "",
+              transparencyText: productData.pageContent?.transparencyText || "",
+              footerNote: productData.pageContent?.footerNote || "",
+            });
+            {
+              const saved = Array.isArray(productData.highlights) ? productData.highlights : [];
+              setHighlights(
+                Array.from({ length: Math.max(4, saved.length) }, (_, i) => ({
+                  title: saved[i]?.title || "",
+                  text: saved[i]?.text || "",
+                }))
+              );
+            }
 
             // Set lifestyle image preview for edit mode
             if (productData.lifestyleImage) {
@@ -1234,6 +1266,8 @@ export function ProductForm({
       formData.append("dosageForm", sectionContents.dosageForm || "");
       formData.append("servingSize", sectionContents.servingSize || "");
       formData.append("whenToTake", sectionContents.whenToTake || "");
+      formData.append("highlights", JSON.stringify(highlights.filter((h) => h.title.trim() && h.text.trim())));
+      formData.append("pageContent", JSON.stringify(pageContent));
 
       // Add lifestyle image if selected
       if (lifestyleImageFile) {
@@ -1918,7 +1952,7 @@ export function ProductForm({
               )}
 
               {/* Sub-Categories Selection */}
-              {product.categoryIds.length > 0 && (
+              {SHOW_ADVANCED && product.categoryIds.length > 0 && (
                 <div className="space-y-2">
                   <Label htmlFor="subCategories">
                     {t("products.form.categories.sub_categories_optional")}
@@ -2090,6 +2124,7 @@ export function ProductForm({
               </div>
 
               {/* Brand selection */}
+{SHOW_ADVANCED && (
               <div className="space-y-2">
                 <Label htmlFor="brandId">{t("products.form.labels.brand_optional")}</Label>
                 <select
@@ -2112,6 +2147,7 @@ export function ProductForm({
                   Optional - associate this product with a brand
                 </p>
               </div>
+)}
 
               <div className="flex items-center gap-2 p-1">
                 <Label className="text-base">{t("products.form.labels.has_variants")}</Label>
@@ -2166,6 +2202,7 @@ export function ProductForm({
                     <Label htmlFor="isActive">{t("products.form.labels.active")}</Label>
                   </div>
 
+{SHOW_ADVANCED && (<>
                   <div className="flex items-center gap-2">
                     <Label htmlFor="visibility" className="text-sm font-medium">Visibility</Label>
                     <select
@@ -2215,9 +2252,11 @@ export function ProductForm({
                       {t("products.form.labels.our_product")}
                     </Label>
                   </div>
+</>)}
                 </div>
 
                 {/* Product Type Selection */}
+{SHOW_ADVANCED && (
                 <div className="space-y-2">
                   <Label>{t("products.form.settings.product_type")}</Label>
                   <p className="text-xs text-muted-foreground">
@@ -2269,6 +2308,7 @@ export function ProductForm({
                     </Link>
                   </div>
                 </div>
+)}
               </div>
 
               {!hasVariants && (
@@ -2291,6 +2331,7 @@ export function ProductForm({
               )}
 
               {/* SKU Field - Auto-generated in both cases */}
+{SHOW_ADVANCED && (
               <div className="grid gap-2">
                 <Label htmlFor="sku">
                   {!hasVariants
@@ -2307,10 +2348,11 @@ export function ProductForm({
                   className="bg-muted"
                 />
               </div>
+)}
 
               {!hasVariants && (
                 <div className="grid gap-2">
-                  <Label htmlFor="price">{t("products.form.labels.price")} *</Label>
+                  <Label htmlFor="price">MRP (price before discount) *</Label>
                   <div className="relative">
                     <span className="absolute left-2 top-1/2 transform -translate-y-1/2 text-muted-foreground">
                       $
@@ -2473,6 +2515,7 @@ export function ProductForm({
           )}
 
           {/* Product Notes Section */}
+{SHOW_ADVANCED && (
           <div className="space-y-4 rounded-lg border p-4 bg-gray-50">
             <div className="flex items-center justify-between border-b pb-2">
               <h2 className="text-xl font-semibold">
@@ -2573,6 +2616,7 @@ export function ProductForm({
               ))}
             </div>
           </div>
+)}
 
           {/* Product Details Sections */}
           <div className="space-y-4 rounded-lg border p-4 bg-gray-50">
@@ -2623,7 +2667,100 @@ export function ProductForm({
                 />
               </div>
             </div>
+            <div className="space-y-3 rounded-lg border bg-white p-4">
+              <div>
+                <Label>Benefit cards (shown under the price)</Label>
+                <p className="text-xs text-muted-foreground mt-0.5">
+                  Short title and one line, e.g. "Daily Wellness" and "Supports women's daily wellness". Empty rows are hidden.
+                </p>
+              </div>
+              {highlights.map((h, i) => (
+                <div key={i} className="grid gap-2 sm:grid-cols-[200px_1fr_auto]">
+                  <Input
+                    placeholder="Title"
+                    value={h.title}
+                    onChange={(e) =>
+                      setHighlights((prev) => prev.map((x, j) => (j === i ? { ...x, title: e.target.value } : x)))
+                    }
+                  />
+                  <Input
+                    placeholder="Short line"
+                    value={h.text}
+                    onChange={(e) =>
+                      setHighlights((prev) => prev.map((x, j) => (j === i ? { ...x, text: e.target.value } : x)))
+                    }
+                  />
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="icon"
+                    aria-label="Delete this card"
+                    title="Delete this card"
+                    className="border-[#EF4444] text-[#EF4444] hover:bg-[#FEF2F2]"
+                    onClick={() => setHighlights((prev) => prev.filter((_, j) => j !== i))}
+                  >
+                    <Trash2 className="h-4 w-4" />
+                  </Button>
+                </div>
+              ))}
+              {highlights.length === 0 && (
+                <p className="text-xs text-muted-foreground">No cards. Click "Add another card" to create one.</p>
+              )}
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                onClick={() => setHighlights((prev) => [...prev, { title: "", text: "" }])}
+              >
+                Add another card
+              </Button>
+            </div>
+            <div className="space-y-3 rounded-lg border bg-white p-4">
+              <div>
+                <Label>Product page text</Label>
+                <p className="text-xs text-muted-foreground mt-0.5">
+                  Leave a box empty to show the default text.
+                </p>
+              </div>
+              <div className="space-y-1.5">
+                <Label htmlFor="pc-badges">Trust badges (comma separated)</Label>
+                <Input
+                  id="pc-badges"
+                  placeholder="GMP Facility, COA Lab Tested, Secure Checkout"
+                  value={pageContent.trustBadges}
+                  onChange={(e) => setPageContent((p) => ({ ...p, trustBadges: e.target.value }))}
+                />
+              </div>
+              <div className="space-y-1.5">
+                <Label htmlFor="pc-ttitle">Transparency heading</Label>
+                <Input
+                  id="pc-ttitle"
+                  placeholder="Why transparency matters"
+                  value={pageContent.transparencyTitle}
+                  onChange={(e) => setPageContent((p) => ({ ...p, transparencyTitle: e.target.value }))}
+                />
+              </div>
+              <div className="space-y-1.5">
+                <Label htmlFor="pc-ttext">Transparency text</Label>
+                <Input
+                  id="pc-ttext"
+                  placeholder="Every ingredient opens to a simple explanation, its dose and where it comes from..."
+                  value={pageContent.transparencyText}
+                  onChange={(e) => setPageContent((p) => ({ ...p, transparencyText: e.target.value }))}
+                />
+              </div>
+              <div className="space-y-1.5">
+                <Label htmlFor="pc-foot">Footer line</Label>
+                <Input
+                  id="pc-foot"
+                  placeholder="MWP Supplements • Premium performance. Transparent formula. Independently tested."
+                  value={pageContent.footerNote}
+                  onChange={(e) => setPageContent((p) => ({ ...p, footerNote: e.target.value }))}
+                />
+              </div>
+            </div>
             <div className="grid gap-6">
+{SHOW_ADVANCED && (<>
               <SectionEditor
                 label="Formula & Key Actives"
                 value={sectionContents.fragranceNotes}
@@ -2660,8 +2797,9 @@ export function ProductForm({
                   setProduct((prev) => ({ ...prev, behindThePerfume: content }));
                 }}
               />
+</>)}
               <SectionEditor
-                label="Shipping & Return"
+                label="Shipping & returns (shown on the product page)"
                 value={sectionContents.shippingReturn}
                 placeholder="Enter shipping and return policy..."
                 onChange={(content) => {
@@ -2670,7 +2808,7 @@ export function ProductForm({
                 }}
               />
               <SectionEditor
-                label="Legal Information"
+                label="Made for trust (certifications / quality note)"
                 value={sectionContents.legalInfo}
                 placeholder="Enter legal information..."
                 onChange={(content) => {
@@ -2683,6 +2821,7 @@ export function ProductForm({
           </div>
 
           {/* Product Videos Section */}
+{SHOW_ADVANCED && (<>
           <div className="space-y-4 rounded-lg border p-4 bg-gray-50">
             <h2 className="text-xl font-semibold border-b pb-2">
               Progress of Product
@@ -2896,6 +3035,7 @@ export function ProductForm({
               </div>
             </div>
           </div>
+</>)}
 
           {/* SEO Section */}
           <div className="space-y-4 rounded-lg border p-4 bg-gray-50">
@@ -3094,6 +3234,7 @@ export function ProductForm({
           )}
 
           {/* MOQ Settings Section */}
+{SHOW_ADVANCED && (
           <div className="space-y-4 rounded-lg border p-4 bg-gray-50">
             <h2 className="text-xl font-semibold border-b pb-2">
               {t("products.form.sections.moq_settings")}
@@ -3155,6 +3296,7 @@ export function ProductForm({
               </div>
             </div>
           </div>
+)}
 
           {/* Shipping Dimensions Section - Only show when Shiprocket is enabled and no variants */}
           {shiprocketEnabled && !hasVariants && (

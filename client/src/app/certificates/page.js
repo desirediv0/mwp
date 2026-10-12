@@ -1,87 +1,152 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState } from "react";
-import Image from "next/image";
+import { useEffect, useState } from "react";
 import Link from "next/link";
-import * as Dialog from "@radix-ui/react-dialog";
-import { IconCertificate, IconFileTypePdf, IconDownload, IconExternalLink, IconShare, IconCheck, IconX, IconArrowRight, IconSearch, IconEye, IconFiles } from "@tabler/icons-react";
-import { toast } from "sonner";
+import { IconArrowRight, IconQrcode, IconLoader2 } from "@tabler/icons-react";
 import { fetchApi } from "@/lib/utils";
-import { PageBreadcrumb, PageNextSteps } from "@/components/layout/Editorial";
-import { EditorialCanvas } from "@/components/layout/EditorialCanvas";
+import { TRUST_CLAIMS } from "@/lib/trustClaims";
+
+const PILLS = TRUST_CLAIMS;
+
+function CertificateCard({ c }) {
+  const hasFile = !!c.fileUrl;
+  const art = (
+    <div className="relative flex h-[220px] flex-col items-center justify-center rounded-md border border-[#d9bf86] bg-gradient-to-br from-white to-[#fbf6ea] px-6 text-center sm:h-[230px]">
+      <span aria-hidden="true" className="absolute left-2.5 top-2.5 h-10 w-12 border-l border-t border-[#c9a15a]" />
+      <span aria-hidden="true" className="absolute bottom-2.5 right-2.5 h-10 w-12 border-b border-r border-[#c9a15a]" />
+      <span className="flex h-12 w-12 items-center justify-center rounded-full border border-[#c9a15a] text-[13px] font-bold text-[#b08a43]">
+        {c.badge || "✓"}
+      </span>
+      <p className="mt-4 text-xl font-bold tracking-tight text-neutral-900">{c.heading || c.title}</p>
+      {(c.summary || c.description) && (
+        <p className="mt-2 max-w-[220px] text-[11px] leading-snug text-neutral-500">{c.summary || c.description}</p>
+      )}
+    </div>
+  );
+
+  const button = (
+    <span
+      className={`mt-4 flex w-full items-center justify-center gap-1.5 rounded-md px-4 py-3 text-center text-[10px] font-bold uppercase tracking-[0.15em] ${
+        hasFile ? "bg-[#161616] text-white group-hover:bg-neutral-700" : "bg-neutral-200 text-neutral-500"
+      }`}
+    >
+      {hasFile ? (c.buttonLabel || "View document") : "Coming soon"}
+      {hasFile && <IconArrowRight size={13} />}
+    </span>
+  );
+
+  const body = (
+    <>
+      {art}
+      <h3 className="mt-5 text-[15px] font-bold text-neutral-900">{c.title}</h3>
+      {c.description && <p className="mt-1.5 text-xs leading-relaxed text-neutral-600">{c.description}</p>}
+      {button}
+    </>
+  );
+
+  const cardClass =
+    "group flex flex-col rounded-[1.6rem] border border-[#e8dccb] bg-white p-3.5 shadow-[0_20px_50px_-35px_rgba(0,0,0,0.3)] transition-all";
+
+  return hasFile ? (
+    <a
+      href={c.fileUrl}
+      target="_blank"
+      rel="noopener noreferrer"
+      aria-label={`${c.buttonLabel || "View"}: ${c.title}`}
+      className={`${cardClass} hover:-translate-y-1 hover:shadow-[0_28px_60px_-30px_rgba(0,0,0,0.35)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-neutral-900`}
+    >
+      {body}
+    </a>
+  ) : (
+    <div className={cardClass}>{body}</div>
+  );
+}
 
 export default function CertificatesPage() {
   const [certificates, setCertificates] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
-  const [preview, setPreview] = useState(null);
-  const [copied, setCopied] = useState(null);
-  const [retry, setRetry] = useState(0);
-  const [search, setSearch] = useState("");
-  const [type, setType] = useState("all");
-  const previewTrigger = useRef(null);
+
   useEffect(() => {
     let alive = true;
-    setLoading(true); setError("");
-    fetchApi("/certificates").then(r => { if (alive) setCertificates(r?.data?.certificates || []); })
-      .catch(() => { if (alive) setError("Documents couldn't be loaded. Please try again."); })
-      .finally(() => { if (alive) setLoading(false); });
-    return () => { alive = false; };
-  }, [retry]);
-  useEffect(() => {
-    if (!copied) return;
-    const timer = setTimeout(() => setCopied(null), 2500);
-    return () => clearTimeout(timer);
-  }, [copied]);
-  const filtered = useMemo(() => certificates.filter(c => c.title.toLowerCase().includes(search.trim().toLowerCase()) && (type === "all" || (type === "pdf" ? c.fileType === "pdf" : c.fileType !== "pdf"))), [certificates, search, type]);
-  const openPreview = (certificate, event) => { previewTrigger.current = event.currentTarget; setPreview(certificate); };
-  const resetFilters = () => { setSearch(""); setType("all"); };
-  const share = async c => {
-    try { await navigator.clipboard.writeText(c.fileUrl); setCopied(c.id); toast.success("Document link copied"); }
-    catch { toast.error("Couldn't copy the link. Use Open document to access the file."); }
-  };
-  const download = async c => {
-    try {
-      const response = await fetch(c.fileUrl);
-      if (!response.ok) throw new Error("Download unavailable");
-      const url = URL.createObjectURL(await response.blob());
-      const link = document.createElement("a");
-      link.href = url; link.download = `${c.title.replace(/[^a-z0-9-]/gi, "-")}.${c.fileType === "pdf" ? "pdf" : "jpg"}`;
-      link.click(); setTimeout(() => URL.revokeObjectURL(url), 1000);
-    } catch { window.open(c.fileUrl, "_blank", "noopener,noreferrer"); toast.info("Document opened. Use your browser to save the file."); }
-  };
+    fetchApi("/certificates")
+      .then((r) => alive && setCertificates(r?.data?.certificates || []))
+      .catch(() => alive && setError("Certificates couldn't be loaded. Please try again."))
+      .finally(() => alive && setLoading(false));
+    return () => {
+      alive = false;
+    };
+  }, []);
 
   return (
-    <EditorialCanvas className="mwp-certificates">
-      <div className="mwp-container">
-        <PageBreadcrumb current="Certificates" />
-        <section className="mwp-doc-hero">
-          <div data-editorial-reveal><p className="mwp-editorial-kicker"><IconCertificate size={17} stroke={1.4} /> THE MWP CERTIFICATE WALL</p><h1 className="mwp-title">The details.<br /><span>Open for you.</span></h1><p className="mwp-lead">Confidence starts with clarity. Our published quality documents, collected in one place for you to read, explore and keep.</p><div className="mwp-actions mt-7"><a href="#documents" className="mwp-button">Explore documents <IconArrowRight size={17} /></a><Link href="/contact" className="mwp-text-link">Ask about your batch</Link></div></div>
-          <aside className="mwp-document-art" data-editorial-reveal><p>YOUR WINDOW INTO THE DETAILS</p><div className="mwp-document-art-card"><div><IconFiles size={31} stroke={1.2} /><span>Document library</span></div><strong>{loading ? "..." : error ? "--" : String(certificates.length).padStart(2, "0")}</strong><p>{loading ? "Loading published documents" : error ? "Documents are currently unavailable" : !certificates.length ? "Documents appear here when published" : `${certificates.length === 1 ? "Published document" : "Published documents"}, ready to explore`}</p></div><small>Only published documents appear here. For a specific product or batch, send our team the details on your bottle.</small></aside>
-        </section>
-      </div>
-      <section id="documents" className="mwp-section border-t border-neutral-200" style={{ scrollMarginTop: 132 }}>
-        <div className="mwp-container">
-          <div className="mwp-library-toolbar"><div><p className="mwp-editorial-kicker">A CLOSER LOOK AT QUALITY</p><h2>Document library.</h2></div><div className="mwp-editorial-search"><IconSearch size={18} /><input type="search" className="mwp-field" aria-label="Search documents" placeholder="Find a document..." value={search} onChange={event => setSearch(event.target.value)} />{search && <button aria-label="Clear document search" onClick={() => setSearch("")}><IconX size={17} /></button>}</div></div>
-          <div className="mwp-topic-list" role="group" aria-label="Document types">{[["all", "All documents"], ["pdf", "PDF reports"], ["image", "Image documents"]].map(([value, label]) => <button key={value} className="mwp-chip" aria-pressed={type === value} onClick={() => setType(value)}>{label}</button>)}</div>
-          {!loading && !error && <p className="mwp-editorial-results" aria-live="polite"><span>{filtered.length}</span> of {certificates.length} published documents</p>}
-          {loading ? <div className="mwp-doc-grid" role="status" aria-label="Loading documents">{[0, 1, 2].map(i => <div className="mwp-skeleton" key={i} />)}</div>
-            : error ? <div className="mwp-empty" role="alert"><h2>Documents are unavailable</h2><p>{error}</p><button className="mwp-button" onClick={() => setRetry(r => r + 1)}>Try again</button></div>
-            : !certificates.length ? <div className="mwp-empty"><IconCertificate className="mx-auto h-10 w-10" stroke={1.2} /><h2>No documents published yet.</h2><p>Certificates and reports will appear here when they are available. Our team can help with questions about your product.</p><Link className="mwp-button mwp-button-outline" href="/contact">Ask our team <IconArrowRight size={16} /></Link></div>
-            : !filtered.length ? <div className="mwp-empty"><IconSearch className="mx-auto h-9 w-9" stroke={1.3} /><h2>No matching documents.</h2><p>Try a different title or document type.</p><button className="mwp-button mwp-button-outline" onClick={resetFilters}>Reset filters</button></div>
-            : <div className="mwp-doc-grid">{filtered.map(c => <article className="mwp-doc-card" key={c.id}><button className="mwp-doc-cover" onClick={event => openPreview(c, event)} aria-label={`Preview ${c.title}`}>{c.fileType === "pdf" ? <IconFileTypePdf className="h-16 w-16" stroke={1.1} /> : <Image src={c.fileUrl} alt="" fill sizes="(max-width:640px) 90vw, (max-width:1024px) 45vw, 30vw" />}<span className="mwp-doc-type">{c.fileType === "pdf" ? "PDF REPORT" : "IMAGE DOCUMENT"}</span><span className="mwp-doc-preview-label"><IconEye size={14} /> Preview</span></button><div className="mwp-doc-info"><h3>{c.title}</h3><p>{c.fileType === "pdf" ? "PDF document" : "Image document"}</p><div className="mwp-doc-tools"><button className="mwp-button mwp-button-outline" onClick={event => openPreview(c, event)}>View document <IconArrowRight size={14} /></button><button className="mwp-icon-button" onClick={() => download(c)} aria-label={`Download ${c.title}`}><IconDownload size={17} /></button><button className="mwp-icon-button" onClick={() => share(c)} aria-label={`Copy link to ${c.title}`}>{copied === c.id ? <IconCheck size={17} /> : <IconShare size={17} />}</button></div></div></article>)}</div>}
+    <main className="bg-[#f8f5ee] text-neutral-900">
+      <div className="mx-auto max-w-6xl px-5 pb-16 pt-12 sm:px-8 sm:pt-16">
+        <div className="mx-auto max-w-2xl text-center">
+          <p className="text-[10px] font-bold uppercase tracking-[0.35em] text-[#a8873f]">The MWP Certificate Wall</p>
+          <h1 className="mt-4 text-5xl font-bold leading-[1.02] tracking-tight sm:text-7xl">
+            Trust you can <span className="italic text-[#bd9650]">see.</span>
+          </h1>
+          <p className="mx-auto mt-5 max-w-lg text-base leading-relaxed text-neutral-600">
+            We believe transparency is part of quality. Explore the standards, testing, and documentation behind the MWP collection.
+          </p>
         </div>
-      </section>
-      <PageNextSteps title="Questions about your bottle?" text="Send us your product name and batch details. We'll help you find the information you need." primary="/university" primaryLabel="Visit MWP University" />
-      <Dialog.Root open={!!preview} onOpenChange={open => { if (!open) setPreview(null); }}>
-        <Dialog.Portal>
-          <Dialog.Overlay className="fixed inset-0 z-[100] bg-[#182c3d]/40 backdrop-blur-sm" />
-          <Dialog.Content onCloseAutoFocus={event => { event.preventDefault(); previewTrigger.current?.focus(); }} className="mwp-document-dialog fixed left-1/2 top-1/2 z-[101] flex max-h-[90dvh] w-[calc(100%-24px)] max-w-4xl -translate-x-1/2 -translate-y-1/2 flex-col overflow-hidden rounded-2xl bg-white p-4 text-neutral-900 sm:p-6">
-            <div className="mb-4 flex items-center justify-between gap-4"><div><Dialog.Title className="text-lg">{preview?.title}</Dialog.Title><Dialog.Description className="mt-1 text-xs text-neutral-500">Preview the published document.</Dialog.Description></div><Dialog.Close className="mwp-icon-button" aria-label="Close document"><IconX size={20} /></Dialog.Close></div>
-            {preview && <><div className="relative min-h-0 flex-1 bg-neutral-50">{preview.fileType === "pdf" ? <iframe src={preview.fileUrl} title={preview.title} className="h-[55dvh] w-full rounded-lg" /> : <div className="relative h-[55dvh]"><Image src={preview.fileUrl} alt={preview.title} fill sizes="900px" className="object-contain" /></div>}</div><div className="mwp-actions mt-4"><a className="mwp-button mwp-button-outline" href={preview.fileUrl} target="_blank" rel="noopener noreferrer"><IconExternalLink size={16} />Open document</a><button className="mwp-button" onClick={() => download(preview)}><IconDownload size={16} />Download</button></div></>}
-          </Dialog.Content>
-        </Dialog.Portal>
-      </Dialog.Root>
-    </EditorialCanvas>
+
+        <ul className="mt-10 flex flex-wrap items-center justify-center gap-2.5">
+          {PILLS.map((p) => (
+            <li
+              key={p}
+              className="rounded-full border border-[#e8dccb] bg-white px-4 py-2 text-[10px] font-bold uppercase tracking-[0.15em] text-[#8a6a35]"
+            >
+              ✓ {p}
+            </li>
+          ))}
+        </ul>
+
+        <section className="mt-12">
+          {loading ? (
+            <div className="flex justify-center py-20" role="status" aria-label="Loading certificates">
+              <IconLoader2 className="h-7 w-7 animate-spin text-neutral-400" />
+            </div>
+          ) : error ? (
+            <p role="alert" className="rounded-2xl border border-[#e8dccb] bg-white px-6 py-10 text-center text-sm text-neutral-600">
+              {error}
+            </p>
+          ) : certificates.length === 0 ? (
+            <p className="rounded-2xl border border-[#e8dccb] bg-white px-6 py-10 text-center text-sm text-neutral-600">
+              Certificates will appear here when they are published.
+            </p>
+          ) : (
+            <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+              {certificates.map((c) => (
+                <CertificateCard key={c.id} c={c} />
+              ))}
+            </div>
+          )}
+        </section>
+
+        <section className="mt-14 grid items-center gap-8 rounded-[2rem] bg-gradient-to-br from-[#1c1a17] to-[#2f281f] p-8 text-white sm:p-12 lg:grid-cols-[1.3fr_1fr]">
+          <div>
+            <p className="text-[10px] font-bold uppercase tracking-[0.3em] text-[#e5c56a]">Scan. Verify. Feel confident.</p>
+            <h2 className="mt-3 text-3xl font-bold leading-tight tracking-tight sm:text-4xl">Every package has a story behind it.</h2>
+            <p className="mt-4 max-w-lg text-sm leading-relaxed text-neutral-300">
+              Use the QR code on your MWP package to access product information, ingredient details, available testing documents, and the latest quality updates.
+            </p>
+            <Link href="/contact" className="mt-6 inline-block text-sm font-semibold text-[#e5c56a] underline underline-offset-4">
+              Questions about your bottle?
+            </Link>
+          </div>
+          <div className="flex flex-col items-center rounded-2xl border border-[#c9a15a]/30 px-6 py-8">
+            <span className="flex h-24 w-24 items-center justify-center rounded-lg bg-white text-neutral-900">
+              <IconQrcode size={64} stroke={1.3} />
+            </span>
+            <p className="mt-4 text-[11px] font-bold uppercase tracking-[0.2em]">Scan for trust &amp; testing</p>
+          </div>
+        </section>
+
+        <p className="mt-10 text-center text-[10px] font-medium uppercase tracking-[0.25em] text-neutral-500">
+          MWP Supplements · Premium performance · Transparent formula
+        </p>
+      </div>
+    </main>
   );
 }

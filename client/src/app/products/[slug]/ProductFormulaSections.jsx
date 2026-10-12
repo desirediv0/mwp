@@ -1,138 +1,116 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useState } from "react";
-import { fetchApi } from "@/lib/utils";
-
-const outlineButton = "inline-flex min-h-11 items-center justify-center rounded-full border border-neutral-900 bg-white px-5 py-2 text-[13px] font-normal text-neutral-900 transition-colors hover:bg-neutral-50 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-neutral-900";
 
 // Data-driven "Inside the formula" block. Everything shown here comes from the
 // product record (ingredientItems, servingSize, whenToTake, shippingReturn,
-// legalInfo), all editable from the admin panel. A card/section with no data
-// is simply not rendered.
+// legalInfo), all editable from the admin panel. Colors come from the page's
+// per-product theme variables (--product-line / --product-accent).
+const plain = (html) =>
+  (html || "")
+    .replace(/<\/(p|div|li|h[1-6])>/gi, " ")
+    .replace(/<[^>]*>/g, "")
+    .replace(/&nbsp;/g, " ")
+    .replace(/&amp;/g, "&")
+    .replace(/\s+/g, " ")
+    .trim();
+
 export default function ProductFormulaSections({ product }) {
-  const [hasCertificates, setHasCertificates] = useState(false);
-  useEffect(() => {
-    let active = true;
-    fetchApi("/certificates")
-      .then((response) => {
-        if (active) setHasCertificates((response?.data?.certificates || []).length > 0);
-      })
-      .catch(() => { if (active) setHasCertificates(false); });
-    return () => { active = false; };
-  }, []);
   const items = product.ingredientItems || [];
+  const copy = product.pageContent || {};
   const howToUse = [product.servingSize, product.whenToTake].filter(Boolean).join(" · ");
-  // shippingReturn / legalInfo are rich-text (HTML) in the admin; show them as plain text here.
-  const plain = (html) =>
-    (html || "")
-      .replace(/<\/(p|div|li|h[1-6])>/gi, " ")
-      .replace(/<[^>]*>/g, "")
-      .replace(/&nbsp;/g, " ")
-      .replace(/&amp;/g, "&")
-      .replace(/\s+/g, " ")
-      .trim();
 
   const infoCards = [
     { title: "How to use", body: howToUse },
-    { title: "Shipping & returns", body: plain(product.shippingReturn) },
-    { title: "Made for trust", body: plain(product.legalInfo) || "Explore the listed ingredients, their amounts and available product documentation in one place." },
+    {
+      title: "Shipping & returns",
+      body: plain(product.shippingReturn) || "Secure checkout, order tracking and clear customer support.",
+      href: "/shipping-policy",
+    },
+    {
+      title: "Made for trust",
+      body: plain(product.legalInfo) || "Certifications, independent testing and product documentation in one place.",
+      href: "/certificates",
+    },
   ].filter((c) => c.body);
-
-  const downloadFormula = () => {
-    const text = [product.name, plain(product.description), "", "Ingredients",
-      ...items.map(item => `${item.name} — ${[item.amount, item.source].filter(Boolean).join(" · ")}\n${plain(item.description)}`),
-      "", "How to use", howToUse || "Follow the directions on the product label.",
-    ].join("\n\n");
-    const url = URL.createObjectURL(new Blob([text], { type: "text/plain;charset=utf-8" }));
-    const link = document.createElement("a");
-    link.href = url; link.download = `${product.slug}-formula.txt`; link.click();
-    setTimeout(() => URL.revokeObjectURL(url), 1000);
-  };
 
   if (items.length === 0 && infoCards.length === 0) return null;
 
+  const outline =
+    "rounded-[10px] border border-[color:var(--product-accent)] bg-white px-[18px] py-2 text-[12px] font-semibold text-[color:var(--product-accent)] transition-colors hover:bg-[color:var(--product-surface)]";
+
   return (
-    <section className="mwp-product-formula max-w-6xl mx-auto px-6 lg:px-10 mb-16 md:mb-20 text-neutral-900">
+    <section className="mwp-product-formula mx-auto mb-12 max-w-6xl px-6 lg:px-10">
       {items.length > 0 && (
-        <div className="mwp-formula-panel rounded-3xl border border-[#e6ded2] bg-white p-6 md:p-10">
-          <div className="grid gap-8 lg:grid-cols-2">
+        <div className="mwp-formula-panel rounded-[28px] border bg-[#fffbf8] p-6 sm:p-8">
+          <div className="grid gap-8 lg:grid-cols-[1.25fr_1fr] lg:gap-10">
             <div>
-              <h2 className="text-2xl md:text-3xl font-normal tracking-tight text-neutral-900">
-                Inside the formula
-              </h2>
-              <ul className="mt-6 grid gap-2 min-[380px]:grid-cols-2">
+              <h2 className="mwp-serif text-[28px] font-bold leading-tight text-[#211c1b] sm:text-[32px]">Inside the formula</h2>
+              <ul className="mt-6 grid gap-2.5 sm:grid-cols-2">
                 {items.map((item) => (
                   <li
                     key={item.id}
-                    className="rounded-2xl border border-[#e6ded2] bg-white overflow-hidden"
+                    className="rounded-[10px] border border-[color:var(--product-line)] bg-white px-3.5 py-2.5"
                   >
-                    <details className="group px-4 py-3">
-                    <summary className="cursor-pointer list-none focus-visible:outline-neutral-900">
-                    <p className="text-[14px] font-normal text-neutral-900">{item.name}</p>
+                    <p className="text-[12.5px] text-[#211c1b]">{item.name}</p>
                     {(item.amount || item.source) && (
-                      <p className="mt-0.5 text-[12px] text-neutral-500">
+                      <p className="mt-0.5 text-[11px] text-[color:var(--product-accent)]">
                         {[item.amount, item.source].filter(Boolean).join(" • ")}
                       </p>
                     )}
-                    <span className="mt-1 block text-[10px] text-neutral-500 group-open:hidden">Details +</span>
-                    </summary>
-                    <div className="mt-3 pt-3 border-t border-neutral-100 text-[13px] leading-relaxed text-neutral-600">
-                      {item.scientificName && <p className="italic mb-2">{item.scientificName}</p>}
-                      <p>{plain(item.description) || "Further details will be added when available."}</p>
-                      {item.type && <p className="mt-2">Type: {item.type}</p>}
-                    </div>
-                    </details>
                   </li>
                 ))}
               </ul>
             </div>
 
             <div>
-              <h2 className="text-2xl md:text-3xl font-normal tracking-tight text-neutral-900">
-                Why transparency matters
+              <h2 className="mwp-serif text-[28px] font-bold leading-tight text-[#211c1b] sm:text-[32px]">
+                {copy.transparencyTitle || "Why transparency matters"}
               </h2>
-              <p className="mt-4 text-[14px] leading-relaxed text-neutral-600">
-                Every ingredient opens to a simple explanation, its dose and where it comes from.
-                Nothing hidden behind a proprietary blend.
+              <p className="mt-4 text-[13px] leading-relaxed text-[#625955]">
+                {copy.transparencyText ||
+                  "Every ingredient opens to a simple explanation, its dose and where it comes from. Nothing hidden behind a proprietary blend."}
               </p>
-              <div className="mt-6 flex flex-wrap gap-3">
-                <Link
-                  href={`/ingredients/product/${product.id}`}
-                  className={outlineButton}
-                >
-                  Explore ingredients
+              <div className="mt-6 flex flex-wrap gap-2.5">
+                <Link href={`/ingredients/product/${product.id}`} className={outline}>
+                  Explore Ingredients
                 </Link>
-                {hasCertificates && <Link
-                  href="/certificates"
-                  className={outlineButton}
-                >
-                  See lab results
-                </Link>}
+                <Link href="/certificates" className={outline}>
+                  See Lab Results
+                </Link>
               </div>
             </div>
           </div>
         </div>
       )}
 
-      {(hasCertificates || items.length > 0) && <div className="mt-5 flex flex-wrap gap-3">
-        {hasCertificates && <Link href="/certificates" className={outlineButton}>View COA &amp; testing</Link>}
-        {items.length > 0 && <button type="button" onClick={downloadFormula} className={outlineButton}>Download formula</button>}
-      </div>}
-
       {infoCards.length > 0 && (
         <div className="mt-4 grid gap-4 md:grid-cols-3">
-          {infoCards.map((card) => (
-            <div key={card.title} className="rounded-2xl border border-[#e6ded2] bg-white p-5">
-              <h3 className="text-[16px] font-normal text-neutral-900">{card.title}</h3>
-              <p className="mt-2 text-[13px] leading-relaxed text-neutral-500">
-                {card.body}
-              </p>
-              {card.title === "Shipping & returns" && <Link href="/shipping-policy" className="mt-3 inline-block text-[13px] underline">Shipping policy</Link>}
-            </div>
-          ))}
+          {infoCards.map((card) => {
+            const inner = (
+              <>
+                <h3 className="mwp-serif text-[20px] font-bold text-[#211c1b]">{card.title}</h3>
+                <p className="mt-2 line-clamp-4 text-[12.5px] leading-relaxed text-[#756c68]">{card.body}</p>
+              </>
+            );
+            const cls =
+              "block rounded-[14px] border border-[color:var(--product-line)] bg-white p-5 transition-colors";
+            return card.href ? (
+              <Link key={card.title} href={card.href} className={`${cls} hover:border-[color:var(--product-accent)]`}>
+                {inner}
+              </Link>
+            ) : (
+              <div key={card.title} className={cls}>
+                {inner}
+              </div>
+            );
+          })}
         </div>
       )}
+
+      <p className="mt-9 text-center text-[11px] text-[#85756f]">
+        {copy.footerNote || "MWP Supplements • Premium performance. Transparent formula. Independently tested."}
+      </p>
     </section>
   );
 }

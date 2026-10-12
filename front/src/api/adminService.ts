@@ -1608,24 +1608,37 @@ export const productIngredients = {
     api.put(`/api/admin/product-ingredients/product/${productId}/reorder`, { order }),
 };
 
+export interface CertificateInput {
+  title?: string;
+  description?: string;
+  badge?: string;
+  heading?: string;
+  summary?: string;
+  buttonLabel?: string;
+  displayOrder?: number;
+  isActive?: boolean;
+  file?: File | null;
+  removeFile?: boolean;
+}
+
+const certificateForm = (data: CertificateInput) => {
+  const fd = new FormData();
+  (["title", "description", "badge", "heading", "summary", "buttonLabel"] as const).forEach((k) => {
+    if (data[k] !== undefined) fd.append(k, data[k] as string);
+  });
+  if (data.displayOrder !== undefined) fd.append("displayOrder", String(data.displayOrder));
+  if (data.isActive !== undefined) fd.append("isActive", String(data.isActive));
+  if (data.removeFile) fd.append("removeFile", "true");
+  if (data.file) fd.append("file", data.file);
+  return fd;
+};
+
 export const certificates = {
   list: () => api.get("/api/admin/certificates"),
-  create: (data: { title: string; displayOrder?: number; isActive?: boolean; file: File }) => {
-    const fd = new FormData();
-    fd.append("title", data.title);
-    if (data.displayOrder !== undefined) fd.append("displayOrder", String(data.displayOrder));
-    if (data.isActive !== undefined) fd.append("isActive", String(data.isActive));
-    fd.append("file", data.file);
-    return api.post("/api/admin/certificates", fd, { headers: { "Content-Type": "multipart/form-data" } });
-  },
-  update: (id: string, data: { title?: string; displayOrder?: number; isActive?: boolean; file?: File | null }) => {
-    const fd = new FormData();
-    if (data.title !== undefined) fd.append("title", data.title);
-    if (data.displayOrder !== undefined) fd.append("displayOrder", String(data.displayOrder));
-    if (data.isActive !== undefined) fd.append("isActive", String(data.isActive));
-    if (data.file) fd.append("file", data.file);
-    return api.put(`/api/admin/certificates/${id}`, fd, { headers: { "Content-Type": "multipart/form-data" } });
-  },
+  create: (data: CertificateInput & { title: string }) =>
+    api.post("/api/admin/certificates", certificateForm(data), { headers: { "Content-Type": "multipart/form-data" } }),
+  update: (id: string, data: CertificateInput) =>
+    api.put(`/api/admin/certificates/${id}`, certificateForm(data), { headers: { "Content-Type": "multipart/form-data" } }),
   remove: (id: string) => api.delete(`/api/admin/certificates/${id}`),
 };
 

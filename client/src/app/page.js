@@ -1,7 +1,6 @@
 // Previous hero — kept for reference/rollback. Re-enable this import and <MwpHomeHero /> below to restore it.
 // import MwpHomeHero from "@/components/sections/home/MwpHomeHero";
 import MwpOrbitHero from "@/components/sections/home/MwpOrbitHero";
-import MwpScrollMarquee from "@/components/sections/home/MwpScrollMarquee";
 import MwpProductShowcase from "@/components/sections/home/MwpProductShowcase";
 import MwpTrustReveal from "@/components/sections/home/MwpTrustReveal";
 
@@ -18,7 +17,6 @@ export default function Home() {
     <>
       {/* <MwpHomeHero /> */}
       <MwpOrbitHero />
-      <MwpScrollMarquee />
       <MwpTrustReveal />
       <MwpProductShowcase />
     </>

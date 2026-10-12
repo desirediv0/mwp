@@ -33,7 +33,7 @@ const DESCRIPTION_NOTE =
 
 const PRODUCTS = [
   {
-    name: "ULTRA PRO™",
+    name: "ULTRA PRO",
     categoryName: "Men's Performance",
     dosageForm: "Capsule",
     servingSize: "2 Capsules Daily",
@@ -58,7 +58,7 @@ const PRODUCTS = [
     ],
   },
   {
-    name: "RAPID BOOST™",
+    name: "RAPID BOOST",
     categoryName: "Men's Performance",
     dosageForm: "Tablet",
     servingSize: "2 Tablets Daily",
@@ -80,7 +80,7 @@ const PRODUCTS = [
     ],
   },
   {
-    name: "POWER MAX™",
+    name: "POWER MAX",
     categoryName: "Workout & Gym Performance",
     dosageForm: "Tablet",
     servingSize: "2 Tablets Daily",
@@ -98,7 +98,7 @@ const PRODUCTS = [
     ],
   },
   {
-    name: "HER POWER™",
+    name: "HER POWER",
     categoryName: "Women's Wellness",
     dosageForm: "Tablet",
     servingSize: "2 Tablets Daily",
@@ -121,7 +121,7 @@ const PRODUCTS = [
     ],
   },
   {
-    name: "HER ENERGY™",
+    name: "HER ENERGY",
     categoryName: "Women's Wellness",
     dosageForm: "Capsule",
     servingSize: "2 Capsules Daily",
@@ -143,7 +143,7 @@ const PRODUCTS = [
     ],
   },
   {
-    name: "DAILY VITALITY™",
+    name: "DAILY VITALITY",
     categoryName: "Daily Wellness",
     dosageForm: "Capsule",
     servingSize: "2 Capsules Daily",

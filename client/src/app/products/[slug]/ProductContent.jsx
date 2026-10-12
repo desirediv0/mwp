@@ -31,11 +31,12 @@ import { useRouter } from "next/navigation";
 import ReviewSection from "./ReviewSection";
 import ProductFormulaSections from "./ProductFormulaSections";
 import { useAddVariantToCart } from "@/lib/cart-utils";
-import { useCart } from "@/lib/cart-context";
 import { useCompare } from "@/lib/compare-context";
-import { ProductCard } from "@/components/products/ProductCard";
-import { toast } from "sonner";
+import { Playfair_Display } from "next/font/google";
+import { TRUST_CLAIMS } from "@/lib/trustClaims";
 import "./product-detail.css";
+
+const serif = Playfair_Display({ subsets: ["latin"], weight: ["400", "600", "700"], display: "swap", variable: "--mwp-serif" });
 
 const getImageUrl = (img) => {
   if (!img) return "/placeholder.jpg";
@@ -62,7 +63,6 @@ const PRODUCT_THEMES = {
 
 export default function ProductContent({ slug }) {
   const [product, setProduct] = useState(null);
-  const [relatedProducts, setRelatedProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [mainImage, setMainImage] = useState(null);
@@ -82,8 +82,6 @@ export default function ProductContent({ slug }) {
   const [initialLoading, setInitialLoading] = useState(true);
   const [priceSettings, setPriceSettings] = useState(null);
   const [showStickyBar, setShowStickyBar] = useState(false);
-  const [bundleSelected, setBundleSelected] = useState({});
-  const [isAddingBundle, setIsAddingBundle] = useState(false);
   const [activeThumb, setActiveThumb] = useState(0);
   const galleryLength = selectedVariant?.images?.length || product?.images?.length || 0;
 
@@ -134,7 +132,6 @@ export default function ProductContent({ slug }) {
   const { isAuthenticated, openAuthModal } = useAuth();
   const router = useRouter();
   const { addVariantToCart } = useAddVariantToCart();
-  const { addToCart } = useCart();
   const { isInCompare, toggleCompare } = useCompare();
 
   const getEffectivePrice = (variant, qty) => {
@@ -161,7 +158,6 @@ export default function ProductContent({ slug }) {
       .then((res) => {
         const pd = res.data.product;
         setProduct(pd);
-        setRelatedProducts(res.data.relatedProducts || []);
         if (pd.images?.length) { setMainImage(pd.images[0]); setActiveThumb(0); }
         if (pd.variants?.length) {
           const combos = pd.variants.filter((v) => v.isActive).map((v) => ({ attributeValueIds: v.attributes?.map((a) => a.attributeValueId) || [], variant: v }));
@@ -203,14 +199,6 @@ export default function ProductContent({ slug }) {
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
-
-  useEffect(() => {
-    if (product) {
-      const initial = { [product.id]: true };
-      relatedProducts.slice(0, 3).forEach((p) => { initial[p.id] = true; });
-      setBundleSelected(initial);
-    }
-  }, [product, relatedProducts]);
 
   const handleAttributeChange = (attrId, valueId) => {
     const next = { ...selectedAttributes, [attrId]: valueId };
@@ -271,20 +259,6 @@ export default function ProductContent({ slug }) {
       }
     } catch (err) { console.error(err); }
     finally { setIsAddingToCart(false); }
-  };
-
-  const handleAddBundleToCart = async () => {
-    if (isAddingBundle || isAddingToCart) return;
-    setIsAddingBundle(true);
-    try {
-      const mainV = selectedVariant || product?.variants?.[0];
-      if (mainV && bundleSelected[product.id]) await addToCart(mainV.id, quantity);
-      for (const p of relatedProducts.slice(0, 3)) {
-        if (bundleSelected[p.id]) { const v = p.variants?.[0]; if (v) await addToCart(v.id, 1); }
-      }
-      setCartSuccess(true); setTimeout(() => setCartSuccess(false), 3000);
-    } catch (err) { console.error(err); toast.error(err.message || "Some items could not be added. Please check your cart."); }
-    finally { setIsAddingBundle(false); }
   };
 
   const handleWishlist = async () => {
@@ -391,7 +365,23 @@ export default function ProductContent({ slug }) {
 
   const images = getImages();
   const productTheme = PRODUCT_THEMES[slug] || PRODUCT_THEMES["ultra-pro"];
-  const benefitItems = (product.ingredientItems || []).filter(item => item.keyBenefit || item.description).slice(0, 4);
+  // Trust pills: admin text (comma separated) or the defaults.
+  const trustBadges = (product.pageContent?.trustBadges || "")
+    .split(",")
+    .map((s) => s.trim())
+    .filter(Boolean);
+  if (trustBadges.length === 0) trustBadges.push(...TRUST_CLAIMS, "Secure Checkout");
+
+  // Admin-managed benefit cards; falls back to ingredient notes when none are set.
+  const adminHighlights = Array.isArray(product.highlights)
+    ? product.highlights.filter((h) => h?.title && h?.text).map((h) => ({ id: h.title, name: h.title, text: h.text }))
+    : [];
+  const benefitItems = adminHighlights.length
+    ? adminHighlights.slice(0, 6)
+    : (product.ingredientItems || [])
+        .filter((item) => item.keyBenefit || item.description)
+        .slice(0, 4)
+        .map((item) => ({ id: item.id, name: item.name, text: (item.keyBenefit || item.description).replace(/<[^>]*>/g, "") }));
   const primary = mainImage && images.some((i) => i.url === mainImage.url) ? mainImage : (images.find((i) => i.isPrimary) || images[0]);
   // Read the real stock from the selected variant. `?? ` (not `||`) so a genuine 0 is respected
   // instead of falling through to a hardcoded 15, which used to keep "Add to Bag" enabled for
@@ -404,14 +394,8 @@ export default function ProductContent({ slug }) {
   const stock = rawStock === null ? (selectedVariant ? 0 : 15) : rawStock;
   const outOfStock = !selectedVariant || stock <= 0;
 
-  const bundleItems = [
-    { id: product.id, name: product.name, price: parseFloat(effectivePriceInfo?.price || selectedVariant?.salePrice || selectedVariant?.price || product.basePrice || 0), isMain: true, stock, image: primary?.url },
-    ...relatedProducts.slice(0, 3).map((p) => { const v = p.variants?.[0] || {}; return { id: p.id, name: p.name, price: parseFloat(v.salePrice || v.price || p.basePrice || 0), isMain: false, stock: p.stock || 10, image: p.image || p.images?.[0]?.url }; })
-  ];
-  const bundleTotal = bundleItems.reduce((sum, item) => sum + (bundleSelected[item.id] ? (item.price * (item.isMain ? quantity : 1)) : 0), 0);
-
   return (
-    <div className="mwp-product-detail min-h-screen" style={{
+    <div className={`mwp-product-detail min-h-screen ${serif.variable}`} style={{
       "--product-bg": productTheme.background,
       "--product-surface": productTheme.surface,
       "--product-deep": productTheme.deep,
@@ -538,15 +522,7 @@ export default function ProductContent({ slug }) {
               </span>
             )}
             <div className="mwp-product-title-row flex items-start gap-3 mb-5 flex-wrap">
-              <h1 className="mwp-product-title text-neutral-900">{product.name}</h1>
-              {product.gender && (
-                <Link
-                  href={`/products?gender=${product.gender}`}
-                  className="mt-1.5 inline-flex items-center px-3 py-1 text-[11px] font-normal rounded-full bg-neutral-100 text-neutral-600 hover:bg-neutral-200 transition-colors"
-                >
-                  {product.gender}
-                </Link>
-              )}
+              <h1 className="mwp-product-title text-neutral-900">{String(product.name).replace(/[™®]/g, "").trim()}</h1>
             </div>
 
             {(product.shortDescription || product.mainBenefits || product.metaDescription) && (
@@ -659,15 +635,19 @@ export default function ProductContent({ slug }) {
                 {benefitItems.map(item => (
                   <div key={item.id || item.name} className="mwp-product-benefit">
                     <p>{item.name}</p>
-                    <span>{(item.keyBenefit || item.description).replace(/<[^>]*>/g, "")}</span>
+                    <span>{item.text}</span>
                   </div>
                 ))}
               </div>
             )}
             <div className="mwp-product-trust">
-              <span><IconShieldCheck size={14} /> Authentic formula</span>
-              <span><IconCheck size={14} /> Ingredient transparency</span>
-              <span><IconShieldCheck size={14} /> Secure checkout</span>
+              {trustBadges.map((label) => (
+                <span key={label}><IconCheck size={12} /> {label}</span>
+              ))}
+            </div>
+            <div className="mwp-product-links">
+              <Link href="/certificates">View COA &amp; Testing</Link>
+              <Link href={`/ingredients/product/${product.id}`}>Ingredient Details</Link>
             </div>
 
             {/* Wishlist + Compare row */}
@@ -792,41 +772,6 @@ export default function ProductContent({ slug }) {
 
       <ProductFormulaSections product={product} />
 
-      {/* Bundle */}
-      {relatedProducts.length > 0 && (
-        <div className="mwp-product-section max-w-6xl mx-auto px-6 lg:px-10 mb-16 md:mb-20">
-          <div className="p-6 sm:p-8 md:p-10 rounded-3xl bg-white">
-            <div className="mb-8">
-              <span className="text-[12px] font-normal text-neutral-400 block mb-2">Build your routine</span>
-              <h3 className="text-2xl md:text-3xl font-normal text-neutral-900 tracking-tight">Frequently bought together</h3>
-            </div>
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
-              <div className="lg:col-span-8 space-y-2">
-                {bundleItems.map((item) => (
-                  <div key={item.id} className="flex items-center gap-3 sm:gap-4 p-3 bg-white transition-colors rounded-2xl">
-                    <input type="checkbox" checked={!!bundleSelected[item.id]} disabled={item.isMain} onChange={(e) => setBundleSelected({ ...bundleSelected, [item.id]: e.target.checked })} className="w-4 h-4 cursor-pointer disabled:opacity-50 accent-neutral-900" />
-                    <div className="relative w-14 h-16 overflow-hidden flex-shrink-0 rounded-xl" style={{ backgroundColor: productTheme.surface }}>
-                      <Image src={getImageUrl(item.image)} alt="" fill className="object-contain p-1" sizes="56px" />
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <p className="text-[13.5px] truncate font-normal text-neutral-900">{item.isMain && <span className="text-[11px] text-neutral-400 mr-2">This formula</span>}{item.name}</p>
-                    </div>
-                    <span className="text-[13.5px] font-normal text-neutral-900">{formatCurrency(item.price)}</span>
-                  </div>
-                ))}
-              </div>
-              <div className="lg:col-span-4 p-7 sm:p-8 text-center rounded-2xl bg-white">
-                <span className="text-[12px] font-normal text-neutral-400 block mb-2">Bundle total</span>
-                <span className="text-3xl sm:text-4xl font-normal block mb-5 text-neutral-900 tracking-tight">{formatCurrency(bundleTotal)}</span>
-                <button onClick={handleAddBundleToCart} disabled={isAddingBundle || !Object.values(bundleSelected).some(Boolean)} className="w-full h-12 text-[13px] font-normal transition-all duration-300 disabled:opacity-40 rounded-full text-white bg-neutral-900 hover:bg-neutral-800">
-                  {isAddingBundle ? "Adding…" : "Add Bundle to Bag"}
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
-
       {/* Accordion Sections */}
       <div className="max-w-6xl mx-auto px-6 lg:px-10 mb-16 md:mb-20">
         {/* Description - always visible */}
@@ -844,8 +789,6 @@ export default function ProductContent({ slug }) {
             { key: "feelings", label: "Benefits & Results" },
             { key: "occasions", label: "How & When To Use" },
             { key: "behindThePerfume", label: "Clinical Science & Formulation" },
-            { key: "shippingReturn", label: "Shipping & Return" },
-            { key: "legalInfo", label: "Quality & Regulatory Info" },
           ].map(({ key, label }) => {
             const content = product[key];
             const hasNotesList = key === "fragranceNotes" && product.notes && product.notes.length > 0;
@@ -1023,22 +966,6 @@ export default function ProductContent({ slug }) {
         </div>
       )}
 
-      {/* Related */}
-      {relatedProducts.length > 0 && (
-        <div className="max-w-6xl mx-auto px-6 lg:px-10 pb-20">
-          <div className="flex items-end justify-between mb-9">
-            <div>
-              <span className="text-[12px] font-normal text-neutral-400 block mb-2.5">Keep exploring</span>
-              <h2 className="text-2xl md:text-3xl font-normal text-neutral-900 tracking-tight">You may also like</h2>
-            </div>
-            <Link href="/products" className="text-[13px] font-normal text-neutral-900 shrink-0 hover:underline underline-offset-4">View all →</Link>
-          </div>
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5">
-            {relatedProducts.map((p) => <ProductCard key={p.id} product={p} />)}
-          </div>
-        </div>
-      )}
-
       {/* Sticky Bar */}
       {showStickyBar && (
         <div className="fixed bottom-0 left-0 right-0 z-50 bg-white/95 backdrop-blur-xl border-t border-neutral-100 shadow-[0_-8px_30px_rgba(0,0,0,0.06)] py-3">
@@ -1110,7 +1037,7 @@ export default function ProductContent({ slug }) {
                 </button>
                 <button
                   onClick={() => setLightboxScale(1)}
-                  className="px-2 py-1 text-xs font-normal font-normal text-white/70 hover:bg-white/10 rounded-full transition-colors"
+                  className="px-2 py-1 text-xs font-normal text-white/70 hover:bg-white/10 rounded-full transition-colors"
                   title="Reset Zoom"
                 >
                   {Math.round(lightboxScale * 100)}%

@@ -6,6 +6,7 @@ import Image from "next/image";
 import { IconArrowUpRight, IconArrowRight, IconChevronLeft, IconChevronRight, IconCheck, IconLeaf, IconPlayerPause, IconPlayerPlay } from "@tabler/icons-react";
 import { motion, useReducedMotion } from "framer-motion";
 import { useLanguage } from "@/lib/language-context";
+import { TRUST_CLAIMS } from "@/lib/trustClaims";
 
 // Composition reference: 21st.dev's Product Spotlight Hero Section.
 // Adapted for MWP with existing assets and a controllable product carousel.
@@ -92,7 +93,7 @@ export default function MwpHomeHero() {
               </Link>
             </div>
             <div className="mt-7 flex flex-wrap gap-x-5 gap-y-2 text-[11px] text-green-700">
-              {["GMP Certified", "Lab Tested", "QR Verified"].map(label => (
+              {TRUST_CLAIMS.map(label => (
                 <span key={label} className="inline-flex items-center gap-1.5">
                   <IconCheck className="h-3.5 w-3.5" stroke={1.5} /> {label}
                 </span>

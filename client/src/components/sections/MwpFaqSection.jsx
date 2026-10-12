@@ -29,7 +29,7 @@ export default function MwpFaqSection() {
     },
     {
       q: "Are MWP Supplements lab tested and free from banned substances?",
-      a: "Every batch of MWP Supplements undergoes rigorous third-party laboratory verification for potency, purity, microbiological safety, and heavy metals. Formulations are manufactured in GMP-certified and FSSAI-audited facilities with zero banned or adulterated ingredients.",
+      a: "Every batch of MWP Supplements undergoes rigorous third-party laboratory verification for potency, purity, microbiological safety, and heavy metals. Formulations are manufactured in cGMP-compliant, FDA-registered facilities with zero banned or adulterated ingredients.",
     },
   ];
 

@@ -1,170 +1,119 @@
 import Link from "next/link";
-import { Mail, Clock, MapPin, Truck, AlertTriangle, ShieldCheck } from "lucide-react";
+import PolicyLayout, { P, UL, Note } from "@/components/layout/PolicyLayout";
+import { SITE_CONTACT } from "@/lib/siteContact";
 
 export const metadata = {
   title: "Shipping & Delivery Policy | MWP SUPPLEMENTS",
-  description: "Learn about MWP SUPPLEMENTS order processing timelines, pan-India delivery coverage, tamper-evident packaging, tracking updates, and shipping terms.",
+  description:
+    "MWP Supplements order processing times, shipping charges at checkout, tracking, tamper-evident packaging and what to do if your parcel arrives damaged.",
 };
+
+const link = "font-semibold text-[#8f6f3a] underline underline-offset-4";
+
+const sections = [
+  {
+    id: "processing",
+    title: "Order processing",
+    body: (
+      <>
+        <UL
+          items={[
+            <>Orders are checked and sent to fulfillment within <strong className="text-neutral-900">24–48 hours</strong>, excluding weekends and holidays.</>,
+            "Each container is inspected for seal integrity before it is packed.",
+            "During busy launches or promotions, dispatch can take up to 72 hours.",
+          ]}
+        />
+      </>
+    ),
+  },
+  {
+    id: "rates-delivery",
+    title: "Shipping charges and delivery times",
+    body: (
+      <>
+        <P>
+          Available shipping options, delivery estimates and any shipping charges are calculated for your address and
+          shown in US dollars at checkout, before you pay. Please review the final total before you place your order.
+        </P>
+        <P>
+          If we cannot deliver to your location, we will contact you with options or give you a full refund.
+        </P>
+      </>
+    ),
+  },
+  {
+    id: "tracking",
+    title: "Tracking your order",
+    body: (
+      <>
+        <P>When your order ships, we email you:</P>
+        <UL
+          items={[
+            "The carrier delivering your parcel.",
+            "Your tracking number.",
+            "A direct link to track it.",
+          ]}
+        />
+        <P className="mt-4">
+          You can also check your order status any time from <Link className={link} href="/account/orders">your account</Link>.
+        </P>
+      </>
+    ),
+  },
+  {
+    id: "packaging",
+    title: "Tamper-evident packaging",
+    body: (
+      <>
+        <P>
+          Every MWP bottle has a tamper-evident seal. Please do not accept a parcel that looks punctured, torn or
+          re-taped. If you see packaging damage, record an unboxing video when you receive it and email us within 48
+          hours so we can send a replacement.
+        </P>
+        <Note>
+          Full steps are in our <Link className={link} href="/return-policy">Returns &amp; Replacement Policy</Link>.
+        </Note>
+      </>
+    ),
+  },
+  {
+    id: "delays",
+    title: "Delays",
+    body: (
+      <P>
+        Carrier transit times can be affected by weather, natural events, strikes or heavy volume, which are outside
+        our control. We watch in-transit parcels and will help you if one is delayed.
+      </P>
+    ),
+  },
+  {
+    id: "address",
+    title: "Address accuracy",
+    body: (
+      <P>
+        Please double-check your shipping address at checkout. If you spot a mistake after ordering, email{" "}
+        <a className={link} href={`mailto:${SITE_CONTACT.email}`}>{SITE_CONTACT.email}</a> straight away. We can only
+        change it before your order ships.
+      </P>
+    ),
+  },
+];
 
 export default function ShippingPolicyPage() {
   return (
-    <div className="min-h-screen bg-white text-neutral-900">
-      {/* ── Banner Header ── */}
-      <section className="relative py-14 md:py-20 overflow-hidden border-b border-neutral-200 bg-white ">
-        <div className="relative z-10 max-w-5xl mx-auto px-6">
-          <div className="flex items-center gap-2 text-xs text-neutral-900 mb-4">
-            <Link href="/" className="hover:text-neutral-900 transition-colors">Home</Link>
-            <span>/</span>
-            <span className="text-red-500 font-medium">Shipping Policy</span>
-          </div>
-          <div className="inline-block px-3 py-1 mb-3 rounded-full bg-red-600/10 border border-red-500/30 text-red-500 text-xs font-bold tracking-wider uppercase">
-            MEN | WOMEN | POWER LOGISTICS
-          </div>
-          <h1 className="text-3xl md:text-5xl font-extrabold tracking-tight mb-2 text-neutral-900">
-            Shipping &amp; Delivery Policy
-          </h1>
-          <p className="text-sm text-neutral-600 max-w-xl">
-            High-potency clinical nutrition requires precision storage and express dispatch. Here is how we get MWP products safely to your doorstep.
-          </p>
-        </div>
-      </section>
-
-      {/* ── Policy Body Content ── */}
-      <section className="py-12 md:py-16 px-6 font-sans">
-        <div className="max-w-4xl mx-auto">
-          <div className="bg-[#121212] border border-neutral-200 rounded-3xl p-8 md:p-14 shadow-2xl space-y-8 text-neutral-600">
-
-            <div className="border-b border-neutral-200 pb-6">
-              <p className="text-sm md:text-base leading-relaxed text-neutral-600">
-                At <strong className="text-neutral-900 font-bold">MWP SUPPLEMENTS</strong>, every batch is precision formulated in GMP-certified, FSSAI-registered facilities and sealed in tamper-evident containers to ensure maximum potency and bio-availability. We dispatch orders rapidly via verified express logistics partners.
-              </p>
-            </div>
-
-            {/* Order Processing */}
-            <div className="space-y-3">
-              <h2 className="text-lg md:text-xl font-bold text-neutral-900 flex items-center gap-2">
-                <Clock className="w-5 h-5 text-red-500" />
-                Order Processing &amp; Verification
-              </h2>
-              <ul className="space-y-2 text-sm text-neutral-600 list-disc pl-5 leading-relaxed">
-                <li>Orders are verified and sent to fulfillment within <strong>24–48 hours</strong> (excluding Sundays and national holidays).</li>
-                <li>Each container undergoes automated weight and seal integrity inspection prior to boxing.</li>
-                <li>During high-demand launches or promotional peak periods, dispatch may take up to 72 hours.</li>
-                <li>Prepaid orders receive priority queue dispatch.</li>
-              </ul>
-            </div>
-
-            {/* Standard Delivery Timelines */}
-            <div className="space-y-3 pt-4 border-t border-neutral-200">
-              <h2 className="text-lg md:text-xl font-bold text-neutral-900 flex items-center gap-2">
-                <Truck className="w-5 h-5 text-red-500" />
-                Delivery Timelines
-              </h2>
-              <p className="text-sm text-neutral-600 leading-relaxed">
-                Estimated express transit times from dispatch:
-              </p>
-              <div className="grid sm:grid-cols-2 gap-3">
-                <div className="p-4 bg-white/[0.03] border border-neutral-200 rounded-2xl">
-                  <div className="text-xs uppercase tracking-wider text-neutral-600">Metro Cities</div>
-                  <div className="text-lg font-bold text-neutral-900 mt-1">2–4 Business Days</div>
-                  <div className="text-xs text-neutral-600 mt-1">Air express priority shipping</div>
-                </div>
-                <div className="p-4 bg-white/[0.03] border border-neutral-200 rounded-2xl">
-                  <div className="text-xs uppercase tracking-wider text-neutral-600">Rest of India</div>
-                  <div className="text-lg font-bold text-neutral-900 mt-1">4–7 Business Days</div>
-                  <div className="text-xs text-neutral-600 mt-1">Tier 2, 3 &amp; regional pin codes</div>
-                </div>
-              </div>
-            </div>
-
-            {/* Shipping Coverage */}
-            <div className="space-y-3 pt-4 border-t border-neutral-200">
-              <h2 className="text-lg md:text-xl font-bold text-neutral-900 flex items-center gap-2">
-                <MapPin className="w-5 h-5 text-red-500" />
-                Pan-India Coverage
-              </h2>
-              <ul className="space-y-2 text-sm text-neutral-600 list-disc pl-5 leading-relaxed">
-                <li>MWP delivers to over 19,000+ PIN codes across India in partnership with Delhivery, BlueDart, Bluedart Apex, and Shiprocket.</li>
-                <li>In rare remote locations where courier service is restricted, our support team will reach out with alternative logistics or issue an immediate full refund.</li>
-              </ul>
-            </div>
-
-            {/* Shipping Charges */}
-            <div className="space-y-3 pt-4 border-t border-neutral-200">
-              <h2 className="text-lg md:text-xl font-bold text-neutral-900">
-                Shipping Charges
-              </h2>
-              <ul className="space-y-2 text-sm text-neutral-600 list-disc pl-5 leading-relaxed">
-                <li>Available shipping options and any charges are displayed at checkout in US dollars.</li>
-                <li>Delivery availability depends on the destination. Please review the final shipping total before placing your order.</li>
-              </ul>
-            </div>
-
-            {/* Order Tracking */}
-            <div className="space-y-3 pt-4 border-t border-neutral-200">
-              <h2 className="text-lg md:text-xl font-bold text-neutral-900">
-                Live Order Tracking
-              </h2>
-              <p className="text-sm text-neutral-600">
-                Immediately upon dispatch, you will receive an SMS and email containing:
-              </p>
-              <ul className="space-y-1 text-sm text-neutral-600 list-disc pl-5">
-                <li>Courier partner name (BlueDart, Delhivery, etc.)</li>
-                <li>Air Waybill (AWB) / Tracking Number</li>
-                <li>Direct one-click tracking URL</li>
-              </ul>
-            </div>
-
-            {/* Tamper-Evident Delivery & Damage Protocol */}
-            <div className="space-y-3 pt-4 border-t border-neutral-200">
-              <h2 className="text-lg md:text-xl font-bold text-neutral-900 flex items-center gap-2">
-                <ShieldCheck className="w-5 h-5 text-green-500" />
-                Tamper-Evident Seal Verification
-              </h2>
-              <p className="text-sm text-neutral-600 leading-relaxed">
-                All MWP supplement bottles feature our signature tamper-evident shrink sleeve or foil inner seal. Do not accept packages that appear punctured, torn, or re-taped. If you observe packaging damage, record an unboxing video upon receipt and email us within 48 hours for immediate replacement.
-              </p>
-            </div>
-
-            {/* Delivery Delays */}
-            <div className="space-y-3 pt-4 border-t border-neutral-200">
-              <h2 className="text-lg md:text-xl font-bold text-neutral-900 flex items-center gap-2">
-                <AlertTriangle className="w-5 h-5 text-amber-500" />
-                Unforeseen Delays
-              </h2>
-              <p className="text-sm text-neutral-600 leading-relaxed">
-                Courier transit times may experience minor delays due to adverse weather, natural disasters, national strikes, or regional courier hub congestions. Our logistics team actively tracks all in-transit parcels to resolve bottlenecks.
-              </p>
-            </div>
-
-            {/* Support CTA */}
-            <div className="pt-6 border-t border-neutral-200 bg-white/[0.02] p-6 rounded-2xl flex flex-col md:flex-row md:items-center justify-between gap-4">
-              <div>
-                <h3 className="font-bold text-neutral-900 text-base mb-1 flex items-center gap-2">
-                  <Mail className="w-4 h-4 text-red-500" />
-                  Need Help With Your Shipment?
-                </h3>
-                <p className="text-xs text-neutral-600">
-                  Our supplement concierge team is on standby to assist with tracking and logistics queries.
-                </p>
-                <p className="text-xs font-medium text-neutral-600 mt-1">
-                  Email: <a href="mailto:support@mwpsupplements.com" className="text-red-400 underline">support@mwpsupplements.com</a>
-                </p>
-                <p className="text-[11px] text-neutral-500 mt-0.5">
-                  Hours: Mon – Sat, 10:00 AM – 7:00 PM IST
-                </p>
-              </div>
-              <a
-                href="mailto:support@mwpsupplements.com"
-                className="px-6 py-3 bg-red-600 hover:bg-red-500 text-white text-xs uppercase tracking-widest font-bold rounded-xl transition-all text-center shrink-0 shadow-lg shadow-red-900/30"
-              >
-                Contact Support
-              </a>
-            </div>
-
-          </div>
-        </div>
-      </section>
-    </div>
+    <PolicyLayout
+      kicker="Men · Women · Power logistics"
+      title="Shipping &"
+      accent="Delivery"
+      intro="How we pack, send and track your MWP order, so it reaches you sealed, safe and on time."
+      updated="October 2026"
+      highlights={[
+        { title: "Ships in 24–48 hours", text: "Orders are processed within 1–2 business days, excluding weekends and holidays." },
+        { title: "Rates shown at checkout", text: "Your delivery estimate and shipping total are shown in USD before you pay." },
+        { title: "Sealed and trackable", text: "Tamper-evident seals, plus an email with your tracking link when it ships." },
+      ]}
+      sections={sections}
+      contactTitle="Need help with a shipment?"
+    />
   );
 }

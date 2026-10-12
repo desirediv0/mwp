@@ -940,7 +940,7 @@ export default function VariantCard({
 
             <div className="space-y-1">
               <Label htmlFor={`price-${index}`} className="text-xs">
-                Price ($)
+                MRP ($)
               </Label>
               <Input
                 id={`price-${index}`}

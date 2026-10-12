@@ -281,6 +281,8 @@ model Product {
   dosageForm                String? // e.g. "Capsule", "Tablet", "Powder"
   servingSize               String? // e.g. "2 capsules"
   whenToTake                String?                    @db.Text
+  highlights                Json? // [{ title, text }] benefit cards shown under the price on the product page
+  pageContent               Json? // { trustBadges, transparencyTitle, transparencyText, footerNote } optional overrides for product-page text
   brandId                   String?
   brand                     Brand?                     @relation(fields: [brandId], references: [id])
   orderItems                OrderItem[]
@@ -906,15 +908,20 @@ model ProductIngredientItem {
   @@index([productId, displayOrder])
 }
 
-// Certification / compliance documents (GMP, FSSAI, lab reports, etc).
+// Certification / compliance documents (cGMP, FDA registration, lab reports, etc).
 // Shown together on one permanent public page (/certificates) so a single
 // QR code printed on packaging keeps working forever, no matter how many
 // certificates are added, edited, or removed later.
 model Certificate {
   id           String   @id @default(uuid())
   title        String
-  fileUrl      String // image or PDF, stored via the same S3/Spaces uploader as other admin assets
-  fileType     String // "image" | "pdf"
+  fileUrl      String? // image or PDF (optional: card can exist before its document is uploaded)
+  fileType     String? // "image" | "pdf"
+  description  String?  @db.Text // line under the title on the card
+  badge        String? // short seal text in the card art, e.g. "GMP", "COA", "NG"
+  heading      String? // title shown inside the card art (falls back to title)
+  summary      String? // small text inside the card art (falls back to description)
+  buttonLabel  String? // e.g. "View certificate"
   displayOrder Int      @default(0)
   isActive     Boolean  @default(true)
   createdAt    DateTime @default(now())

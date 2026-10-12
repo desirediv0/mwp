@@ -31,7 +31,7 @@ const PILLARS = [
   {
     icon: ShieldCheck,
     title: "Third-Party Certified & Tested",
-    description: "Every production batch undergoes independent HPLC testing for purity, heavy metals, microbial safety, and zero banned substances. Certified GMP and FSSAI approved.",
+    description: "Every production batch undergoes independent HPLC testing for purity, heavy metals, microbial safety, and zero banned substances. Made in a cGMP-compliant, FDA-registered facility.",
   },
   {
     icon: Flame,

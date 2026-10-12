@@ -31,7 +31,7 @@ const PILLARS = [
   {
     id: "gmp",
     tag: "CERTIFIED COMPLIANCE",
-    title: "GMP & FSSAI Certified",
+    title: "cGMP & FDA-Registered Facility",
     desc: "Produced in sterile facilities compliant with Good Manufacturing Practices and audited under stringent food-safety norms.",
     image: "/pillars/gmp.jpg",
     icon: IconCertificate,

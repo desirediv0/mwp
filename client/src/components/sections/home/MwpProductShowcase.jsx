@@ -150,11 +150,11 @@ function ProductTile({ slide }) {
         </div>
       )}
 
-      {/* Soft colored glow behind the product, brightens on hover */}
+      {/* Clean spotlight right behind the bottle (no wide blurry blob), brightens on hover */}
       <div
         data-tile-glow
-        className="pointer-events-none absolute left-1/2 bottom-0 -translate-x-1/2 w-[70%] h-[55%] rounded-full blur-[60px] opacity-25"
-        style={{ background: slide.glow }}
+        className="pointer-events-none absolute left-1/2 bottom-[6%] h-[340px] w-[340px] -translate-x-1/2 rounded-full opacity-70 sm:h-[400px] sm:w-[400px] lg:bottom-[4%] lg:h-[460px] lg:w-[460px]"
+        style={{ background: "radial-gradient(circle, rgba(255,255,255,0.95) 0%, rgba(255,255,255,0.55) 38%, rgba(255,255,255,0) 68%)" }}
       />
 
       <span aria-hidden="true" className="absolute right-5 top-6 text-[11px] tracking-[0.2em] text-neutral-600/60 sm:right-8 sm:top-8">
@@ -162,13 +162,13 @@ function ProductTile({ slide }) {
       </span>
 
       <div data-tile-copy className="pointer-events-none relative z-10 px-5 pt-[84px] pb-2 text-center sm:px-8 sm:pt-24 lg:px-12">
-        <h2 className="text-[28px] leading-[1.15] tracking-[-0.04em] text-neutral-900 sm:text-[32px] lg:text-[40px]">
+        <h2 className="text-[30px] font-semibold leading-[1.1] tracking-[-0.02em] text-neutral-950 sm:text-[34px] lg:text-[42px]">
           {slide.name}
         </h2>
-        <p className="mt-3 text-[17px] leading-snug tracking-tight text-neutral-800 sm:text-lg lg:text-xl">
+        <p className="mt-3 text-[18px] font-medium leading-snug tracking-tight text-neutral-800 sm:text-xl lg:text-[22px]">
           {slide.headline}
         </p>
-        <p className="mx-auto mt-3 max-w-[310px] min-h-[42px] text-[13px] leading-[1.6] text-neutral-600 sm:min-h-[46px] sm:text-sm">
+        <p className="mx-auto mt-3 max-w-[330px] min-h-[44px] text-[14px] leading-[1.6] text-neutral-700 sm:min-h-[48px] sm:text-[15px]">
           {slide.copy}
         </p>
 
@@ -191,6 +191,7 @@ function ProductTile({ slide }) {
 
       {/* Equal-height bottle stages with a separate GSAP hover wrapper. */}
       <div data-tile-stage className="pointer-events-none relative z-10 mx-auto mt-7 mb-9 flex h-[300px] w-full items-center justify-center sm:mt-8 sm:mb-12 sm:h-[330px] lg:h-[380px]">
+        <span aria-hidden="true" className="absolute bottom-0 left-1/2 h-4 w-40 -translate-x-1/2 rounded-full bg-black/20 blur-md sm:w-48" />
         <div data-tile-image className="relative flex h-full w-full items-center justify-center">
         {slide.image ? (
           <Image
@@ -257,7 +258,7 @@ export default function MwpProductShowcase() {
             // A separate wrapper keeps reveal and hover transforms independent.
             const hover = gsap.timeline({ paused: true, defaults: { duration: 0.55, ease: "power2.out" } })
               .to(tile.querySelector("[data-tile-image]"), { y: -10, scale: 1.035 }, 0)
-              .to(tile.querySelector("[data-tile-glow]"), { opacity: 0.38, scale: 1.08 }, 0);
+              .to(tile.querySelector("[data-tile-glow]"), { opacity: 1, scale: 1.06 }, 0);
             const enter = () => hover.play();
             const leave = () => hover.reverse();
             const pointerEnter = (event) => { if (event.pointerType === "mouse") enter(); };

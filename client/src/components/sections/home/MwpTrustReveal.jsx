@@ -1,6 +1,7 @@
 "use client";
 
 import RevealText from "@/components/ui/reveal-text";
+import { TRUST_CLAIMS } from "@/lib/trustClaims";
 
 export default function MwpTrustReveal() {
   return (
@@ -23,12 +24,12 @@ export default function MwpTrustReveal() {
           gsapVars={{ delay: 0.5 }}
           className="mt-5 max-w-2xl overflow-hidden text-base leading-relaxed text-neutral-600 sm:text-lg"
         >
-          Every MWP formula is clinically dosed, made in a GMP-certified facility and lab tested
-          for purity. Scan the QR on any pack to verify it is genuine.
+          Every MWP formula is clinically dosed, made in a cGMP-compliant facility and third-party lab tested.
+          Scan the QR on any pack to verify it is genuine.
         </RevealText>
 
         <div className="mt-6 flex flex-wrap items-center justify-center gap-x-8 gap-y-3 text-sm font-medium text-green-700">
-          {["GMP Certified", "Lab Tested", "QR Verified"].map((item) => (
+          {TRUST_CLAIMS.map((item) => (
             <span key={item} className="flex items-center gap-2">
               <span className="h-1.5 w-1.5 rounded-full bg-green-700" />
               {item}

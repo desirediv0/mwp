@@ -71,7 +71,7 @@ export const getVerificationTemplate = (verificationLink, storeConfig = null) =>
                 <h3>The MWP Supplements Standard:</h3>
                 <div class="feature-item">Clinically Dosed Active Ingredients & Standardized Extracts</div>
                 <div class="feature-item">100% Transparent Formulations & Zero Proprietary Blends</div>
-                <div class="feature-item">GMP Certified & FSSAI Compliant Manufacturing</div>
+                <div class="feature-item">cGMP-Compliant, FDA-Registered Facility Manufacturing</div>
                 <div class="feature-item">Express Pan-India Shipping & Fresh Batch Guarantee</div>
                 <div class="feature-item">100% Encrypted & Secure Checkout</div>
             </div>

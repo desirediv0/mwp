@@ -35,13 +35,27 @@ const CERTIFICATES_URL = "https://mwpsupplements.com/certificates";
 interface Certificate {
   id: string;
   title: string;
-  fileUrl: string;
-  fileType: "image" | "pdf";
+  fileUrl: string | null;
+  fileType: "image" | "pdf" | null;
+  description: string | null;
+  badge: string | null;
+  heading: string | null;
+  summary: string | null;
+  buttonLabel: string | null;
   displayOrder: number;
   isActive: boolean;
 }
 
-const empty = { title: "", displayOrder: 0, isActive: true };
+const empty = {
+  title: "",
+  description: "",
+  badge: "",
+  heading: "",
+  summary: "",
+  buttonLabel: "View certificate",
+  displayOrder: 0,
+  isActive: true,
+};
 
 export default function CertificatesPage() {
   const [list, setList] = useState<Certificate[]>([]);
@@ -51,6 +65,7 @@ export default function CertificatesPage() {
   const [form, setForm] = useState<typeof empty>(empty);
   const [file, setFile] = useState<File | null>(null);
   const [saving, setSaving] = useState(false);
+  const [removeFile, setRemoveFile] = useState(false);
   const fileRef = useRef<HTMLInputElement>(null);
   const [qrDataUrl, setQrDataUrl] = useState("");
   const [copied, setCopied] = useState(false);
@@ -136,15 +151,26 @@ export default function CertificatesPage() {
 
   const openCreate = () => {
     setEditing(null);
-    setForm({ ...empty, displayOrder: list.length + 1 });
+    setForm({ ...empty, displayOrder: list.length });
     setFile(null);
+    setRemoveFile(false);
     setOpen(true);
   };
 
   const openEdit = (c: Certificate) => {
     setEditing(c);
-    setForm({ title: c.title, displayOrder: c.displayOrder, isActive: c.isActive });
+    setForm({
+      title: c.title,
+      description: c.description || "",
+      badge: c.badge || "",
+      heading: c.heading || "",
+      summary: c.summary || "",
+      buttonLabel: c.buttonLabel || "",
+      displayOrder: c.displayOrder,
+      isActive: c.isActive,
+    });
     setFile(null);
+    setRemoveFile(false);
     setOpen(true);
   };
 
@@ -158,17 +184,13 @@ export default function CertificatesPage() {
       toast.error("Title is required");
       return;
     }
-    if (!editing && !file) {
-      toast.error("Please choose an image or PDF");
-      return;
-    }
     setSaving(true);
     try {
       if (editing) {
-        await api.update(editing.id, { ...form, file });
+        await api.update(editing.id, { ...form, file, removeFile: removeFile && !file });
         toast.success("Certificate updated");
       } else {
-        await api.create({ ...form, file: file! });
+        await api.create({ ...form, file });
         toast.success("Certificate added");
       }
       setOpen(false);
@@ -199,7 +221,7 @@ export default function CertificatesPage() {
             <BadgeCheck className="h-6 w-6 text-[#4CAF50]" /> Certificates
           </h1>
           <p className="text-sm text-[#9CA3AF] mt-1 max-w-xl">
-            Upload GMP, FSSAI, lab reports and other compliance documents (image or PDF). They all
+            Upload cGMP, FDA registration, lab reports and other compliance documents (image or PDF). They all
             appear together on the permanent{" "}
             <code className="bg-[#F3F4F6] px-1.5 py-0.5 rounded">/certificates</code> page — a QR
             code pointing there can be printed on packaging and will keep working even as you
@@ -249,50 +271,54 @@ export default function CertificatesPage() {
           <p className="text-sm text-[#9CA3AF] mt-1">Add your first certificate to get started.</p>
         </div>
       ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
           {list.map((c) => (
-            <div key={c.id} className="rounded-xl border bg-white overflow-hidden">
-              <a
-                href={c.fileUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="relative aspect-[3/4] bg-[#F3F4F6] flex items-center justify-center block group"
-              >
-                {c.fileType === "pdf" ? (
-                  <div className="flex flex-col items-center text-[#9CA3AF]">
-                    <FileText className="h-10 w-10" />
-                    <span className="text-[10px] uppercase tracking-wide mt-1">PDF</span>
-                  </div>
-                ) : (
-                  <img src={c.fileUrl} alt={c.title} className="w-full h-full object-cover" />
+            <div key={c.id} className="rounded-xl border bg-white p-3 flex flex-col">
+              <div className="relative rounded-md border border-[#E5D3A8] bg-gradient-to-br from-white to-[#FBF6EA] h-36 flex flex-col items-center justify-center text-center px-4">
+                <span className="h-9 w-9 rounded-full border border-[#C9A15A] flex items-center justify-center text-[11px] font-bold text-[#B08A43]">
+                  {c.badge || "✓"}
+                </span>
+                <p className="mt-2 text-sm font-bold text-[#1F2937] leading-tight">{c.heading || c.title}</p>
+                {(c.summary || c.description) && (
+                  <p className="mt-1 text-[10px] text-[#6B7280] line-clamp-2">{c.summary || c.description}</p>
                 )}
-                <div className="absolute inset-0 bg-black/0 group-hover:bg-black/30 flex items-center justify-center transition-colors">
-                  <ExternalLink className="h-5 w-5 text-white opacity-0 group-hover:opacity-100 transition-opacity" />
-                </div>
                 {!c.isActive && (
                   <span className="absolute top-2 left-2 bg-[#F59E0B] text-white text-[10px] font-bold px-2 py-0.5 rounded">
                     Hidden
                   </span>
                 )}
-                <span className="absolute top-2 right-2 bg-white/90 text-[#4B5563] text-[10px] font-bold px-2 py-0.5 rounded">
+                <span className="absolute top-2 right-2 bg-white/90 border text-[#4B5563] text-[10px] font-bold px-2 py-0.5 rounded">
                   #{c.displayOrder}
                 </span>
-              </a>
-              <div className="p-3">
-                <h3 className="text-[13px] font-bold text-[#1F2937] leading-snug truncate">{c.title}</h3>
-                <div className="flex gap-2 mt-3">
-                  <Button size="sm" variant="outline" className="flex-1" onClick={() => openEdit(c)}>
-                    <Pencil className="h-3.5 w-3.5 mr-1" /> Edit
-                  </Button>
-                  <Button
-                    size="sm"
-                    variant="outline"
-                    className="border-[#EF4444] text-[#EF4444] hover:bg-[#FEF2F2]"
-                    onClick={() => remove(c)}
+              </div>
+              <h3 className="mt-3 text-[13px] font-bold text-[#1F2937] leading-snug">{c.title}</h3>
+              <div className="mt-1.5">
+                {c.fileUrl ? (
+                  <a
+                    href={c.fileUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-1 text-[11px] font-semibold text-[#2E7D32] hover:underline"
                   >
-                    <Trash2 className="h-3.5 w-3.5" />
-                  </Button>
-                </div>
+                    <FileText className="h-3.5 w-3.5" /> {c.fileType === "pdf" ? "PDF attached" : "Image attached"}
+                    <ExternalLink className="h-3 w-3" />
+                  </a>
+                ) : (
+                  <span className="text-[11px] font-semibold text-[#B45309]">No document yet. Card shows "Coming soon".</span>
+                )}
+              </div>
+              <div className="flex gap-2 mt-3">
+                <Button size="sm" variant="outline" className="flex-1" onClick={() => openEdit(c)}>
+                  <Pencil className="h-3.5 w-3.5 mr-1" /> Edit
+                </Button>
+                <Button
+                  size="sm"
+                  variant="outline"
+                  className="border-[#EF4444] text-[#EF4444] hover:bg-[#FEF2F2]"
+                  onClick={() => remove(c)}
+                >
+                  <Trash2 className="h-3.5 w-3.5" />
+                </Button>
               </div>
             </div>
           ))}
@@ -300,20 +326,66 @@ export default function CertificatesPage() {
       )}
 
       <Dialog open={open} onOpenChange={setOpen}>
-        <DialogContent className="sm:max-w-[440px]">
+        <DialogContent className="sm:max-w-[520px] max-h-[88vh] overflow-y-auto">
           <DialogHeader>
-            <DialogTitle>{editing ? "Edit Certificate" : "Add Certificate"}</DialogTitle>
+            <DialogTitle>{editing ? "Edit Certificate Card" : "Add Certificate Card"}</DialogTitle>
           </DialogHeader>
           <div className="space-y-4 py-2">
             <div>
-              <Label>Title *</Label>
+              <Label>Title * (shown under the card)</Label>
               <Input
                 value={form.title}
                 onChange={(e) => setForm((f) => ({ ...f, title: e.target.value }))}
-                placeholder="e.g. GMP Certification 2026"
+                placeholder="e.g. Certificate of Analysis"
               />
             </div>
+            <div>
+              <Label>Description (line under the title)</Label>
+              <Input
+                value={form.description}
+                onChange={(e) => setForm((f) => ({ ...f, description: e.target.value }))}
+                placeholder="e.g. View available product testing and laboratory records."
+              />
+            </div>
+            <div className="rounded-lg border bg-[#FAFAFA] p-3 space-y-3">
+              <p className="text-[11px] uppercase tracking-wide font-bold text-[#9CA3AF]">Card artwork</p>
+              <div className="grid grid-cols-[90px_1fr] gap-3">
+                <div>
+                  <Label>Seal text</Label>
+                  <Input
+                    value={form.badge}
+                    maxLength={4}
+                    onChange={(e) => setForm((f) => ({ ...f, badge: e.target.value }))}
+                    placeholder="COA"
+                  />
+                </div>
+                <div>
+                  <Label>Card heading</Label>
+                  <Input
+                    value={form.heading}
+                    onChange={(e) => setForm((f) => ({ ...f, heading: e.target.value }))}
+                    placeholder="Same as title if empty"
+                  />
+                </div>
+              </div>
+              <div>
+                <Label>Card small text</Label>
+                <Input
+                  value={form.summary}
+                  onChange={(e) => setForm((f) => ({ ...f, summary: e.target.value }))}
+                  placeholder="Same as description if empty"
+                />
+              </div>
+            </div>
             <div className="grid grid-cols-2 gap-3">
+              <div>
+                <Label>Button text</Label>
+                <Input
+                  value={form.buttonLabel}
+                  onChange={(e) => setForm((f) => ({ ...f, buttonLabel: e.target.value }))}
+                  placeholder="View certificate"
+                />
+              </div>
               <div>
                 <Label>Display Order</Label>
                 <Input
@@ -322,26 +394,23 @@ export default function CertificatesPage() {
                   onChange={(e) => setForm((f) => ({ ...f, displayOrder: parseInt(e.target.value) || 0 }))}
                 />
               </div>
-              <div className="flex items-end gap-2 pb-1">
-                <Switch
-                  checked={form.isActive}
-                  onCheckedChange={(v) => setForm((f) => ({ ...f, isActive: v }))}
-                />
-                <Label className="mb-0">Visible</Label>
-              </div>
+            </div>
+            <div className="flex items-center gap-2">
+              <Switch checked={form.isActive} onCheckedChange={(v) => setForm((f) => ({ ...f, isActive: v }))} />
+              <Label className="mb-0">Visible on the website</Label>
             </div>
             <div>
-              <Label>File (image or PDF) {editing ? "— optional to replace" : "*"}</Label>
+              <Label>Document (PDF or image). Customers open this when they click the card.</Label>
               <div
                 onClick={() => fileRef.current?.click()}
                 className="mt-1 border-2 border-dashed border-[#E5E7EB] rounded-lg p-4 text-center cursor-pointer hover:border-[#4CAF50]"
               >
                 {file ? (
                   <p className="text-sm text-[#1F2937] font-medium">{file.name}</p>
-                ) : editing ? (
-                  <p className="text-sm text-[#9CA3AF]">Click to replace the current file</p>
+                ) : editing?.fileUrl && !removeFile ? (
+                  <p className="text-sm text-[#9CA3AF]">A document is attached. Click to replace it.</p>
                 ) : (
-                  <p className="text-sm text-[#9CA3AF]">Click to upload image or PDF</p>
+                  <p className="text-sm text-[#9CA3AF]">Click to upload a PDF (optional, can be added later)</p>
                 )}
                 <input
                   ref={fileRef}
@@ -351,6 +420,12 @@ export default function CertificatesPage() {
                   onChange={onFile}
                 />
               </div>
+              {editing?.fileUrl && !file && (
+                <label className="mt-2 flex items-center gap-2 text-xs text-[#6B7280]">
+                  <input type="checkbox" checked={removeFile} onChange={(e) => setRemoveFile(e.target.checked)} />
+                  Remove the attached document
+                </label>
+              )}
             </div>
           </div>
           <DialogFooter>

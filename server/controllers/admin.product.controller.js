@@ -11,6 +11,37 @@ import {
   formatVariantsWithAttributes,
 } from "../utils/variant-attributes.js";
 
+// Benefit cards under the price: accepts a JSON string or array of { title, text }.
+const parseHighlights = (raw) => {
+  try {
+    const arr = typeof raw === "string" ? JSON.parse(raw || "[]") : raw;
+    if (!Array.isArray(arr)) return [];
+    return arr
+      .map((h) => ({ title: String(h?.title || "").trim(), text: String(h?.text || "").trim() }))
+      .filter((h) => h.title && h.text)
+      .slice(0, 6);
+  } catch {
+    return [];
+  }
+};
+
+// Optional product-page text overrides; only known keys, trimmed, empty values dropped.
+const PAGE_CONTENT_KEYS = ["trustBadges", "transparencyTitle", "transparencyText", "footerNote"];
+const parsePageContent = (raw) => {
+  try {
+    const obj = typeof raw === "string" ? JSON.parse(raw || "{}") : raw;
+    if (!obj || typeof obj !== "object" || Array.isArray(obj)) return {};
+    const out = {};
+    for (const k of PAGE_CONTENT_KEYS) {
+      const v = String(obj[k] ?? "").trim();
+      if (v) out[k] = v.slice(0, 600);
+    }
+    return out;
+  } catch {
+    return {};
+  }
+};
+
 const stripHtmlToPlain = (value = "", maxLength = 160) => {
   const plain = String(value)
     .replace(/<[^>]*>/g, " ")
@@ -585,6 +616,8 @@ export const createProduct = asyncHandler(async (req, res, next) => {
     dosageForm,
     servingSize,
     whenToTake,
+    highlights,
+    pageContent,
   } = req.body;
 
   // Validation checks with better error handling
@@ -757,6 +790,8 @@ export const createProduct = asyncHandler(async (req, res, next) => {
           dosageForm,
           servingSize,
           whenToTake,
+          highlights: parseHighlights(highlights),
+          pageContent: parsePageContent(pageContent),
         },
       });
 
@@ -1386,6 +1421,8 @@ export const updateProduct = asyncHandler(async (req, res, next) => {
     dosageForm,
     servingSize,
     whenToTake,
+    highlights,
+    pageContent,
   } = req.body;
 
   // Check if product exists
@@ -1616,6 +1653,8 @@ export const updateProduct = asyncHandler(async (req, res, next) => {
           ...(dosageForm !== undefined && { dosageForm }),
           ...(servingSize !== undefined && { servingSize }),
           ...(whenToTake !== undefined && { whenToTake }),
+          ...(highlights !== undefined && { highlights: parseHighlights(highlights) }),
+          ...(pageContent !== undefined && { pageContent: parsePageContent(pageContent) }),
         },
       });
 
