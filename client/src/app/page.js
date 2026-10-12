@@ -1,6 +1,8 @@
 // Previous hero — kept for reference/rollback. Re-enable this import and <MwpHomeHero /> below to restore it.
 // import MwpHomeHero from "@/components/sections/home/MwpHomeHero";
-import MwpOrbitHero from "@/components/sections/home/MwpOrbitHero";
+// Light 3D "orbit" hero — kept for rollback. Swap it back in by re-enabling this import and <MwpOrbitHero /> below.
+// import MwpOrbitHero from "@/components/sections/home/MwpOrbitHero";
+import MwpParticleHero from "@/components/sections/home/MwpParticleHero";
 import MwpProductShowcase from "@/components/sections/home/MwpProductShowcase";
 import MwpTrustReveal from "@/components/sections/home/MwpTrustReveal";
 
@@ -16,7 +18,8 @@ export default function Home() {
   return (
     <>
       {/* <MwpHomeHero /> */}
-      <MwpOrbitHero />
+      {/* <MwpOrbitHero /> */}
+      <MwpParticleHero />
       <MwpTrustReveal />
       <MwpProductShowcase />
     </>
