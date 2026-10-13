@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { IconArrowRight, IconQrcode, IconLoader2 } from "@tabler/icons-react";
+import { IconArrowRight, IconLoader2 } from "@tabler/icons-react";
 import { fetchApi } from "@/lib/utils";
 import { TRUST_CLAIMS } from "@/lib/trustClaims";
 
@@ -16,7 +16,7 @@ function CertificateCard({ c }) {
       <span aria-hidden="true" className="absolute bottom-2.5 right-2.5 h-10 w-12 border-b border-r border-[#c9a15a]" />
       {c.logoUrl ? (
         // eslint-disable-next-line @next/next/no-img-element
-        <img src={c.logoUrl} alt={c.heading || c.title} className="h-24 w-24 object-contain mix-blend-multiply sm:h-28 sm:w-28" />
+        <img src={c.logoUrl} alt={c.heading || c.title} className="h-24 w-24 object-contain sm:h-28 sm:w-28" />
       ) : (
         <span className="flex h-12 w-12 items-center justify-center rounded-full border border-[#c9a15a] text-[13px] font-bold text-[#b08a43]">
           {c.badge || "✓"}
@@ -141,9 +141,15 @@ export default function CertificatesPage() {
             </Link>
           </div>
           <div className="flex flex-col items-center rounded-2xl border border-[#c9a15a]/30 px-6 py-8">
-            <span className="flex h-24 w-24 items-center justify-center rounded-lg bg-white text-neutral-900">
-              <IconQrcode size={64} stroke={1.3} />
-            </span>
+            {/* Real QR for https://mwpsupplements.com/certificates (same one as the admin "Certificates Page QR") */}
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src="/certificates-qr.svg"
+              alt="QR code that opens the MWP certificate wall"
+              width={176}
+              height={176}
+              className="h-40 w-40 rounded-xl bg-white p-1 sm:h-44 sm:w-44"
+            />
             <p className="mt-4 text-[11px] font-bold uppercase tracking-[0.2em]">Scan for trust &amp; testing</p>
           </div>
         </section>

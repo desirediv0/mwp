@@ -287,7 +287,7 @@ export default function CertificatesPage() {
             <div key={c.id} className="rounded-xl border bg-white p-3 flex flex-col">
               <div className="relative rounded-md border border-[#E5D3A8] bg-gradient-to-br from-white to-[#FBF6EA] h-36 flex flex-col items-center justify-center text-center px-4">
                 {c.logoUrl ? (
-                  <img src={c.logoUrl} alt={c.title} className="h-14 w-14 object-contain mix-blend-multiply" />
+                  <img src={c.logoUrl} alt={c.title} className="h-14 w-14 object-contain" />
                 ) : (
                   <span className="h-9 w-9 rounded-full border border-[#C9A15A] flex items-center justify-center text-[11px] font-bold text-[#B08A43]">
                     {c.badge || "✓"}
