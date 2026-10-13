@@ -19,15 +19,6 @@ export default function MwpTrustReveal() {
           Proof before promises.
         </RevealText>
 
-        <RevealText
-          type="lines"
-          gsapVars={{ delay: 0.5 }}
-          className="mt-5 max-w-2xl overflow-hidden text-base leading-relaxed text-neutral-600 sm:text-lg"
-        >
-          Every MWP formula is clinically dosed, made in a cGMP-compliant facility and third-party lab tested.
-          Scan the QR on any pack to verify it is genuine.
-        </RevealText>
-
         <div className="mt-6 flex flex-wrap items-center justify-center gap-x-8 gap-y-3 text-sm font-medium text-green-700">
           {TRUST_CLAIMS.map((item) => (
             <span key={item} className="flex items-center gap-2">

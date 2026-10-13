@@ -12,6 +12,7 @@ import { deleteFromS3 } from "../utils/deleteFromS3.js";
 const format = (c) => ({
   ...c,
   fileUrl: c.fileUrl ? getFileUrl(c.fileUrl) : null,
+  logoUrl: c.logoUrl ? getFileUrl(c.logoUrl) : null,
 });
 
 const text = (v) => (typeof v === "string" && v.trim() ? v.trim() : null);
@@ -21,6 +22,17 @@ const uploadDoc = async (file) => {
   const fileUrl = isPdf ? await uploadPDF(file) : await processAndUploadImage(file, "certificates");
   return { fileUrl, fileType: isPdf ? "pdf" : "image" };
 };
+
+const uploadLogo = async (file) => {
+  if (!file.mimetype?.startsWith("image/")) throw new ApiError(400, "The logo must be an image");
+  return processAndUploadImage(file, "certificate-logos");
+};
+
+// multer .fields() puts files under req.files.<field>[0]
+const pickFiles = (req) => ({
+  doc: req.files?.file?.[0] || req.file || null,
+  logo: req.files?.logo?.[0] || null,
+});
 
 /* -------------------- PUBLIC -------------------- */
 // One permanent page (/certificates) lists every active certificate card.
@@ -49,12 +61,15 @@ export const adminCreateCertificate = asyncHandler(async (req, res) => {
   const { title, displayOrder, isActive, description, badge, heading, summary, buttonLabel } = req.body;
   if (!title) throw new ApiError(400, "Title is required");
 
-  const doc = req.file ? await uploadDoc(req.file) : { fileUrl: null, fileType: null };
+  const { doc, logo } = pickFiles(req);
+  const docData = doc ? await uploadDoc(doc) : { fileUrl: null, fileType: null };
+  const logoUrl = logo ? await uploadLogo(logo) : null;
 
   const certificate = await prisma.certificate.create({
     data: {
       title,
-      ...doc,
+      ...docData,
+      logoUrl,
       description: text(description),
       badge: text(badge),
       heading: text(heading),
@@ -72,7 +87,7 @@ export const adminUpdateCertificate = asyncHandler(async (req, res) => {
   const existing = await prisma.certificate.findUnique({ where: { id } });
   if (!existing) throw new ApiError(404, "Certificate not found");
 
-  const { title, displayOrder, isActive, description, badge, heading, summary, buttonLabel, removeFile } = req.body;
+  const { title, displayOrder, isActive, description, badge, heading, summary, buttonLabel, removeFile, removeLogo } = req.body;
   const data = {};
   if (title !== undefined) data.title = title;
   if (displayOrder !== undefined) data.displayOrder = parseInt(displayOrder) || 0;
@@ -83,13 +98,23 @@ export const adminUpdateCertificate = asyncHandler(async (req, res) => {
   if (summary !== undefined) data.summary = text(summary);
   if (buttonLabel !== undefined) data.buttonLabel = text(buttonLabel);
 
-  if (req.file) {
+  const { doc, logo } = pickFiles(req);
+
+  if (doc) {
     if (existing.fileUrl) await deleteFromS3(existing.fileUrl).catch(() => {});
-    Object.assign(data, await uploadDoc(req.file));
+    Object.assign(data, await uploadDoc(doc));
   } else if (removeFile === "true" && existing.fileUrl) {
     await deleteFromS3(existing.fileUrl).catch(() => {});
     data.fileUrl = null;
     data.fileType = null;
+  }
+
+  if (logo) {
+    if (existing.logoUrl) await deleteFromS3(existing.logoUrl).catch(() => {});
+    data.logoUrl = await uploadLogo(logo);
+  } else if (removeLogo === "true" && existing.logoUrl) {
+    await deleteFromS3(existing.logoUrl).catch(() => {});
+    data.logoUrl = null;
   }
 
   const certificate = await prisma.certificate.update({ where: { id }, data });
@@ -101,6 +126,7 @@ export const adminDeleteCertificate = asyncHandler(async (req, res) => {
   const existing = await prisma.certificate.findUnique({ where: { id } });
   if (!existing) throw new ApiError(404, "Certificate not found");
   if (existing.fileUrl) await deleteFromS3(existing.fileUrl).catch(() => {});
+  if (existing.logoUrl) await deleteFromS3(existing.logoUrl).catch(() => {});
   await prisma.certificate.delete({ where: { id } });
   res.status(200).json(new ApiResponsive(200, {}, "Certificate deleted"));
 });

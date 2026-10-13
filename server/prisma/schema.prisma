@@ -919,6 +919,7 @@ model Certificate {
   fileType     String? // "image" | "pdf"
   description  String?  @db.Text // line under the title on the card
   badge        String? // short seal text in the card art, e.g. "GMP", "COA", "NG"
+  logoUrl      String? // optional logo image shown in the card art (replaces the seal circle)
   heading      String? // title shown inside the card art (falls back to title)
   summary      String? // small text inside the card art (falls back to description)
   buttonLabel  String? // e.g. "View certificate"

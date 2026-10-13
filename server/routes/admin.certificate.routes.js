@@ -14,9 +14,9 @@ const router = Router();
 router.use(verifyAdminJWT);
 
 router.get("/", adminListCertificates);
-router.post("/", uploadFiles.single("file"), adminCreateCertificate);
+router.post("/", uploadFiles.fields([{ name: "file", maxCount: 1 }, { name: "logo", maxCount: 1 }]), adminCreateCertificate);
 router.put("/reorder", adminReorderCertificates);
-router.put("/:id", uploadFiles.single("file"), adminUpdateCertificate);
+router.put("/:id", uploadFiles.fields([{ name: "file", maxCount: 1 }, { name: "logo", maxCount: 1 }]), adminUpdateCertificate);
 router.delete("/:id", adminDeleteCertificate);
 
 export default router;

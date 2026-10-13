@@ -39,6 +39,7 @@ interface Certificate {
   fileType: "image" | "pdf" | null;
   description: string | null;
   badge: string | null;
+  logoUrl: string | null;
   heading: string | null;
   summary: string | null;
   buttonLabel: string | null;
@@ -66,6 +67,10 @@ export default function CertificatesPage() {
   const [file, setFile] = useState<File | null>(null);
   const [saving, setSaving] = useState(false);
   const [removeFile, setRemoveFile] = useState(false);
+  const [logoFile, setLogoFile] = useState<File | null>(null);
+  const [logoPreview, setLogoPreview] = useState("");
+  const [removeLogo, setRemoveLogo] = useState(false);
+  const logoRef = useRef<HTMLInputElement>(null);
   const fileRef = useRef<HTMLInputElement>(null);
   const [qrDataUrl, setQrDataUrl] = useState("");
   const [copied, setCopied] = useState(false);
@@ -154,6 +159,9 @@ export default function CertificatesPage() {
     setForm({ ...empty, displayOrder: list.length });
     setFile(null);
     setRemoveFile(false);
+    setLogoFile(null);
+    setLogoPreview("");
+    setRemoveLogo(false);
     setOpen(true);
   };
 
@@ -171,6 +179,9 @@ export default function CertificatesPage() {
     });
     setFile(null);
     setRemoveFile(false);
+    setLogoFile(null);
+    setLogoPreview("");
+    setRemoveLogo(false);
     setOpen(true);
   };
 
@@ -187,10 +198,10 @@ export default function CertificatesPage() {
     setSaving(true);
     try {
       if (editing) {
-        await api.update(editing.id, { ...form, file, removeFile: removeFile && !file });
+        await api.update(editing.id, { ...form, file, removeFile: removeFile && !file, logo: logoFile, removeLogo: removeLogo && !logoFile });
         toast.success("Certificate updated");
       } else {
-        await api.create({ ...form, file });
+        await api.create({ ...form, file, logo: logoFile });
         toast.success("Certificate added");
       }
       setOpen(false);
@@ -275,9 +286,13 @@ export default function CertificatesPage() {
           {list.map((c) => (
             <div key={c.id} className="rounded-xl border bg-white p-3 flex flex-col">
               <div className="relative rounded-md border border-[#E5D3A8] bg-gradient-to-br from-white to-[#FBF6EA] h-36 flex flex-col items-center justify-center text-center px-4">
-                <span className="h-9 w-9 rounded-full border border-[#C9A15A] flex items-center justify-center text-[11px] font-bold text-[#B08A43]">
-                  {c.badge || "✓"}
-                </span>
+                {c.logoUrl ? (
+                  <img src={c.logoUrl} alt={c.title} className="h-14 w-14 object-contain mix-blend-multiply" />
+                ) : (
+                  <span className="h-9 w-9 rounded-full border border-[#C9A15A] flex items-center justify-center text-[11px] font-bold text-[#B08A43]">
+                    {c.badge || "✓"}
+                  </span>
+                )}
                 <p className="mt-2 text-sm font-bold text-[#1F2937] leading-tight">{c.heading || c.title}</p>
                 {(c.summary || c.description) && (
                   <p className="mt-1 text-[10px] text-[#6B7280] line-clamp-2">{c.summary || c.description}</p>
@@ -349,6 +364,53 @@ export default function CertificatesPage() {
             </div>
             <div className="rounded-lg border bg-[#FAFAFA] p-3 space-y-3">
               <p className="text-[11px] uppercase tracking-wide font-bold text-[#9CA3AF]">Card artwork</p>
+              <div className="flex items-center gap-3">
+                <div className="h-16 w-16 shrink-0 rounded-lg border bg-white flex items-center justify-center overflow-hidden">
+                  {logoPreview || (editing?.logoUrl && !removeLogo) ? (
+                    <img src={logoPreview || (editing?.logoUrl as string)} alt="Logo preview" className="h-full w-full object-contain" />
+                  ) : (
+                    <span className="text-[10px] text-[#9CA3AF] text-center px-1">No logo</span>
+                  )}
+                </div>
+                <div className="flex flex-wrap gap-2">
+                  <Button type="button" variant="outline" size="sm" onClick={() => logoRef.current?.click()}>
+                    {logoPreview || (editing?.logoUrl && !removeLogo) ? "Replace logo" : "Upload logo"}
+                  </Button>
+                  {(logoPreview || (editing?.logoUrl && !removeLogo)) && (
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      className="border-[#EF4444] text-[#EF4444] hover:bg-[#FEF2F2]"
+                      onClick={() => {
+                        setLogoFile(null);
+                        setLogoPreview("");
+                        setRemoveLogo(true);
+                      }}
+                    >
+                      Remove logo
+                    </Button>
+                  )}
+                  <input
+                    ref={logoRef}
+                    type="file"
+                    accept="image/*"
+                    className="hidden"
+                    onChange={(e) => {
+                      const f = e.target.files?.[0];
+                      if (f) {
+                        setLogoFile(f);
+                        setLogoPreview(URL.createObjectURL(f));
+                        setRemoveLogo(false);
+                      }
+                      e.target.value = "";
+                    }}
+                  />
+                </div>
+              </div>
+              <p className="text-xs text-muted-foreground">
+                The logo replaces the seal circle on the website card. Remove it to go back to the seal text.
+              </p>
               <div className="grid grid-cols-[90px_1fr] gap-3">
                 <div>
                   <Label>Seal text</Label>

@@ -1619,6 +1619,8 @@ export interface CertificateInput {
   isActive?: boolean;
   file?: File | null;
   removeFile?: boolean;
+  logo?: File | null;
+  removeLogo?: boolean;
 }
 
 const certificateForm = (data: CertificateInput) => {
@@ -1629,6 +1631,8 @@ const certificateForm = (data: CertificateInput) => {
   if (data.displayOrder !== undefined) fd.append("displayOrder", String(data.displayOrder));
   if (data.isActive !== undefined) fd.append("isActive", String(data.isActive));
   if (data.removeFile) fd.append("removeFile", "true");
+  if (data.removeLogo) fd.append("removeLogo", "true");
+  if (data.logo) fd.append("logo", data.logo);
   if (data.file) fd.append("file", data.file);
   return fd;
 };

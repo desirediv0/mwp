@@ -14,11 +14,16 @@ function CertificateCard({ c }) {
     <div className="relative flex h-[220px] flex-col items-center justify-center rounded-md border border-[#d9bf86] bg-gradient-to-br from-white to-[#fbf6ea] px-6 text-center sm:h-[230px]">
       <span aria-hidden="true" className="absolute left-2.5 top-2.5 h-10 w-12 border-l border-t border-[#c9a15a]" />
       <span aria-hidden="true" className="absolute bottom-2.5 right-2.5 h-10 w-12 border-b border-r border-[#c9a15a]" />
-      <span className="flex h-12 w-12 items-center justify-center rounded-full border border-[#c9a15a] text-[13px] font-bold text-[#b08a43]">
-        {c.badge || "✓"}
-      </span>
-      <p className="mt-4 text-xl font-bold tracking-tight text-neutral-900">{c.heading || c.title}</p>
-      {(c.summary || c.description) && (
+      {c.logoUrl ? (
+        // eslint-disable-next-line @next/next/no-img-element
+        <img src={c.logoUrl} alt={c.heading || c.title} className="h-24 w-24 object-contain mix-blend-multiply sm:h-28 sm:w-28" />
+      ) : (
+        <span className="flex h-12 w-12 items-center justify-center rounded-full border border-[#c9a15a] text-[13px] font-bold text-[#b08a43]">
+          {c.badge || "✓"}
+        </span>
+      )}
+      <p className={`${c.logoUrl ? "mt-3 text-lg" : "mt-4 text-xl"} font-bold tracking-tight text-neutral-900`}>{c.heading || c.title}</p>
+      {!c.logoUrl && (c.summary || c.description) && (
         <p className="mt-2 max-w-[220px] text-[11px] leading-snug text-neutral-500">{c.summary || c.description}</p>
       )}
     </div>
