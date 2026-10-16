@@ -154,14 +154,6 @@
   background-clip: text;
   animation: mwp-particle-shine 6.5s var(--particle-ease) infinite;
 }
-.mwp-particle__dot {
-  height: 6px;
-  width: 6px;
-  flex-shrink: 0;
-  border-radius: 999px;
-  background: var(--particle-glow);
-  box-shadow: 0 0 0 4px color-mix(in srgb, var(--particle-glow) 18%, transparent);
-}
 .mwp-particle__meter {
   background: var(--particle-ink);
   transition: width 0.6s var(--particle-ease);
@@ -198,15 +190,6 @@
 .mwp-particle[data-scene="ready"] .mwp-particle__fallback {
   opacity: 0;
   animation: none;
-}
-.mwp-particle__hint {
-  transition: opacity 0.6s ease;
-}
-.mwp-particle__hint[data-hidden="true"] {
-  opacity: 0;
-}
-.mwp-particle__hint svg {
-  animation: mwp-particle-nudge 2.4s ease-in-out infinite;
 }
 
 /* ── Rail ─────────────────────────────────────────────── */
@@ -298,15 +281,6 @@
     opacity: 1;
   }
 }
-@keyframes mwp-particle-nudge {
-  0%,
-  100% {
-    translate: 0 0;
-  }
-  50% {
-    translate: 3px -3px;
-  }
-}
 @keyframes mwp-particle-progress {
   from {
     transform: scaleX(0);
@@ -320,7 +294,6 @@
 .mwp-particle[data-motion="off"] .mwp-particle__spot,
 .mwp-particle[data-motion="off"] .mwp-particle__beams span,
 .mwp-particle[data-motion="off"] .mwp-particle__shine,
-.mwp-particle[data-motion="off"] .mwp-particle__hint svg,
 .mwp-particle[data-motion="off"] .mwp-particle__progress {
   animation-play-state: paused;
 }
@@ -328,7 +301,6 @@
   .mwp-particle__spot,
   .mwp-particle__beams span,
   .mwp-particle__shine,
-  .mwp-particle__hint svg,
   .mwp-particle__progress {
     animation: none !important;
   }

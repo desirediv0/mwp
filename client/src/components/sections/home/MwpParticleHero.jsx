@@ -19,12 +19,9 @@ import {
   IconChevronRight,
   IconPlayerPause,
   IconPlayerPlay,
-  IconPointer,
 } from "@tabler/icons-react";
 import { useLanguage } from "@/lib/language-context";
-import { CORE_PRODUCTS } from "@/lib/mwp-content";
 import { productPalette } from "@/lib/product-palette";
-import { TRUST_CLAIMS } from "@/lib/trustClaims";
 import "./mwp-particle-hero.css";
 
 // WebGL stage is client-only and streams in after hydration; headline text carries first paint.
@@ -36,7 +33,6 @@ const GLYPHS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789/#*+";
 
 // Tag lines match the header product menu. Glow is sampled from each bottle's cap/label; ink (from the
 // product palette) is the darker shade used for small text on the light stage.
-// Formulas without a signature in mwp-content show their focus areas instead of ingredients.
 const FORMULAS = [
   { key: "ultra-pro", name: "Ultra Pro", category: "Men's vitality", tag: "The Quiet Miracle", purpose: "Everyday support for vitality, stamina and confidence.", glow: "#c9962e" },
   { key: "power-max", name: "Power Max", category: "Strength & stamina", tag: "Unlock Your Miracle", purpose: "Herbal support for strength, stamina and performance.", glow: "#3d63c4" },
@@ -44,20 +40,10 @@ const FORMULAS = [
   { key: "her-power", name: "Her Power", category: "Women's wellness", tag: "Her Inner Miracle", purpose: "Daily wellness support for balance and vitality.", glow: "#dc4f7f" },
   { key: "her-energy", name: "Her Energy", category: "Women's energy", tag: "Keeps Up With Her", purpose: "Energy and focus support for your everyday routine.", glow: "#8d4fb8" },
   { key: "daily-vitality", name: "Daily Vitality", category: "Everyday wellness", tag: "Age Is A Number", purpose: "Everyday support for overall health and wellbeing.", glow: "#5f9a3f" },
-  { key: "alpha-prime", name: "Alpha Prime", category: "Men's performance", tag: "Strength. Focus. Performance.", purpose: "Support for strength, vitality and performance.", glow: "#c0652f", focus: ["Strength", "Vitality", "Performance"] },
-  { key: "titan-force", name: "Titan Force", category: "Power & endurance", tag: "Power For Your Everyday.", purpose: "Performance support for strength and endurance.", glow: "#d8692a", focus: ["Strength", "Endurance", "Performance"] },
-].map(formula => {
-  const signature = CORE_PRODUCTS.find(product => product.key === formula.key)?.signature;
-  return {
-    ...formula,
-    ink: productPalette(formula.key).accent,
-    notes: signature ? signature.split(" · ") : formula.focus,
-    notesLabel: signature ? "Inside the formula" : "Formula focus",
-  };
-});
+  { key: "alpha-prime", name: "Alpha Prime", category: "Men's performance", tag: "Strength. Focus. Performance.", purpose: "Support for strength, vitality and performance.", glow: "#c0652f" },
+  { key: "titan-force", name: "Titan Force", category: "Power & endurance", tag: "Power For Your Everyday.", purpose: "Performance support for strength and endurance.", glow: "#d8692a" },
+].map(formula => ({ ...formula, ink: productPalette(formula.key).accent }));
 
-// The short claims fit the hero; the full list (from trustClaims.js) lives on product + certificate pages.
-const HERO_CLAIMS = TRUST_CLAIMS.filter(claim => claim.length <= 26);
 const TITLE_WORDS = [["Your", "everyday."], ["Your", "kind", "of", "power."]];
 
 class SceneBoundary extends Component {
@@ -146,7 +132,6 @@ export default function MwpParticleHero() {
   const [webgl, setWebgl] = useState(null);
   const [lite, setLite] = useState(false);
   const [sceneReady, setSceneReady] = useState(false);
-  const [touched, setTouched] = useState(false);
   const [stage, setStage] = useState(null);
   const [isDesktop, setIsDesktop] = useState(false);
 
@@ -155,7 +140,6 @@ export default function MwpParticleHero() {
   const autoPlaying = motionOn && pageVisible && inView && !holding;
   const move = useCallback(step => setSelected(index => (index + step + FORMULAS.length) % FORMULAS.length), []);
   const handleSceneReady = useCallback(() => setSceneReady(true), []);
-  const handleInteract = useCallback(() => setTouched(true), []);
   const handleSceneError = useCallback(() => {
     setWebgl(false);
     setSceneReady(false);
@@ -310,7 +294,6 @@ export default function MwpParticleHero() {
                 inView={inView && pageVisible}
                 lite={lite}
                 onReady={handleSceneReady}
-                onInteract={handleInteract}
               />
             </SceneBoundary>
           )}
@@ -396,15 +379,6 @@ export default function MwpParticleHero() {
                 <IconChevronRight className="h-4 w-4" stroke={1.5} />
               </ControlButton>
             </div>
-
-            <p
-              aria-hidden="true"
-              data-hidden={touched || sceneState !== "ready" || reduceMotion}
-              className="mwp-particle__hint relative z-[2] mt-5 inline-flex items-center gap-2 text-[10px] uppercase tracking-[0.22em] text-neutral-500"
-            >
-              <IconPointer className="h-3.5 w-3.5" stroke={1.5} />
-              {isDesktop ? "Hover the bottle" : "Touch & drag the bottle"}
-            </p>
           </div>
 
           {/* Right: formula details */}
@@ -435,22 +409,6 @@ export default function MwpParticleHero() {
                   <p className="mt-3 text-[11px] uppercase tracking-[0.22em] text-[color:var(--particle-ink)]">{active.category}</p>
                   <p className="mt-1.5 text-[15px] text-neutral-800">{active.tag}</p>
                   <p className="mt-3 text-sm leading-6 text-neutral-600">{active.purpose}</p>
-                  <p className="mt-6 text-[10px] uppercase tracking-[0.22em] text-neutral-500">{active.notesLabel}</p>
-                  <ol className="mt-2 border-t border-neutral-900/10 text-left">
-                    {active.notes.slice(0, 3).map((note, index) => (
-                      <motion.li
-                        key={note}
-                        className="flex items-center gap-4 border-b border-neutral-900/10 py-2.5 text-[15px] text-neutral-800"
-                        initial={{ opacity: 0, x: 12 }}
-                        animate={{ opacity: 1, x: 0 }}
-                        transition={{ duration: 0.5, delay: 0.15 + index * 0.08, ease: EASE }}
-                      >
-                        <span className="w-5 text-[10px] tabular-nums text-neutral-400">0{index + 1}</span>
-                        <span className="mwp-particle__dot" aria-hidden="true" />
-                        {note}
-                      </motion.li>
-                    ))}
-                  </ol>
                 </motion.div>
               </AnimatePresence>
               <Link href={`/products/${active.key}`} className="group mt-6 inline-flex items-center gap-3 text-sm text-neutral-900">
@@ -462,16 +420,13 @@ export default function MwpParticleHero() {
             </div>
           </motion.div>
 
-          {/* Left, lower: copy + CTAs */}
+          {/* Left, lower: CTAs */}
           <motion.div
             className="relative z-[2] pb-10 pt-8 text-center lg:col-start-1 lg:row-start-2 lg:self-start lg:pb-8 lg:pt-0 lg:text-left"
             style={scrollStyle({ x: leftX, opacity: sideOpacity })}
           >
             <motion.div initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.9, delay: 0.5, ease: EASE }}>
-              <p className="mx-auto max-w-[400px] text-[15px] leading-7 text-neutral-600 lg:mx-0">
-                Supplements for men, women and everyday wellness. Explore eight formulas for energy, vitality and performance—and find the one that fits your routine.
-              </p>
-              <div className="mt-7 flex flex-wrap items-center justify-center gap-3 lg:justify-start">
+              <div className="flex flex-wrap items-center justify-center gap-3 lg:justify-start">
                 <Link
                   href="/products"
                   className="mwp-particle__cta group relative inline-flex min-h-[52px] items-center gap-3 overflow-hidden rounded-full bg-neutral-950 px-7 text-sm text-white shadow-[0_18px_40px_-20px_rgba(0,0,0,0.55)] focus-visible:outline-offset-4"
@@ -487,15 +442,6 @@ export default function MwpParticleHero() {
                   <IconArrowRight className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-1" stroke={1.5} />
                 </Link>
               </div>
-              {HERO_CLAIMS.length > 0 && (
-                <ul className="mt-6 flex flex-wrap justify-center gap-2 lg:justify-start">
-                  {HERO_CLAIMS.map(claim => (
-                    <li key={claim} className="rounded-full border border-neutral-900/10 bg-white/50 px-3 py-1 text-[10px] uppercase tracking-[0.16em] text-neutral-600">
-                      {claim}
-                    </li>
-                  ))}
-                </ul>
-              )}
             </motion.div>
           </motion.div>
         </div>

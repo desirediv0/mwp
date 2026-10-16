@@ -6,8 +6,7 @@ import * as THREE from "three";
 
 // WebGL stage for MwpParticleHero (light studio stage). Every bottle photo is sampled into a cloud of coloured
 // particles; switching formulas swirls the cloud from one bottle into the next. Once a bottle
-// has assembled, the sharp photo fades in on top, the cursor burns a hole through it and
-// scatters the particles underneath, and scrolling away blows the whole bottle upward.
+// has assembled, the sharp photo fades in on top, and scrolling away blows the whole bottle upward.
 
 const CAMERA_Z = 12;
 const CAMERA_FOV = 30;
@@ -17,7 +16,6 @@ const BOTTLE_FILL = 0.94; // share of the anchor height the bottle occupies
 const BOTTLE_LIFT = 0.03; // matches the transparent margin under the DOM fallback image
 const MORPH_SECONDS = 1.8;
 const INTRO_SECONDS = 2.6;
-const BRUSH_RADIUS = 0.13; // in bottle heights
 
 const clamp01 = value => Math.min(1, Math.max(0, value));
 
@@ -33,9 +31,6 @@ const particleVertex = /* glsl */ `
   uniform float uSize;
   uniform float uVisible;
   uniform float uScroll;
-  uniform vec3 uPointer;
-  uniform float uBrush;
-  uniform float uRadius;
   uniform vec3 uGlow;
   uniform float uSpread;
   varying vec3 vColor;
@@ -62,13 +57,6 @@ const particleVertex = /* glsl */ `
     p = axis + radial;
     p += vec3(sin(aSeed.z * 6.2832), (aSeed.w - 0.5) * 0.6, cos(aSeed.z * 6.2832)) * flight * (0.06 + aSeed.y * 0.12) * uSpread;
 
-    // Cursor brush pushes particles out of a ring around the pointer.
-    vec2 offset = p.xy - uPointer.xy;
-    float distanceToPointer = length(offset);
-    float brush = uBrush * (1.0 - smoothstep(uRadius * 0.3, uRadius, distanceToPointer));
-    p.xy += (offset / max(distanceToPointer, 0.0001)) * brush * uRadius * (0.6 + aSeed.y * 0.9);
-    p.z += brush * (0.08 + aSeed.x * 0.3);
-
     // Scrolling away blows the bottle upward in a widening spiral.
     float blow = smoothstep(aSeed.x * 0.45, 1.0, uScroll);
     vec3 blown = rotateY(p, blow * (1.4 + aSeed.y * 2.4));
@@ -83,10 +71,10 @@ const particleVertex = /* glsl */ `
     gl_PointSize = uSize * (0.7 + aSeed.w * 0.6) * (1.0 + flight * 0.7 + blow * 0.5) * (${CAMERA_Z.toFixed(1)} / -mv.z);
 
     vec3 color = mix(aColorFrom, aColorTo, eased);
-    vColor = mix(color, uGlow, clamp(flight * 0.7 + brush * 0.55 + blow * 0.6, 0.0, 0.85));
+    vColor = mix(color, uGlow, clamp(flight * 0.7 + blow * 0.6, 0.0, 0.85));
     // Once scrolling starts the whole cloud shows, then thins out as it drifts away.
     float scrolling = smoothstep(0.005, 0.06, uScroll) * (1.0 - smoothstep(0.55, 1.0, blow));
-    vAlpha = max(uVisible, max(brush, scrolling));
+    vAlpha = max(uVisible, scrolling);
   }
 `;
 
@@ -104,33 +92,22 @@ const particleFragment = /* glsl */ `
 
 const crispVertex = /* glsl */ `
   varying vec2 vUv;
-  varying vec2 vLocal;
   void main() {
     vUv = uv;
-    vLocal = position.xy;
     gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
   }
 `;
 
-// The sharp photo: a hole follows the cursor with a glowing burn edge, and it fades on scroll.
+// The sharp photo; it fades out as scrolling blows the particles away.
 const crispFragment = /* glsl */ `
   uniform sampler2D uMap;
   uniform vec4 uRect;
   uniform float uOpacity;
-  uniform vec3 uPointer;
-  uniform float uBrush;
-  uniform float uRadius;
   uniform float uScroll;
-  uniform vec3 uGlow;
   varying vec2 vUv;
-  varying vec2 vLocal;
   void main() {
     vec4 color = texture2D(uMap, uRect.xy + vUv * uRect.zw);
-    float d = distance(vLocal, uPointer.xy);
-    float hole = uBrush * (1.0 - smoothstep(uRadius * 0.3, uRadius * 0.85, d));
-    float rim = uBrush * smoothstep(uRadius * 0.3, uRadius * 0.6, d) * (1.0 - smoothstep(uRadius * 0.6, uRadius * 0.95, d));
-    color.rgb = mix(color.rgb, mix(uGlow, vec3(1.0), 0.2), rim * 0.8 * color.a);
-    color.a *= uOpacity * (1.0 - hole) * (1.0 - smoothstep(0.03, 0.2, uScroll));
+    color.a *= uOpacity * (1.0 - smoothstep(0.03, 0.2, uScroll));
     if (color.a < 0.004) discard;
     gl_FragColor = color;
     #include <colorspace_fragment>
@@ -368,8 +345,8 @@ function useAnchorLayout(anchorRef) {
 
 /* ── World ─────────────────────────────────────────────── */
 
-function ParticleWorld({ formulas, activeIndex, anchorRef, pointerRef, scrollProgress, motionOn, reduceMotion, lite, onReady, onInteract }) {
-  const { gl, camera, invalidate } = useThree();
+function ParticleWorld({ formulas, activeIndex, anchorRef, pointerRef, scrollProgress, motionOn, reduceMotion, lite, onReady }) {
+  const { gl, invalidate } = useThree();
   const layout = useAnchorLayout(anchorRef);
   const count = lite ? 7000 : 16000;
   const glow = useRef(new THREE.Color(formulas[activeIndex].glow));
@@ -384,7 +361,6 @@ function ParticleWorld({ formulas, activeIndex, anchorRef, pointerRef, scrollPro
     particleGeometry.setAttribute("aColorFrom", new THREE.BufferAttribute(new Float32Array(count * 3), 3));
     particleGeometry.setAttribute("aColorTo", new THREE.BufferAttribute(new Float32Array(count * 3), 3));
     particleGeometry.setAttribute("aSeed", new THREE.BufferAttribute(seeds, 4));
-    const pointer = new THREE.Vector3(0, -5, 0);
     const particleMaterial = new THREE.ShaderMaterial({
       uniforms: {
         uProgress: { value: 1 },
@@ -392,9 +368,6 @@ function ParticleWorld({ formulas, activeIndex, anchorRef, pointerRef, scrollPro
         uSize: { value: 3 },
         uVisible: { value: 0 },
         uScroll: { value: 0 },
-        uPointer: { value: pointer },
-        uBrush: { value: 0 },
-        uRadius: { value: BRUSH_RADIUS },
         uGlow: { value: glow.current },
         // Narrow screens get a tighter swirl so the morph stays inside the viewport.
         uSpread: { value: lite ? 0.55 : 1 },
@@ -414,11 +387,7 @@ function ParticleWorld({ formulas, activeIndex, anchorRef, pointerRef, scrollPro
         uMap: { value: null },
         uRect: { value: new THREE.Vector4(0, 0, 1, 1) },
         uOpacity: { value: 0 },
-        uPointer: { value: pointer },
-        uBrush: particleMaterial.uniforms.uBrush,
-        uRadius: { value: BRUSH_RADIUS },
         uScroll: particleMaterial.uniforms.uScroll,
-        uGlow: { value: glow.current },
       },
       vertexShader: crispVertex,
       fragmentShader: crispFragment,
@@ -531,7 +500,6 @@ function ParticleWorld({ formulas, activeIndex, anchorRef, pointerRef, scrollPro
   const formulaData = useRef(new Map());
   const morph = useRef({ running: false, progress: 1, duration: MORPH_SECONDS, current: null, queued: null, swapped: true, pending: null, shock: 0 });
   const announced = useRef(false);
-  const interacted = useRef(false);
 
   useEffect(() => {
     const cache = formulaData.current;
@@ -621,22 +589,9 @@ function ParticleWorld({ formulas, activeIndex, anchorRef, pointerRef, scrollPro
     advance(formulas[activeIndex].key);
   }, [activeIndex, count, formulas, gl, invalidate, onReady, reduceMotion, world]);
 
-  // While paused the canvas only renders on demand; the cursor brush still needs frames.
-  useEffect(() => {
-    if (motionOn || reduceMotion) return;
-    const onMove = () => invalidate();
-    window.addEventListener("pointermove", onMove, { passive: true });
-    return () => window.removeEventListener("pointermove", onMove);
-  }, [invalidate, motionOn, reduceMotion]);
-
   /* Per-frame animation */
   const clock = useRef(0);
   const pointer = useRef({ x: 0, y: 0 });
-  const brush = useRef(0);
-  const helpers = useMemo(
-    () => ({ raycaster: new THREE.Raycaster(), plane: new THREE.Plane(new THREE.Vector3(0, 0, 1), 0), hit: new THREE.Vector3(), ndc: new THREE.Vector2() }),
-    []
-  );
 
   useFrame((_, rawDelta) => {
     const L = layout.current;
@@ -695,34 +650,11 @@ function ParticleWorld({ formulas, activeIndex, anchorRef, pointerRef, scrollPro
     bottleGroup.position.set(L.x, baseY + Math.sin(time * 0.8) * h * 0.01, 0);
     bottleGroup.scale.setScalar(h);
     bottleGroup.rotation.set(pointer.current.y * 0.04, Math.sin(time * 0.45) * 0.09 + pointer.current.x * 0.22, 0);
-    bottleGroup.updateMatrixWorld();
     aura.position.set(L.x, baseY, 0);
     aura.scale.setScalar(h);
     floor.position.set(L.x, baseY, 0);
     floor.rotation.set(-Math.PI / 2 + 0.2, 0, 0);
     floor.scale.setScalar(h);
-
-    // Cursor brush: ray-cast onto the bottle plane, then work in bottle-local units.
-    let brushTarget = 0;
-    if (!reduceMotion && input.inside && !state.running && crisp.visible && s < 0.05) {
-      helpers.ndc.set((input.px / (L.viewW * L.unitPx)) * 2 - 1, -(input.py / (L.viewH * L.unitPx)) * 2 + 1);
-      helpers.raycaster.setFromCamera(helpers.ndc, camera);
-      if (helpers.raycaster.ray.intersectPlane(helpers.plane, helpers.hit)) {
-        bottleGroup.worldToLocal(helpers.hit);
-        if (Math.abs(helpers.hit.x) < BOTTLE_ASPECT * 0.62 && helpers.hit.y > -0.04 && helpers.hit.y < 1.04) {
-          brushTarget = 1;
-          const pointerUniform = pu.uPointer.value;
-          if (brush.current < 0.05) pointerUniform.set(helpers.hit.x, helpers.hit.y, 0);
-          else pointerUniform.lerp(helpers.hit.setZ(0), 1 - Math.exp(-delta * 18));
-          if (!interacted.current) {
-            interacted.current = true;
-            onInteract?.();
-          }
-        }
-      }
-    }
-    brush.current = THREE.MathUtils.damp(brush.current, brushTarget, brushTarget ? 7 : 2.4, delta);
-    pu.uBrush.value = brush.current;
 
     // Point sizes scale with how large the bottle is on screen.
     const bottlePx = h * L.unitPx;
@@ -748,7 +680,7 @@ function ParticleWorld({ formulas, activeIndex, anchorRef, pointerRef, scrollPro
     }
 
     // In "demand" mode keep frames coming until transitions settle.
-    if (!animate && (state.running || state.shock > 0 || brush.current > 0.01 || brushTarget > 0 || Math.abs(crispUniform.value - crispTarget) > 0.01 || Math.abs(pu.uVisible.value - visibleTarget) > 0.01)) {
+    if (!animate && (state.running || state.shock > 0 || Math.abs(crispUniform.value - crispTarget) > 0.01 || Math.abs(pu.uVisible.value - visibleTarget) > 0.01)) {
       invalidate();
     }
   });
