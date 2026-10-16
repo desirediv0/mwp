@@ -238,7 +238,7 @@ const getShippingPolicy = asyncHandler(async (req, res) => {
         content:
           "<h2>Delivery Information</h2><p>At MWP SUPPLEMENTS, we ensure your supplements reach you fresh, tamper-proof, and fast. All orders are packed in secure sealed packaging to guarantee product integrity.</p><h2>Shipping Rates</h2><p>Shipping availability and any charges are confirmed at checkout in US dollars. Delivery timelines depend on the destination; tracking is provided when your order ships.</p>",
         metaTitle: "Shipping Policy | MWP SUPPLEMENTS",
-        metaDescription: "Fast Pan-India shipping and delivery policy for MWP SUPPLEMENTS.",
+        metaDescription: "Shipping and delivery policy for MWP SUPPLEMENTS.",
       })
     );
   } catch (error) {
@@ -379,10 +379,10 @@ const getContactInfo = asyncHandler(async (req, res) => {
 
     // Default fallback contact info
     const contactInfo = {
-      address: "India",
-      phone: "+91 76783 36268",
+      address: "531 Main Street, PMB 1127, El Segundo, CA 90245-3006, USA",
+      phone: "+1 (562) 524-3557",
       email: "support@mwpsupplements.com",
-      hours: "Monday - Saturday: 9:00 AM - 8:00 PM",
+      hours: "Monday - Friday: 9:00 AM - 6:00 PM",
       mapCoordinates: {
         lat: 28.4595,
         lng: 77.0266,

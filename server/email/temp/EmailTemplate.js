@@ -37,7 +37,7 @@ const HEADER_HTML = (title, accent, store, isDanger = false) => `
 const FOOTER_HTML = (store) => `
   <div class="footer">
     <strong style="color: #18181b; font-size: 12px; letter-spacing: 0.1em; text-transform: uppercase;">MWP SUPPLEMENTS &bull; MEN | WOMEN | POWER</strong><br>
-    <a href="mailto:${store.storeEmail || 'support@mwpsupplements.com'}">${store.storeEmail || 'support@mwpsupplements.com'}</a> &nbsp;·&nbsp; ${store.storePhone || '+91 76783 36268'}<br>
+    <a href="mailto:${store.storeEmail || 'support@mwpsupplements.com'}">${store.storeEmail || 'support@mwpsupplements.com'}</a> &nbsp;·&nbsp; ${store.storePhone || '+1 (562) 524-3557'}<br>
     <a href="https://wa.me/${store.socialWhatsapp || '917678336268'}" class="wa-cta">Support via WhatsApp</a><br><br>
     <span style="font-size: 11px; color: #a1a1aa;">© ${new Date().getFullYear()} MWP SUPPLEMENTS. All rights reserved. Clean formulations &bull; Lab tested.</span>
   </div>
@@ -72,7 +72,7 @@ export const getVerificationTemplate = (verificationLink, storeConfig = null) =>
                 <div class="feature-item">Clinically Dosed Active Ingredients & Standardized Extracts</div>
                 <div class="feature-item">100% Transparent Formulations & Zero Proprietary Blends</div>
                 <div class="feature-item">cGMP-Compliant, FDA-Registered Facility Manufacturing</div>
-                <div class="feature-item">Express Pan-India Shipping & Fresh Batch Guarantee</div>
+                <div class="feature-item">Fast USA Shipping & Fresh Batch Guarantee</div>
                 <div class="feature-item">100% Encrypted & Secure Checkout</div>
             </div>
         </div>
@@ -214,7 +214,7 @@ export const getOrderConfirmationTemplate = (data, storeConfig = null) => {
     const store = storeConfig || getStoreConfig();
     const hasDiscount = data.discount && parseFloat(data.discount) > 0;
     const hasCoupon = data.couponCode && data.couponCode.trim() !== "";
-    const hasTracking = data.awbCode && data.awbCode.trim() !== "";
+    const hasTracking = data.trackingCode && String(data.trackingCode).trim() !== "";
 
     return `
 <!DOCTYPE html>
@@ -266,9 +266,9 @@ export const getOrderConfirmationTemplate = (data, storeConfig = null) => {
             ${hasTracking ? `
             <div class="tracking-box">
                 <h3>📦 Your Shipment is On Its Way!</h3>
-                <div class="awb-code">${data.awbCode}</div>
-                <div class="courier-name">${data.courierName || "Shiprocket"}</div>
-                <a href="https://shiprocket.co/tracking/${data.awbCode}" class="tracking-btn">Track Your Order</a>
+                <div class="awb-code">${data.trackingCode}</div>
+                <div class="courier-name">${data.carrier || "Carrier"}</div>
+                ${data.trackingUrl ? `<a href="${data.trackingUrl}" class="tracking-btn">Track Your Order</a>` : ""}
                 <p style="font-size: 12px; color: #9ca3af; margin-top: 12px;">Click above to track your shipment in real-time</p>
             </div>
             ` : ""}
@@ -315,8 +315,8 @@ export const getOrderConfirmationTemplate = (data, storeConfig = null) => {
                     <strong>${data.shippingAddress.name}</strong><br>
                     ${data.shippingAddress.street}<br>
                     ${data.shippingAddress.city}, ${data.shippingAddress.state} ${data.shippingAddress.postalCode}<br>
-                    ${data.shippingAddress.country}
-                    ${data.shippingAddress.phone ? `<br>📞 ${data.shippingAddress.phone}` : ""}
+                    ${/^(us|usa|united states( of america)?)$/i.test(String(data.shippingAddress.country || "").trim()) || !data.shippingAddress.country ? "United States" : data.shippingAddress.country}
+                    ${data.shippingAddress.phone ? `<br>📞 ${(() => { const d = String(data.shippingAddress.phone).replace(/\D/g, "").replace(/^1(?=\d{10}$)/, ""); return d.length === 10 ? `(${d.slice(0, 3)}) ${d.slice(3, 6)}-${d.slice(6)}` : data.shippingAddress.phone; })()}` : ""}
                 </p>
             </div>
 
@@ -544,183 +544,6 @@ export const getCertificateGeneratedTemplate = (data) => {
 </html>`;
 };
 
-/* ─── Secret Collection Access Email ─────────────────────────────────── */
-export const getSecretAccessEmailTemplate = (data, storeConfig = null) => {
-  const store = storeConfig || getStoreConfig();
-  const { customerName, displayCode, activationUrl, orderNumber, expiryDate } = data;
-
-  return `
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Secret Collection Access</title>
-  <style>
-    ${BASE_STYLES}
-    .secret-hero {
-      background: linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 50%, #0a0a0a 100%);
-      color: #ffffff;
-      text-align: center;
-      padding: 50px 40px;
-      position: relative;
-      overflow: hidden;
-    }
-    .secret-hero::before {
-      content: '';
-      position: absolute;
-      top: 0; left: 0; right: 0; bottom: 0;
-      background: radial-gradient(ellipse at center, rgba(212,175,55,0.08) 0%, transparent 70%);
-    }
-    .secret-hero h1 {
-      color: #ffffff;
-      font-size: 28px;
-      margin-bottom: 8px;
-      position: relative;
-    }
-    .gold-accent {
-      color: #D4AF37;
-      font-weight: 900;
-    }
-    .secret-badge {
-      display: inline-block;
-      background: linear-gradient(135deg, #D4AF37, #B8860B);
-      color: #000000;
-      font-size: 11px;
-      font-weight: 800;
-      letter-spacing: 0.2em;
-      text-transform: uppercase;
-      padding: 8px 20px;
-      border-radius: 30px;
-      margin-bottom: 20px;
-      position: relative;
-    }
-    .code-display {
-      background: #0a0a0a;
-      border: 2px solid #D4AF37;
-      border-radius: 16px;
-      padding: 24px 32px;
-      text-align: center;
-      margin: 30px 0;
-      position: relative;
-    }
-    .code-label {
-      color: #9ca3af;
-      font-size: 11px;
-      text-transform: uppercase;
-      letter-spacing: 0.15em;
-      margin-bottom: 8px;
-    }
-    .code-value {
-      color: #D4AF37;
-      font-size: 28px;
-      font-weight: 900;
-      letter-spacing: 0.1em;
-      font-family: 'Courier New', monospace;
-    }
-    .activate-btn {
-      display: inline-block;
-      padding: 18px 50px;
-      background: linear-gradient(135deg, #D4AF37, #B8860B);
-      color: #000000 !important;
-      text-decoration: none;
-      border-radius: 12px;
-      font-weight: 900;
-      font-size: 16px;
-      letter-spacing: 0.05em;
-      box-shadow: 0 8px 30px rgba(212,175,55,0.4);
-      text-transform: uppercase;
-    }
-    .detail-row {
-      display: flex;
-      justify-content: space-between;
-      padding: 12px 0;
-      border-bottom: 1px solid #E5E7EB;
-      font-size: 14px;
-    }
-    .detail-label { color: #6b7280; }
-    .detail-value { color: #111827; font-weight: 600; }
-    .notice-box {
-      background: rgba(212,175,55,0.06);
-      border: 1px solid rgba(212,175,55,0.2);
-      border-radius: 12px;
-      padding: 20px;
-      margin: 24px 0;
-    }
-    .notice-box h4 {
-      color: #B8860B;
-      font-size: 13px;
-      text-transform: uppercase;
-      letter-spacing: 0.1em;
-      margin-top: 0;
-    }
-    .notice-box p {
-      color: #6b7280;
-      font-size: 13px;
-      margin-bottom: 8px;
-    }
-  </style>
-</head>
-<body>
-  <div class="container" style="border: none; box-shadow: 0 20px 60px rgba(0,0,0,0.15);">
-    <div class="secret-hero">
-      <div style="margin-bottom: 20px; position: relative;">
-        <img src="${store.websiteUrl}/logo.png" alt="${store.storeName}" style="max-height: 50px; width: auto; display: inline-block; filter: brightness(1.2);" />
-      </div>
-      <div class="secret-badge">Exclusive Invitation</div>
-      <h1>The <span class="gold-accent">Secret Collection</span> Awaits</h1>
-      <p style="color: #9ca3af; font-size: 15px; margin-top: 8px; position: relative;">An exclusive selection, reserved for our most distinguished clients</p>
-    </div>
-
-    <div class="content">
-      <p style="font-size: 16px; color: #374151;">Dear <strong>${customerName}</strong>,</p>
-      <p>Congratulations. Your recent order has unlocked access to the <strong>MWP VIP Elite Performance Stack</strong> — exclusive limited-run formulations and high-potency stacks available by invitation only.</p>
-
-      <div class="code-display">
-        <div class="code-label">Your VIP Access Pass</div>
-        <div class="code-value">${displayCode}</div>
-      </div>
-
-      <div class="button-container">
-        <a href="${activationUrl}" class="activate-btn">Activate VIP Access</a>
-      </div>
-
-      <div style="background: #f9fafb; border-radius: 12px; padding: 20px; margin: 24px 0;">
-        <div class="detail-row">
-          <span class="detail-label">Order Number</span>
-          <span class="detail-value">#${orderNumber}</span>
-        </div>
-        <div class="detail-row">
-          <span class="detail-label">Access Code</span>
-          <span class="detail-value" style="font-family: monospace; color: #D4AF37;">${displayCode}</span>
-        </div>
-        <div class="detail-row" style="border-bottom: none;">
-          <span class="detail-label">Valid Until</span>
-          <span class="detail-value">${expiryDate}</span>
-        </div>
-      </div>
-
-      <div class="notice-box">
-        <h4>Important</h4>
-        <p>This invitation is linked directly to your MWP athlete account and cannot be transferred.</p>
-        <p>Click the button above to activate your access. You must be logged into your MWP account.</p>
-      </div>
-    </div>
-
-    <div class="footer" style="background: #0a0a0a; color: #6b7280; border-top: 1px solid #222;">
-      <div style="margin-bottom: 12px;">
-        <img src="${store.websiteUrl}/logo.png" alt="${store.storeName}" style="max-height: 30px; opacity: 0.6;" />
-      </div>
-      © ${new Date().getFullYear()} ${store.storeName} | ${store.storeTagline}<br>
-      <a href="mailto:${store.storeEmail}" style="color: #D4AF37;">${store.storeEmail}</a> &nbsp;·&nbsp; ${store.storePhone}<br>
-      <a href="https://wa.me/${store.socialWhatsapp}" class="wa-cta" style="background: #D4AF37; color: #000;">Message us on WhatsApp</a><br><br>
-      This is a confidential invitation. Please do not share.
-    </div>
-  </div>
-</body>
-</html>`;
-};
-
 /* ─── Admin New Order Notification ───────────────────────────────────── */
 export const getAdminNewOrderTemplate = (data, storeConfig = null) => {
     const store = storeConfig || getStoreConfig();
@@ -943,22 +766,22 @@ export const getOrderShippedTemplate = (data, storeConfig = null) => {
 
             <div class="tracking-box">
                 <h3>📦 Track Your Shipment</h3>
-                <div class="awb-code">${data.awbCode}</div>
-                <div class="courier-name">${data.courierName || "Shiprocket"}</div>
-                ${data.courierService ? `<div class="courier-service">${data.courierService}</div>` : ""}
-                <a href="https://shiprocket.co/tracking/${data.awbCode}" class="tracking-btn">Track Live</a>
+                <div class="awb-code">${data.trackingCode}</div>
+                <div class="courier-name">${data.carrier || "Carrier"}</div>
+                ${data.service ? `<div class="courier-service">${data.service}</div>` : ""}
+                ${data.trackingUrl ? `<a href="${data.trackingUrl}" class="tracking-btn">Track Package</a>` : ""}
                 <p style="font-size: 12px; color: #9ca3af; margin-top: 14px;">Click above to track your shipment in real-time</p>
             </div>
 
             <div class="info-box">
                 <h3>Shipment Details</h3>
                 <div class="detail-row">
-                    <span class="detail-label">AWB / Tracking Number</span>
-                    <span class="detail-value" style="font-family: monospace;">${data.awbCode}</span>
+                    <span class="detail-label">Tracking Number</span>
+                    <span class="detail-value" style="font-family: monospace;">${data.trackingCode}</span>
                 </div>
                 <div class="detail-row">
-                    <span class="detail-label">Courier Partner</span>
-                    <span class="detail-value">${data.courierName || "Shiprocket"}</span>
+                    <span class="detail-label">Carrier</span>
+                    <span class="detail-value">${data.carrier || "Carrier"}${data.service ? ` · ${data.service}` : ""}</span>
                 </div>
                 ${data.estimatedDelivery ? `<div class="detail-row">
                     <span class="detail-label">Estimated Delivery</span>
@@ -974,6 +797,45 @@ export const getOrderShippedTemplate = (data, storeConfig = null) => {
             <div class="button-container">
                 <a href="${process.env.FRONTEND_URL}/account/orders" class="button">View My Orders</a>
             </div>
+        </div>
+        ${FOOTER_HTML(store)}
+    </div>
+</body>
+</html>`;
+};
+
+
+/* ─── Generic notice (admin alerts, return updates, delivered) ───────── */
+const escapeHtml = (v) =>
+    String(v ?? "").replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+
+export const getNoticeTemplate = (data, storeConfig = null) => {
+    const store = storeConfig || getStoreConfig();
+    const { title, accent = "", greeting = "", paragraphs = [], rows = [], buttonText, buttonUrl, danger = false } = data;
+    const rowHtml = rows
+        .filter(([, value]) => value !== null && value !== undefined && value !== "")
+        .map(
+            ([label, value]) =>
+                `<tr><td style="padding:8px 0;color:#6b7280;font-size:13px;border-bottom:1px solid #e5e7eb;">${escapeHtml(label)}</td><td style="padding:8px 0;color:#111827;font-size:13px;font-weight:600;text-align:right;border-bottom:1px solid #e5e7eb;">${escapeHtml(value)}</td></tr>`
+        )
+        .join("");
+    return `
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>${escapeHtml(title)} - ${escapeHtml(store.storeName)}</title>
+    <style>${BASE_STYLES}</style>
+</head>
+<body>
+    <div class="container">
+        ${HEADER_HTML(escapeHtml(title), escapeHtml(accent), store, danger)}
+        <div class="content">
+            ${greeting ? `<h2>${escapeHtml(greeting)}</h2>` : ""}
+            ${paragraphs.map((p) => `<p>${escapeHtml(p)}</p>`).join("")}
+            ${rowHtml ? `<div class="info-box"><table style="width:100%;border-collapse:collapse;">${rowHtml}</table></div>` : ""}
+            ${buttonText && buttonUrl ? `<div class="button-container"><a class="button" href="${escapeHtml(buttonUrl)}">${escapeHtml(buttonText)}</a></div>` : ""}
         </div>
         ${FOOTER_HTML(store)}
     </div>

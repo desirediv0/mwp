@@ -2,6 +2,7 @@ import { ApiError } from "../utils/ApiError.js";
 import { ApiResponsive } from "../utils/ApiResponsive.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
 import { prisma } from "../config/db.js";
+import { emailUser, notifyAdmin } from "../utils/notify.js";
 
 // Get return settings (public)
 export const getReturnSettings = asyncHandler(async (req, res) => {
@@ -170,6 +171,22 @@ export const createReturnRequest = asyncHandler(async (req, res) => {
         },
       },
     },
+  });
+
+  const reasonText = reason === "Other" ? customReason : reason;
+  const productName = returnRequest.orderItem?.product?.name || "Item";
+  const requester = await prisma.user.findUnique({ where: { id: userId }, select: { email: true, name: true, phone: true } });
+  await emailUser(requester?.email, `Return request received - Order #${returnRequest.order.orderNumber}`, {
+    title: "Return request received",
+    accent: "Return",
+    greeting: `Hi ${requester?.name || "there"},`,
+    paragraphs: ["We received your return request and will review it within 1-2 business days. We will email you once it is decided."],
+    rows: [["Order", `#${returnRequest.order.orderNumber}`], ["Item", productName], ["Reason", reasonText]],
+  });
+  await notifyAdmin(`New return request - Order #${returnRequest.order.orderNumber}`, {
+    title: "New return request",
+    paragraphs: ["A customer submitted a return request. Review it in Admin > Orders > Return Requests."],
+    rows: [["Order", `#${returnRequest.order.orderNumber}`], ["Customer", `${requester?.name || ""} ${requester?.email || ""}`.trim()], ["Item", productName], ["Reason", reasonText], ["Photos", String((images || []).length)]],
   });
 
   res.status(201).json(

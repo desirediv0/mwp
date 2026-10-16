@@ -895,42 +895,25 @@ export const getPaymentSettings = asyncHandler(async (req, res) => {
   // If no settings exist, create default ones
   if (!paymentSettings) {
     paymentSettings = await prisma.paymentSettings.create({
-      data: {
-        cashEnabled: true,
-        razorpayEnabled: false,
-        codCharge: 0,
-      },
+      data: { cashEnabled: false, razorpayEnabled: false, stripeEnabled: false, codCharge: 0 },
     });
   }
 
   res.status(200).json(
     new ApiResponsive(
       200,
-      {
-        cashEnabled: paymentSettings.cashEnabled,
-        razorpayEnabled: paymentSettings.razorpayEnabled,
-        codCharge: parseFloat(paymentSettings.codCharge) || 0,
-      },
+      { stripeEnabled: paymentSettings.stripeEnabled },
       "Payment settings fetched successfully"
     )
   );
 });
 
-// Update payment settings
+// Update payment settings (Stripe on/off)
 export const updatePaymentSettings = asyncHandler(async (req, res) => {
-  const { cashEnabled, razorpayEnabled, codCharge } = req.body;
+  const { stripeEnabled } = req.body;
 
-  // Validate that at least one payment method is enabled
-  if (cashEnabled === false && razorpayEnabled === false) {
-    throw new ApiError(
-      400,
-      "At least one payment method must be enabled (Cash or Razorpay)"
-    );
-  }
-
-  // Validate COD charge is non-negative
-  if (codCharge !== undefined && codCharge < 0) {
-    throw new ApiError(400, "COD charge cannot be negative");
+  if (typeof stripeEnabled !== "boolean") {
+    throw new ApiError(400, "stripeEnabled must be true or false");
   }
 
   // Get or create payment settings
@@ -938,33 +921,19 @@ export const updatePaymentSettings = asyncHandler(async (req, res) => {
 
   if (!paymentSettings) {
     paymentSettings = await prisma.paymentSettings.create({
-      data: {
-        cashEnabled: cashEnabled !== undefined ? cashEnabled : true,
-        razorpayEnabled: razorpayEnabled !== undefined ? razorpayEnabled : false,
-        codCharge: codCharge !== undefined ? codCharge : 0,
-        updatedBy: req.admin?.id,
-      },
+      data: { cashEnabled: false, razorpayEnabled: false, stripeEnabled, codCharge: 0, updatedBy: req.admin?.id },
     });
   } else {
     paymentSettings = await prisma.paymentSettings.update({
       where: { id: paymentSettings.id },
-      data: {
-        ...(cashEnabled !== undefined && { cashEnabled }),
-        ...(razorpayEnabled !== undefined && { razorpayEnabled }),
-        ...(codCharge !== undefined && { codCharge }),
-        updatedBy: req.admin?.id,
-      },
+      data: { stripeEnabled, cashEnabled: false, razorpayEnabled: false, updatedBy: req.admin?.id },
     });
   }
 
   res.status(200).json(
     new ApiResponsive(
       200,
-      {
-        cashEnabled: paymentSettings.cashEnabled,
-        razorpayEnabled: paymentSettings.razorpayEnabled,
-        codCharge: parseFloat(paymentSettings.codCharge) || 0,
-      },
+      { stripeEnabled: paymentSettings.stripeEnabled },
       "Payment settings updated successfully"
     )
   );

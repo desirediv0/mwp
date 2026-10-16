@@ -20,7 +20,6 @@ import {
   getUserWishlist,
   getUserOrders,
   getOrderDetails,
-  cancelOrder,
   requestAccountDeletion,
   confirmAccountDeletion,
   getUserReviews,
@@ -30,6 +29,7 @@ import {
   resendVerificationEmail,
   verifyOtp,
 } from "../controllers/user.controller.js";
+import { cancelOrder } from "../controllers/payment.controller.js";
 import { verifyJWTToken } from "../middlewares/auth.middleware.js";
 import { uploadFiles } from "../middlewares/multer.middlerware.js";
 import otpRateLimiter from "../middlewares/rateLimiter.js";

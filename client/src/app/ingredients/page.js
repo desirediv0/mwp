@@ -23,19 +23,13 @@ function IngredientPhoto({ ingredient, eager = false }) {
   return (
     <div className="mwp-ingredient-photo" role="img" aria-label={`${ingredient.name} ingredient photograph`}>
       <Image
-        src={`/ingredient-library/page-${ingredient.page}.jpg`}
+        src={`/ingredients/${ingredient.id}.jpg`}
         alt=""
-        width={1275}
-        height={1650}
+        width={560}
+        height={560}
         unoptimized
         loading={eager ? "eager" : "lazy"}
         draggable={false}
-        style={{
-          width: `${(1275 / 192) * 100}%`,
-          height: `${(1650 / 192) * 100}%`,
-          left: `-${(ingredient.photoX / 192) * 100}%`,
-          top: `-${(ingredient.photoY / 192) * 100}%`,
-        }}
       />
     </div>
   );
@@ -130,13 +124,7 @@ export default function IngredientsPage() {
           <div className="mwp-ingredients-hero-copy">
             <p className="mwp-ingredients-kicker"><IconLeaf size={17} stroke={1.5} /> THE MWP INGREDIENT LIBRARY</p>
             <h1>Good ingredients.<br /><span>Clear intentions.</span></h1>
-            <p className="mwp-ingredients-lead">Know what goes into your everyday. Explore the ingredients behind our formulas, what they do and their reference origins.</p>
             <a href="#ingredient-collection" className="mwp-ingredients-primary">Explore the library <IconArrowRight size={18} stroke={1.5} /></a>
-            <div className="mwp-ingredients-hero-stats">
-              <span><strong>{INGREDIENT_LIBRARY.length}</strong> Ingredients</span>
-              <span><strong>{ORIGINS.length}</strong> Reference origins</span>
-              <span><IconLeaf size={17} stroke={1.5} /> One clear library</span>
-            </div>
           </div>
           <div className="mwp-ingredients-hero-art">
             <span className="mwp-ingredients-art-caption">ROOTED IN NATURE. EXPLAINED SIMPLY.</span>

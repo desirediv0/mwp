@@ -1,8 +1,9 @@
 import express from "express";
 import cors from "cors";
 import cookieParser from "cookie-parser";
-import Razorpay from "razorpay";
 import { logger } from "./utils/logger.js";
+import { stripeWebhook } from "./controllers/payment.controller.js";
+import { easypostWebhook } from "./controllers/shipping.controller.js";
 
 // Routes
 import userRoutes from "./routes/user.routes.js";
@@ -45,20 +46,15 @@ import returnRoutes from "./routes/return.routes.js";
 import adminReturnRoutes from "./routes/admin.return.routes.js";
 import adminMOQRoutes from "./routes/admin.moq.routes.js";
 import adminPaymentGatewayRoutes from "./routes/admin.payment-gateway.routes.js";
-import adminShiprocketRoutes from "./routes/admin.shiprocket.routes.js";
+import adminShippingRoutes from "./routes/admin.shipping.routes.js";
+import adminQuickBooksRoutes from "./routes/admin.quickbooks.routes.js";
+import shippingRoutes from "./routes/shipping.routes.js";
 import adminVideoReelRoutes from "./routes/admin.video-reel.routes.js";
 import adminBundleRoutes from "./routes/admin.bundle.routes.js";
 import bundleRoutes from "./routes/bundle.routes.js";
-import adminSecretAccessRoutes from "./routes/admin.secretAccess.routes.js";
-import secretAccessRoutes from "./routes/secretAccess.routes.js";
-import adminFragranceQuizRoutes from "./routes/admin.fragrance-quiz.routes.js";
-import fragranceQuizRoutes from "./routes/fragrance-quiz.routes.js";
 import adminEmailMarketingRoutes from "./routes/admin.email-marketing.routes.js";
 import newsletterRoutes from "./routes/newsletter.routes.js";
 import adminNewsletterRoutes from "./routes/admin.newsletter.routes.js";
-import customPerfumeRoutes from "./routes/custom-perfume.routes.js";
-import adminCustomPerfumeRoutes from "./routes/admin.custom-perfume.routes.js";
-import customPerfumeOrderRoutes from "./routes/custom-perfume-order.routes.js";
 import adminCheckoutRecommendationRoutes from "./routes/admin.checkout-recommendation.routes.js";
 
 const app = express();
@@ -69,6 +65,10 @@ const app = express();
 app.set('trust proxy', 1);
 
 /* -------------------- BASIC MIDDLEWARE -------------------- */
+
+/* -------------------- STRIPE WEBHOOK (needs the raw body, so it is registered before express.json) -------------------- */
+app.post("/api/webhooks/stripe", express.raw({ type: "application/json" }), stripeWebhook);
+app.post("/api/webhooks/easypost", express.raw({ type: "application/json" }), easypostWebhook);
 
 app.use(express.json({ limit: '50mb' }));
 app.use(express.urlencoded({ extended: false, limit: '50mb' }));
@@ -126,27 +126,6 @@ app.use((req, res, next) => {
 
 app.use(express.static("public/upload"));
 
-/* -------------------- RAZORPAY -------------------- */
-
-let razorpay = null;
-
-if (process.env.RAZORPAY_KEY_ID && process.env.RAZORPAY_KEY_SECRET) {
-  try {
-    razorpay = new Razorpay({
-      key_id: process.env.RAZORPAY_KEY_ID,
-      key_secret: process.env.RAZORPAY_KEY_SECRET,
-    });
-
-    logger("SUCCESS", "Razorpay Initialized from ENV");
-  } catch (error) {
-    logger("ERROR", "Razorpay Init Failed", error);
-  }
-} else {
-  logger("INFO", "Razorpay using DB-based keys");
-}
-
-export { razorpay };
-
 /* -------------------- ROUTES -------------------- */
 
 app.use("/api/users", userRoutes);
@@ -188,25 +167,18 @@ app.use("/api/returns", returnRoutes);
 app.use("/api/admin/returns", adminReturnRoutes);
 app.use("/api/admin", adminMOQRoutes);
 app.use("/api/admin", adminPaymentGatewayRoutes);
-app.use("/api/admin/shiprocket", adminShiprocketRoutes);
+app.use("/api/admin/shipping", adminShippingRoutes);
+app.use("/api/admin/quickbooks", adminQuickBooksRoutes);
+app.use("/api/shipping", shippingRoutes);
 app.use("/api/admin", adminVideoReelRoutes);
 app.use("/api/admin/bundles", adminBundleRoutes);
 app.use("/api/bundles", bundleRoutes);
-app.use("/api/admin/secret-access", adminSecretAccessRoutes);
-app.use("/api/secret-access", secretAccessRoutes);
-  app.use("/api/admin/fragrance-quiz", adminFragranceQuizRoutes);
 
 app.use("/api/admin", adminEmailMarketingRoutes);
 app.use("/api/admin", adminNewsletterRoutes);
 app.use("/api/newsletter", newsletterRoutes);
-app.use("/api/admin", adminCustomPerfumeRoutes);
-app.use("/api/fragrance-quiz", fragranceQuizRoutes);
-app.use("/api/custom-perfume", customPerfumeRoutes);
-app.use("/api", customPerfumeOrderRoutes);
 app.use("/api/admin", adminCheckoutRecommendationRoutes);
 
-// Shiprocket webhook (public endpoint)
-app.use("/api/webhooks/shiprocket", adminShiprocketRoutes);
 
 /* -------------------- HEALTH CHECK -------------------- */
 

@@ -2,14 +2,11 @@ import express from "express";
 import { verifyJWTToken } from "../middlewares/auth.middleware.js";
 import {
   getPaymentSettings,
-  getRazorpayKey,
   checkout,
-  paymentVerification,
+  confirmStripePayment,
   getOrderHistory,
   getOrderDetails,
   cancelOrder,
-  createCashOrder,
-  phonePeCallback,
 } from "../controllers/payment.controller.js";
 
 const router = express.Router();
@@ -17,23 +14,14 @@ const router = express.Router();
 // Public route - Get payment settings
 router.get("/settings", getPaymentSettings);
 
-// PhonePe callback (public route - called by PhonePe)
-router.post("/phonepe-callback", phonePeCallback);
-
 // All other payment routes require authentication
 router.use(verifyJWTToken);
 
-// Get Razorpay key
-router.get("/razorpay-key", getRazorpayKey);
-
-// Create order (checkout)
+// Start a Stripe Checkout Session (returns the hosted payment URL)
 router.post("/checkout", checkout);
 
-// Verify payment
-router.post("/verify", paymentVerification);
-
-// Create Cash on Delivery order
-router.post("/cash-order", createCashOrder);
+// Confirm a paid Stripe Checkout Session and create the order
+router.post("/confirm", confirmStripePayment);
 
 // Order history
 router.get("/orders", getOrderHistory);

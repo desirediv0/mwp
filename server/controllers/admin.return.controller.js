@@ -2,7 +2,9 @@ import { ApiError } from "../utils/ApiError.js";
 import { ApiResponsive } from "../utils/ApiResponsive.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
 import { prisma } from "../config/db.js";
-import { getShiprocketSettings, processShiprocketReturn } from "../utils/shiprocket.js";
+import { emailUser } from "../utils/notify.js";
+import { autoRefundOrder } from "../utils/quickbooks.js";
+import { refundStripePayment } from "../utils/stripe.js";
 
 // Get return settings
 export const getReturnSettings = asyncHandler(async (req, res) => {
@@ -293,8 +295,8 @@ export const updateReturnRequestStatus = asyncHandler(async (req, res) => {
     ...(adminNotes && { adminNotes }),
   };
 
-  // If approved, update inventory and handle Shiprocket
-  if (status.toUpperCase() === "APPROVED") {
+  // If approved, restock the item
+  if (status.toUpperCase() === "APPROVED" && returnRequest.status !== "APPROVED") {
     const orderItem = await prisma.orderItem.findUnique({
       where: { id: returnRequest.orderItemId },
       include: { variant: true },
@@ -324,27 +326,37 @@ export const updateReturnRequestStatus = asyncHandler(async (req, res) => {
       });
     }
 
-    // Check if Shiprocket is enabled and order has Shiprocket info - process return
+    // Mark the order as having an approved return
     try {
-      const shiprocketSettings = await getShiprocketSettings();
-
-      // Update order status to indicate return
       await prisma.order.update({
         where: { id: returnRequest.orderId },
-        data: {
-          status: "RETURN_APPROVED",
-        },
+        data: { status: "RETURN_APPROVED" },
       });
-
-      // Process Shiprocket return if enabled
-      if (shiprocketSettings.isEnabled) {
-        // This will create return order in Shiprocket and update shiprocketStatus
-        processShiprocketReturn(returnRequest.orderId, returnRequest.reason).catch((err) => {
-          console.error("Shiprocket return processing error:", err.message);
-        });
-      }
     } catch (err) {
       console.log("Return processing error:", err.message);
+    }
+  }
+
+  // Completing a return refunds that item to the customer card (once)
+  let refundedAmount = null;
+  if (status.toUpperCase() === "COMPLETED" && returnRequest.status !== "COMPLETED") {
+    const orderItem = await prisma.orderItem.findUnique({ where: { id: returnRequest.orderItemId } });
+    const payment = await prisma.stripePayment.findFirst({ where: { orderId: returnRequest.orderId } });
+    if (orderItem && payment?.paymentIntentId && ["CAPTURED", "PARTIALLY_REFUNDED"].includes(payment.status)) {
+      const done = await prisma.stripeRefund.aggregate({
+        where: { paymentIntentId: payment.paymentIntentId, status: { not: "FAILED" } },
+        _sum: { amount: true },
+      });
+      const left = parseFloat(payment.amount) - parseFloat(done._sum.amount || 0);
+      const amount = Math.min(parseFloat(orderItem.subtotal), left);
+      if (amount > 0) {
+        try {
+          await refundStripePayment(payment, amount, "requested_by_customer");
+          refundedAmount = amount;
+        } catch (err) {
+          throw new ApiError(400, `Stripe refund failed, return not completed: ${err.message}`);
+        }
+      }
     }
   }
 
@@ -377,6 +389,28 @@ export const updateReturnRequestStatus = asyncHandler(async (req, res) => {
       },
     },
   });
+
+  const newStatus = status.toUpperCase();
+  if (refundedAmount) {
+    await autoRefundOrder(returnRequest.orderId, {
+      amount: refundedAmount,
+      description: `Return refund: ${updatedReturn.orderItem?.product?.name || "item"}`,
+    });
+  }
+  if (newStatus !== returnRequest.status && ["APPROVED", "REJECTED", "COMPLETED"].includes(newStatus)) {
+    const copy = {
+      APPROVED: ["Return approved", "Your return request was approved. We will contact you with the next steps."],
+      REJECTED: ["Return request declined", "Unfortunately your return request could not be approved."],
+      COMPLETED: ["Return completed", refundedAmount ? "Your return is complete and the refund was sent to your original payment method (5-7 business days)." : "Your return is complete."],
+    }[newStatus];
+    await emailUser(updatedReturn.user?.email, `${copy[0]} - Order #${updatedReturn.order.orderNumber}`, {
+      title: copy[0],
+      accent: "Return",
+      greeting: `Hi ${updatedReturn.user?.name || "there"},`,
+      paragraphs: [copy[1], ...(adminNotes ? [`Note from our team: ${adminNotes}`] : [])],
+      rows: [["Order", `#${updatedReturn.order.orderNumber}`], ["Item", updatedReturn.orderItem?.product?.name], ["Refund", refundedAmount ? `${refundedAmount.toFixed(2)}` : null]],
+    });
+  }
 
   res
     .status(200)

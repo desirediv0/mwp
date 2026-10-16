@@ -358,54 +358,30 @@ export default function OrdersPage() {
                     </div>
 
                     {/* Shipment Info */}
-                    {order.shiprocket && (
+                    {order.shipping?.trackingCode && (
                       <div className="mt-4 p-3 bg-[#F9FAFB] border border-[#E5E7EB] rounded-lg">
                         <div className="flex items-center gap-2 mb-2">
                           <Truck className="h-4 w-4 text-[#4CAF50]" />
                           <span className="text-xs font-medium text-[#1F2937]">SHIPMENT</span>
                         </div>
                         <div className="flex flex-wrap items-center gap-3">
-                          {order.shiprocket.awbCode && (
-                            <div className="flex items-center gap-2">
-                              <a
-                                href={`https://shiprocket.co/tracking/${order.shiprocket.awbCode}`}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="font-mono text-sm font-medium text-[#22C55E] hover:underline flex items-center gap-1"
-                              >
-                                {order.shiprocket.awbCode}
-                                <ExternalLink className="h-3 w-3" />
-                              </a>
-                            </div>
-                          )}
-                          {order.shiprocket.courierName && (
+                          <a
+                            href={order.shipping.trackingUrl || "#"}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="font-mono text-sm font-medium text-[#22C55E] hover:underline flex items-center gap-1"
+                          >
+                            {order.shipping.trackingCode}
+                            <ExternalLink className="h-3 w-3" />
+                          </a>
+                          {order.shipping.carrier && (
                             <span className="text-sm text-[#6B7280]">
-                              {order.shiprocket.courierName}
+                              {order.shipping.carrier} {order.shipping.service}
                             </span>
                           )}
-                          {order.shiprocket.warehouseNickname && (
-                            <span className="text-xs text-[#6B7280] inline-flex items-center gap-1">
-                              <span className="text-[#9CA3AF]">Warehouse:</span>
-                              <span className="font-medium text-[#1F2937]">
-                                {order.shiprocket.warehouseNickname}
-                              </span>
-                              {order.shiprocket.warehouseAssignedBy && (
-                                <span className="text-[10px] uppercase tracking-wide text-[#9CA3AF]">
-                                  ({order.shiprocket.warehouseAssignedBy})
-                                </span>
-                              )}
-                            </span>
-                          )}
-                          {order.shiprocket.status && (
-                            <Badge className={cn(
-                              "text-xs",
-                              order.shiprocket.status === "PICKUP_SCHEDULED"
-                                ? "bg-[#FEF3C7] text-[#D97706] border-[#FCD34D]"
-                                : order.shiprocket.status === "AWB_ASSIGNED"
-                                ? "bg-[#EFF6FF] text-[#3B82F6] border-[#DBEAFE]"
-                                : "bg-[#F3F4F6] text-[#6B7280] border-[#E5E7EB]"
-                            )}>
-                              {order.shiprocket.status.replace(/_/g, " ")}
+                          {order.shipping.status && (
+                            <Badge className="text-xs bg-[#F3F4F6] text-[#6B7280] border-[#E5E7EB]">
+                              {order.shipping.status.replace(/_/g, " ")}
                             </Badge>
                           )}
                         </div>

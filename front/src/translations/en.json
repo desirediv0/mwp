@@ -1857,12 +1857,12 @@
       },
       "shipping": {
         "title": "Shipping Settings",
-        "description": "Configure shipping dimensions for Shiprocket integration",
-        "length_label": "Length (cm)",
-        "breadth_label": "Breadth (cm)",
-        "height_label": "Height (cm)",
-        "weight_label": "Weight (kg)",
-        "optional_hint": "Leave specific dimensions blank to use defaults from Shiprocket settings"
+        "description": "Package size and weight used for live carrier rates",
+        "length_label": "Length (in)",
+        "breadth_label": "Breadth (in)",
+        "height_label": "Height (in)",
+        "weight_label": "Weight (lb)",
+        "optional_hint": "Leave specific dimensions blank to use defaults from Shipping Settings"
       },
       "pricing_slabs": {
         "title": "Pricing Slabs",
@@ -2030,10 +2030,10 @@
     "default_dimensions": {
       "title": "Default Shipping Dimensions",
       "description": "Fallback dimensions when product variants don't have shipping info",
-      "length": "Length (cm)",
-      "breadth": "Breadth (cm)",
-      "height": "Height (cm)",
-      "weight": "Weight (kg)",
+      "length": "Length (in)",
+      "breadth": "Breadth (in)",
+      "height": "Height (in)",
+      "weight": "Weight (lb)",
       "save_success": "Dimensions saved successfully",
       "info": "📦 This button ONLY saves shipping dimensions (Length, Breadth, Height, Weight). Example: Set Length=15cm, Breadth=10cm, Height=5cm, Weight=0.3kg → Click Save → Only these 4 values are updated. Shipping charges are NOT affected."
     },
@@ -2132,10 +2132,10 @@
     "shipping": {
       "title": "Shipping Dimensions (for Shiprocket)",
       "optional": "Optional",
-      "length": "Length (cm)",
-      "breadth": "Breadth (cm)",
-      "height": "Height (cm)",
-      "weight": "Weight (kg)",
+      "length": "Length (in)",
+      "breadth": "Breadth (in)",
+      "height": "Height (in)",
+      "weight": "Weight (lb)",
       "hint": "Leave empty to use default dimensions from Shiprocket settings"
     },
     "images": {

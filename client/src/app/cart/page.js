@@ -622,14 +622,10 @@ export default function CartPage() {
 
                                 <div className="flex justify-between">
                                     <span className="text-black/40 uppercase tracking-wider">Shipping</span>
-                                    {totals.shipping > 0 ? (
-                                        <span className="font-medium text-black">{formatCurrency(totals.shipping)}</span>
-                                    ) : (
-                                        <span className="font-medium text-green-600 uppercase tracking-widest text-[10px]">Free</span>
-                                    )}
+                                    <span className="font-medium text-black/50 text-[10px] uppercase tracking-widest">Calculated at checkout</span>
                                 </div>
 
-                                {totals.shipping > 0 && cart.freeShippingThreshold > 0 && (
+                                {totals.subtotal < cart.freeShippingThreshold && cart.freeShippingThreshold > 0 && (
                                     <div className="text-[10px] text-black/50 bg-black/[0.02] p-2.5 rounded-md text-center">
                                         Add <strong className="text-black/70">{formatCurrency(cart.freeShippingThreshold - totals.subtotal)}</strong> more for free shipping
                                     </div>

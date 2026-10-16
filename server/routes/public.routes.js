@@ -13,8 +13,6 @@ import {
   getProductVariantById,
   getMaxPrice,
   getProductsByType,
-  getSecretProducts,
-  getSecretProductBySlug,
 } from "../controllers/product.controller.js";
 import { trackProductView } from "../middlewares/tracking.middleware.js";
 import {
@@ -27,7 +25,6 @@ import { getPublishedBanners } from "../controllers/admin.banner.controller.js";
 import { getActiveFlashSales, getActiveProductSections } from "../controllers/public.controller.js";
 import { getActiveVideoReels } from "../controllers/admin.video-reel.controller.js";
 import { getPublicCheckoutRecommendations } from "../controllers/checkout-recommendation.controller.js";
-import { verifyJWTToken, requireSecretAccess } from "../middlewares/auth.middleware.js";
 
 const router = express.Router();
 
@@ -45,9 +42,6 @@ router.get("/products/:slug", trackProductView, getProductBySlug);
 router.get("/product-variant", getProductVariant);
 router.get("/products/variants/:id", getProductVariantById);
 
-// Secret Collection - requires login + active Secret Access
-router.get("/secret-products", verifyJWTToken, requireSecretAccess, getSecretProducts);
-router.get("/secret-products/:slug", verifyJWTToken, requireSecretAccess, getSecretProductBySlug);
 
 // Brands
 router.get("/brands-by-tag", getBrandsByTag);

@@ -343,11 +343,11 @@ model ProductVariant {
   isActive        Boolean                 @default(true)
   createdAt       DateTime                @default(now())
   updatedAt       DateTime                @updatedAt
-  // Shipping dimensions for Shiprocket
-  shippingLength  Float? // Length in cm
-  shippingBreadth Float? // Breadth in cm
-  shippingHeight  Float? // Height in cm
-  shippingWeight  Float? // Weight in kg
+  // Shipping package size (US units)
+  shippingLength  Float? // Length in inches
+  shippingBreadth Float? // Width in inches
+  shippingHeight  Float? // Height in inches
+  shippingWeight  Float? // Weight in pounds
   attributes      VariantAttributeValue[]
   product         Product                 @relation(fields: [productId], references: [id], onDelete: Cascade)
   images          ProductVariantImage[]
@@ -461,6 +461,7 @@ model Order {
   user                         User                 @relation(fields: [userId], references: [id])
   items                        OrderItem[]
   razorpayPayment              RazorpayPayment?
+  stripePayment                StripePayment?
   tracking                     Tracking?
   coupon                       Coupon?              @relation(fields: [couponId], references: [id])
   partnerEarnings              PartnerEarning[]
@@ -469,6 +470,26 @@ model Order {
   paymentGateway               PaymentGatewayType?
   paymentMode                  PaymentMode?
   paymentOwnerId               String? // User ID whose payment keys were used
+  shippingAddressSnapshot      Json? // US shipping address as it was when the order was placed
+  // US shipping (EasyPost: USPS / UPS / FedEx ...)
+  shippingProvider             String?
+  shipmentId                   String? // EasyPost shipment id
+  shipmentRateId               String? // rate chosen at checkout
+  shippingCarrier              String?
+  shippingService              String?
+  shippingRateCost             Decimal?             @db.Decimal(10, 2) // what the carrier charges the store
+  trackingCode                 String?
+  trackingUrl                  String?
+  labelUrl                     String?
+  labelBoughtAt                DateTime?
+  shippingStatus               String? // label_created | pre_transit | in_transit | out_for_delivery | delivered | label_voided ...
+  shipmentError                String?
+  // QuickBooks Online bookkeeping sync
+  qbSalesReceiptId             String?
+  qbSyncStatus                 String? // SYNCED | FAILED | REFUNDED | PARTIAL_REFUND
+  qbSyncError                  String?
+  qbSyncedAt                   DateTime?
+  qbRefundIds                  String[]
   phonePeTransactions          PhonePeTransaction[]
   orderBundles                 OrderBundle[]
   secretAccess                 SecretAccess[]
@@ -1039,12 +1060,14 @@ enum PaymentMethod {
 }
 
 enum OrderPaymentMethod {
+  STRIPE
   CASH
   RAZORPAY
   PHONEPE
 }
 
 enum PaymentGatewayType {
+  STRIPE
   RAZORPAY
   PHONEPE
 }
@@ -1234,6 +1257,7 @@ model PaymentSettings {
   id              String   @id @default(uuid())
   cashEnabled     Boolean  @default(true)
   razorpayEnabled Boolean  @default(false)
+  stripeEnabled   Boolean  @default(false)
   codCharge       Decimal  @default(0) @db.Decimal(10, 2)
   updatedAt       DateTime @updatedAt
   updatedBy       String?
@@ -1312,6 +1336,11 @@ model PaymentGatewaySetting {
   razorpayKeyId         String?
   razorpayKeySecret     String? // Encrypted
   razorpayWebhookSecret String? // Encrypted
+
+  // Stripe Keys
+  stripePublishableKey String?
+  stripeSecretKey      String? // Encrypted
+  stripeWebhookSecret  String? // Encrypted
 
   // PhonePe Keys
   phonepeMerchantId String?
@@ -1864,4 +1893,125 @@ model CustomPerfumeOrder {
   @@index([userId])
   @@index([orderStatus])
   @@index([paymentStatus])
+}
+
+// -----------------------
+// Stripe payments (USD). A row is created when a Checkout Session starts (orderId empty,
+// status PENDING) and completed when the paid session turns into an order.
+// -----------------------
+model StripePayment {
+  id              String         @id @default(uuid())
+  sessionId       String         @unique
+  paymentIntentId String?        @unique
+  orderId         String?        @unique
+  userId          String
+  amount          Decimal        @db.Decimal(10, 2)
+  currency        String         @default("USD")
+  status          PaymentStatus  @default(PENDING)
+  paymentMethod   PaymentMethod?
+  checkoutPayload Json? // address ids, coupon, shipping snapshot taken when checkout started
+  notes           Json?
+  failureReason   String?
+  createdAt       DateTime       @default(now())
+  updatedAt       DateTime       @updatedAt
+  order           Order?         @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  refunds         StripeRefund[]
+
+  @@index([userId])
+}
+
+model StripeRefund {
+  id              String        @id @default(uuid())
+  paymentIntentId String
+  amount          Decimal       @db.Decimal(10, 2)
+  stripeRefundId  String        @unique
+  status          RefundStatus  @default(PENDING)
+  reason          String?
+  notes           Json?
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+  payment         StripePayment @relation(fields: [paymentIntentId], references: [paymentIntentId], onDelete: Cascade)
+}
+
+// -----------------------
+// US shipping settings (EasyPost). Singleton row, API key stored encrypted.
+// -----------------------
+model ShippingSettings {
+  id        String  @id @default(uuid())
+  isEnabled Boolean @default(false)
+  provider  String  @default("EASYPOST")
+
+  // AUTO = buy the label as soon as an order is paid, MANUAL = admin clicks "Create label"
+  bookingMode String @default("MANUAL")
+
+  apiKey        String? // Encrypted
+  keyMode       String  @default("TEST") // TEST | LIVE (from the key prefix)
+  webhookSecret String? // Encrypted
+
+  // Ship-from address (US)
+  originName    String?
+  originCompany String?
+  originStreet1 String?
+  originStreet2 String?
+  originCity    String?
+  originState   String?
+  originZip     String?
+  originPhone   String?
+  originEmail   String?
+
+  // Package used when a product has no size/weight of its own (pounds / inches)
+  defaultWeightLb   Float @default(1)
+  packagingWeightLb Float @default(0.25)
+  defaultLengthIn   Float @default(8)
+  defaultWidthIn    Float @default(6)
+  defaultHeightIn   Float @default(4)
+
+  // Rates shown to the customer
+  rateStrategy          String   @default("CHEAPEST") // CHEAPEST | FASTEST
+  allowedCarriers       String[] @default([]) // empty = every carrier on the account
+  handlingFee           Decimal  @default(0) @db.Decimal(10, 2)
+  freeShippingThreshold Decimal  @default(0) @db.Decimal(10, 2)
+  flatRate              Decimal  @default(0) @db.Decimal(10, 2) // used only if live rates are unavailable (0 = block checkout)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  updatedBy String?
+}
+
+// -----------------------
+// QuickBooks Online (accounting). Singleton row; keys and tokens stored encrypted.
+// -----------------------
+model QuickBooksSettings {
+  id          String  @id @default(uuid())
+  isEnabled   Boolean @default(false)
+  // SANDBOX (Intuit development keys) or PRODUCTION (live keys)
+  environment String  @default("SANDBOX")
+  // AUTO = send every paid order to QuickBooks, MANUAL = admin clicks Sync
+  syncMode    String  @default("AUTO")
+
+  sandboxClientId        String?
+  sandboxClientSecret    String? // Encrypted
+  productionClientId     String?
+  productionClientSecret String? // Encrypted
+
+  realmId               String? // QuickBooks company id
+  companyName           String?
+  accessToken           String? // Encrypted
+  refreshToken          String? // Encrypted
+  accessTokenExpiresAt  DateTime?
+  refreshTokenExpiresAt DateTime?
+  connectedAt           DateTime?
+
+  // Cached QuickBooks ids created on first use
+  incomeAccountId    String?
+  salesItemId        String?
+  shippingItemId     String?
+  taxItemId          String?
+  discountAccountId  String?
+  depositAccountId   String? // optional "Deposit to" account (default: Undeposited Funds)
+
+  lastSyncAt    DateTime?
+  lastError     String?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
 }

@@ -1,4 +1,5 @@
 "use client";
+import { formatUsPhone, formatCityLine, formatCountry } from "@/lib/us";
 
 import { useState, useEffect } from "react";
 import { useAuth } from "@/lib/auth-context";
@@ -56,6 +57,9 @@ export default function OrderDetailPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [cancelling, setCancelling] = useState(false);
+  const [showCancel, setShowCancel] = useState(false);
+  const [cancelReason, setCancelReason] = useState("Changed my mind");
+  const [cancelNote, setCancelNote] = useState("");
 
   useEffect(() => {
     if (!authLoading && !isAuthenticated) {
@@ -86,16 +90,17 @@ export default function OrderDetailPage() {
 
   const handleCancelOrder = async () => {
     if (!order || order.status === "CANCELLED" || order.status === "DELIVERED") return;
-    if (!confirm("Are you sure you want to cancel this order?")) return;
 
     setCancelling(true);
     try {
       const response = await fetchApi(`/users/orders/${orderId}/cancel`, {
         method: "POST",
         credentials: "include",
+        body: JSON.stringify({ reason: cancelNote.trim() ? `${cancelReason}: ${cancelNote.trim()}` : cancelReason }),
       });
       if (response.success) {
-        toast.success("Order cancelled successfully");
+        toast.success("Order cancelled. Your payment will be refunded to your card.");
+        setShowCancel(false);
         setOrder({ ...order, status: "CANCELLED" });
       } else {
         toast.error(response.message || "Failed to cancel order");
@@ -161,7 +166,7 @@ export default function OrderDetailPage() {
             {order.status}
           </span>
           {order.status !== "CANCELLED" && order.status !== "DELIVERED" && order.status !== "SHIPPED" && (
-            <button onClick={handleCancelOrder} disabled={cancelling}
+            <button onClick={() => setShowCancel(true)} disabled={cancelling}
               className="inline-flex items-center gap-2 px-4 h-10 border border-neutral-300 text-neutral-800 text-[11px] uppercase tracking-[0.15em] font-medium hover:bg-neutral-100 transition-all duration-300 disabled:opacity-50">
               {cancelling ? <IconLoader2 className="h-3.5 w-3.5 animate-spin" stroke={1.5} /> : <IconX className="h-3.5 w-3.5" stroke={1.5} />}
               Cancel
@@ -169,6 +174,37 @@ export default function OrderDetailPage() {
           )}
         </div>
       </div>
+
+      {order.status === "CANCELLED" && (
+        <div className="border border-neutral-200 bg-neutral-50 px-5 py-4 text-[13px] text-neutral-700">
+          This order was cancelled. If you paid by card, the refund goes back to your original payment method, usually within 5–7 business days.
+        </div>
+      )}
+
+      {showCancel && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-4" onClick={() => !cancelling && setShowCancel(false)}>
+          <div className="w-full max-w-md rounded-2xl bg-white p-6 shadow-xl" onClick={(e) => e.stopPropagation()}>
+            <h3 className="text-lg font-semibold text-neutral-900">Cancel order #{order.orderNumber}?</h3>
+            <p className="mt-1 text-[13px] text-neutral-600">Tell us why. Paid orders are refunded to your card automatically.</p>
+            <select value={cancelReason} onChange={(e) => setCancelReason(e.target.value)}
+              className="mt-4 h-11 w-full rounded-lg border border-neutral-300 bg-white px-3 text-[13px]">
+              {["Changed my mind", "Ordered by mistake", "Found a better price", "Delivery takes too long", "Wrong address", "Other"].map((r) => (
+                <option key={r} value={r}>{r}</option>
+              ))}
+            </select>
+            <textarea value={cancelNote} onChange={(e) => setCancelNote(e.target.value)} maxLength={300} rows={3} placeholder="Add a note (optional)"
+              className="mt-3 w-full rounded-lg border border-neutral-300 p-3 text-[13px]" />
+            <div className="mt-5 flex justify-end gap-3">
+              <button onClick={() => setShowCancel(false)} disabled={cancelling}
+                className="h-10 rounded-full border border-neutral-300 px-5 text-[12px] font-medium">Keep order</button>
+              <button onClick={handleCancelOrder} disabled={cancelling}
+                className="inline-flex h-10 items-center gap-2 rounded-full bg-neutral-900 px-5 text-[12px] font-semibold text-white disabled:opacity-50">
+                {cancelling && <IconLoader2 className="h-3.5 w-3.5 animate-spin" stroke={1.5} />} Cancel order
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
 
@@ -266,9 +302,19 @@ export default function OrderDetailPage() {
                 <div className="flex items-center gap-4 mb-4">
                   <IconTruck className="h-6 w-6 text-gold" stroke={1.5} />
                   <div>
-                    <p className="text-[13px] text-noir font-medium">{order.tracking.carrier || "Carrier"}</p>
+                    <p className="text-[13px] text-noir font-medium">{order.tracking.carrier || order.shippingCarrier || "Carrier"}</p>
                     <p className="text-[12px] text-stone font-light">#{order.tracking.trackingNumber}</p>
                   </div>
+                  {order.trackingUrl && (
+                    <a
+                      href={order.trackingUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="ml-auto inline-flex items-center gap-1.5 px-4 h-9 bg-noir text-ivory text-[10px] uppercase tracking-[0.15em] font-medium hover:bg-gold transition-all duration-500"
+                    >
+                      Track package
+                    </a>
+                  )}
                 </div>
                 {order.tracking.updates && order.tracking.updates.length > 0 && (
                   <div className="border-t border-line pt-4 mt-4 space-y-3">
@@ -336,10 +382,10 @@ export default function OrderDetailPage() {
                 <span className="text-stone font-light">Status</span>
                 <span className={`font-medium ${paymentStatusColors[order.paymentStatus] || "text-stone"}`}>{order.paymentStatus || "N/A"}</span>
               </div>
-              {order.razorpayPayment?.razorpayPaymentId && (
+              {order.stripePayment?.paymentIntentId && (
                 <div className="flex justify-between text-[13px]">
                   <span className="text-stone font-light">Transaction</span>
-                  <span className="text-[11px] text-noir font-mono">{order.razorpayPayment.razorpayPaymentId}</span>
+                  <span className="text-[11px] text-noir font-mono">{order.stripePayment.paymentIntentId}</span>
                 </div>
               )}
             </div>
@@ -354,11 +400,11 @@ export default function OrderDetailPage() {
               <div className="p-6">
                 <p className="text-[13px] text-noir font-medium">{order.shippingAddress.name}</p>
                 <p className="text-[12px] text-stone font-light mt-1">{order.shippingAddress.street}</p>
-                <p className="text-[12px] text-stone font-light">{order.shippingAddress.city}, {order.shippingAddress.state} {order.shippingAddress.postalCode}</p>
-                <p className="text-[12px] text-stone font-light">{order.shippingAddress.country}</p>
+                <p className="text-[12px] text-stone font-light">{formatCityLine(order.shippingAddress)}</p>
+                <p className="text-[12px] text-stone font-light">{formatCountry(order.shippingAddress.country)}</p>
                 {order.shippingAddress.phone && (
                   <p className="flex items-center gap-1.5 text-[12px] text-stone font-light mt-2">
-                    <IconPhone className="h-3 w-3" stroke={1.5} /> {order.shippingAddress.phone}
+                    <IconPhone className="h-3 w-3" stroke={1.5} /> {formatUsPhone(order.shippingAddress.phone)}
                   </p>
                 )}
               </div>

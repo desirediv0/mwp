@@ -42,9 +42,6 @@ import VideoReelsPage from "./pages/VideoReelsPage";
 import BundleCampaignsPage from "./pages/BundleCampaignsPage";
 import BundleCampaignCreatePage from "./pages/BundleCampaignCreatePage";
 import BundleCampaignEditPage from "./pages/BundleCampaignEditPage";
-import SecretAccessDashboardPage from "./pages/SecretAccessDashboardPage";
-import SecretAccessPendingPage from "./pages/SecretAccessPendingPage";
-import SecretAccessListPage from "./pages/SecretAccessListPage";
 import PaymentSettingsPage from "./pages/PaymentSettingsPage";
 import PriceVisibilitySettingsPage from "./pages/PriceVisibilitySettingsPage";
 import FlashSalesPage from "./pages/FlashSalesPage";
@@ -53,18 +50,11 @@ import ReturnRequestsPage from "./pages/ReturnRequestsPage";
 import MOQSettingsPage from "./pages/MOQSettingsPage";
 import PricingSlabsPage from "./pages/PricingSlabsPage";
 import PaymentGatewaySettingsPage from "./pages/PaymentGatewaySettingsPage";
-import ShiprocketSettingsPage from "./pages/ShiprocketSettingsPage";
 import ShippingSettingsPage from "./pages/ShippingSettingsPage";
+import QuickBooksSettingsPage from "./pages/QuickBooksSettingsPage";
 import EmailMarketingPage from "./pages/EmailMarketingPage";
 import AdminHelpPage from "./pages/AdminHelpPage";
 import SettingsPage from "./pages/SettingsPage";
-import FragranceQuizDashboardPage from "./pages/FragranceQuizDashboardPage";
-import FragranceQuizQuestionsPage from "./pages/FragranceQuizQuestionsPage";
-import FragranceQuizRulesPage from "./pages/FragranceQuizRulesPage";
-import FragranceQuizAnalyticsPage from "./pages/FragranceQuizAnalyticsPage";
-import FragranceQuizResponsesPage from "./pages/FragranceQuizResponsesPage";
-import CustomPerfumeManagementPage from "./pages/CustomPerfumeManagementPage";
-import CustomPerfumeOrdersPage from "./pages/CustomPerfumeOrdersPage";
 import NewsletterSubscribersPage from "./pages/NewsletterSubscribersPage";
 import { LanguageProvider } from "./context/LanguageContext";
 
@@ -425,14 +415,15 @@ const App = () => {
               }
             />
 
+
             <Route
-              path="shiprocket-settings"
+              path="quickbooks-settings"
               element={
                 <ProtectedRoute
                   resource={Resource.SETTINGS}
                   action={Action.UPDATE}
                 >
-                  <ShiprocketSettingsPage />
+                  <QuickBooksSettingsPage />
                 </ProtectedRoute>
               }
             />
@@ -473,14 +464,6 @@ const App = () => {
               }
             />
 
-            <Route
-              path="custom-perfume"
-              element={
-                <ProtectedRoute>
-                  <CustomPerfumeManagementPage />
-                </ProtectedRoute>
-              }
-            />
 
             <Route
               path="flash-sales"
@@ -548,30 +531,6 @@ const App = () => {
               }
             />
 
-            <Route
-              path="secret-access"
-              element={
-                <ProtectedRoute resource={Resource.USERS} action={Action.READ}>
-                  <SecretAccessDashboardPage />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="secret-access/pending"
-              element={
-                <ProtectedRoute resource={Resource.USERS} action={Action.READ}>
-                  <SecretAccessPendingPage />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="secret-access/issued"
-              element={
-                <ProtectedRoute resource={Resource.USERS} action={Action.READ}>
-                  <SecretAccessListPage />
-                </ProtectedRoute>
-              }
-            />
 
             <Route
               path="moq-settings"
@@ -627,47 +586,6 @@ const App = () => {
               }
             />
 
-            {/* Fragrance Quiz Routes */}
-            <Route
-              path="fragrance-quiz"
-              element={
-                <ProtectedRoute resource={Resource.FRAGRANCE_QUIZ} action={Action.READ}>
-                  <FragranceQuizDashboardPage />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="fragrance-quiz/questions"
-              element={
-                <ProtectedRoute resource={Resource.FRAGRANCE_QUIZ} action={Action.READ}>
-                  <FragranceQuizQuestionsPage />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="fragrance-quiz/rules"
-              element={
-                <ProtectedRoute resource={Resource.FRAGRANCE_QUIZ} action={Action.READ}>
-                  <FragranceQuizRulesPage />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="fragrance-quiz/analytics"
-              element={
-                <ProtectedRoute resource={Resource.FRAGRANCE_QUIZ} action={Action.READ}>
-                  <FragranceQuizAnalyticsPage />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="fragrance-quiz/responses"
-              element={
-                <ProtectedRoute resource={Resource.FRAGRANCE_QUIZ} action={Action.READ}>
-                  <FragranceQuizResponsesPage />
-                </ProtectedRoute>
-              }
-            />
 
             <Route
               path="admins"
@@ -876,14 +794,6 @@ const App = () => {
               }
             />
 
-            <Route
-              path="custom-perfume-orders"
-              element={
-                <ProtectedRoute>
-                  <CustomPerfumeOrdersPage />
-                </ProtectedRoute>
-              }
-            />
 
             <Route
               path="help"

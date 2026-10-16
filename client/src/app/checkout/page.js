@@ -1,10 +1,11 @@
 "use client";
+import { formatUsPhone, formatCityLine, formatCountry } from "@/lib/us";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/lib/auth-context";
 import { useCart } from "@/lib/cart-context";
-import { fetchApi, formatCurrency, loadScript } from "@/lib/utils";
+import { fetchApi, formatCurrency } from "@/lib/utils";
 import { playSuccessSound, fireConfetti } from "@/lib/sound-utils";
 import { Button } from "@/components/ui/button";
 import {
@@ -17,7 +18,7 @@ import {
     ShoppingBag,
     PartyPopper,
     Gift,
-    Wallet,
+    Truck,
     ArrowLeft,
     X,
     Tag,
@@ -42,17 +43,13 @@ export default function CheckoutPage() {
     const [selectedAddressId, setSelectedAddressId] = useState("");
     const [loadingAddresses, setLoadingAddresses] = useState(true);
     const [paymentSettings, setPaymentSettings] = useState({
-        cashEnabled: false,
-        razorpayEnabled: false,
-        codCharge: 0,
+        stripeEnabled: false,
     });
     const [paymentMethod, setPaymentMethod] = useState("");
     const [loadingPaymentSettings, setLoadingPaymentSettings] = useState(true);
     const [processing, setProcessing] = useState(false);
     const [orderCreated, setOrderCreated] = useState(false);
     const [orderId, setOrderId] = useState("");
-    const [paymentId, setPaymentId] = useState("");
-    const [razorpayKey, setRazorpayKey] = useState("");
     const [error, setError] = useState("");
     const [showAddressForm, setShowAddressForm] = useState(false);
     const [orderNumber, setOrderNumber] = useState("");
@@ -61,8 +58,23 @@ export default function CheckoutPage() {
     const [confettiCannon, setConfettiCannon] = useState(false);
 
     const totals = getCartTotals();
-    const codCharge = paymentMethod === "CASH" ? Number(paymentSettings.codCharge || 0) : 0;
-    const checkoutTotal = totals.total + codCharge;
+
+    // Shipping options from the carrier (USPS / UPS / FedEx) for the chosen address
+    const [shippingQuote, setShippingQuote] = useState(null);
+    const [selectedRateId, setSelectedRateId] = useState("");
+    const [loadingRates, setLoadingRates] = useState(false);
+    const [ratesError, setRatesError] = useState("");
+    const selectedRate = shippingQuote?.rates?.find((r) => r.id === selectedRateId) || null;
+    const shippingPrice = selectedRate ? selectedRate.price : 0;
+    const checkoutTotal = totals.subtotal - totals.discount + shippingPrice;
+    const prettyService = (service) => String(service || "").replace(/([a-z])([A-Z])/g, "$1 $2").replace(/_/g, " ");
+
+    // Stripe sends the customer back to /checkout?stripe_session=... after paying.
+    // Keep that flag so the empty-cart redirect below does not fire (the order may already have cleared the cart).
+    const [returningFromStripe] = useState(
+        () => typeof window !== "undefined" && new URLSearchParams(window.location.search).has("stripe_session")
+    );
+    const confirmStarted = useRef(false);
 
     useEffect(() => {
         if (!authLoading && !isAuthenticated) {
@@ -71,26 +83,18 @@ export default function CheckoutPage() {
     }, [isAuthenticated, authLoading, router]);
 
     useEffect(() => {
-        if (!cartLoading && !mergeProgress && isAuthenticated && cart.items?.length === 0 && !orderCreated) {
+        if (!cartLoading && !mergeProgress && isAuthenticated && cart.items?.length === 0 && !orderCreated && !returningFromStripe) {
             router.push("/cart");
         }
-    }, [isAuthenticated, cart, cartLoading, mergeProgress, router, orderCreated]);
+    }, [isAuthenticated, cart, cartLoading, mergeProgress, router, orderCreated, returningFromStripe]);
 
     useEffect(() => {
         const fetchPaymentSettings = async () => {
             try {
                 const response = await fetchApi("/payment/settings", { credentials: "include" });
                 if (response.success) {
-                    setPaymentSettings({
-                        cashEnabled: !!response.data.cashEnabled,
-                        razorpayEnabled: !!response.data.razorpayEnabled,
-                        codCharge: response.data.codCharge ?? 0,
-                    });
-                    if (response.data.razorpayEnabled) {
-                        setPaymentMethod("RAZORPAY");
-                    } else if (response.data.cashEnabled) {
-                        setPaymentMethod("CASH");
-                    }
+                    setPaymentSettings({ stripeEnabled: !!response.data.stripeEnabled });
+                    setPaymentMethod(response.data.stripeEnabled ? "STRIPE" : "");
                 }
             } catch (error) {
                 console.error("Error fetching payment settings:", error);
@@ -127,19 +131,35 @@ export default function CheckoutPage() {
         fetchAddresses();
     }, [fetchAddresses]);
 
+    const cartSignature = (cart.items || []).map((i) => `${i.id}:${i.quantity}`).join(",");
     useEffect(() => {
-        const fetchRazorpayKey = async () => {
-            try {
-                const response = await fetchApi("/payment/razorpay-key", { credentials: "include" });
-                if (response.success) {
-                    setRazorpayKey(response.data.key);
-                }
-            } catch (error) {
-                console.error("Error fetching Razorpay key:", error);
-            }
+        if (!isAuthenticated || !selectedAddressId || !cartSignature || returningFromStripe) return;
+        let cancelled = false;
+        setLoadingRates(true);
+        setRatesError("");
+        setShippingQuote(null);
+        setSelectedRateId("");
+        fetchApi("/shipping/rates", {
+            method: "POST",
+            credentials: "include",
+            body: JSON.stringify({ shippingAddressId: selectedAddressId, couponId: coupon?.id || null }),
+        })
+            .then((res) => {
+                if (cancelled) return;
+                if (!res.success) throw new Error(res.message || "Could not load shipping options");
+                setShippingQuote(res.data);
+                setSelectedRateId(res.data.rates?.[0]?.id || "");
+            })
+            .catch((err) => {
+                if (!cancelled) setRatesError(err.message || "Could not load shipping options");
+            })
+            .finally(() => {
+                if (!cancelled) setLoadingRates(false);
+            });
+        return () => {
+            cancelled = true;
         };
-        if (isAuthenticated && paymentSettings.razorpayEnabled) fetchRazorpayKey();
-    }, [isAuthenticated, paymentSettings.razorpayEnabled]);
+    }, [isAuthenticated, selectedAddressId, cartSignature, coupon?.id, returningFromStripe]);
 
     const handleAddressSelect = (id) => setSelectedAddressId(id);
     const handlePaymentMethodSelect = (method) => setPaymentMethod(method);
@@ -169,7 +189,6 @@ export default function CheckoutPage() {
     }, [successAnimation]);
 
     const handleSuccessfulPayment = (paymentResponse = null, orderData = null) => {
-        if (paymentResponse?.razorpay_payment_id) setPaymentId(paymentResponse.razorpay_payment_id);
         if (orderData?.orderNumber) setOrderNumber(orderData.orderNumber);
         setSuccessAnimation(true);
         playSuccessSound();
@@ -183,167 +202,86 @@ export default function CheckoutPage() {
         setTimeout(() => setOrderCreated(true), 100);
     };
 
+    // Back from Stripe: confirm the paid session and show the success screen
+    useEffect(() => {
+        if (!isAuthenticated || confirmStarted.current || typeof window === "undefined") return;
+        const params = new URLSearchParams(window.location.search);
+        const sessionId = params.get("stripe_session");
+
+        if (params.get("canceled")) {
+            toast.info("Payment was canceled. Your cart is still here.");
+            window.history.replaceState({}, "", "/checkout");
+            return;
+        }
+        if (!sessionId) return;
+
+        confirmStarted.current = true;
+        setProcessing(true);
+        (async () => {
+            try {
+                const response = await fetchApi("/payment/confirm", {
+                    method: "POST",
+                    credentials: "include",
+                    body: JSON.stringify({ sessionId }),
+                });
+                if (!response.success) throw new Error(response.message || "Could not confirm your payment");
+                window.history.replaceState({}, "", "/checkout");
+                setOrderId(response.data.orderId);
+                handleSuccessfulPayment(null, response.data);
+            } catch (err) {
+                console.error("Payment confirmation error:", err);
+                setError(err.message || "Could not confirm your payment. If you were charged, please contact support.");
+                toast.error(err.message || "Could not confirm your payment.");
+            } finally {
+                setProcessing(false);
+            }
+        })();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [isAuthenticated]);
+
     const handleCheckout = async () => {
         if (processing || loadingPaymentSettings || !paymentMethod) return;
         if (!selectedAddressId) {
             toast.error("Please select a shipping address");
             return;
         }
+        if (!selectedRateId) {
+            toast.error("Please choose a shipping option");
+            return;
+        }
 
         setProcessing(true);
         setError("");
+        let redirecting = false;
 
         try {
-            const calculatedAmount = totals.total;
-            const amount = Math.max(parseFloat(calculatedAmount.toFixed(2)), 1);
+            toast.loading("Preparing secure payment...", { id: "order-creation", duration: 10000 });
+            const response = await fetchApi("/payment/checkout", {
+                method: "POST",
+                credentials: "include",
+                body: JSON.stringify({
+                    currency: "USD",
+                    shippingAddressId: selectedAddressId,
+                    billingAddressSameAsShipping: true,
+                    couponCode: coupon?.code || null,
+                    couponId: coupon?.id || null,
+                    discountAmount: totals.discount || 0,
+                    shipmentId: shippingQuote?.shipmentId || null,
+                    rateId: selectedRateId,
+                }),
+            });
+            toast.dismiss("order-creation");
+            if (!response.success || !response.data?.url) throw new Error(response.message || "Could not start the payment");
 
-            if (calculatedAmount < 1) {
-                toast.info("Minimum order amount is $1. Your total has been adjusted.");
-            }
-
-            if (paymentMethod === "CASH") {
-                toast.loading("Creating your order...", { id: "order-creation", duration: 10000 });
-                const orderResponse = await fetchApi("/payment/cash-order", {
-                    method: "POST",
-                    credentials: "include",
-                    body: JSON.stringify({
-                        shippingAddressId: selectedAddressId,
-                        billingAddressSameAsShipping: true,
-                        couponCode: coupon?.code || null,
-                        couponId: coupon?.id || null,
-                        discountAmount: totals.discount || 0,
-                    }),
-                });
-                toast.dismiss("order-creation");
-                if (!orderResponse.success) throw new Error(orderResponse.message || "Failed to create order");
-                const orderData = {
-                    orderNumber: orderResponse.data.orderNumber,
-                    orderId: orderResponse.data.orderId,
-                    paymentMethod: orderResponse.data.paymentMethod || "CASH",
-                };
-                setOrderNumber(orderResponse.data.orderNumber);
-                setOrderId(orderResponse.data.orderId || "");
-                handleSuccessfulPayment(null, orderData);
-                return;
-            } else if (paymentMethod === "RAZORPAY") {
-                if (!razorpayKey) {
-                    try {
-                        const keyResponse = await fetchApi("/payment/razorpay-key", { method: "GET", credentials: "include" });
-                        if (keyResponse.success && keyResponse.data?.key) {
-                            setRazorpayKey(keyResponse.data.key);
-                        } else {
-                            throw new Error("Payment gateway key missing.");
-                        }
-                    } catch {
-                        throw new Error("Failed to initialize payment gateway.");
-                    }
-                }
-
-                toast.loading("Creating your order...", { id: "order-creation", duration: 10000 });
-                const orderResponse = await fetchApi("/payment/checkout", {
-                    method: "POST",
-                    credentials: "include",
-                    body: JSON.stringify({
-                        amount,
-                        currency: "USD",
-                        paymentGateway: "RAZORPAY",
-                        couponCode: coupon?.code || null,
-                        couponId: coupon?.id || null,
-                        discountAmount: totals.discount || 0,
-                    }),
-                });
-                toast.dismiss("order-creation");
-                if (!orderResponse.success) throw new Error(orderResponse.message || "Failed to create order");
-
-                toast.success("Order created! Redirecting to payment…", { duration: 2000 });
-                const razorpayOrder = orderResponse.data;
-                setOrderId(razorpayOrder.id);
-
-                toast.loading("Loading payment gateway...", { id: "payment-gateway", duration: 5000 });
-                const loaded = await loadScript("https://checkout.razorpay.com/v1/checkout.js");
-                toast.dismiss("payment-gateway");
-                if (!loaded) throw new Error("Payment gateway failed to load.");
-
-                let currentKey = razorpayKey;
-                if (!currentKey) {
-                    try {
-                        const keyResponse = await fetchApi("/payment/razorpay-key", { method: "GET", credentials: "include" });
-                        if (keyResponse.success && keyResponse.data?.key) {
-                            currentKey = keyResponse.data.key;
-                            setRazorpayKey(currentKey);
-                        }
-                    } catch (err) {
-                        console.error("Failed to fetch Razorpay key:", err);
-                    }
-                }
-                if (!currentKey) throw new Error("Razorpay gateway keys are misconfigured.");
-
-                const options = {
-                    key: currentKey,
-                    amount: razorpayOrder.amount,
-                    currency: razorpayOrder.currency,
-                    name: "MWP SUPPLEMENTS",
-                    description: "MWP SUPPLEMENTS - Men | Women | Power",
-                    order_id: razorpayOrder.id,
-                    prefill: {
-                        name: user?.name || "",
-                        email: user?.email || "",
-                        contact: user?.phone || "",
-                    },
-                    handler: async function (response) {
-                        setProcessing(true);
-                        toast.loading("Verifying payment...", { id: "payment-verification", duration: 10000 });
-                        try {
-                            const verificationResponse = await fetchApi("/payment/verify", {
-                                method: "POST",
-                                credentials: "include",
-                                body: JSON.stringify({
-                                    razorpay_order_id: response.razorpay_order_id,
-                                    razorpay_payment_id: response.razorpay_payment_id,
-                                    razorpay_signature: response.razorpay_signature,
-                                    razorpayOrderId: response.razorpay_order_id,
-                                    razorpayPaymentId: response.razorpay_payment_id,
-                                    razorpaySignature: response.razorpay_signature,
-                                    shippingAddressId: selectedAddressId,
-                                    billingAddressSameAsShipping: true,
-                                    couponCode: coupon?.code || null,
-                                    couponId: coupon?.id || null,
-                                    discountAmount: totals.discount || 0,
-                                    notes: "",
-                                }),
-                            });
-                            toast.dismiss("payment-verification");
-                            if (verificationResponse.success) {
-                                toast.success("Payment verified!", { duration: 3000 });
-                                setOrderId(verificationResponse.data.orderId);
-                                handleSuccessfulPayment(response, verificationResponse.data);
-                            } else {
-                                throw new Error(verificationResponse.message || "Payment verification failed");
-                            }
-                        } catch (error) {
-                            console.error("Payment verification error:", error);
-                            toast.dismiss("payment-verification");
-                            setError(error.message || "Payment verification failed");
-                            toast.error(error.message || "Verification failed. Please contact support.");
-                            setProcessing(false);
-                        }
-                    },
-                    theme: { color: "#000000" },
-                    modal: { ondismiss: () => setProcessing(false) },
-                };
-
-                const razorpay = new window.Razorpay(options);
-                razorpay.open();
-            }
+            redirecting = true;
+            window.location.href = response.data.url;
         } catch (error) {
             console.error("Checkout error:", error);
             toast.dismiss("order-creation");
-            toast.dismiss("payment-gateway");
-            toast.dismiss("payment-verification");
             setError(error.message || "Checkout failed");
             toast.error(error.message || "Checkout failed. Please try again.");
         } finally {
-            setProcessing(false);
+            if (!redirecting) setProcessing(false);
         }
     };
 
@@ -490,9 +428,9 @@ export default function CheckoutPage() {
                                                 </div>
                                                 <div className="text-[11px] text-black/40 leading-relaxed mb-3">
                                                     <p>{address.street}</p>
-                                                    <p>{address.city}, {address.state} {address.postalCode}</p>
-                                                    <p>{address.country}</p>
-                                                    {address.phone && <p className="mt-1 text-black/50 font-medium">{address.phone}</p>}
+                                                    <p>{formatCityLine(address)}</p>
+                                                    <p>{formatCountry(address.country)}</p>
+                                                    {address.phone && <p className="mt-1 text-black/50 font-medium">{formatUsPhone(address.phone)}</p>}
                                                 </div>
                                                 <div className="flex items-center gap-2 pt-2 border-t border-black/5">
                                                     <div className={`w-3.5 h-3.5 rounded-full border flex items-center justify-center ${selected ? "border-black" : "border-black/20"}`}>
@@ -507,54 +445,84 @@ export default function CheckoutPage() {
                             )}
                         </div>
 
+                        {/* Shipping method */}
+                        <div className="bg-white border border-[#e6ded2] rounded-2xl p-5 sm:p-6">
+                            <h2 className="text-sm uppercase tracking-[0.15em] text-black font-medium mb-5 pb-4 border-b border-black/5 flex items-center gap-2">
+                                <Truck className="h-4 w-4 text-black/40" strokeWidth={1.5} />
+                                Shipping Method
+                            </h2>
+                            {!selectedAddressId ? (
+                                <p className="text-[12px] text-black/40">Choose a shipping address to see delivery options.</p>
+                            ) : loadingRates ? (
+                                <div className="flex items-center gap-2 text-[12px] text-black/40">
+                                    <Loader2 className="h-4 w-4 animate-spin" /> Getting live rates from USPS, UPS and FedEx…
+                                </div>
+                            ) : ratesError ? (
+                                <p className="text-[12px] text-neutral-700">{ratesError}</p>
+                            ) : (
+                                <div className="space-y-2.5">
+                                    {shippingQuote?.rates?.map((rate, idx) => {
+                                        const selected = selectedRateId === rate.id;
+                                        return (
+                                            <label
+                                                key={rate.id}
+                                                className={`flex items-center justify-between gap-3 border rounded-lg p-4 cursor-pointer transition-all ${
+                                                    selected ? "border-black bg-black/[0.02]" : "border-black/10 hover:border-black/30"
+                                                }`}
+                                            >
+                                                <span className="flex items-center gap-3">
+                                                    <input
+                                                        type="radio"
+                                                        name="shipping-rate"
+                                                        checked={selected}
+                                                        onChange={() => setSelectedRateId(rate.id)}
+                                                        className="h-4 w-4 accent-neutral-900"
+                                                    />
+                                                    <span>
+                                                        <span className="block text-[12px] font-medium text-black">
+                                                            {rate.carrier} {prettyService(rate.service)}
+                                                            {idx === 0 && <span className="ml-2 text-[9px] uppercase tracking-wider bg-black text-white px-1.5 py-0.5 rounded-sm">Best value</span>}
+                                                        </span>
+                                                        <span className="block text-[11px] text-black/40 mt-0.5">
+                                                            {rate.days ? `Delivery in about ${rate.days} business day${rate.days === 1 ? "" : "s"}` : "Standard delivery"}
+                                                        </span>
+                                                    </span>
+                                                </span>
+                                                <span className="text-[12px] font-medium text-black">
+                                                    {rate.price > 0 ? formatCurrency(rate.price) : "Free"}
+                                                </span>
+                                            </label>
+                                        );
+                                    })}
+                                    {shippingQuote?.freeShipping && (
+                                        <p className="text-[10px] text-green-600">Your order qualifies for free shipping on the first option.</p>
+                                    )}
+                                </div>
+                            )}
+                        </div>
+
                         {/* Payment */}
                         <div className="bg-white border border-[#e6ded2] rounded-2xl p-5 sm:p-6">
                             <h2 className="text-sm uppercase tracking-[0.15em] text-black font-medium mb-5 pb-4 border-b border-black/5">
                                 Payment Method
                             </h2>
-                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                                {paymentSettings.razorpayEnabled && (
-                                    <div
-                                        onClick={() => handlePaymentMethodSelect("RAZORPAY")}
-                                        className={`border rounded-lg p-4 cursor-pointer transition-all duration-200 ${
-                                            paymentMethod === "RAZORPAY"
-                                                ? "border-black bg-black/[0.02]"
-                                                : "border-black/5 hover:border-black/20 bg-white"
-                                        }`}
-                                    >
-                                        <div className="flex items-center gap-3 mb-2">
-                                            <div className={`w-3.5 h-3.5 rounded-full border flex items-center justify-center ${paymentMethod === "RAZORPAY" ? "border-black" : "border-black/20"}`}>
-                                                {paymentMethod === "RAZORPAY" && <div className="w-1.5 h-1.5 rounded-full bg-neutral-900" />}
-                                            </div>
-                                            <CreditCard className="h-4 w-4 text-black/40" strokeWidth={1.5} />
+                            {paymentSettings.stripeEnabled && (
+                                <div className="border border-black rounded-lg p-4 bg-black/[0.02]">
+                                    <div className="flex items-center gap-3 mb-2">
+                                        <div className="w-3.5 h-3.5 rounded-full border border-black flex items-center justify-center">
+                                            <div className="w-1.5 h-1.5 rounded-full bg-neutral-900" />
                                         </div>
-                                        <h3 className="text-[11px] uppercase tracking-wider text-black/70 font-medium">Card / UPI / NetBanking</h3>
-                                        <p className="text-[10px] text-black/30 mt-1 font-light">Secure payment via Razorpay</p>
+                                        <CreditCard className="h-4 w-4 text-black/40" strokeWidth={1.5} />
                                     </div>
-                                )}
-                                {paymentSettings.cashEnabled && (
-                                    <div
-                                        onClick={() => handlePaymentMethodSelect("CASH")}
-                                        className={`border rounded-lg p-4 cursor-pointer transition-all duration-200 ${
-                                            paymentMethod === "CASH"
-                                                ? "border-black bg-black/[0.02]"
-                                                : "border-black/5 hover:border-black/20 bg-white"
-                                        }`}
-                                    >
-                                        <div className="flex items-center gap-3 mb-2">
-                                            <div className={`w-3.5 h-3.5 rounded-full border flex items-center justify-center ${paymentMethod === "CASH" ? "border-black" : "border-black/20"}`}>
-                                                {paymentMethod === "CASH" && <div className="w-1.5 h-1.5 rounded-full bg-neutral-900" />}
-                                            </div>
-                                            <Wallet className="h-4 w-4 text-black/40" strokeWidth={1.5} />
-                                        </div>
-                                        <h3 className="text-[11px] uppercase tracking-wider text-black/70 font-medium">Cash on Delivery</h3>
-                                        <p className="text-[10px] text-black/30 mt-1 font-light">Pay upon delivery</p>
-                                    </div>
-                                )}
-                            </div>
+                                    <h3 className="text-[11px] uppercase tracking-wider text-black/70 font-medium">Credit / Debit Card</h3>
+                                    <p className="text-[10px] text-black/30 mt-1 font-light">
+                                        You will pay on Stripe&apos;s secure page, then come straight back here. All prices are in USD.
+                                    </p>
+                                </div>
+                            )}
                         </div>
 
-                        {!loadingPaymentSettings && !paymentSettings.cashEnabled && !paymentSettings.razorpayEnabled && <p className="text-sm text-neutral-600">Checkout is temporarily unavailable. Please contact us for help.</p>}
+                        {!loadingPaymentSettings && !paymentSettings.stripeEnabled && <p className="text-sm text-neutral-600">Checkout is temporarily unavailable. Please contact us for help.</p>}
 
                         {/* Recommended products */}
                         <CheckoutRecommendations title="Add to Your Order" />
@@ -640,18 +608,19 @@ export default function CheckoutPage() {
                                 </div>
                                 <div className="flex justify-between">
                                     <span className="text-black/40 uppercase tracking-wider">Shipping</span>
-                                    {totals.shipping > 0 ? (
-                                        <span className="font-medium text-black">{formatCurrency(totals.shipping)}</span>
+                                    {!selectedRate ? (
+                                        <span className="font-medium text-black/40 text-[10px] uppercase tracking-widest">{loadingRates ? "Calculating…" : "Choose option"}</span>
+                                    ) : selectedRate.price > 0 ? (
+                                        <span className="font-medium text-black">{formatCurrency(selectedRate.price)}</span>
                                     ) : (
                                         <span className="font-medium text-green-600 uppercase tracking-widest text-[10px]">Free</span>
                                     )}
                                 </div>
-                                {totals.shipping === 0 && cart.freeShippingThreshold > 0 && (
-                                    <p className="text-[9px] text-green-600 text-right">🎉 Free shipping applied!</p>
+                                {selectedRate && (
+                                    <p className="text-[9px] text-black/40 text-right">{selectedRate.carrier} {prettyService(selectedRate.service)}</p>
                                 )}
                             </div>
 
-                            {codCharge > 0 && <div className="flex justify-between text-[12px] mb-3"><span>Cash on delivery fee</span><span>{formatCurrency(codCharge)}</span></div>}
                             {/* Total */}
                             <div className="flex justify-between items-baseline mb-5">
                                 <span className="text-[11px] uppercase tracking-[0.15em] text-black/50 font-medium">Total</span>
@@ -661,14 +630,14 @@ export default function CheckoutPage() {
                             {/* Pay Button */}
                             <button
                                 onClick={handleCheckout}
-                                disabled={processing || !selectedAddressId || loadingPaymentSettings || !paymentMethod || cartLoading || !!mergeProgress}
+                                disabled={processing || !selectedAddressId || !selectedRateId || loadingRates || loadingPaymentSettings || !paymentMethod || cartLoading || !!mergeProgress}
                                 className="w-full bg-neutral-900 text-white text-[13px] font-semibold py-4 rounded-full hover:bg-neutral-800 transition-colors disabled:opacity-40 active:scale-[0.99]"
                             >
-                                {processing ? "Processing…" : loadingPaymentSettings ? "Loading payment options…" : paymentMethod === "CASH" ? `Place Order · ${formatCurrency(checkoutTotal)}` : `Pay ${formatCurrency(checkoutTotal)}`}
+                                {processing ? "Processing…" : loadingPaymentSettings ? "Loading payment options…" : `Pay ${formatCurrency(checkoutTotal)}`}
                             </button>
 
                             <p className="text-[9px] text-black/20 text-center mt-3">
-                                256-bit SSL encrypted
+                                Secure payment by Stripe · SSL encrypted
                             </p>
                         </div>
                     </div>

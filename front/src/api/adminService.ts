@@ -516,29 +516,23 @@ export const orders = {
   updateOrderStatus: (orderId: string, data: { status: string }) => {
     return api.patch(`/api/admin/orders/${orderId}/status`, data);
   },
-  getCouriersForOrder: (orderId: string) => {
-    return api.get(`/api/admin/shiprocket/orders/${orderId}/couriers`);
+  syncOrderToQuickBooks: (orderId: string) => {
+    return api.post(`/api/admin/quickbooks/orders/${orderId}/sync`);
   },
-  getOrderWarehouseOptions: (orderId: string) => {
-    return api.get(`/api/admin/shiprocket/orders/${orderId}/warehouse-options`);
+  recordQuickBooksRefund: (orderId: string) => {
+    return api.post(`/api/admin/quickbooks/orders/${orderId}/refund`);
   },
-  syncToShiprocket: (
-    orderId: string,
-    data?: { courierId?: number | string; warehouseId?: string }
-  ) => {
-    return api.post(`/api/admin/shiprocket/orders/${orderId}/sync`, data);
+  getOrderShippingRates: (orderId: string) => {
+    return api.get(`/api/admin/shipping/orders/${orderId}/rates`);
   },
-  getOrderTracking: (orderId: string) => {
-    return api.get(`/api/admin/shiprocket/orders/${orderId}/tracking`);
+  createShippingLabel: (orderId: string, data?: { rateId?: string }) => {
+    return api.post(`/api/admin/shipping/orders/${orderId}/label`, data);
   },
-  getShippingLabel: (orderId: string) => {
-    return api.get(`/api/admin/shiprocket/orders/${orderId}/label`);
+  voidShippingLabel: (orderId: string) => {
+    return api.post(`/api/admin/shipping/orders/${orderId}/void-label`);
   },
-  getOrderInvoice: (orderId: string) => {
-    return api.get(`/api/admin/shiprocket/orders/${orderId}/invoice`);
-  },
-  cancelShiprocketShipment: (orderId: string) => {
-    return api.post(`/api/admin/shiprocket/orders/${orderId}/cancel`);
+  syncShippingTracking: (orderId: string) => {
+    return api.post(`/api/admin/shipping/orders/${orderId}/sync`);
   },
   getOrderStats: async () => {
     try {
@@ -721,8 +715,8 @@ export const settings = {
           settings: {
             storeName: "MWP SUPPLEMENTS",
             storeEmail: "support@mwpsupplements.com",
-            storePhone: "+91 76783 36268",
-            storeAddress: "India",
+            storePhone: "+1 (562) 524-3557",
+            storeAddress: "531 Main Street, PMB 1127, El Segundo, CA 90245-3006, USA",
             currency: "USD",
             taxRate: 18,
             enableTax: true,
@@ -1383,105 +1377,6 @@ export const bundles = {
 };
 
 // Secret Collection Access
-export const secretAccess = {
-  getDashboard: () => {
-    return api.get("/api/admin/secret-access/dashboard");
-  },
-  getPendingOrders: (params: any = {}) => {
-    return api.get("/api/admin/secret-access/pending-orders", { params });
-  },
-  grantAccess: (data: { orderId: string; email: string; usageLimit?: number; expiryDays?: number }) => {
-    return api.post("/api/admin/secret-access/grant", data);
-  },
-  listAccess: (params: any = {}) => {
-    return api.get("/api/admin/secret-access", { params });
-  },
-  getById: (id: string) => {
-    return api.get(`/api/admin/secret-access/${id}`);
-  },
-  revokeAccess: (id: string, reason?: string) => {
-    return api.patch(`/api/admin/secret-access/${id}/revoke`, { reason });
-  },
-  reactivateAccess: (id: string) => {
-    return api.patch(`/api/admin/secret-access/${id}/reactivate`);
-  },
-  extendExpiry: (id: string, expiryDays: number) => {
-    return api.patch(`/api/admin/secret-access/${id}/extend-expiry`, { expiryDays });
-  },
-  increaseUsageLimit: (id: string, usageLimit: number) => {
-    return api.patch(`/api/admin/secret-access/${id}/usage-limit`, { usageLimit });
-  },
-  resendEmail: (id: string) => {
-    return api.post(`/api/admin/secret-access/${id}/resend-email`);
-  },
-};
-
-// ─── Fragrance Quiz ────────────────────────────────────────────
-
-export const fragranceQuiz = {
-  // Settings
-  getSettings: () => {
-    return api.get("/api/admin/fragrance-quiz/settings");
-  },
-  updateSettings: (data: any) => {
-    return api.put("/api/admin/fragrance-quiz/settings", data);
-  },
-
-  // Questions
-  getQuestions: (params: any = {}) => {
-    return api.get("/api/admin/fragrance-quiz/questions", { params });
-  },
-  createQuestion: (data: any) => {
-    return api.post("/api/admin/fragrance-quiz/questions", data);
-  },
-  updateQuestion: (id: string, data: any) => {
-    return api.put(`/api/admin/fragrance-quiz/questions/${id}`, data);
-  },
-  deleteQuestion: (id: string) => {
-    return api.delete(`/api/admin/fragrance-quiz/questions/${id}`);
-  },
-  reorderQuestions: (questionIds: string[]) => {
-    return api.patch("/api/admin/fragrance-quiz/questions/reorder", { questionIds });
-  },
-
-  // Options
-  createOption: (questionId: string, data: any) => {
-    return api.post(`/api/admin/fragrance-quiz/questions/${questionId}/options`, data);
-  },
-  updateOption: (id: string, data: any) => {
-    return api.put(`/api/admin/fragrance-quiz/options/${id}`, data);
-  },
-  deleteOption: (id: string) => {
-    return api.delete(`/api/admin/fragrance-quiz/options/${id}`);
-  },
-
-  // Rules
-  getRules: (params: any = {}) => {
-    return api.get("/api/admin/fragrance-quiz/rules", { params });
-  },
-  createRule: (data: any) => {
-    return api.post("/api/admin/fragrance-quiz/rules", data);
-  },
-  updateRule: (id: string, data: any) => {
-    return api.put(`/api/admin/fragrance-quiz/rules/${id}`, data);
-  },
-  deleteRule: (id: string) => {
-    return api.delete(`/api/admin/fragrance-quiz/rules/${id}`);
-  },
-  toggleRuleStatus: (id: string) => {
-    return api.patch(`/api/admin/fragrance-quiz/rules/${id}/toggle-status`);
-  },
-
-  // Analytics
-  getAnalytics: (params: any = {}) => {
-    return api.get("/api/admin/fragrance-quiz/analytics", { params });
-  },
-
-  // Responses
-  getResponses: (params: any = {}) => {
-    return api.get("/api/admin/fragrance-quiz/responses", { params });
-  },
-};
 
 // ==================== Checkout Recommendations ====================
 export const checkoutRecommendations = {

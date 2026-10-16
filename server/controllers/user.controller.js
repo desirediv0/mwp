@@ -4,6 +4,7 @@ import { asyncHandler } from "../utils/asyncHandler.js";
 import { prisma } from "../config/db.js";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
+import { normalizeUsPhone, validateUsAddress } from "../utils/usValidation.js";
 import sendEmail from "../utils/sendEmail.js";
 import {
   getOrderCancelledTemplate,
@@ -33,6 +34,11 @@ export const registerUser = asyncHandler(async (req, res, next) => {
   // Validate required fields
   if (!name || !email || !password) {
     throw new ApiError(400, "All fields are required");
+  }
+
+  const usPhone = normalizeUsPhone(phone);
+  if (!usPhone) {
+    throw new ApiError(400, "Enter a valid US phone number, like (562) 524-3557");
   }
 
   const normalizedEmail = String(email).toLowerCase().trim();
@@ -72,7 +78,7 @@ export const registerUser = asyncHandler(async (req, res, next) => {
         name,
         email: normalizedEmail,
         password: hashedPassword,
-        phone: phone || "",
+        phone: usPhone,
         otp: otpCode,
         otpVerified: false,
         otpVerifiedExpiry: otpExpiry,
@@ -633,6 +639,12 @@ export const updateUserProfile = asyncHandler(async (req, res, next) => {
   const { name, phone } = req.body;
   let profileImage = null;
 
+  let usPhone;
+  if (phone) {
+    usPhone = normalizeUsPhone(phone);
+    if (!usPhone) throw new ApiError(400, "Enter a valid US phone number, like (562) 524-3557");
+  }
+
   // Process profile image if provided
   if (req.file) {
     // Get current user to check if there's an existing image to delete
@@ -653,7 +665,7 @@ export const updateUserProfile = asyncHandler(async (req, res, next) => {
   // Prepare update data
   const updateData = {
     ...(name && { name }),
-    ...(phone && { phone }),
+    ...(usPhone && { phone: usPhone }),
     ...(profileImage && { profileImage }),
   };
 
@@ -691,10 +703,15 @@ export const addUserAddress = asyncHandler(async (req, res, next) => {
   const { name, street, city, state, postalCode, country, phone, isDefault } =
     req.body;
 
-  // Validate required fields
-  if (!street || !city || !state || !postalCode || !country) {
-    throw new ApiError(400, "All address fields are required");
+  // US addresses only: validate and normalize state, ZIP, phone and country
+  if (!name || String(name).trim().length < 2) {
+    throw new ApiError(400, "Enter the recipient's full name");
   }
+  const checked = validateUsAddress({ street, city, state, postalCode, country, phone });
+  if (checked.errors) {
+    throw new ApiError(400, Object.values(checked.errors)[0], checked.errors);
+  }
+  const clean = checked.value;
 
   // If setting as default, clear default flag from other addresses
   if (isDefault) {
@@ -711,13 +728,8 @@ export const addUserAddress = asyncHandler(async (req, res, next) => {
   const newAddress = await prisma.address.create({
     data: {
       userId: req.user.id,
-      name,
-      street,
-      city,
-      state,
-      postalCode,
-      country,
-      phone,
+      name: String(name).trim(),
+      ...clean,
       isDefault: isDefault || false,
     },
   });
@@ -751,6 +763,20 @@ export const updateUserAddress = asyncHandler(async (req, res, next) => {
     throw new ApiError(404, "Address not found");
   }
 
+  // Validate the merged address as a whole (US only)
+  const checked = validateUsAddress({
+    street: street !== undefined ? street : address.street,
+    city: city !== undefined ? city : address.city,
+    state: state !== undefined ? state : address.state,
+    postalCode: postalCode !== undefined ? postalCode : address.postalCode,
+    country: country !== undefined ? country : address.country,
+    phone: phone !== undefined ? phone : address.phone,
+  });
+  if (checked.errors) {
+    throw new ApiError(400, Object.values(checked.errors)[0], checked.errors);
+  }
+  const clean = checked.value;
+
   // If setting as default, clear default flag from other addresses
   if (isDefault) {
     await prisma.address.updateMany({
@@ -767,13 +793,8 @@ export const updateUserAddress = asyncHandler(async (req, res, next) => {
   const updatedAddress = await prisma.address.update({
     where: { id: addressId },
     data: {
-      ...(name !== undefined && { name }),
-      ...(street !== undefined && { street }),
-      ...(city !== undefined && { city }),
-      ...(state !== undefined && { state }),
-      ...(postalCode !== undefined && { postalCode }),
-      ...(country !== undefined && { country }),
-      ...(phone !== undefined && { phone }),
+      ...(name !== undefined && { name: String(name).trim() }),
+      ...clean,
       ...(isDefault !== undefined && { isDefault }),
     },
   });
@@ -1238,11 +1259,11 @@ export const getUserOrders = asyncHandler(async (req, res, next) => {
         },
       },
       tracking: true,
-      razorpayPayment: {
+      stripePayment: {
         select: {
           paymentMethod: true,
           status: true,
-          razorpayPaymentId: true,
+          paymentIntentId: true,
         },
       },
       coupon: {
@@ -1304,9 +1325,9 @@ export const getUserOrders = asyncHandler(async (req, res, next) => {
           }
           : null,
       })),
-      razorpayPayment: order.razorpayPayment ? {
-        ...order.razorpayPayment,
-        amount: formatDecimal(order.razorpayPayment.amount)
+      stripePayment: order.stripePayment ? {
+        ...order.stripePayment,
+        amount: formatDecimal(order.stripePayment.amount)
       } : null
     };
   });
@@ -1367,7 +1388,7 @@ export const getOrderDetails = asyncHandler(async (req, res, next) => {
           updates: true,
         },
       },
-      razorpayPayment: true,
+      stripePayment: true,
       shippingAddress: true,
     },
   });
@@ -1379,14 +1400,20 @@ export const getOrderDetails = asyncHandler(async (req, res, next) => {
   // Format order for frontend - use snapshot data when available for immutability
   const formattedOrder = {
     ...order,
+    shippingAddress: order.shippingAddressSnapshot ? { ...order.shippingAddress, ...order.shippingAddressSnapshot } : order.shippingAddress,
+    shipmentId: undefined,
+    shipmentRateId: undefined,
+    labelUrl: undefined,
+    shippingRateCost: undefined,
+    shipmentError: undefined,
     subTotal: parseFloat(order.subTotal),
     tax: parseFloat(order.tax),
     shippingCost: parseFloat(order.shippingCost),
     discount: parseFloat(order.discount),
     total: parseFloat(order.total),
-    razorpayPayment: order.razorpayPayment ? {
-      ...order.razorpayPayment,
-      amount: parseFloat(order.razorpayPayment.amount)
+    stripePayment: order.stripePayment ? {
+      ...order.stripePayment,
+      amount: parseFloat(order.stripePayment.amount)
     } : null,
     items: order.items.map(item => {
       // Use snapshot if available (immutable), otherwise fallback to live data
@@ -1432,111 +1459,6 @@ export const getOrderDetails = asyncHandler(async (req, res, next) => {
     );
 });
 
-// Cancel order
-export const cancelOrder = asyncHandler(async (req, res, next) => {
-  const { orderId } = req.params;
-  const { reason } = req.body;
-
-  // Find order
-  const order = await prisma.order.findFirst({
-    where: {
-      id: orderId,
-      userId: req.user.id,
-    },
-  });
-
-  if (!order) {
-    throw new ApiError(404, "Order not found");
-  }
-
-  // Check if order can be cancelled
-  if (order.status !== "PENDING" && order.status !== "PROCESSING") {
-    throw new ApiError(400, "This order cannot be cancelled");
-  }
-
-  // Update order status
-  const updatedOrder = await prisma.order.update({
-    where: { id: orderId },
-    data: {
-      status: "CANCELLED",
-      cancelReason: reason,
-      cancelledAt: new Date(),
-      cancelledBy: req.user.id,
-    },
-  });
-
-  // Cancel Shiprocket order if it exists (outside transaction, non-blocking)
-  if (order.shiprocketOrderId) {
-    try {
-      const { cancelShiprocketOrder } = await import("../utils/shiprocket.js");
-      await cancelShiprocketOrder(order.shiprocketOrderId);
-      // Update order shiprocket status
-      await prisma.order.update({
-        where: { id: orderId },
-        data: { shiprocketStatus: "CANCELLED" },
-      });
-      console.log(`User cancelled Shiprocket order ${order.shiprocketOrderId}`);
-    } catch (error) {
-      console.error("Failed to cancel Shiprocket order:", error.message);
-      // Non-critical - order is already cancelled in our system
-    }
-  }
-
-  // Send cancellation emails
-  try {
-    const user = await prisma.user.findUnique({
-      where: { id: req.user.id },
-      select: { email: true, name: true },
-    });
-
-    // Send cancellation email to user
-    if (user && user.email) {
-      await sendEmail({
-        email: user.email,
-        subject: `Order #${order.orderNumber} Cancelled - ${process.env.STORE_NAME || "MWP Supplements"}`,
-        html: getOrderCancelledTemplate({
-          userName: user.name || "Customer",
-          orderNumber: order.orderNumber,
-          reason: reason || "Cancelled by customer",
-          refundAmount: order.paymentMethod !== "CASH" ? parseFloat(order.total) : null,
-        }),
-      });
-      console.log(`Cancellation email sent to user ${user.email}`);
-    }
-
-    // Send cancellation notification to admin
-    const adminEmail = process.env.ADMIN_EMAIL || process.env.SMTP_USER || process.env.STORE_EMAIL;
-    if (adminEmail) {
-      await sendEmail({
-        email: adminEmail,
-        subject: `❌ Order #${order.orderNumber} Cancelled by Customer`,
-        html: getAdminOrderCancelledTemplate({
-          orderNumber: order.orderNumber,
-          customerName: user?.name || "Guest",
-          customerEmail: user?.email || "No email",
-          reason: reason || "No reason provided",
-          total: parseFloat(order.total).toFixed(2),
-          cancelledBy: "user",
-        }),
-      });
-      console.log(`Admin cancellation notification sent for order ${order.orderNumber}`);
-    }
-  } catch (emailError) {
-    console.error("Cancellation email error:", emailError);
-  }
-
-  // TODO: Handle inventory restock and payment refund logic
-
-  res
-    .status(200)
-    .json(
-      new ApiResponsive(
-        200,
-        { order: updatedOrder },
-        "Order cancelled successfully"
-      )
-    );
-});
 
 // Request account deletion
 export const requestAccountDeletion = asyncHandler(async (req, res, next) => {

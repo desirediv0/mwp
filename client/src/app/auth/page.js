@@ -5,6 +5,7 @@ import { useSearchParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import { useAuth } from "@/lib/auth-context";
 import { toast } from "sonner";
+import { formatUsPhone, isValidUsPhone } from "@/lib/us";
 import {
   IconMail,
   IconLock,
@@ -334,7 +335,8 @@ function RegisterForm({ onSwitch, redirect }) {
   const router = useRouter();
 
   const handleChange = (e) => {
-    const { name, value } = e.target;
+    const { name } = e.target;
+    const value = name === "phone" ? formatUsPhone(e.target.value) : e.target.value;
     if (errorMsg) setErrorMsg("");
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
@@ -346,8 +348,8 @@ function RegisterForm({ onSwitch, redirect }) {
       toast.error(msg);
       return false;
     }
-    if (!formData.phone || formData.phone.length < 10) {
-      const msg = "Please enter a valid phone number";
+    if (!isValidUsPhone(formData.phone)) {
+      const msg = "Please enter a valid US phone number, like (562) 524-3557";
       setErrorMsg(msg);
       toast.error(msg);
       return false;
@@ -403,7 +405,7 @@ function RegisterForm({ onSwitch, redirect }) {
   const fields = [
     { label: "Full Name", name: "name", type: "text", icon: IconUser, placeholder: "John Doe" },
     { label: "Email", name: "email", type: "email", icon: IconMail, placeholder: "you@example.com" },
-    { label: "Phone", name: "phone", type: "tel", icon: IconPhone, placeholder: "+91 9876543210" },
+    { label: "Phone", name: "phone", type: "tel", icon: IconPhone, placeholder: "(562) 524-3557" },
   ];
 
   return (

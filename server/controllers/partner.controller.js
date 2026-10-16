@@ -301,7 +301,7 @@ export const getPartnerEarnings = asyncHandler(async (req, res) => {
             customerName: order.user?.name,
             customerEmail: order.user?.email,
             orderStatus: order.status,
-            paymentStatus: order.razorpayPayment ? 'paid' : 'pending',
+            paymentStatus: order.stripePayment ? 'paid' : 'pending',
             date: order.createdAt,
             createdAt: order.createdAt
         };

@@ -15,7 +15,7 @@
 .mwp-ingredients-art-caption { position: absolute; left: 26px; top: 24px; font-size: 9px; letter-spacing: .15em; color: #7c8670; }
 .mwp-ingredients-art-foot { display: flex; align-items: center; gap: 7px; position: absolute; bottom: 19px; left: 26px; font-size: 11px; color: #77846d; }
 .mwp-ingredients-specimen { position: absolute; display: flex; flex-direction: column; align-items: center; padding: 16px; border: 1px solid #fff; border-radius: 22px; background: #fffefbe8; box-shadow: 0 15px 30px -20px #69745866; }
-.mwp-ingredients-specimen .mwp-ingredient-photo { border-radius: 50%; width: 100%; }
+.mwp-ingredients-specimen .mwp-ingredient-photo { border-radius: 16px; width: 100%; }
 .mwp-ingredients-specimen > span { margin-top: 12px; font-size: 12px; text-align: center; line-height: 1.4; }
 .mwp-ingredients-specimen small { margin-top: 4px; font-size: 10px; color: #8a8d80; }
 .mwp-ingredients-specimen-0 { left: 25px; top: 72px; width: 210px; transform: rotate(-7deg); }
@@ -52,10 +52,10 @@
 .mwp-ingredient-tone-3 { background: #f6edeb; }
 .mwp-ingredient-number { position: absolute; top: 16px; left: 16px; color: #949c87; font-size: 10px; letter-spacing: .1em; }
 .mwp-ingredient-origin { position: absolute; right: 14px; top: 12px; display: inline-flex; align-items: center; gap: 4px; padding: 5px 8px; background: #ffffffa8; border-radius: 99px; font-size: 10px; color: #7b816f; }
-.mwp-ingredient-photo-wrap { width: 154px; transition: transform .6s cubic-bezier(.2,.7,.3,1); }
+.mwp-ingredient-photo-wrap { width: 180px; transition: transform .6s cubic-bezier(.2,.7,.3,1); }
 .mwp-ingredient-card:hover .mwp-ingredient-photo-wrap { transform: scale(1.06); }
-.mwp-ingredient-photo { position: relative; width: 100%; aspect-ratio: 1; overflow: hidden; border-radius: 50%; background: #fff; box-shadow: 0 12px 25px -20px #5f665366; }
-.mwp-ingredient-photo img { position: absolute; display: block; max-width: none; object-fit: fill; user-select: none; pointer-events: none; }
+.mwp-ingredient-photo { position: relative; width: 100%; aspect-ratio: 1; overflow: hidden; border-radius: 22px; background: #fff; box-shadow: 0 12px 25px -20px #5f665366; }
+.mwp-ingredient-photo img { position: absolute; inset: 0; display: block; width: 100%; height: 100%; max-width: none; object-fit: cover; transform: none; user-select: none; pointer-events: none; }
 .mwp-ingredient-copy { display: flex; flex-direction: column; flex: 1; min-width: 0; padding: 16px 23px 7px; }
 .mwp-ingredient-reference { font-size: 9px; color: #889278; text-transform: uppercase; letter-spacing: .1em; margin-bottom: 10px; }
 .mwp-ingredient-copy h2 { color: #171717; font-size: 21px; letter-spacing: -.035em; line-height: 1.25; overflow-wrap: anywhere; }
@@ -163,3 +163,13 @@
  .mwp-ingredients-specimen-2 { bottom: 25px; }
  .mwp-ingredients-art-foot { left: 20px; bottom: 14px; font-size: 10px; }
 }
+
+/* Minimal hero */
+.mwp-ingredients-header { gap: 48px; padding: 16px 0 36px; }
+.mwp-ingredients-header h1 { font-size: clamp(34px, 3.6vw, 52px); margin-top: 14px; }
+.mwp-ingredients-hero-copy > .mwp-ingredients-primary { margin-top: 24px; min-height: 42px; padding: 9px 20px; }
+.mwp-ingredients-hero-art { height: 320px; border-radius: 24px; }
+.mwp-ingredients-specimen-0 { width: 160px; top: 56px; }
+.mwp-ingredients-specimen-1 { width: 120px; top: 40px; }
+.mwp-ingredients-specimen-2 { width: 115px; bottom: 34px; }
+@media (max-width: 900px) { .mwp-ingredients-hero-art { height: 280px; } }

@@ -260,34 +260,17 @@ export const getUserCart = asyncHandler(async (req, res) => {
     })
   );
 
-  // Calculate shipping
+  // Shipping is priced by the carrier at checkout (live USPS / UPS / FedEx rates).
+  // Here we only tell the customer about the free-shipping threshold.
   let shippingTotal = 0;
   let freeShippingThreshold = 0;
-  let shippingMessage = "";
+  let shippingMessage = "Shipping calculated at checkout";
 
-  const shiprocketSettings = await prisma.shiprocketSettings.findFirst();
-
-  if (shiprocketSettings) {
-    const charge = parseFloat(shiprocketSettings.shippingCharge) || 0;
-    // Only set threshold if there is a charge, otherwise it's always free (threshold irrelevant)
-    freeShippingThreshold = charge > 0 ? (parseFloat(shiprocketSettings.freeShippingThreshold) || 0) : 0;
-
-    if (charge > 0) {
-      if (freeShippingThreshold > 0) {
-        if (subtotal >= freeShippingThreshold) {
-          shippingTotal = 0;
-          shippingMessage = "Eligible for Free Shipping";
-        } else {
-          shippingTotal = charge;
-          // Format message in frontend usually, but providing data here helps
-          shippingMessage = "Add more for free shipping";
-        }
-      } else {
-        shippingTotal = charge;
-      }
-    } else {
-      shippingTotal = 0;
-      shippingMessage = "Free Shipping";
+  const shippingSettings = await prisma.shippingSettings.findFirst();
+  if (shippingSettings) {
+    freeShippingThreshold = parseFloat(shippingSettings.freeShippingThreshold) || 0;
+    if (freeShippingThreshold > 0) {
+      shippingMessage = subtotal >= freeShippingThreshold ? "Eligible for Free Shipping" : "Add more for free shipping";
     }
   }
 

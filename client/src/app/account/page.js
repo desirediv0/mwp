@@ -1,4 +1,5 @@
 "use client";
+import { formatUsPhone, formatCityLine, formatCountry } from "@/lib/us";
 
 import { useState, useEffect } from "react";
 import { useAuth } from "@/lib/auth-context";
@@ -129,7 +130,7 @@ export default function AccountPage() {
                     <div>
                       <label className="block text-[10px] uppercase tracking-[0.2em] text-gray-500 font-medium mb-2">Phone</label>
                       <input
-                        name="phone" type="tel" value={formData.phone} onChange={handleChange}
+                        name="phone" type="tel" placeholder="(562) 524-3557" value={formatUsPhone(formData.phone)} onChange={handleChange}
                         className="w-full h-12 px-4 bg-white border border-[#e6ded2] rounded-xl text-gray-900 text-[13px] focus:outline-none focus:border-neutral-900 transition-colors"
                       />
                     </div>
@@ -164,7 +165,7 @@ export default function AccountPage() {
                     <span className="flex items-center gap-2 text-[10px] uppercase tracking-[0.2em] text-gray-500 font-medium mb-1.5">
                       <IconPhone className="h-3 w-3" stroke={1.5} /> Phone
                     </span>
-                    <p className="text-[14px] text-gray-900 font-light">{user?.phone || "Not provided"}</p>
+                    <p className="text-[14px] text-gray-900 font-light">{user?.phone ? formatUsPhone(user.phone) : "Not provided"}</p>
                   </div>
                   <div>
                     <span className="flex items-center gap-2 text-[10px] uppercase tracking-[0.2em] text-gray-500 font-medium mb-1.5">
@@ -195,7 +196,7 @@ export default function AccountPage() {
                           <span className="text-[9px] uppercase tracking-[0.2em] text-neutral-800 font-medium bg-neutral-900/10 px-2 py-0.5 mb-2 inline-block">Default</span>
                         )}
                         <p className="text-[13px] text-gray-900 font-medium">{address.name || user?.name}</p>
-                        <p className="text-[12px] text-gray-500 font-light mt-0.5">{address.street}, {address.city}, {address.state} {address.postalCode}</p>
+                        <p className="text-[12px] text-gray-500 font-light mt-0.5">{address.street}, {formatCityLine(address)}</p>
                       </div>
                     </div>
                   ))}

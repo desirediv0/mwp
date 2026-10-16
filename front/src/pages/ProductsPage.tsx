@@ -228,7 +228,7 @@ export function ProductForm({
     topBrandIds: [] as string[],
     newBrandIds: [] as string[],
     hotBrandIds: [] as string[],
-    // Shipping dimensions for Shiprocket (for products without variants)
+    // Shipping dimensions for carrier rates (for products without variants)
     shippingLength: "",
     shippingBreadth: "",
     shippingHeight: "",
@@ -261,8 +261,8 @@ export function ProductForm({
     minQuantity: 1,
   });
 
-  // Shiprocket enabled state
-  const [shiprocketEnabled, setShiprocketEnabled] = useState(false);
+  // Shipping enabled state
+  const [shippingEnabled, setShippingEnabled] = useState(false);
 
   // Add state to track selected categories
   const [selectedCategories, setSelectedCategories] = useState<any[]>([]);
@@ -276,21 +276,21 @@ export function ProductForm({
   // Get categories data using the useCategories hook
   const { categories, isLoading: categoriesLoading } = useCategories();
 
-  // Fetch Shiprocket settings to check if enabled
+  // Fetch shipping settings to check if enabled
   useEffect(() => {
-    const fetchShiprocketSettings = async () => {
+    const fetchShippingSettings = async () => {
       try {
-        const response = await api.get("/api/admin/shiprocket/settings");
+        const response = await api.get("/api/admin/shipping/settings");
         if (response.data.success) {
-          setShiprocketEnabled(response.data.data?.settings?.isEnabled || false);
+          setShippingEnabled(response.data.data?.isEnabled || false);
         }
       } catch (error) {
-        // Shiprocket not configured, keep disabled
-        console.error("Error fetching shiprocket settings:", error);
-        setShiprocketEnabled(false);
+        // Shipping not configured, keep disabled
+        console.error("Error fetching shipping settings:", error);
+        setShippingEnabled(false);
       }
     };
-    fetchShiprocketSettings();
+    fetchShippingSettings();
   }, []);
 
   // Jodit Editor reference and local state
@@ -1313,7 +1313,7 @@ export function ProductForm({
         formData.append("quantity", String(product.quantity || 0));
 
         // Add shipping dimensions for simple product
-        if (shiprocketEnabled) {
+        if (shippingEnabled) {
           if (product.shippingLength) formData.append("shippingLength", product.shippingLength);
           if (product.shippingBreadth) formData.append("shippingBreadth", product.shippingBreadth);
           if (product.shippingHeight) formData.append("shippingHeight", product.shippingHeight);
@@ -3217,7 +3217,7 @@ export function ProductForm({
                           onRemove={removeVariantByIndex}
                           onImagesChange={handleVariantImagesChange}
                           isEditMode={mode === "edit"}
-                          shiprocketEnabled={shiprocketEnabled}
+                          shippingEnabled={shippingEnabled}
                         />
                       ))}
                     </div>
@@ -3298,8 +3298,8 @@ export function ProductForm({
           </div>
 )}
 
-          {/* Shipping Dimensions Section - Only show when Shiprocket is enabled and no variants */}
-          {shiprocketEnabled && !hasVariants && (
+          {/* Shipping Dimensions Section - Only show when shipping is enabled and no variants */}
+          {shippingEnabled && !hasVariants && (
             <div className="space-y-4 rounded-lg border p-4 bg-gray-50">
               <div className="flex items-center gap-2">
                 <h2 className="text-xl font-semibold">

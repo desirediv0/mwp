@@ -2,9 +2,12 @@ import { ApiError } from "../utils/ApiError.js";
 import { ApiResponsive } from "../utils/ApiResponsive.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
 import { prisma } from "../config/db.js";
-import { razorpay } from "../app.js";
-import { cancelShiprocketOrder, getShiprocketSettings, processOrderForShipping } from "../utils/shiprocket.js";
+import { refundStripePayment } from "../utils/stripe.js";
+import { createDeliveryCommissions } from "../utils/partnerCommission.js";
+import { voidLabelForOrder } from "../utils/shipping.js";
 import sendEmail from "../utils/sendEmail.js";
+import { notifyAdmin } from "../utils/notify.js";
+import { autoRefundOrder } from "../utils/quickbooks.js";
 import { getOrderCancelledTemplate, getAdminOrderCancelledTemplate } from "../email/temp/EmailTemplate.js";
 
 // Get all orders with pagination, filtering, and sorting
@@ -95,12 +98,12 @@ export const getOrders = asyncHandler(async (req, res, next) => {
           carrier: true,
         },
       },
-      razorpayPayment: {
+      stripePayment: {
         select: {
           id: true,
           status: true,
           amount: true,
-          razorpayPaymentId: true,
+          paymentIntentId: true,
         },
       },
       coupon: {
@@ -151,16 +154,26 @@ export const getOrders = asyncHandler(async (req, res, next) => {
       : order.couponCode
         ? { code: order.couponCode }
         : null,
-    // Include Shiprocket data
-    shiprocket: {
-      orderId: order.shiprocketOrderId,
-      shipmentId: order.shiprocketShipmentId,
-      awbCode: order.awbCode,
-      courierName: order.courierName,
-      status: order.shiprocketStatus,
-      warehouseId: order.warehouseId,
-      warehouseNickname: order.warehouseNickname,
-      warehouseAssignedBy: order.warehouseAssignedBy,
+    // Shipping (EasyPost) data
+    shipping: {
+      provider: order.shippingProvider,
+      shipmentId: order.shipmentId,
+      carrier: order.shippingCarrier,
+      service: order.shippingService,
+      trackingCode: order.trackingCode,
+      trackingUrl: order.trackingUrl,
+      labelUrl: order.labelUrl,
+      status: order.shippingStatus,
+      rateCost: order.shippingRateCost !== null && order.shippingRateCost !== undefined ? parseFloat(order.shippingRateCost) : null,
+      labelBoughtAt: order.labelBoughtAt,
+      error: order.shipmentError,
+    },
+    quickbooks: {
+      status: order.qbSyncStatus,
+      receiptId: order.qbSalesReceiptId,
+      error: order.qbSyncError,
+      syncedAt: order.qbSyncedAt,
+      refundIds: order.qbRefundIds || [],
     },
   }));
 
@@ -231,7 +244,7 @@ export const getOrderById = asyncHandler(async (req, res, next) => {
           },
         },
       },
-      razorpayPayment: {
+      stripePayment: {
         include: {
           refunds: true,
         },
@@ -309,6 +322,7 @@ export const getOrderById = asyncHandler(async (req, res, next) => {
   // Normalize values for tax and shipping
   const modifiedOrder = {
     ...order,
+    shippingAddress: order.shippingAddressSnapshot ? { ...order.shippingAddress, ...order.shippingAddressSnapshot } : order.shippingAddress,
     items: processedItems, // Use processed items with image URLs
     subTotal: parseFloat(order.subTotal),
     tax: parseFloat(order.tax),
@@ -328,16 +342,26 @@ export const getOrderById = asyncHandler(async (req, res, next) => {
       : order.couponCode
         ? { code: order.couponCode }
         : null,
-    // Include Shiprocket data
-    shiprocket: {
-      orderId: order.shiprocketOrderId,
-      shipmentId: order.shiprocketShipmentId,
-      awbCode: order.awbCode,
-      courierName: order.courierName,
-      status: order.shiprocketStatus,
-      warehouseId: order.warehouseId,
-      warehouseNickname: order.warehouseNickname,
-      warehouseAssignedBy: order.warehouseAssignedBy,
+    // Shipping (EasyPost) data
+    shipping: {
+      provider: order.shippingProvider,
+      shipmentId: order.shipmentId,
+      carrier: order.shippingCarrier,
+      service: order.shippingService,
+      trackingCode: order.trackingCode,
+      trackingUrl: order.trackingUrl,
+      labelUrl: order.labelUrl,
+      status: order.shippingStatus,
+      rateCost: order.shippingRateCost !== null && order.shippingRateCost !== undefined ? parseFloat(order.shippingRateCost) : null,
+      labelBoughtAt: order.labelBoughtAt,
+      error: order.shipmentError,
+    },
+    quickbooks: {
+      status: order.qbSyncStatus,
+      receiptId: order.qbSalesReceiptId,
+      error: order.qbSyncError,
+      syncedAt: order.qbSyncedAt,
+      refundIds: order.qbRefundIds || [],
     },
   };
 
@@ -365,7 +389,7 @@ export const updateOrderStatus = asyncHandler(async (req, res, next) => {
   const order = await prisma.order.findUnique({
     where: { id: orderId },
     include: {
-      razorpayPayment: true,
+      stripePayment: true,
     },
   });
 
@@ -401,20 +425,18 @@ export const updateOrderStatus = asyncHandler(async (req, res, next) => {
       // Return items to inventory
       await handleInventoryReturn(tx, orderId, req.admin.id);
 
-      // Cancel Shiprocket order if it exists
-      if (order.shiprocketOrderId) {
+      // Cancel the shipping label (carrier refunds the postage) while it has not been scanned yet
+      if (order.labelUrl) {
         try {
-          await cancelShiprocketOrder(order.shiprocketOrderId);
-          orderData.shiprocketStatus = "CANCELLED";
-          console.log(`Admin cancelled Shiprocket order ${order.shiprocketOrderId}`);
+          await voidLabelForOrder(orderId);
         } catch (error) {
-          console.error("Failed to cancel Shiprocket order:", error.message);
-          // Continue with order cancellation even if Shiprocket fails
+          console.error("Failed to cancel the shipping label:", error.message);
+          // Continue with the cancellation even if the label cannot be voided
         }
       }
     }
 
-    // If shipping, create or update tracking AND sync to Shiprocket
+    // If shipping, create or update tracking
     if (status === "SHIPPED") {
       const existingTracking = await tx.tracking.findUnique({
         where: { orderId },
@@ -458,18 +480,6 @@ export const updateOrderStatus = asyncHandler(async (req, res, next) => {
         });
       }
 
-      // Auto-sync to Shiprocket if enabled and not already synced
-      try {
-        const shiprocketSettings = await getShiprocketSettings();
-        if (shiprocketSettings.isEnabled && !order.shiprocketOrderId) {
-          console.log(`Auto-syncing order ${order.orderNumber} to Shiprocket...`);
-          await processOrderForShipping(orderId);
-          console.log(`Order ${order.orderNumber} synced to Shiprocket successfully`);
-        }
-      } catch (shiprocketError) {
-        // Non-critical: log error but don't fail the order status update
-        console.error(`Failed to auto-sync order ${order.orderNumber} to Shiprocket:`, shiprocketError.message);
-      }
     }
 
     // If delivered, update tracking
@@ -495,10 +505,10 @@ export const updateOrderStatus = asyncHandler(async (req, res, next) => {
     // Handle payment status updates
     if (
       status === "PAID" &&
-      order.razorpayPayment &&
-      order.razorpayPayment.status !== "CAPTURED"
+      order.stripePayment &&
+      order.stripePayment.status !== "CAPTURED"
     ) {
-      await tx.razorpayPayment.update({
+      await tx.stripePayment.update({
         where: { orderId },
         data: {
           status: "CAPTURED",
@@ -506,36 +516,17 @@ export const updateOrderStatus = asyncHandler(async (req, res, next) => {
       });
     }
 
-    // If refunding, initiate Razorpay refund
+    // If refunding a card payment, refund it in Stripe (the whole payment)
     if (
       status === "REFUNDED" &&
-      order.razorpayPayment &&
-      order.razorpayPayment.razorpayPaymentId
+      order.stripePayment &&
+      order.stripePayment.paymentIntentId &&
+      order.stripePayment.status !== "REFUNDED"
     ) {
-      const refundData = await initiateRefund(
-        order.razorpayPayment.razorpayPaymentId,
-        order.total,
-        notes
-      );
-
-      if (refundData) {
-        await tx.razorpayRefund.create({
-          data: {
-            razorpayPaymentId: order.razorpayPayment.razorpayPaymentId,
-            amount: order.total,
-            razorpayRefundId: refundData.id,
-            status: "PROCESSED",
-            reason: notes || "Admin initiated refund",
-            notes: JSON.stringify(refundData.notes || {}),
-          },
-        });
-
-        await tx.razorpayPayment.update({
-          where: { orderId },
-          data: {
-            status: "REFUNDED",
-          },
-        });
+      try {
+        await refundStripePayment(order.stripePayment, parseFloat(order.total), "requested_by_customer");
+      } catch (refundError) {
+        throw new ApiError(400, `Stripe refund failed: ${refundError.message}`);
       }
     }
 
@@ -545,69 +536,39 @@ export const updateOrderStatus = asyncHandler(async (req, res, next) => {
       data: orderData,
       include: {
         tracking: true,
-        razorpayPayment: true,
+        stripePayment: true,
       },
     });
 
-    // Create partner commissions when order is delivered (safety check)
-    if (status === "DELIVERED" && order.couponId) {
-      try {
-        // Check if commissions already exist for this order
-        const existingCommissions = await tx.partnerEarning.findMany({
-          where: { orderId: orderId },
-        });
-
-        if (existingCommissions.length === 0) {
-          // Calculate final order amount (subtotal - discount)
-          const finalOrderAmount =
-            parseFloat(order.subTotal) - parseFloat(order.discount);
-
-          // Get coupon partners
-          const couponPartners = await tx.couponPartner.findMany({
-            where: { couponId: order.couponId },
-            include: { partner: true },
-          });
-
-          // Create commissions for each partner
-          for (const couponPartner of couponPartners) {
-            if (
-              couponPartner.commission &&
-              couponPartner.commission > 0 &&
-              finalOrderAmount > 0
-            ) {
-              // Calculate commission based on FINAL ORDER AMOUNT (not discount)
-              const commissionAmount =
-                (finalOrderAmount * couponPartner.commission) / 100;
-
-              await tx.partnerEarning.create({
-                data: {
-                  partnerId: couponPartner.partnerId,
-                  orderId: orderId,
-                  couponId: order.couponId,
-                  amount: commissionAmount.toFixed(2),
-                  percentage: couponPartner.commission,
-                  createdAt: new Date(),
-                },
-              });
-
-              console.log(
-                `Created delayed commission for partner ${couponPartner.partner.name
-                }: $${commissionAmount.toFixed(2)} (${couponPartner.commission
-                }% of final order $${finalOrderAmount.toFixed(2)})`
-              );
-            }
-          }
-        }
-      } catch (commissionError) {
-        console.error(
-          "Error creating partner commissions on delivery:",
-          commissionError
-        );
-      }
+    // Partners earn their commission when the order is delivered
+    if (status === "DELIVERED") {
+      await createDeliveryCommissions(tx, order);
     }
 
     return updatedOrder;
   });
+
+  // A cancelled, paid order gets its card payment refunded in Stripe
+  let refundNote = "";
+  if (
+    status === "CANCELLED" &&
+    order.stripePayment?.paymentIntentId &&
+    order.stripePayment.status === "CAPTURED"
+  ) {
+    try {
+      await refundStripePayment(order.stripePayment, parseFloat(order.total), "requested_by_customer");
+      refundNote = " (card payment refunded)";
+    } catch (refundError) {
+      console.error(`Stripe refund failed for cancelled order ${order.orderNumber}:`, refundError.message);
+      refundNote = " (Stripe refund FAILED: refund it from the Stripe dashboard)";
+      await notifyAdmin(`Refund FAILED for cancelled order #${order.orderNumber}`, {
+        title: "Refund needs attention",
+        danger: true,
+        paragraphs: ["The automatic Stripe refund failed. Please refund it from the Stripe dashboard."],
+        rows: [["Order", `#${order.orderNumber}`], ["Amount", `${parseFloat(order.total).toFixed(2)}`], ["Error", refundError.message]],
+      });
+    }
+  }
 
   // Log the activity
   await prisma.activityLog.create({
@@ -615,11 +576,16 @@ export const updateOrderStatus = asyncHandler(async (req, res, next) => {
       entityType: "order",
       entityId: orderId,
       action: "update",
-      description: `Order status updated from ${order.status} to ${status}`,
+      description: `Order status updated from ${order.status} to ${status}${refundNote}`,
       performedBy: req.admin.id,
       performedByRole: "admin",
     },
   });
+
+  // Mirror a cancelled or refunded order in QuickBooks
+  if ((status === "CANCELLED" && !refundNote.includes("FAILED")) || status === "REFUNDED") {
+    await autoRefundOrder(orderId);
+  }
 
   // Send cancellation email to customer when admin cancels order
   if (status === "CANCELLED") {
@@ -1065,7 +1031,7 @@ export const processPayment = asyncHandler(async (req, res, next) => {
   const order = await prisma.order.findUnique({
     where: { id: orderId },
     include: {
-      razorpayPayment: true,
+      stripePayment: true,
     },
   });
 
@@ -1083,15 +1049,15 @@ export const processPayment = asyncHandler(async (req, res, next) => {
 
   // Process the payment
   const updatedOrder = await prisma.$transaction(async (tx) => {
-    // Create Razorpay payment record if it doesn't exist
-    if (!order.razorpayPayment) {
-      await tx.razorpayPayment.create({
+    // Record a manual payment if the order has none yet
+    if (!order.stripePayment) {
+      await tx.stripePayment.create({
         data: {
           orderId,
+          userId: order.userId,
           amount: order.total,
           currency: order.currency,
-          razorpayOrderId: `MANUAL-${Date.now()}`,
-          razorpayPaymentId: `MANUAL-PAYMENT-${Date.now()}`,
+          sessionId: `MANUAL-${Date.now()}`,
           status: "CAPTURED",
           paymentMethod: paymentMethod || "OTHER",
           notes: notes ? JSON.stringify({ notes }) : null,
@@ -1099,7 +1065,7 @@ export const processPayment = asyncHandler(async (req, res, next) => {
       });
     } else {
       // Update existing payment record
-      await tx.razorpayPayment.update({
+      await tx.stripePayment.update({
         where: { orderId },
         data: {
           status: "CAPTURED",
@@ -1458,27 +1424,6 @@ async function handleInventoryReturn(tx, orderId, adminId) {
         createdBy: adminId,
       },
     });
-  }
-}
-
-// Helper function to initiate Razorpay refund
-async function initiateRefund(paymentId, amount, notes) {
-  try {
-    // Check if Razorpay is initialized
-    if (!razorpay) {
-      console.error("Razorpay not initialized");
-      return null;
-    }
-
-    const refund = await razorpay.payments.refund(paymentId, {
-      amount: amount * 100, // Convert to paisa
-      notes: { reason: notes || "Admin initiated refund" },
-    });
-
-    return refund;
-  } catch (error) {
-    console.error("Razorpay refund error:", error);
-    return null;
   }
 }
 

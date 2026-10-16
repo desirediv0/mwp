@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/lib/auth-context";
 import { toast } from "sonner";
+import { formatUsPhone, isValidUsPhone } from "@/lib/us";
 import {
   IconMail,
   IconLock,
@@ -245,7 +246,8 @@ function ModalRegisterForm({ onSwitch, onSuccess, register }) {
   const [errorMsg, setErrorMsg] = useState("");
 
   const handleChange = (e) => {
-    const { name, value } = e.target;
+    const { name } = e.target;
+    const value = name === "phone" ? formatUsPhone(e.target.value) : e.target.value;
     if (errorMsg) setErrorMsg("");
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
@@ -259,8 +261,8 @@ function ModalRegisterForm({ onSwitch, onSuccess, register }) {
       toast.error(msg);
       return;
     }
-    if (!formData.phone || formData.phone.length < 10) {
-      const msg = "Please enter a valid phone number";
+    if (!isValidUsPhone(formData.phone)) {
+      const msg = "Please enter a valid US phone number, like (562) 524-3557";
       setErrorMsg(msg);
       toast.error(msg);
       return;
@@ -354,7 +356,7 @@ function ModalRegisterForm({ onSwitch, onSuccess, register }) {
             value={formData.phone}
             onChange={handleChange}
             required
-            placeholder="10-digit Phone Number"
+            placeholder="US phone, e.g. (562) 524-3557"
             className="w-full h-10 pl-10 pr-3 bg-ivory border border-line text-noir text-[13px] font-light placeholder:text-stone/50 focus:outline-none focus:border-gold transition-all"
           />
         </div>

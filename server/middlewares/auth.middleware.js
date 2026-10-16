@@ -184,43 +184,4 @@ export const verifyPartnerToken = asyncHandler(async (req, res, next) => {
   }
 });
 
-/**
- * requireSecretAccess - Middleware that checks if the authenticated user
- * has an active SecretAccess record. Must be used AFTER verifyJWTToken.
- */
-export const requireSecretAccess = asyncHandler(async (req, res, next) => {
-  const userId = req.user?.id;
-  if (!userId) {
-    throw new ApiError(401, "Authentication required");
-  }
 
-  const now = new Date();
-  const record = await prisma.secretAccess.findFirst({
-    where: {
-      userId,
-      status: { in: ["ACTIVE", "USED"] },
-      expiresAt: { gt: now },
-    },
-  });
-
-  if (!record || record.usageCount >= record.usageLimit) {
-    throw new ApiError(403, "Secret Collection access required");
-  }
-
-  // Update lastUsedAt
-  const ip =
-    req.headers["x-forwarded-for"]?.split(",")[0] || req.socket?.remoteAddress;
-  const device = req.headers["user-agent"] || "Unknown";
-
-  await prisma.secretAccess.update({
-    where: { id: record.id },
-    data: {
-      lastUsedAt: now,
-      lastUsedIP: ip,
-      lastUsedDevice: device,
-    },
-  });
-
-  req.secretAccess = record;
-  next();
-});

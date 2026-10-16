@@ -54,7 +54,7 @@ interface VariantData {
     isActive: boolean;
     minQuantity: number;
   };
-  // Shipping dimensions for Shiprocket
+  // Shipping dimensions for carrier rates
   shippingLength?: number;
   shippingBreadth?: number;
   shippingHeight?: number;
@@ -76,7 +76,7 @@ interface VariantCardProps {
   onRemove: (index: number) => void;
   onImagesChange: (index: number, images: ImageData[]) => void;
   isEditMode?: boolean;
-  shiprocketEnabled?: boolean;
+  shippingEnabled?: boolean;
 }
 
 export default function VariantCard({
@@ -86,7 +86,7 @@ export default function VariantCard({
   onRemove,
   onImagesChange,
   isEditMode = false,
-  shiprocketEnabled = false,
+  shippingEnabled = false,
 }: VariantCardProps) {
   const { t } = useLanguage();
   const [isExpanded, setIsExpanded] = useState(true); // Default expanded so user can see images
@@ -1155,8 +1155,8 @@ export default function VariantCard({
             </div>
           </div>
 
-          {/* Shipping Dimensions Section - Only show when Shiprocket is enabled */}
-          {shiprocketEnabled && (
+          {/* Shipping Dimensions Section - Only show when shipping is enabled */}
+          {shippingEnabled && (
             <div className="space-y-3 border-t pt-4">
               <div className="flex items-center gap-2">
                 <Label className="text-sm font-medium">{t("variant_card.shipping.title")}</Label>

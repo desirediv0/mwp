@@ -180,19 +180,9 @@ export const checkout = {
   createOrder: (data: {
     addressId: string;
     couponCode?: string;
-    paymentMethod: "RAZORPAY" | "COD";
+    paymentMethod: "STRIPE";
   }) => {
     return api.post("/api/orders", data);
-  },
-  initiatePayment: (orderId: string) => {
-    return api.post(`/api/payment/razorpay/create`, { orderId });
-  },
-  verifyPayment: (data: {
-    orderId: string;
-    paymentId: string;
-    signature: string;
-  }) => {
-    return api.post("/api/payment/razorpay/verify", data);
   },
   getPaymentStatus: (orderId: string) => {
     return api.get(`/api/payment/status/${orderId}`);

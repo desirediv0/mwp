@@ -20,7 +20,7 @@ const translations = {
   hero_badge: "Join Our Partner & Athlete Affiliate Network",
   hero_title: "Become an MWP Partner & Athlete Affiliate",
   hero_subtitle:
-    "Partner with India's elite sports nutrition & wellness brand. Gyms, fitness trainers, athletes, and retail partners — let's grow together.",
+    "Partner with MWP Supplements, a premium sports nutrition & wellness brand. Gyms, fitness trainers, athletes, and retail partners — let's grow together.",
   btn_apply: "Join the Team",
   btn_login: "Partner Login",
   benefits_title: "Why Partner with MWP SUPPLEMENTS?",
@@ -446,7 +446,7 @@ export default function BecomePartnerPage() {
                       <div>
                         <label className="block text-xs   tracking-wider uppercase text-gray-400 mb-2">{t.form_phone}</label>
                         <input type="tel" name="number" value={form.number} onChange={handleChange}
-                          placeholder="+91 98765 43210"
+                          placeholder="(562) 524-3557"
                           className="partner-input w-full px-4 py-3 border-2 border-gray-100 rounded-xl bg-gray-50 text-[#0f0f0f] text-sm font-medium placeholder:text-gray-300" />
                       </div>
                       <div>

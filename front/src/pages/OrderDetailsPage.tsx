@@ -15,13 +15,20 @@ import {
   User,
   Truck,
   CheckCircle,
-  RefreshCw,
-  ExternalLink,
 } from "lucide-react";
 import { toast } from "sonner";
 import { formatCurrency, debugData, cn } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
 import { useLanguage } from "@/context/LanguageContext";
+
+// US phone as (562) 524-3557 (the database stores +15625243557)
+const formatUsPhone = (value?: string) => {
+  let d = String(value || "").replace(/D/g, "");
+  if (d.length === 11 && d.startsWith("1")) d = d.slice(1);
+  return d.length === 10 ? `(${d.slice(0, 3)}) ${d.slice(3, 6)}-${d.slice(6)}` : String(value || "");
+};
+const formatCountry = (country?: string) =>
+  !country || /^(us|usa|united states( of america)?)$/i.test(country.trim()) ? "United States" : country;
 
 export default function OrderDetailsPage() {
   const { id } = useParams<{ id: string }>();
@@ -63,11 +70,11 @@ export default function OrderDetailsPage() {
     paymentGateway?: string;
     paymentMode?: string;
     paymentMethod?: string;
-    razorpayPayment?: {
+    stripePayment?: {
       paymentMethod: string;
       status: string;
-      razorpayPaymentId?: string;
-      razorpayOrderId?: string;
+      paymentIntentId?: string;
+      sessionId?: string;
     };
     coupon?: {
       discountType: string;
@@ -81,12 +88,25 @@ export default function OrderDetailsPage() {
       estimatedDelivery?: string;
       updates?: OrderUpdate[];
     };
-    shiprocket?: {
-      orderId?: number;
-      shipmentId?: number;
-      awbCode?: string;
-      courierName?: string;
-      status?: string;
+    quickbooks?: {
+      status?: string | null;
+      receiptId?: string | null;
+      error?: string | null;
+      syncedAt?: string | null;
+      refundIds?: string[];
+    };
+    shipping?: {
+      provider?: string | null;
+      shipmentId?: string | null;
+      carrier?: string | null;
+      service?: string | null;
+      trackingCode?: string | null;
+      trackingUrl?: string | null;
+      labelUrl?: string | null;
+      status?: string | null;
+      rateCost?: number | null;
+      labelBoughtAt?: string | null;
+      error?: string | null;
     };
     shippingCost?: string | number;
     total?: string | number;
@@ -95,7 +115,6 @@ export default function OrderDetailsPage() {
   const [orderDetails, setOrderDetails] = useState<OrderDetails | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [isSyncing, setIsSyncing] = useState(false);
 
   interface OrderItem {
     id: string;
@@ -363,110 +382,71 @@ export default function OrderDetailsPage() {
     }
   };
 
-  interface CourierPartner {
-    id: number | string;
-    name: string;
-    rate: number;
-    etd: string;
-    estimatedDeliveryDays: number;
-    rating: number;
-    cod: boolean;
+  interface ShippingRate {
+    id: string;
+    carrier: string;
+    service: string;
+    cost: number;
+    days: number | null;
   }
 
-  const [availableCouriers, setAvailableCouriers] = useState<CourierPartner[]>([]);
-  const [isFetchingCouriers, setIsFetchingCouriers] = useState(false);
+  const [shippingRates, setShippingRates] = useState<ShippingRate[]>([]);
+  const [shippingBusy, setShippingBusy] = useState(false);
 
-  // Warehouse (pickup location) options for this order
-  const [warehouseOptions, setWarehouseOptions] = useState<
-    { id: string; nickname: string; city?: string; state?: string; pincode?: string; isDefault?: boolean }[]
-  >([]);
-  const [selectedWarehouseId, setSelectedWarehouseId] = useState<string>("");
-  const [suggestedWarehouseId, setSuggestedWarehouseId] = useState<string>("");
+  const hasActiveLabel = Boolean(
+    orderDetails?.shipping?.trackingCode &&
+      orderDetails?.shipping?.status &&
+      orderDetails.shipping.status !== "label_voided"
+  );
 
-  // Handle manual sync to Shiprocket (with optional specific courierId)
-  const handleSyncToShiprocket = async (courierId?: number | string) => {
-    if (!id) return;
-
+  const runShippingAction = async (action: () => Promise<any>, okMessage: string) => {
+    setShippingBusy(true);
     try {
-      setIsSyncing(true);
-      const payload: { courierId?: number | string; warehouseId?: string } = {};
-      if (courierId) payload.courierId = courierId;
-      if (selectedWarehouseId) payload.warehouseId = selectedWarehouseId;
-      const response = await orders.syncToShiprocket(
-        id,
-        Object.keys(payload).length ? payload : undefined
-      );
-
-      if (response && response.data && response.data.success) {
-        toast.success("Order synced to Shiprocket successfully!");
-        // Refresh order details to show updated Shiprocket data
-        await fetchOrderDetails();
-      } else {
-        toast.error(response.data?.message || "Failed to sync to Shiprocket");
-      }
-    } catch (error: unknown) {
-      console.error("Error syncing to Shiprocket:", error);
-      if (error && typeof error === 'object' && 'response' in error) {
-        const axiosError = error as { response: { data?: { message?: string } } };
-        toast.error(axiosError.response?.data?.message || "Failed to sync to Shiprocket");
-      } else {
-        toast.error("Failed to sync to Shiprocket");
-      }
-    } finally {
-      setIsSyncing(false);
-    }
-  };
-
-  // Load warehouse options + the auto-suggested one for this order
-  useEffect(() => {
-    if (!id) return;
-    if (orderDetails?.shiprocket?.orderId) return; // already synced
-    let cancelled = false;
-    orders
-      .getOrderWarehouseOptions(id)
-      .then((res) => {
-        if (cancelled || !res.data?.success) return;
-        const d = res.data.data || {};
-        const list = d.warehouses || [];
-        setWarehouseOptions(list);
-        const suggested =
-          d.suggestedWarehouseId ||
-          list.find((w: { isDefault?: boolean }) => w.isDefault)?.id ||
-          list[0]?.id ||
-          "";
-        setSuggestedWarehouseId(d.suggestedWarehouseId || "");
-        setSelectedWarehouseId((prev) => prev || suggested);
-      })
-      .catch(() => {
-        /* warehouse picker is optional; ignore */
-      });
-    return () => {
-      cancelled = true;
-    };
-  }, [id, orderDetails?.shiprocket?.orderId]);
-
-  // Fetch available courier delivery partners (rates, time) for this order
-  const handleFetchCouriers = async () => {
-    if (!id || orderDetails?.shiprocket?.orderId || orderDetails?.status === "CANCELLED") return;
-    setIsFetchingCouriers(true);
-    try {
-      const response = await orders.getCouriersForOrder(id);
-      if (response.data?.success) {
-        const list = response.data.data?.couriers || [];
-        setAvailableCouriers(list);
-        if (list.length === 0) {
-          toast.info("No courier partners available for this address/weight");
-        } else {
-          toast.success(`Fetched ${list.length} delivery partners!`);
-        }
-      }
+      const res = await action();
+      if (res?.data?.success === false) throw new Error(res.data.message);
+      toast.success(okMessage);
+      await fetchOrderDetails();
     } catch (error: any) {
-      console.error("Error fetching couriers:", error);
-      toast.error(error.response?.data?.message || "Failed to fetch courier partners");
+      toast.error(error?.response?.data?.message || error?.message || "Shipping action failed");
     } finally {
-      setIsFetchingCouriers(false);
+      setShippingBusy(false);
     }
   };
+
+  const handleFetchRates = async () => {
+    if (!id) return;
+    setShippingBusy(true);
+    try {
+      const res = await orders.getOrderShippingRates(id);
+      const list: ShippingRate[] = res.data?.data?.rates || [];
+      setShippingRates(list);
+      if (list.length === 0) toast.info("No carrier rates available for this address");
+    } catch (error: any) {
+      toast.error(error?.response?.data?.message || "Could not fetch rates");
+    } finally {
+      setShippingBusy(false);
+    }
+  };
+
+  const handleCreateLabel = (rateId?: string) =>
+    id && runShippingAction(() => orders.createShippingLabel(id, rateId ? { rateId } : undefined), "Shipping label created");
+
+  const handleVoidLabel = () => {
+    if (!id) return;
+    if (!window.confirm("Cancel this shipping label and request a postage refund?")) return;
+    runShippingAction(() => orders.voidShippingLabel(id), "Label cancelled, postage refund requested");
+  };
+
+  const handleQuickBooksSync = () =>
+    id && runShippingAction(() => orders.syncOrderToQuickBooks(id), "Order sent to QuickBooks");
+
+  const handleQuickBooksRefund = () => {
+    if (!id) return;
+    if (!window.confirm("Record a full refund for this order in QuickBooks?")) return;
+    runShippingAction(() => orders.recordQuickBooksRefund(id), "Refund recorded in QuickBooks");
+  };
+
+  const handleSyncTracking = () => id && runShippingAction(() => orders.syncShippingTracking(id), "Tracking updated");
 
   // Get image URL helper
   const getImageUrl = (image: string | string[] | undefined | null): string => {
@@ -898,7 +878,7 @@ export default function OrderDetailsPage() {
                 <div>
                   <p className="text-xs text-[#9CA3AF] mb-1">{t('orders.details.method')}</p>
                   <p className="font-medium text-[#1F2937]">
-                    {orderDetails.paymentMethod || orderDetails.razorpayPayment?.paymentMethod || "ONLINE"}
+                    {orderDetails.paymentMethod || orderDetails.stripePayment?.paymentMethod || "ONLINE"}
                   </p>
                 </div>
                 {orderDetails.paymentGateway && (
@@ -919,29 +899,29 @@ export default function OrderDetailsPage() {
                   <Badge
                     className={cn(
                       "text-xs font-medium border",
-                      orderDetails.razorpayPayment?.status === "CAPTURED" ||
-                        orderDetails.razorpayPayment?.status === "PAID" ||
+                      orderDetails.stripePayment?.status === "CAPTURED" ||
+                        orderDetails.stripePayment?.status === "PAID" ||
                         orderDetails.status === "PAID"
                         ? "bg-[#ECFDF5] text-[#22C55E] border-[#D1FAE5]"
                         : "bg-[#FFFBEB] text-[#F59E0B] border-[#FEF3C7]"
                     )}
                   >
-                    {orderDetails.razorpayPayment?.status || getStatusLabel(orderDetails.status) || t('orders.details.not_available')}
+                    {orderDetails.stripePayment?.status || getStatusLabel(orderDetails.status) || t('orders.details.not_available')}
                   </Badge>
                 </div>
-                {orderDetails.razorpayPayment?.razorpayPaymentId && (
+                {orderDetails.stripePayment?.paymentIntentId && (
                   <div>
                     <p className="text-xs text-[#9CA3AF] mb-1">{t('orders.details.transaction_id')}</p>
                     <p className="font-mono text-xs text-[#1F2937] bg-[#F3F4F6] px-2 py-1 rounded border border-[#E5E7EB]">
-                      {orderDetails.razorpayPayment.razorpayPaymentId}
+                      {orderDetails.stripePayment.paymentIntentId}
                     </p>
                   </div>
                 )}
-                {orderDetails.razorpayPayment?.razorpayOrderId && (
+                {orderDetails.stripePayment?.sessionId && (
                   <div>
                     <p className="text-xs text-[#9CA3AF] mb-1">{t('orders.details.order_id')}</p>
                     <p className="font-mono text-xs text-[#1F2937] bg-[#F3F4F6] px-2 py-1 rounded border border-[#E5E7EB]">
-                      {orderDetails.razorpayPayment.razorpayOrderId}
+                      {orderDetails.stripePayment.sessionId}
                     </p>
                   </div>
                 )}
@@ -969,9 +949,9 @@ export default function OrderDetailsPage() {
                     {orderDetails.shippingAddress.state}{" "}
                     {orderDetails.shippingAddress.postalCode}
                   </p>
-                  <p className="text-[#4B5563]">{orderDetails.shippingAddress.country}</p>
+                  <p className="text-[#4B5563]">{formatCountry(orderDetails.shippingAddress.country)}</p>
                   <p className="text-sm text-[#9CA3AF]">
-                    Phone: {orderDetails.shippingAddress.phone || t('orders.details.not_available')}
+                    Phone: {orderDetails.shippingAddress.phone ? formatUsPhone(orderDetails.shippingAddress.phone) : t('orders.details.not_available')}
                   </p>
                 </div>
               ) : (
@@ -1188,312 +1168,148 @@ export default function OrderDetailsPage() {
             </Card>
           ) : null}
 
-          {/* Shiprocket Information */}
-          {orderDetails.shiprocket && (
+          {/* QuickBooks */}
+          {orderDetails.quickbooks && (
             <Card className="bg-[#FFFFFF] border-[#E5E7EB] shadow-[0_1px_2px_rgba(0,0,0,0.04)] rounded-xl">
               <CardHeader className="px-6 pt-6 pb-4">
                 <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-3">
-                    <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-[#ECFDF5] border border-[#D1FAE5]">
-                      <Truck className="h-5 w-5 text-[#22C55E]" />
-                    </div>
-                    <div>
-                      <CardTitle className="text-lg font-semibold text-[#1F2937]">
-                        Shiprocket Shipment
-                      </CardTitle>
-                      <p className="text-sm text-[#9CA3AF]">Courier management & live tracking</p>
-                    </div>
-                  </div>                  <div className="flex items-center gap-2">
-                    {orderDetails.shiprocket.orderId && (
-                      <Badge className={cn(
-                        "text-xs border",
-                        (orderDetails.shiprocket.status === "CANCELLED" || orderDetails.status === "CANCELLED")
-                          ? "bg-gray-100 text-gray-500 border-gray-200"
-                          : "bg-[#ECFDF5] text-[#22C55E] border-[#D1FAE5]"
-                      )}>
-                        ✓ Synced to Shiprocket
-                      </Badge>
-                    )}
-                    {orderDetails.shiprocket.status && (
-                      <Badge className={cn(
-                        "text-xs font-medium border",
-                        orderDetails.shiprocket.status === "CANCELLED"
-                          ? "bg-red-50 text-red-600 border-red-200"
-                          : orderDetails.shiprocket.status === "PICKUP_SCHEDULED"
-                          ? "bg-[#FEF3C7] text-[#D97706] border-[#FCD34D]"
-                          : orderDetails.shiprocket.status === "AWB_ASSIGNED"
-                          ? "bg-[#EFF6FF] text-[#3B82F6] border-[#DBEAFE]"
-                          : "bg-[#F3F4F6] text-[#6B7280] border-[#E5E7EB]"
-                      )}>
-                        {orderDetails.shiprocket.status.replace(/_/g, " ")}
-                      </Badge>
-                    )}
-                  </div>
+                  <CardTitle className="text-lg font-semibold text-[#1F2937]">QuickBooks</CardTitle>
+                  <Badge variant="outline" className="uppercase text-xs">
+                    {(orderDetails.quickbooks.status || "not sent").replace(/_/g, " ")}
+                  </Badge>
                 </div>
               </CardHeader>
-              <CardContent className="px-6 pb-6">
-                {orderDetails.shiprocket.orderId ? (
-                  <div className="space-y-4">
-                    {/* AWB Code with Track Live */}
-                    {orderDetails.shiprocket.awbCode && (
-                      <div className={cn(
-                        "p-4 border rounded-xl",
-                        (orderDetails.shiprocket.status === "CANCELLED" || orderDetails.status === "CANCELLED")
-                          ? "bg-gray-50 border-gray-200"
-                          : "bg-[#ECFDF5] border-[#D1FAE5]"
-                      )}>
-                        <div className="flex items-center justify-between">
-                          <div>
-                            <p className={cn(
-                              "text-xs font-medium mb-1",
-                              (orderDetails.shiprocket.status === "CANCELLED" || orderDetails.status === "CANCELLED")
-                                ? "text-gray-500"
-                                : "text-[#22C55E]"
-                            )}>
-                              AWB / TRACKING NUMBER {(orderDetails.shiprocket.status === "CANCELLED" || orderDetails.status === "CANCELLED") && "(CANCELLED)"}
-                            </p>
-                            <p className="font-mono text-xl font-bold text-[#1F2937]">
-                              {orderDetails.shiprocket.awbCode}
-                            </p>
-                          </div>
-                          {orderDetails.shiprocket.status !== "CANCELLED" && orderDetails.status !== "CANCELLED" && (
-                            <a
-                              href={`https://shiprocket.co/tracking/${orderDetails.shiprocket.awbCode}`}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="inline-flex items-center gap-2 px-4 py-2 bg-[#22C55E] text-white rounded-lg hover:bg-[#16A34A] transition-colors"
-                            >
-                              <ExternalLink className="h-4 w-4" />
-                              Track Live
-                            </a>
-                          )}
-                        </div>
-                      </div>
-                    )}
-
-                    {/* Details Grid */}
-                    <div className="grid grid-cols-3 gap-4">
-                      {orderDetails.shiprocket.courierName && (
-                        <div className="p-3 bg-[#F9FAFB] rounded-lg">
-                          <p className="text-xs text-[#9CA3AF] mb-1">COURIER</p>
-                          <p className="font-medium text-[#1F2937]">{orderDetails.shiprocket.courierName}</p>
-                        </div>
-                      )}
-                      {orderDetails.shiprocket.orderId && (
-                        <div className="p-3 bg-[#F9FAFB] rounded-lg">
-                          <p className="text-xs text-[#9CA3AF] mb-1">SR ORDER ID</p>
-                          <p className="font-mono text-sm font-medium text-[#1F2937]">{orderDetails.shiprocket.orderId}</p>
-                        </div>
-                      )}
-                      {orderDetails.shiprocket.shipmentId && (
-                        <div className="p-3 bg-[#F9FAFB] rounded-lg">
-                          <p className="text-xs text-[#9CA3AF] mb-1">SHIPMENT ID</p>
-                          <p className="font-mono text-sm font-medium text-[#1F2937]">{orderDetails.shiprocket.shipmentId}</p>
-                        </div>
-                      )}
-                    </div>
-
-                    {/* Action Buttons */}
-                    <div className="flex flex-wrap gap-3 pt-2">
-                      {orderDetails.shiprocket.status !== "CANCELLED" && orderDetails.status !== "CANCELLED" ? (
-                        <>
-                          <Button
-                            size="sm"
-                            variant="outline"
-                            onClick={async () => {
-                              try {
-                                const response = await orders.getShippingLabel(id!);
-                                if (response.data.success && response.data.data.label?.label_url) {
-                                  window.open(response.data.data.label.label_url, '_blank');
-                                } else {
-                                  toast.error("Failed to generate label");
-                                }
-                              } catch (error) {
-                                toast.error("Failed to download label");
-                              }
-                            }}
-                            className="border-[#E5E7EB] hover:bg-[#F3F7F6]"
-                          >
-                            Download Label
-                          </Button>
-                          <Button
-                            size="sm"
-                            variant="outline"
-                            onClick={async () => {
-                              try {
-                                const response = await orders.getOrderInvoice(id!);
-                                if (response.data.success && response.data.data.invoice?.invoice_url) {
-                                  window.open(response.data.data.invoice.invoice_url, '_blank');
-                                } else {
-                                  toast.error("Failed to generate invoice");
-                                }
-                              } catch (error) {
-                                toast.error("Failed to download invoice");
-                              }
-                            }}
-                            className="border-[#E5E7EB] hover:bg-[#F3F7F6]"
-                          >
-                            Print Invoice
-                          </Button>
-                          <Button
-                            size="sm"
-                            variant="outline"
-                            onClick={async () => {
-                              if (!confirm("Are you sure you want to cancel this shipment?")) return;
-                              try {
-                                const response = await orders.cancelShiprocketShipment(id!);
-                                if (response.data.success) {
-                                  toast.success("Shipment cancelled successfully");
-                                  await fetchOrderDetails();
-                                } else {
-                                  toast.error(response.data?.message || "Failed to cancel shipment");
-                                }
-                              } catch (error) {
-                                toast.error("Failed to cancel shipment");
-                              }
-                            }}
-                            className="border-[#EF4444] text-[#EF4444] hover:bg-[#FEF2F2]"
-                          >
-                            Cancel Shipment
-                          </Button>
-                        </>
-                      ) : (
-                        <div className="flex items-center gap-2">
-                          <Button size="sm" variant="outline" disabled className="bg-red-50 text-red-600 border-red-200 cursor-not-allowed">
-                            Shipment Cancelled
-                          </Button>
-                        </div>
-                      )}
-                    </div>
-
-                    {/* Info Note */}
-                    {orderDetails.shiprocket.status === "CANCELLED" || orderDetails.status === "CANCELLED" ? (
-                      <div className="flex items-start gap-2 p-3 bg-red-50 border border-red-200 rounded-lg">
-                        <AlertTriangle className="h-4 w-4 text-red-500 mt-0.5 flex-shrink-0" />
-                        <p className="text-sm text-red-700 font-medium">
-                          This shipment has been cancelled. Pickup and dispatch are stopped.
-                        </p>
-                      </div>
-                    ) : (
-                      <div className="flex items-start gap-2 p-3 bg-[#EFF6FF] border border-[#DBEAFE] rounded-lg">
-                        <CheckCircle className="h-4 w-4 text-[#3B82F6] mt-0.5 flex-shrink-0" />
-                        <p className="text-sm text-[#1E40AF]">
-                          Shipment booked in Shiprocket. AWB assigned. Click "Track Live" for live location updates.
-                        </p>
-                      </div>
+              <CardContent className="px-6 pb-6 space-y-3">
+                {orderDetails.quickbooks.error && (
+                  <div className="rounded-lg border border-red-200 bg-red-50 p-3 text-sm text-red-700">{orderDetails.quickbooks.error}</div>
+                )}
+                {orderDetails.quickbooks.receiptId && (
+                  <div className="text-sm">
+                    <p className="text-xs text-[#6B7280]">Sales receipt</p>
+                    <p className="font-mono font-medium text-[#1F2937]">
+                      #{orderDetails.quickbooks.receiptId}
+                      {orderDetails.quickbooks.syncedAt ? ` (${formatDate(orderDetails.quickbooks.syncedAt)})` : ""}
+                    </p>
+                    {(orderDetails.quickbooks.refundIds?.length || 0) > 0 && (
+                      <p className="text-xs text-[#6B7280] mt-1">Refund receipts: {orderDetails.quickbooks.refundIds!.join(", ")}</p>
                     )}
                   </div>
-                ) : (
-                  <div className="py-4 space-y-4">
-                    <div className="text-center">
-                      <div className="inline-flex items-center justify-center w-14 h-14 rounded-full bg-emerald-50 mb-3 border border-emerald-100">
-                        <Truck className="h-7 w-7 text-emerald-600" />
-                      </div>
-                      <p className="font-semibold text-[#1F2937] text-base mb-1">Not Synced to Shiprocket Yet</p>
-                      <p className="text-sm text-[#6B7280] mb-4 max-w-md mx-auto">
-                        In Manual Mode, you can fetch available courier partners to compare rates &amp; estimated delivery time, or auto-assign the best courier directly.
-                      </p>
+                )}
+                <div className="flex flex-wrap gap-2">
+                  {!orderDetails.quickbooks.receiptId && ["PAID", "PROCESSING", "SHIPPED", "DELIVERED"].includes(orderDetails.status) && (
+                    <Button size="sm" disabled={shippingBusy} onClick={handleQuickBooksSync}>
+                      Sync to QuickBooks
+                    </Button>
+                  )}
+                  {orderDetails.quickbooks.receiptId &&
+                    ["CANCELLED", "REFUNDED"].includes(orderDetails.status) &&
+                    orderDetails.quickbooks.status !== "REFUNDED" && (
+                      <Button size="sm" variant="outline" disabled={shippingBusy} onClick={handleQuickBooksRefund}>
+                        Record refund in QuickBooks
+                      </Button>
+                    )}
+                </div>
+              </CardContent>
+            </Card>
+          )}
 
-                      {warehouseOptions.length > 1 && (
-                        <div className="max-w-sm mx-auto mb-4 text-left">
-                          <label className="block text-xs font-semibold text-[#374151] mb-1.5">
-                            Ship from warehouse
-                          </label>
-                          <select
-                            value={selectedWarehouseId}
-                            onChange={(e) => setSelectedWarehouseId(e.target.value)}
-                            className="w-full border border-[#D1D5DB] rounded-lg px-3 py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-[#22C55E]/30"
-                          >
-                            {warehouseOptions.map((w) => (
-                              <option key={w.id} value={w.id}>
-                                {w.nickname}
-                                {w.city ? ` — ${w.city}` : ""}
-                                {w.pincode ? ` (${w.pincode})` : ""}
-                                {w.id === suggestedWarehouseId ? "  · nearest" : ""}
-                              </option>
-                            ))}
-                          </select>
-                          <p className="text-[11px] text-[#9CA3AF] mt-1">
-                            {suggestedWarehouseId
-                              ? "Pre-selected the warehouse nearest the delivery pincode. Change it if needed."
-                              : "Pick which warehouse this order ships from."}
-                          </p>
+          {/* Shipping (EasyPost) */}
+          {orderDetails.shipping && (
+            <Card className="bg-[#FFFFFF] border-[#E5E7EB] shadow-[0_1px_2px_rgba(0,0,0,0.04)] rounded-xl">
+              <CardHeader className="px-6 pt-6 pb-4">
+                <div className="flex items-center justify-between">
+                  <CardTitle className="text-lg font-semibold text-[#1F2937]">Shipping (USA)</CardTitle>
+                  {orderDetails.shipping.status && (
+                    <Badge variant="outline" className="uppercase text-xs">
+                      {orderDetails.shipping.status.replace(/_/g, " ")}
+                    </Badge>
+                  )}
+                </div>
+              </CardHeader>
+              <CardContent className="px-6 pb-6 space-y-4">
+                {orderDetails.shipping.error && (
+                  <div className="rounded-lg border border-red-200 bg-red-50 p-3 text-sm text-red-700">
+                    Label problem: {orderDetails.shipping.error}
+                  </div>
+                )}
+
+                {hasActiveLabel ? (
+                  <div className="space-y-4">
+                    <div className="grid grid-cols-2 gap-4 text-sm">
+                      <div>
+                        <p className="text-xs text-[#6B7280]">Carrier / service</p>
+                        <p className="font-medium text-[#1F2937]">
+                          {orderDetails.shipping.carrier} {orderDetails.shipping.service}
+                        </p>
+                      </div>
+                      <div>
+                        <p className="text-xs text-[#6B7280]">Tracking number</p>
+                        <p className="font-mono font-medium text-[#1F2937]">{orderDetails.shipping.trackingCode}</p>
+                      </div>
+                      {orderDetails.shipping.rateCost !== null && orderDetails.shipping.rateCost !== undefined && (
+                        <div>
+                          <p className="text-xs text-[#6B7280]">Postage paid</p>
+                          <p className="font-medium text-[#1F2937]">{formatCurrency(orderDetails.shipping.rateCost)}</p>
                         </div>
                       )}
-
-                      <div className="flex flex-wrap justify-center gap-3">
-                        <Button
-                          onClick={handleFetchCouriers}
-                          disabled={isFetchingCouriers || isSyncing}
-                          variant="outline"
-                          className="border-[#3B82F6] text-[#3B82F6] hover:bg-[#EFF6FF]"
-                        >
-                          {isFetchingCouriers ? (
-                            <>
-                              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                              Fetching Rates &amp; Couriers...
-                            </>
-                          ) : (
-                            <>
-                              <Truck className="mr-2 h-4 w-4" />
-                              View Delivery Partners (Rates &amp; Speed)
-                            </>
-                          )}
-                        </Button>
-                        <Button
-                          onClick={() => handleSyncToShiprocket()}
-                          disabled={isSyncing}
-                          className="bg-[#22C55E] hover:bg-[#16A34A] text-white"
-                        >
-                          {isSyncing ? (
-                            <>
-                              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                              Syncing...
-                            </>
-                          ) : (
-                            <>
-                              <RefreshCw className="mr-2 h-4 w-4" />
-                              Auto-Assign Best Courier
-                            </>
-                          )}
-                        </Button>
-                      </div>
                     </div>
-
-                    {availableCouriers.length > 0 && (
-                      <div className="mt-4 border rounded-xl p-4 bg-gray-50/60 space-y-3">
-                        <div className="flex items-center justify-between">
-                          <h4 className="font-semibold text-sm text-gray-800 flex items-center gap-2">
-                            <Truck className="h-4 w-4 text-emerald-600" />
-                            Available Courier Partners ({availableCouriers.length})
-                          </h4>
-                          <span className="text-xs text-gray-500">Sorted by lowest rate</span>
-                        </div>
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-3 max-h-72 overflow-y-auto pr-1">
-                          {availableCouriers.map((courier) => (
-                            <div key={courier.id} className="p-3 bg-white border border-gray-200 rounded-lg hover:border-emerald-500 flex items-center justify-between transition-colors shadow-sm">
-                              <div>
-                                <p className="font-semibold text-gray-900 text-sm">{courier.name}</p>
-                                <p className="text-xs text-gray-500 mt-0.5">
-                                  ⚡ Delivery: <span className="font-medium text-gray-700">{courier.etd || `${courier.estimatedDeliveryDays} Days`}</span>
-                                </p>
-                                <div className="flex items-center gap-2 mt-1">
-                                  <span className="text-xs font-semibold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200">${courier.rate}</span>
-                                  {courier.rating > 0 && <span className="text-xs text-amber-600 font-medium">★ {courier.rating}</span>}
-                                  {courier.cod && <span className="text-[10px] text-blue-600 bg-blue-50 px-1.5 py-0.5 rounded">COD Available</span>}
-                                </div>
-                              </div>
-                              <Button
-                                size="sm"
-                                onClick={() => handleSyncToShiprocket(courier.id)}
-                                disabled={isSyncing}
-                                className="bg-emerald-600 hover:bg-emerald-700 text-white text-xs px-3"
-                              >
-                                {isSyncing ? "Booking..." : "Book Shipment"}
+                    <div className="flex flex-wrap gap-2">
+                      {orderDetails.shipping.labelUrl && (
+                        <Button variant="outline" size="sm" onClick={() => window.open(orderDetails.shipping!.labelUrl!, "_blank")}>
+                          Print label
+                        </Button>
+                      )}
+                      {orderDetails.shipping.trackingUrl && (
+                        <Button variant="outline" size="sm" onClick={() => window.open(orderDetails.shipping!.trackingUrl!, "_blank")}>
+                          Track package
+                        </Button>
+                      )}
+                      <Button variant="outline" size="sm" disabled={shippingBusy} onClick={handleSyncTracking}>
+                        Refresh tracking
+                      </Button>
+                      <Button variant="destructive" size="sm" disabled={shippingBusy} onClick={handleVoidLabel}>
+                        Cancel label
+                      </Button>
+                    </div>
+                    <p className="text-xs text-[#6B7280]">
+                      Cancelling asks the carrier to refund the postage. This only works before the package is scanned.
+                    </p>
+                  </div>
+                ) : orderDetails.status === "CANCELLED" || orderDetails.status === "REFUNDED" ? (
+                  <p className="text-sm text-[#6B7280]">
+                    {orderDetails.shipping.status === "label_voided"
+                      ? "The label was cancelled and the postage refund requested."
+                      : "This order is cancelled. No label can be created."}
+                  </p>
+                ) : (
+                  <div className="space-y-3">
+                    <p className="text-sm text-[#6B7280]">No label yet. Pick a carrier rate below, or buy the option the customer chose.</p>
+                    <div className="flex flex-wrap gap-2">
+                      <Button variant="outline" size="sm" disabled={shippingBusy} onClick={handleFetchRates}>
+                        {shippingBusy ? "Loading..." : "Get live rates"}
+                      </Button>
+                      <Button size="sm" disabled={shippingBusy} onClick={() => handleCreateLabel()}>
+                        Create label (customer choice)
+                      </Button>
+                    </div>
+                    {shippingRates.length > 0 && (
+                      <div className="space-y-2">
+                        {shippingRates.map((r) => (
+                          <div key={r.id} className="flex items-center justify-between rounded-lg border p-3 text-sm">
+                            <div>
+                              <p className="font-medium text-[#1F2937]">
+                                {r.carrier} {r.service}
+                              </p>
+                              <p className="text-xs text-[#6B7280]">{r.days ? `${r.days} business day(s)` : "Standard"}</p>
+                            </div>
+                            <div className="flex items-center gap-3">
+                              <span className="font-medium">{formatCurrency(r.cost)}</span>
+                              <Button size="sm" disabled={shippingBusy} onClick={() => handleCreateLabel(r.id)}>
+                                Buy label
                               </Button>
                             </div>
-                          ))}
-                        </div>
+                          </div>
+                        ))}
                       </div>
                     )}
                   </div>

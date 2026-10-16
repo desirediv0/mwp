@@ -1,4 +1,5 @@
 "use client";
+import { formatUsPhone, formatCityLine, formatCountry } from "@/lib/us";
 
 import { useState, useEffect } from "react";
 import { fetchApi } from "@/lib/utils";
@@ -117,9 +118,9 @@ export default function AddressesPage() {
               <div className="mb-4">
                 <p className="text-[14px] text-gray-900 font-medium">{address.name}</p>
                 <p className="text-[12px] text-gray-500 font-light mt-1">{address.street}</p>
-                <p className="text-[12px] text-gray-500 font-light">{address.city}, {address.state} {address.postalCode}</p>
-                <p className="text-[12px] text-gray-500 font-light">{address.country}</p>
-                {address.phone && <p className="text-[12px] text-gray-500 font-light mt-1">Phone: {address.phone}</p>}
+                <p className="text-[12px] text-gray-500 font-light">{formatCityLine(address)}</p>
+                <p className="text-[12px] text-gray-500 font-light">{formatCountry(address.country)}</p>
+                {address.phone && <p className="text-[12px] text-gray-500 font-light mt-1">Phone: {formatUsPhone(address.phone)}</p>}
               </div>
               <div className="flex gap-2 flex-wrap pt-4 border-t border-gray-200">
                 {!address.isDefault && (

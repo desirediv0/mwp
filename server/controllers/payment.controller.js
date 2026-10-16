@@ -1,377 +1,369 @@
-import crypto from "crypto";
-import { getUsdPaymentError } from "../utils/usd-payment.js";
-import Razorpay from "razorpay";
 import { prisma } from "../config/db.js";
 import { ApiError } from "../utils/ApiError.js";
 import { ApiResponsive } from "../utils/ApiResponsive.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
 import sendEmail from "../utils/sendEmail.js";
+import { notifyAdmin } from "../utils/notify.js";
+import { autoSyncOrder, autoRefundOrder } from "../utils/quickbooks.js";
 import { getOrderConfirmationTemplate, getAdminNewOrderTemplate, getOrderCancelledTemplate, getAdminOrderCancelledTemplate } from "../email/temp/EmailTemplate.js";
 import { getFileUrl } from "../utils/deleteFromS3.js";
 import { getPrimaryProductImage } from "../utils/product-image.js";
 import { processReferralReward } from "./referral.controller.js";
-import { decrypt } from "../utils/encryption.js";
-import { processOrderForShipping } from "../utils/shiprocket.js";
+import { resolveSelectedRate, autoBookLabel, voidLabelForOrder } from "../utils/shipping.js";
+import { getStripeContext, mapStripeCardMethod, refundStripePayment } from "../utils/stripe.js";
+import { validateUsAddress } from "../utils/usValidation.js";
 
+// -----------------------------------------------------------------------------
+// Payments run on Stripe (Checkout Sessions, USD only). Keys are saved by the admin
+// in Payment Gateway Settings.
+// -----------------------------------------------------------------------------
 
-async function getPaymentGatewayConfig(userId = null, gateway = "RAZORPAY") {
-  if (gateway.toUpperCase() !== "RAZORPAY") throw new ApiError(400, "Please use a USD-supported payment method.");
-
-  let paymentSettings;
-
-  if (userId) {
-
-    paymentSettings = await prisma.paymentGatewaySetting.findUnique({
-      where: {
-        userId_gateway: {
-          userId,
-          gateway: gateway.toUpperCase(),
-        },
-      },
-    });
-  }
-
-  if (!paymentSettings) {
-    paymentSettings = await prisma.paymentGatewaySetting.findFirst({
-      where: {
-        gateway: gateway.toUpperCase(),
-        isActive: true,
-      },
-    });
-  }
-
-  if (!paymentSettings || !paymentSettings.isActive) {
-    throw new ApiError(
-      400,
-      `Payment gateway ${gateway} is not configured or not active. Please configure payment gateway keys in admin settings.`
-    );
-  }
-
-  if (gateway.toUpperCase() === "RAZORPAY") {
-    if (!paymentSettings.razorpayKeyId || !paymentSettings.razorpayKeySecret) {
-      throw new ApiError(400, "Razorpay keys are not configured. Please configure Razorpay Key ID and Key Secret in Payment Gateway Settings.");
-    }
-
-    let decryptedSecret;
-    try {
-      decryptedSecret = decrypt(paymentSettings.razorpayKeySecret);
-      if (!decryptedSecret || decryptedSecret.trim() === "") {
-        throw new Error("Decrypted secret is empty");
-      }
-    } catch (decryptError) {
-      console.error("Error decrypting Razorpay key secret:", decryptError);
-      throw new ApiError(400, "Failed to decrypt Razorpay key secret. Please reconfigure your Razorpay keys.");
-    }
-
-    let razorpayInstance;
-    try {
-      razorpayInstance = new Razorpay({
-        key_id: paymentSettings.razorpayKeyId,
-        key_secret: decryptedSecret,
-      });
-    } catch (razorpayError) {
-      console.error("Error initializing Razorpay:", razorpayError);
-      throw new ApiError(400, `Failed to initialize Razorpay: ${razorpayError.message || "Invalid keys"}`);
-    }
-
-    return {
-      razorpayInstance,
-      paymentSettings: {
-        gateway: paymentSettings.gateway,
-        mode: paymentSettings.mode,
-        userId: paymentSettings.userId,
-        razorpayKeyId: paymentSettings.razorpayKeyId,
-        razorpayKeySecret: decryptedSecret,
-      },
-    };
-  }
-
-  // For PhonePe, return settings without Razorpay instance
-  return {
-    razorpayInstance: null,
-    paymentSettings: {
-      gateway: paymentSettings.gateway,
-      mode: paymentSettings.mode,
-      userId: paymentSettings.userId,
-      phonepeMerchantId: paymentSettings.phonepeMerchantId,
-      phonepeSaltKey: paymentSettings.phonepeSaltKey
-        ? decrypt(paymentSettings.phonepeSaltKey)
-        : null,
-      phonepeSaltIndex: paymentSettings.phonepeSaltIndex,
-    },
-  };
-}
-
-// Get payment settings (public endpoint for checkout page)
+// Public: what the checkout page may offer
 export const getPaymentSettings = asyncHandler(async (req, res) => {
-  // Get or create payment settings (singleton)
   let paymentSettings = await prisma.paymentSettings.findFirst();
 
-  // If no settings exist, create default ones
   if (!paymentSettings) {
     paymentSettings = await prisma.paymentSettings.create({
-      data: {
-        cashEnabled: true,
-        razorpayEnabled: false,
-        codCharge: 0,
-      },
+      data: { cashEnabled: false, razorpayEnabled: false, stripeEnabled: false, codCharge: 0 },
     });
   }
 
-  // Check if payment gateway keys are configured
-  // For now, we'll check for any active payment gateway settings
-  // In a multi-merchant system, we might need to check for the order owner's keys
-  // For now, checking if any admin has configured keys
-
-  // Check Razorpay keys
-  const razorpaySettings = await prisma.paymentGatewaySetting.findFirst({
-    where: {
-      gateway: "RAZORPAY",
-      isActive: true,
-      razorpayKeyId: { not: null },
-      razorpayKeySecret: { not: null },
-    },
-  });
-
-  // Check PhonePe keys
-  const phonepeSettings = await prisma.paymentGatewaySetting.findFirst({
-    where: {
-      gateway: "PHONEPE",
-      isActive: true,
-      phonepeMerchantId: { not: null },
-      phonepeSaltKey: { not: null },
-      phonepeSaltIndex: { not: null },
-    },
+  const stripeSettings = await prisma.paymentGatewaySetting.findFirst({
+    where: { gateway: "STRIPE", isActive: true, stripeSecretKey: { not: null } },
   });
 
   res.status(200).json(
     new ApiResponsive(
       200,
       {
-        cashEnabled: paymentSettings.cashEnabled,
-        razorpayEnabled: paymentSettings.razorpayEnabled && !!razorpaySettings,
-        phonepeEnabled: false, // This adapter charges INR, so it is unavailable for the USD catalog.
+        stripeEnabled: paymentSettings.stripeEnabled && !!stripeSettings,
         currency: "USD",
-        codCharge: parseFloat(paymentSettings.codCharge) || 0,
       },
       "Payment settings fetched successfully"
     )
   );
 });
 
-// Get Razorpay Key (from DB for the user)
-export const getRazorpayKey = asyncHandler(async (req, res) => {
-  const userId = req.user?.id || req.body.userId;
+// Validates the user's cart and prices it on the server (also used for shipping quotes).
+export async function priceCart(userId, couponId = null) {
+  const cartItems = await prisma.cartItem.findMany({
+    where: { userId },
+    include: {
+      productVariant: {
+        include: { product: true },
+      },
+      bundleCampaign: {
+        include: { pricingSlabs: { orderBy: { itemCount: "asc" } } },
+      },
+    },
+  });
 
-  if (!userId) {
-    throw new ApiError(400, "User ID is required");
+  if (!cartItems.length) {
+    throw new ApiError(400, "Cart is empty");
   }
 
-  const paymentConfig = await getPaymentGatewayConfig(userId, "RAZORPAY");
+  const normalItems = cartItems.filter((item) => item.cartItemType === "NORMAL" || !item.cartItemType);
+  const bundleItems = cartItems.filter((item) => item.cartItemType === "BUNDLE");
 
-  res
-    .status(200)
-    .json(
-      new ApiResponsive(
-        200,
-        { key: paymentConfig.paymentSettings.razorpayKeyId || null },
-        "Razorpay key fetched successfully"
-      )
-    );
-});
+  let subTotal = 0;
 
-// Create Razorpay order
+  // Validate and recalculate normal items
+  for (const item of normalItems) {
+    const product = item.productVariant?.product;
+    if (!product) throw new ApiError(400, "A product in your cart no longer exists");
+    if (product.isDeleted) throw new ApiError(400, `"${product.name}" has been removed from the store`);
+    if (!product.isActive) throw new ApiError(400, `"${product.name}" is currently unavailable`);
+    if (item.productVariant.quantity < item.quantity) {
+      throw new ApiError(400, `Not enough stock for "${product.name}"`);
+    }
+    const price = parseFloat(item.productVariant.salePrice || item.productVariant.price);
+    subTotal += price * item.quantity;
+  }
+
+  // Validate and recalculate bundle items
+  for (const item of bundleItems) {
+    const campaign = item.bundleCampaign;
+    if (!campaign || campaign.isDeleted) throw new ApiError(400, "A bundle in your cart is no longer available");
+    if (!campaign.isActive) throw new ApiError(400, `Bundle "${campaign.title}" is no longer active`);
+
+    const now = new Date();
+    if (campaign.startDate && new Date(campaign.startDate) > now) {
+      throw new ApiError(400, `Bundle "${campaign.title}" has not started yet`);
+    }
+    if (campaign.endDate && new Date(campaign.endDate) < now) {
+      throw new ApiError(400, `Bundle "${campaign.title}" has expired`);
+    }
+
+    const bundleData = item.bundleData || {};
+    const selectedProductIds = bundleData.selectedProductIds || [];
+    const itemCount = selectedProductIds.length;
+
+    const bundleProducts = await prisma.product.findMany({ where: { id: { in: selectedProductIds } } });
+    for (const pid of selectedProductIds) {
+      const p = bundleProducts.find((bp) => bp.id === pid);
+      if (!p) throw new ApiError(400, "A product in a bundle no longer exists");
+      if (p.isDeleted) throw new ApiError(400, `"${p.name}" in a bundle has been removed`);
+      if (!p.isActive) throw new ApiError(400, `"${p.name}" in a bundle is unavailable`);
+    }
+
+    const matchingSlab = campaign.pricingSlabs.find((s) => s.itemCount === itemCount);
+    if (matchingSlab) {
+      subTotal += parseFloat(matchingSlab.price);
+    } else if (campaign.bundlePrice) {
+      subTotal += parseFloat(campaign.bundlePrice);
+    } else {
+      throw new ApiError(400, `No pricing for ${itemCount} items in bundle "${campaign.title}"`);
+    }
+  }
+
+  // Validate coupon
+  let discountAmount = 0;
+  if (couponId) {
+    const coupon = await prisma.coupon.findUnique({ where: { id: couponId } });
+    if (!coupon || coupon.isDeleted || !coupon.isActive) {
+      throw new ApiError(400, "The applied coupon is no longer valid");
+    }
+    if (coupon.discountType === "PERCENTAGE") {
+      let pct = parseFloat(coupon.discountValue);
+      if (pct > 90 || coupon.isDiscountCapped) pct = Math.min(pct, 90);
+      discountAmount = (subTotal * pct) / 100;
+    } else {
+      discountAmount = Math.min(parseFloat(coupon.discountValue), subTotal);
+    }
+  }
+
+  // Items as the carrier needs them: weight (lb) and size (in), per variant
+  const parcelItems = [
+    ...normalItems.map((item) => ({
+      qty: item.quantity,
+      weightLb: item.productVariant?.shippingWeight || null,
+      lengthIn: item.productVariant?.shippingLength || null,
+      widthIn: item.productVariant?.shippingBreadth || null,
+      heightIn: item.productVariant?.shippingHeight || null,
+    })),
+    ...bundleItems.map((item) => ({ qty: Math.max((item.bundleData?.selectedProductIds || []).length, 1) })),
+  ];
+
+  return { cartItems, normalItems, bundleItems, subTotal, discountAmount, parcelItems };
+}
+
+// Start a Stripe Checkout Session for the user's cart and return the hosted payment URL
 export const checkout = asyncHandler(async (req, res) => {
   const currency = "USD";
-  if (req.body.currency && req.body.currency !== currency) throw new ApiError(400, "Checkout currency must be USD");
+  if (req.body.currency && String(req.body.currency).toUpperCase() !== currency) {
+    throw new ApiError(400, "Checkout currency must be USD");
+  }
   const {
     couponCode,
     couponId,
-    paymentGateway = "RAZORPAY",
+    shippingAddressId,
+    billingAddressSameAsShipping = true,
+    billingAddress,
+    notes,
+    shipmentId,
+    rateId,
   } = req.body;
   const userId = req.user.id;
 
-  try {
-    const paymentConfig = await getPaymentGatewayConfig(userId, paymentGateway);
+  if (!shippingAddressId) throw new ApiError(400, "Shipping address is required");
+  const address = await prisma.address.findFirst({ where: { id: shippingAddressId, userId } });
+  if (!address) throw new ApiError(404, "Shipping address not found");
+  const usAddress = validateUsAddress(address);
+  if (usAddress.errors) {
+    throw new ApiError(400, `Please update your shipping address: ${Object.values(usAddress.errors)[0]}`);
+  }
 
-    if (paymentGateway.toUpperCase() !== "RAZORPAY") {
-      throw new ApiError(400, "Only RAZORPAY is currently supported for checkout");
+  const { stripe, settings } = await getStripeContext();
+
+  const { cartItems, normalItems, subTotal, discountAmount } = await priceCart(userId, couponId);
+
+  // Shipping: the option the customer picked, re-checked with the carrier
+  const chosen = await resolveSelectedRate({ shipmentId, rateId, address, subTotal });
+  const shippingCost = chosen.customerPrice;
+
+  const finalAmount = Math.max(subTotal + shippingCost - discountAmount, 1);
+  const amountInCents = Math.round(parseFloat(finalAmount.toFixed(2)) * 100);
+
+  const itemCountTotal = cartItems.reduce((n, i) => n + (i.quantity || 1), 0);
+  const names = normalItems.map((i) => i.productVariant?.product?.name).filter(Boolean);
+  const description =
+    [[...new Set(names)].join(", "), `Shipping: ${chosen.carrier} ${chosen.service}`].filter(Boolean).join(" | ").slice(0, 400) || undefined;
+
+  const base = (req.headers.origin || process.env.FRONTEND_URL || "").split(",")[0].replace(/\/$/, "");
+  if (!base) throw new ApiError(500, "Site URL is not configured");
+
+  // Only one open payment page per customer: close any earlier unpaid ones so the same cart
+  // can never be paid twice (e.g. checkout opened in two tabs).
+  const openSessions = await prisma.stripePayment.findMany({
+    where: { userId, orderId: null, status: "PENDING", createdAt: { gt: new Date(Date.now() - 24 * 60 * 60 * 1000) } },
+    select: { id: true, sessionId: true },
+  });
+  for (const old of openSessions) {
+    try {
+      await stripe.checkout.sessions.expire(old.sessionId);
+      await prisma.stripePayment.update({ where: { id: old.id }, data: { status: "FAILED", failureReason: "Replaced by a newer checkout" } });
+    } catch {
+      // already paid or already closed: leave it, the webhook / success page will settle it
     }
+  }
 
-    // Fetch cart and validate server-side
-    const cartItems = await prisma.cartItem.findMany({
-      where: { userId },
-      include: {
-        productVariant: {
-          include: { product: true },
-        },
-        bundleCampaign: {
-          include: { pricingSlabs: { orderBy: { itemCount: "asc" } } },
+  const session = await stripe.checkout.sessions.create({
+    mode: "payment",
+    client_reference_id: userId,
+    customer_email: req.user.email || undefined,
+    line_items: [
+      {
+        quantity: 1,
+        price_data: {
+          currency: "usd",
+          unit_amount: amountInCents,
+          product_data: {
+            name: `MWP Supplements order (${itemCountTotal} ${itemCountTotal === 1 ? "item" : "items"})`,
+            description,
+          },
         },
       },
-    });
+    ],
+    metadata: { userId },
+    payment_intent_data: { metadata: { userId } },
+    success_url: `${base}/checkout?stripe_session={CHECKOUT_SESSION_ID}`,
+    cancel_url: `${base}/checkout?canceled=1`,
+  });
 
-    if (!cartItems.length) {
-      throw new ApiError(400, "Cart is empty");
-    }
-
-    const normalItems = cartItems.filter(
-      (item) => item.cartItemType === "NORMAL" || !item.cartItemType
-    );
-    const bundleItems = cartItems.filter(
-      (item) => item.cartItemType === "BUNDLE"
-    );
-
-    let subTotal = 0;
-
-    // Validate and recalculate normal items
-    for (const item of normalItems) {
-      const product = item.productVariant?.product;
-      if (!product) throw new ApiError(400, "A product in your cart no longer exists");
-      if (product.isDeleted) throw new ApiError(400, `"${product.name}" has been removed from the store`);
-      if (!product.isActive) throw new ApiError(400, `"${product.name}" is currently unavailable`);
-      if (item.productVariant.quantity < item.quantity) {
-        throw new ApiError(400, `Not enough stock for "${product.name}"`);
-      }
-      const price = parseFloat(item.productVariant.salePrice || item.productVariant.price);
-      subTotal += price * item.quantity;
-    }
-
-    // Validate and recalculate bundle items
-    for (const item of bundleItems) {
-      const campaign = item.bundleCampaign;
-      if (!campaign || campaign.isDeleted) throw new ApiError(400, "A bundle in your cart is no longer available");
-      if (!campaign.isActive) throw new ApiError(400, `Bundle "${campaign.title}" is no longer active`);
-
-      const now = new Date();
-      if (campaign.startDate && new Date(campaign.startDate) > now) {
-        throw new ApiError(400, `Bundle "${campaign.title}" has not started yet`);
-      }
-      if (campaign.endDate && new Date(campaign.endDate) < now) {
-        throw new ApiError(400, `Bundle "${campaign.title}" has expired`);
-      }
-
-      const bundleData = item.bundleData || {};
-      const selectedProductIds = bundleData.selectedProductIds || [];
-      const itemCount = selectedProductIds.length;
-
-      // Check bundle products
-      const bundleProducts = await prisma.product.findMany({
-        where: { id: { in: selectedProductIds } },
-      });
-      for (const pid of selectedProductIds) {
-        const p = bundleProducts.find((bp) => bp.id === pid);
-        if (!p) throw new ApiError(400, "A product in a bundle no longer exists");
-        if (p.isDeleted) throw new ApiError(400, `"${p.name}" in a bundle has been removed`);
-        if (!p.isActive) throw new ApiError(400, `"${p.name}" in a bundle is unavailable`);
-      }
-
-      const matchingSlab = campaign.pricingSlabs.find((s) => s.itemCount === itemCount);
-      if (matchingSlab) {
-        subTotal += parseFloat(matchingSlab.price);
-      } else if (campaign.bundlePrice) {
-        subTotal += parseFloat(campaign.bundlePrice);
-      } else {
-        throw new ApiError(400, `No pricing for ${itemCount} items in bundle "${campaign.title}"`);
-      }
-    }
-
-    // Validate coupon
-    let discountAmount = 0;
-    if (couponId) {
-      const coupon = await prisma.coupon.findUnique({ where: { id: couponId } });
-      if (!coupon || coupon.isDeleted || !coupon.isActive) {
-        throw new ApiError(400, "The applied coupon is no longer valid");
-      }
-      if (coupon.discountType === "PERCENTAGE") {
-        let pct = parseFloat(coupon.discountValue);
-        if (pct > 90 || coupon.isDiscountCapped) pct = Math.min(pct, 90);
-        discountAmount = (subTotal * pct) / 100;
-      } else {
-        discountAmount = Math.min(parseFloat(coupon.discountValue), subTotal);
-      }
-    }
-
-    // Calculate shipping cost (same logic as paymentVerification)
-    let shippingCost = 0;
-    const shiprocketSettings = await prisma.shiprocketSettings.findFirst();
-    if (shiprocketSettings) {
-      const threshold = parseFloat(shiprocketSettings.freeShippingThreshold || 0);
-      const charge = parseFloat(shiprocketSettings.shippingCharge || 0);
-      if (threshold > 0 && subTotal >= threshold) {
-        shippingCost = 0;
-      } else {
-        shippingCost = charge;
-      }
-    }
-
-    const finalAmount = Math.max(subTotal + shippingCost - discountAmount, 1);
-
-    // Generate receipt
-    const shortUserId = userId.slice(-4);
-    const timestamp = Date.now().toString().slice(-10);
-    const receipt = `rcpt_${timestamp}_${shortUserId}`;
-
-    const notes = {};
-    if (couponCode) notes.couponCode = couponCode;
-    if (couponId) notes.couponId = couponId;
-    if (discountAmount > 0) notes.discountAmount = discountAmount;
-    notes.paymentGateway = paymentConfig.paymentSettings.gateway;
-    notes.paymentMode = paymentConfig.paymentSettings.mode;
-    notes.paymentOwnerId = paymentConfig.paymentSettings.userId;
-    notes.shippingCost = shippingCost; // Store so verify can use exact same value
-    notes.subTotal = subTotal; // Store recalculated subtotal for reference
-
-    const amountInPaise = Math.round(parseFloat(finalAmount.toFixed(2)) * 100);
-
-    const options = {
-      amount: amountInPaise,
+  await prisma.stripePayment.create({
+    data: {
+      sessionId: session.id,
+      userId,
+      amount: finalAmount.toFixed(2),
       currency,
-      receipt,
-      notes: Object.keys(notes).length > 0 ? notes : undefined,
-    };
+      status: "PENDING",
+      checkoutPayload: {
+        shippingAddressId,
+        billingAddressSameAsShipping,
+        billingAddress: billingAddress || null,
+        couponCode: couponCode || null,
+        couponId: couponId || null,
+        discountAmount,
+        shippingCost,
+        shipment: {
+          shipmentId: chosen.shipmentId,
+          rateId: chosen.rateId,
+          carrier: chosen.carrier,
+          service: chosen.service,
+          rateCost: chosen.rateCost,
+        },
+        subTotal,
+        notes: notes || null,
+        paymentMode: settings.mode,
+        paymentOwnerId: settings.userId,
+      },
+    },
+  });
 
-    const order = await paymentConfig.razorpayInstance.orders.create(options);
-
-    if (!order) {
-      throw new ApiError(500, "Error creating Razorpay order");
-    }
-
-    const responseData = {
-      ...order,
-      serverCalculatedAmount: finalAmount,
-      shippingCost,
-      couponData: Object.keys(notes).length > 0 ? notes : null,
-    };
-
-    res
-      .status(200)
-      .json(new ApiResponsive(200, responseData, "Order created successfully"));
-  } catch (error) {
-    console.error("Razorpay order creation error:", error);
-
-    let errorMessage = "Error creating Razorpay order";
-    let errorDetails = [];
-
-    if (error.error && error.error.description) {
-      errorMessage = error.error.description;
-    } else if (error.message) {
-      errorMessage = error.message;
-    }
-
-    throw new ApiError(500, errorMessage, errorDetails);
-  }
+  res.status(200).json(
+    new ApiResponsive(
+      200,
+      { url: session.url, sessionId: session.id, serverCalculatedAmount: finalAmount, shippingCost },
+      "Checkout session created"
+    )
+  );
 });
 
-// Verify payment and create order
-export const paymentVerification = asyncHandler(async (req, res) => {
-  // Extract parameters with fallbacks for both snake_case and camelCase formats
-  const razorpay_order_id =
-    req.body.razorpay_order_id || req.body.razorpayOrderId;
-  const razorpay_payment_id =
-    req.body.razorpay_payment_id || req.body.razorpayPaymentId;
-  const razorpay_signature =
-    req.body.razorpay_signature || req.body.razorpaySignature;
+// The success page calls this with the session id Stripe sent the customer back with
+export const confirmStripePayment = asyncHandler(async (req, res) => {
+  const sessionId = req.body.sessionId || req.body.session_id;
+  if (!sessionId) throw new ApiError(400, "Missing checkout session");
+
+  const { stripe } = await getStripeContext();
+  const session = await stripe.checkout.sessions.retrieve(sessionId);
+  const result = await fulfillStripeSession(session, req.user.id);
+
+  res.status(200).json(
+    new ApiResponsive(
+      200,
+      { orderId: result.order.id, orderNumber: result.order.orderNumber, paymentId: result.payment.id },
+      "Payment confirmed and order created successfully"
+    )
+  );
+});
+
+// Stripe -> server webhook (raw body, signature verified). Creates the order even if the
+// customer closes the browser right after paying.
+export const stripeWebhook = async (req, res) => {
+  let event;
+  try {
+    const { stripe, webhookSecret } = await getStripeContext();
+    if (!webhookSecret) return res.status(400).send("Stripe webhook secret is not configured");
+    event = stripe.webhooks.constructEvent(req.body, req.headers["stripe-signature"], webhookSecret);
+  } catch (err) {
+    return res.status(400).send(`Webhook Error: ${err.message}`);
+  }
+
+  try {
+    if (event.type === "checkout.session.completed" || event.type === "checkout.session.async_payment_succeeded") {
+      await fulfillStripeSession(event.data.object);
+    } else if (event.type === "checkout.session.expired") {
+      await prisma.stripePayment.updateMany({
+        where: { sessionId: event.data.object.id, orderId: null, status: "PENDING" },
+        data: { status: "FAILED", failureReason: "Checkout session expired" },
+      });
+    }
+  } catch (err) {
+    console.error("Stripe webhook handling error:", err.message);
+    if (!err.cartChanged) return res.status(500).send("Webhook handler failed");
+  }
+
+  res.json({ received: true });
+};
+
+// Turns a PAID Stripe Checkout Session into an order. Safe to call more than once: the
+// success page and the webhook both call it, the first call creates the order and any later
+// call just returns it.
+const wait = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+
+async function loadFulfilled(stripePayment) {
+  const order = await prisma.order.findUnique({ where: { id: stripePayment.orderId } });
+  return { order, payment: stripePayment, alreadyProcessed: true };
+}
+
+export async function fulfillStripeSession(session, expectedUserId = null) {
+  const stripePayment = await prisma.stripePayment.findUnique({ where: { sessionId: session.id } });
+  if (!stripePayment) throw new ApiError(404, "Checkout session not found");
+
+  const userId = stripePayment.userId;
+  if (expectedUserId && expectedUserId !== userId) {
+    throw new ApiError(403, "This payment belongs to another account");
+  }
+
+  if (stripePayment.orderId) return loadFulfilled(stripePayment);
+  if (session.payment_status !== "paid") throw new ApiError(400, "Payment has not been completed");
+
+  // Claim the session so the webhook and the success page can never create two orders.
+  const paymentIntentId =
+    typeof session.payment_intent === "string" ? session.payment_intent : session.payment_intent?.id || null;
+  const claim = await prisma.stripePayment.updateMany({
+    where: {
+      id: stripePayment.id,
+      orderId: null,
+      OR: [
+        { status: { in: ["PENDING", "FAILED"] } },
+        // a previous attempt that died half-way (server restart) can be retried after 2 minutes
+        { status: "AUTHORIZED", updatedAt: { lt: new Date(Date.now() - 2 * 60 * 1000) } },
+      ],
+    },
+    data: { status: "AUTHORIZED", paymentIntentId },
+  });
+  if (claim.count === 0) {
+    for (let i = 0; i < 20; i++) {
+      await wait(500);
+      const again = await prisma.stripePayment.findUnique({ where: { id: stripePayment.id } });
+      if (again?.orderId) return loadFulfilled(again);
+    }
+    throw new ApiError(409, "Your payment is being processed. Please refresh in a moment.");
+  }
+  session.payment_intent = paymentIntentId;
+
+  const payload = stripePayment.checkoutPayload || {};
   const {
     shippingAddressId,
     billingAddressSameAsShipping = true,
@@ -380,84 +372,15 @@ export const paymentVerification = asyncHandler(async (req, res) => {
     couponId: requestCouponId,
     discountAmount: requestDiscount,
     notes,
-  } = req.body;
-
-  // Validation
-  if (!razorpay_order_id || !razorpay_payment_id || !razorpay_signature) {
-    throw new ApiError(400, "Missing payment details");
-  }
-
-  if (!shippingAddressId) {
-    throw new ApiError(400, "Shipping address is required");
-  }
-
-
-  const userId = req.user.id;
-  let paymentConfig;
-  let paymentGateway = "RAZORPAY";
-  let paymentMode = "TEST";
-  let paymentOwnerId = userId;
+  } = payload;
+  const paymentGateway = "STRIPE";
+  const paymentMode = payload.paymentMode || "TEST";
+  const paymentOwnerId = payload.paymentOwnerId || userId;
+  const paymentMethod = mapStripeCardMethod(session);
 
   try {
-    // Try to get payment gateway from request body or default to RAZORPAY
-    paymentGateway = req.body.paymentGateway || "RAZORPAY";
-    paymentConfig = await getPaymentGatewayConfig(userId, paymentGateway);
-    paymentMode = paymentConfig.paymentSettings.mode;
-    paymentOwnerId = paymentConfig.paymentSettings.userId;
-  } catch (error) {
-    throw new ApiError(400, error.message || "Payment gateway not configured");
-  }
+    if (!shippingAddressId) throw new ApiError(400, "Shipping address is required");
 
-  // Verify signature using DB key
-  const body = razorpay_order_id + "|" + razorpay_payment_id;
-  const expectedSignature = crypto
-    .createHmac("sha256", paymentConfig.paymentSettings.razorpayKeySecret)
-    .update(body.toString())
-    .digest("hex");
-
-  if (expectedSignature !== razorpay_signature) {
-    throw new ApiError(400, "Invalid payment signature");
-  }
-
-  try {
-    // Check if payment already processed
-    const existingPayment = await prisma.razorpayPayment.findUnique({
-      where: { razorpayPaymentId: razorpay_payment_id },
-    });
-
-    if (existingPayment) {
-      throw new ApiError(400, "Payment already processed");
-    }
-
-    // Check for cancelled orders with this Razorpay order ID
-    const cancelledOrder = await prisma.razorpayPayment.findFirst({
-      where: {
-        razorpayOrderId: razorpay_order_id,
-        order: {
-          status: "CANCELLED",
-        },
-      },
-      include: {
-        order: true,
-      },
-    });
-
-    if (cancelledOrder) {
-      console.log(
-        `Detected payment for previously cancelled order: ${cancelledOrder.order.orderNumber}`
-      );
-      throw new ApiError(
-        400,
-        "This order was previously cancelled. Please start a new checkout process."
-      );
-    }
-
-    if (!razorpay_signature) {
-      throw new ApiError(400, "Razorpay signature is missing");
-    }
-
-    // Get user's cart items
-    const userId = req.user.id;
     const cartItems = await prisma.cartItem.findMany({
       where: { userId },
       include: {
@@ -635,18 +558,7 @@ export const paymentVerification = asyncHandler(async (req, res) => {
       });
     }
 
-    // Calculate shipping cost based on Shiprocket settings
-    const shiprocketSettings = await prisma.shiprocketSettings.findFirst();
-    if (shiprocketSettings) {
-      const threshold = parseFloat(shiprocketSettings.freeShippingThreshold || 0);
-      const charge = parseFloat(shiprocketSettings.shippingCharge || 0);
-
-      if (threshold > 0 && subTotal >= threshold) {
-        shippingCost = 0;
-      } else {
-        shippingCost = charge;
-      }
-    }
+    // Shipping was priced at checkout; the amount the customer was charged is applied below
 
     // Apply coupon discount if available
     if (userCoupon && userCoupon.coupon) {
@@ -674,76 +586,31 @@ export const paymentVerification = asyncHandler(async (req, res) => {
       // After successful order, deactivate the coupon for this user
       // We'll do this in the transaction to ensure it only happens if order is created
     }
-    // If no userCoupon but we have coupon info stored in the Razorpay order, use that
+    // No active user coupon: fall back to the coupon info saved when checkout started
     else {
       try {
-        // First check if direct coupon info was provided in the request
         if (requestCouponCode || requestCouponId || requestDiscount) {
           if (requestCouponCode) couponCode = requestCouponCode;
           if (requestCouponId) couponId = requestCouponId;
           if (requestDiscount) discount = parseFloat(requestDiscount);
         }
-        // Fallback to Razorpay order notes
-        else {
-          // Fetch the Razorpay order to get notes using DB keys
-          const razorpayOrderDetails = await paymentConfig.razorpayInstance.orders.fetch(
-            razorpay_order_id
-          );
-
-          if (razorpayOrderDetails.notes) {
-            // Get coupon information from notes
-            if (razorpayOrderDetails.notes.couponCode) {
-              couponCode = razorpayOrderDetails.notes.couponCode;
-            }
-
-            if (razorpayOrderDetails.notes.couponId) {
-              couponId = razorpayOrderDetails.notes.couponId;
-            }
-
-            if (razorpayOrderDetails.notes.discountAmount) {
-              discount = parseFloat(razorpayOrderDetails.notes.discountAmount);
-            }
-
-            // Get payment gateway info from notes
-            if (razorpayOrderDetails.notes.paymentGateway) {
-              paymentGateway = razorpayOrderDetails.notes.paymentGateway;
-            }
-            if (razorpayOrderDetails.notes.paymentMode) {
-              paymentMode = razorpayOrderDetails.notes.paymentMode;
-            }
-            if (razorpayOrderDetails.notes.paymentOwnerId) {
-              paymentOwnerId = razorpayOrderDetails.notes.paymentOwnerId;
-            }
-
-            // Read shippingCost from notes if stored — this ensures we use the
-            // exact shipping amount that was charged to the customer
-            if (razorpayOrderDetails.notes.shippingCost !== undefined) {
-              shippingCost = parseFloat(razorpayOrderDetails.notes.shippingCost || 0);
-              console.log(`[Payment Verify] Using shippingCost from Razorpay notes: $${shippingCost}`);
-            }
-          }
-        }
 
         // If we have couponId but no couponCode or vice versa, try to get the missing information
         if (couponId && !couponCode) {
-          const coupon = await prisma.coupon.findUnique({
-            where: { id: couponId },
-          });
-          if (coupon) {
-            couponCode = coupon.code;
-          }
+          const coupon = await prisma.coupon.findUnique({ where: { id: couponId } });
+          if (coupon) couponCode = coupon.code;
         } else if (couponCode && !couponId) {
-          const coupon = await prisma.coupon.findUnique({
-            where: { code: couponCode },
-          });
-          if (coupon) {
-            couponId = coupon.id;
-          }
+          const coupon = await prisma.coupon.findUnique({ where: { code: couponCode } });
+          if (coupon) couponId = coupon.id;
         }
       } catch (err) {
         console.log("Error processing coupon information:", err);
-        // Continue with the process, just without coupon info
       }
+    }
+
+    // Use the exact shipping amount the customer was charged at checkout
+    if (payload.shippingCost !== undefined && payload.shippingCost !== null) {
+      shippingCost = parseFloat(payload.shippingCost || 0);
     }
 
     // Tax is 0% now
@@ -752,17 +619,13 @@ export const paymentVerification = asyncHandler(async (req, res) => {
     // Generate order number
     const orderNumber = `ORD-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
 
-    // Use payment gateway info from above (already set)
-
-    // Get Razorpay payment details using DB keys
-    const razorpayPaymentDetails = await paymentConfig.razorpayInstance.payments.fetch(
-      razorpay_payment_id
-    );
-    if (razorpayPaymentDetails.currency !== "USD") throw new ApiError(400, "Payment currency does not match USD checkout");
-    const paymentMethod = mapRazorpayMethod(razorpayPaymentDetails.method);
-
-    const paymentError = getUsdPaymentError(razorpayPaymentDetails, razorpay_order_id, subTotal + shippingCost - discount);
-    if (paymentError) throw new ApiError(400, paymentError);
+    // The customer already paid in Stripe: make sure the cart still matches what they paid for.
+    const expectedTotal = Math.max(subTotal + shippingCost - discount, 1);
+    if (Math.abs(Math.round(expectedTotal * 100) - session.amount_total) > 1) {
+      const changed = new ApiError(409, "Your cart changed while you were paying.");
+      changed.cartChanged = true;
+      throw changed;
+    }
 
     // Create order and process payment in a transaction
     const result = await prisma.$transaction(async (tx) => {
@@ -781,13 +644,29 @@ export const paymentVerification = asyncHandler(async (req, res) => {
           paymentOwnerId,
           total: (subTotal + shippingCost - discount).toFixed(2),
           shippingAddressId,
+          shippingProvider: payload.shipment?.shipmentId ? "EASYPOST" : null,
+          shipmentId: payload.shipment?.shipmentId || null,
+          shipmentRateId: payload.shipment?.rateId || null,
+          shippingCarrier: payload.shipment?.carrier || null,
+          shippingService: payload.shipment?.service || null,
+          shippingRateCost: payload.shipment?.rateCost ?? null,
+          shippingStatus: payload.shipment?.shipmentId ? "awaiting_label" : null,
+          shippingAddressSnapshot: {
+            name: shippingAddress.name,
+            street: shippingAddress.street,
+            city: shippingAddress.city,
+            state: shippingAddress.state,
+            postalCode: shippingAddress.postalCode,
+            country: "US",
+            phone: shippingAddress.phone,
+          },
           billingAddressSameAsShipping,
           billingAddress: !billingAddressSameAsShipping
             ? billingAddress
             : undefined,
           notes,
           status: "PAID",
-          paymentMethod: paymentGateway === "PHONEPE" ? "PHONEPE" : "RAZORPAY",
+          paymentMethod: "STRIPE",
           couponCode,
           couponId: couponId,
         },
@@ -817,18 +696,20 @@ export const paymentVerification = asyncHandler(async (req, res) => {
         });
       }
 
-      // 2. Create the Razorpay payment record
-      const payment = await tx.razorpayPayment.create({
+      // 2. Complete the Stripe payment record
+      const payment = await tx.stripePayment.update({
+        where: { id: stripePayment.id },
         data: {
           orderId: order.id,
-          amount: (subTotal + tax + shippingCost - discount).toFixed(2),
-          currency: razorpayPaymentDetails.currency,
-          razorpayOrderId: razorpay_order_id,
-          razorpayPaymentId: razorpay_payment_id,
-          razorpaySignature: razorpay_signature,
           status: "CAPTURED",
           paymentMethod,
-          notes: razorpayPaymentDetails,
+          notes: {
+            sessionId: session.id,
+            paymentIntentId: session.payment_intent || null,
+            amountTotal: session.amount_total,
+            currency: session.currency,
+            customerEmail: session.customer_details?.email || null,
+          },
         },
       });
 
@@ -1021,12 +902,11 @@ export const paymentVerification = asyncHandler(async (req, res) => {
       console.error("Referral reward processing error:", err);
     });
 
-    // Process Shiprocket shipping (outside transaction, non-blocking)
-    // This creates the order in Shiprocket and assigns AWB if enabled
-    processOrderForShipping(result.order.id).catch((err) => {
-      console.error("Shiprocket order processing error:", err);
-      // Non-critical - admin can manually sync later
-    });
+    // Buy the shipping label right away when booking mode is AUTO (non-blocking; admin can retry)
+    autoBookLabel(result.order.id);
+
+    // Record the sale in QuickBooks (non-blocking; admin can retry from the order)
+    autoSyncOrder(result.order.id);
 
     // Send order confirmation email
     try {
@@ -1117,35 +997,46 @@ export const paymentVerification = asyncHandler(async (req, res) => {
       // Don't throw error, continue with response
     }
 
-    // Return success response
-    return res.status(200).json(
-      new ApiResponsive(
-        200,
-        {
-          orderId: result.order.id,
-          orderNumber: result.order.orderNumber,
-          paymentId: result.payment.id,
-        },
-        "Payment verified and order created successfully"
-      )
-    );
+    return { order: result.order, payment: result.payment };
   } catch (error) {
-    console.error("Payment Verification Error:", error);
+    console.error("Stripe order fulfillment error:", error);
+
+    let refunded = false;
+    const done = await prisma.stripePayment.findFirst({ where: { id: stripePayment.id, orderId: { not: null } } });
+    if (!done) {
+      // The customer HAS paid. If the order cannot be created for a business reason (cart empty or
+      // changed, out of stock, address removed...) give the money back; for unexpected errors keep the
+      // payment open so the webhook retry / the success page can try again.
+      const refundable =
+        !!session.payment_intent && (error.cartChanged || (error.statusCode >= 400 && error.statusCode <= 404));
+      if (refundable) {
+        try {
+          const latest = await prisma.stripePayment.findUnique({ where: { id: stripePayment.id } });
+          await refundStripePayment(latest, parseFloat(latest.amount), "requested_by_customer");
+          refunded = true;
+          await prisma.stripePayment.update({
+            where: { id: stripePayment.id },
+            data: { failureReason: String(error.message || "Order could not be created. Payment refunded automatically.").slice(0, 300) },
+          });
+        } catch (refundError) {
+          console.error("Automatic refund failed - refund manually in Stripe:", session.id, refundError.message);
+        }
+      } else {
+        await prisma.stripePayment
+          .update({ where: { id: stripePayment.id }, data: { status: "PENDING", failureReason: String(error.message || "").slice(0, 300) } })
+          .catch(() => {});
+      }
+    }
 
     if (error.code === "P2002") {
       throw new ApiError(400, "Duplicate payment record");
     }
 
-    if (error.code === "P2025") {
-      throw new ApiError(404, "Related record not found");
-    }
-
-    throw new ApiError(
-      error.statusCode || 500,
-      error.message || "Payment verification failed"
-    );
+    const baseMessage = error.message || "Order could not be completed";
+    const message = refunded ? `${baseMessage} Your card payment was refunded automatically.` : baseMessage;
+    throw Object.assign(new ApiError(error.statusCode || 500, message), { cartChanged: !!error.cartChanged || refunded });
   }
-});
+}
 
 // Get order history
 export const getOrderHistory = asyncHandler(async (req, res) => {
@@ -1207,11 +1098,11 @@ export const getOrderHistory = asyncHandler(async (req, res) => {
         },
       },
       tracking: true,
-      razorpayPayment: {
+      stripePayment: {
         select: {
           paymentMethod: true,
           status: true,
-          razorpayPaymentId: true,
+          paymentIntentId: true,
         },
       },
       coupon: {
@@ -1252,8 +1143,8 @@ export const getOrderHistory = asyncHandler(async (req, res) => {
           discountValue: parseFloat(order.coupon.discountValue),
         }
         : null,
-      paymentMethod: order.razorpayPayment?.paymentMethod || "ONLINE",
-      paymentStatus: order.razorpayPayment?.status || order.status,
+      paymentMethod: order.stripePayment?.paymentMethod || "ONLINE",
+      paymentStatus: order.stripePayment?.status || order.status,
       items: order.items.map((item) => ({
         id: item.id,
         productId: item.productId,
@@ -1395,7 +1286,7 @@ export const getOrderDetails = asyncHandler(async (req, res) => {
           },
         },
       },
-      razorpayPayment: true,
+      stripePayment: true,
       coupon: {
         select: {
           code: true,
@@ -1427,9 +1318,9 @@ export const getOrderDetails = asyncHandler(async (req, res) => {
     discount: parseFloat(order.discount) || 0,
     // Use the original total stored in the database to preserve historical pricing
     total: parseFloat(order.total),
-    paymentMethod: order.razorpayPayment?.paymentMethod || "ONLINE",
-    paymentId: order.razorpayPayment?.razorpayPaymentId,
-    paymentStatus: order.razorpayPayment?.status || order.status,
+    paymentMethod: order.stripePayment?.paymentMethod || "ONLINE",
+    paymentId: order.stripePayment?.paymentIntentId,
+    paymentStatus: order.stripePayment?.status || order.status,
     notes: order.notes,
     couponCode: order.couponCode,
     couponId: order.couponId,
@@ -1530,6 +1421,7 @@ export const cancelOrder = asyncHandler(async (req, res) => {
       userId,
     },
     include: {
+      stripePayment: true,
       items: {
         include: {
           variant: true,
@@ -1587,34 +1479,31 @@ export const cancelOrder = asyncHandler(async (req, res) => {
       });
     }
 
-    // 3. Handle payment refund if needed (just mark as refund pending)
-    if (order.razorpayPayment) {
-      await tx.razorpayPayment.update({
-        where: { orderId },
-        data: {
-          status: "REFUNDED",
-        },
-      });
-    }
   });
 
-  // Cancel Shiprocket order if it exists (outside transaction, non-blocking)
-  if (order.shiprocketOrderId) {
+  // Refund the card payment through Stripe (outside the transaction; a failure is
+  // recorded on the payment so an admin can retry from the order page).
+  if (order.stripePayment?.paymentIntentId && order.stripePayment.status === "CAPTURED") {
+    await refundStripePayment(order.stripePayment, parseFloat(order.total), "requested_by_customer").catch(async (err) => {
+      console.error(`Stripe refund failed for order ${order.orderNumber}:`, err.message);
+      await notifyAdmin(`Refund FAILED for cancelled order #${order.orderNumber}`, {
+        title: "Refund needs attention",
+        danger: true,
+        paragraphs: ["The customer cancelled but the automatic Stripe refund failed. Please refund it from the Stripe dashboard."],
+        rows: [["Order", `#${order.orderNumber}`], ["Amount", `${parseFloat(order.total).toFixed(2)}`], ["Error", err.message]],
+      });
+    });
+  }
+
+  // Record the refund in QuickBooks
+  await autoRefundOrder(orderId);
+
+  // Cancel the shipping label (the carrier refunds the postage) if one was bought and not scanned yet
+  if (order.labelUrl) {
     try {
-      const { cancelShiprocketOrder, getShiprocketSettings } = await import("../utils/shiprocket.js");
-      const settings = await getShiprocketSettings();
-      if (settings.isEnabled) {
-        await cancelShiprocketOrder(order.shiprocketOrderId);
-        // Update order shiprocket status
-        await prisma.order.update({
-          where: { id: orderId },
-          data: { shiprocketStatus: "CANCELLED" },
-        });
-        console.log(`Shiprocket order ${order.shiprocketOrderId} cancelled`);
-      }
+      await voidLabelForOrder(orderId);
     } catch (error) {
-      console.error("Failed to cancel Shiprocket order:", error.message);
-      // Non-critical - order is already cancelled in our system
+      console.error("Failed to cancel the shipping label:", error.message);
     }
   }
 
@@ -1635,7 +1524,7 @@ export const cancelOrder = asyncHandler(async (req, res) => {
           orderNumber: order.orderNumber,
       currency: order.currency,
           reason: reason || "Cancelled",
-          refundAmount: order.razorpayPayment ? parseFloat(order.total) : null,
+          refundAmount: order.stripePayment ? parseFloat(order.total) : null,
         }),
       });
       console.log(`Cancellation email sent to user ${user.email}`);
@@ -1670,981 +1559,3 @@ export const cancelOrder = asyncHandler(async (req, res) => {
     );
 });
 
-// Create Cash on Delivery order
-// PhonePe Callback Handler
-export const phonePeCallback = asyncHandler(async (req, res) => {
-  try {
-    // PhonePe sends callback as POST with base64 encoded response
-    const { response } = req.body;
-
-    if (!response) {
-      throw new ApiError(400, "Response data is required");
-    }
-
-    // Decode response
-    const decodedResponse = JSON.parse(Buffer.from(response, "base64").toString());
-    const {
-      success,
-      code,
-      message,
-      data
-    } = decodedResponse;
-
-    const transactionId = data?.merchantTransactionId;
-
-    if (!transactionId) {
-      throw new ApiError(400, "Transaction ID is required");
-    }
-
-    // Get stored transaction
-    const storedTransaction = await prisma.phonePeTransaction.findUnique({
-      where: { transactionId },
-    });
-
-    if (!storedTransaction) {
-      throw new ApiError(404, "Transaction not found");
-    }
-
-    const orderData = JSON.parse(storedTransaction.orderData);
-
-    // Check payment status
-    if (success && code === "PAYMENT_SUCCESS") {
-      // Payment successful - create order (similar to createCashOrder)
-      const userId = orderData.userId;
-
-      // Get cart items with bundle support
-      const cartItems = await prisma.cartItem.findMany({
-        where: { userId },
-        include: {
-          productVariant: {
-            include: {
-              product: { include: { images: true } },
-              images: true,
-            },
-          },
-          bundleCampaign: {
-            include: {
-              pricingSlabs: { orderBy: { itemCount: 'asc' } }
-            }
-          },
-        },
-      });
-
-      // Separate normal and bundle items
-      const normalCartItems = cartItems.filter(
-        (item) => item.cartItemType === "NORMAL" || !item.cartItemType
-      );
-      const bundleCartItems = cartItems.filter(
-        (item) => item.cartItemType === "BUNDLE"
-      );
-
-      if (cartItems.length === 0) {
-        throw new ApiError(400, "Cart is empty");
-      }
-
-      // Calculate totals for normal items
-      let subTotal = 0;
-      for (const item of normalCartItems) {
-        const variant = item.productVariant;
-        const price = parseFloat(variant.salePrice || variant.price);
-        subTotal += price * item.quantity;
-      }
-
-      // Process bundle items - recalculate price server-side
-      const processedBundles = [];
-      for (const item of bundleCartItems) {
-        const bundleData = item.bundleData || {};
-        const campaign = item.bundleCampaign;
-
-        if (!campaign || !campaign.isActive) continue;
-
-        const selectedProductIds = bundleData.selectedProductIds || [];
-        const itemCount = selectedProductIds.length;
-
-        const matchingSlab = campaign.pricingSlabs.find(
-          (s) => s.itemCount === itemCount
-        );
-
-        let bundlePrice;
-        if (matchingSlab) {
-          bundlePrice = parseFloat(matchingSlab.price);
-        } else if (campaign.bundlePrice) {
-          bundlePrice = parseFloat(campaign.bundlePrice);
-        } else {
-          continue;
-        }
-
-        const products = await prisma.product.findMany({
-          where: { id: { in: selectedProductIds } },
-          include: {
-            variants: { take: 1, select: { price: true, salePrice: true, id: true } },
-          },
-        });
-
-        let actualPrice = 0;
-        for (const product of products) {
-          const variant = product.variants[0];
-          if (variant) {
-            actualPrice += parseFloat(variant.salePrice || variant.price);
-          }
-        }
-
-        subTotal += bundlePrice;
-        processedBundles.push({
-          item,
-          campaign,
-          selectedProductIds,
-          bundlePrice,
-          actualPrice,
-          savings: actualPrice - bundlePrice,
-          products,
-        });
-      }
-
-      let discount = orderData.discountAmount || 0;
-      const tax = 0;
-      const shippingCost = 0;
-
-      // Generate order number
-      const orderNumber = `ORD-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
-
-      // Create order
-      const result = await prisma.$transaction(async (tx) => {
-        // Create order
-        const order = await tx.order.create({
-          data: {
-            orderNumber,
-            userId,
-            subTotal: subTotal.toFixed(2),
-            tax: tax.toFixed(2),
-            shippingCost,
-            discount,
-            total: (subTotal - discount).toFixed(2),
-            paymentMethod: "PHONEPE",
-            currency: "INR",
-            paymentGateway: orderData.paymentGateway,
-            paymentMode: orderData.paymentMode,
-            paymentOwnerId: orderData.paymentOwnerId,
-            shippingAddressId: orderData.shippingAddressId,
-            billingAddressSameAsShipping: orderData.billingAddressSameAsShipping,
-            status: "PAID",
-            couponCode: orderData.couponCode,
-            couponId: orderData.couponId,
-            notes: JSON.stringify({
-              phonepeTransactionId: transactionId,
-              phonepePaymentId: data?.transactionId,
-            }),
-          },
-        });
-
-        // Create order items for normal items
-        for (const item of normalCartItems) {
-          const variant = item.productVariant;
-          const price = parseFloat(variant.salePrice || variant.price);
-
-          // Create immutable product snapshot
-          const primaryImageUrl = getPrimaryProductImage(variant);
-          const productSnapshot = {
-            name: variant.product.name,
-            slug: variant.product.slug,
-            image: primaryImageUrl ? getFileUrl(primaryImageUrl) : null,
-            sku: variant.sku,
-            brand: variant.product.brand ? { id: variant.product.brand.id, name: variant.product.brand.name } : null,
-            categories: (variant.product.categories || []).map(pc => ({ id: pc.categoryId, name: pc.category?.name })),
-            variantAttributes: variant.attributes?.map(a => ({
-              name: a.attributeValue?.attribute?.name,
-              value: a.attributeValue?.value,
-            })) || [],
-            originalPrice: parseFloat(variant.price),
-            salePrice: variant.salePrice ? parseFloat(variant.salePrice) : null,
-            paidPrice: price,
-          };
-
-          await tx.orderItem.create({
-            data: {
-              orderId: order.id,
-              productId: variant.productId,
-              variantId: item.productVariantId,
-              price,
-              quantity: item.quantity,
-              subtotal: price * item.quantity,
-              productSnapshot,
-            },
-          });
-
-          // Update inventory
-          await tx.productVariant.update({
-            where: { id: item.productVariantId },
-            data: {
-              quantity: {
-                decrement: item.quantity,
-              },
-            },
-          });
-
-          // Log inventory change
-          await tx.inventoryLog.create({
-            data: {
-              variantId: item.productVariantId,
-              quantityChange: -item.quantity,
-              reason: "sale",
-              referenceId: order.id,
-              previousQuantity: item.productVariant.quantity,
-              newQuantity: item.productVariant.quantity - item.quantity,
-              createdBy: userId,
-            },
-          });
-        }
-
-        // Process bundle items
-        for (const bundle of processedBundles) {
-          const { campaign, selectedProductIds, bundlePrice, actualPrice, savings, products } = bundle;
-
-          // Create OrderBundle record
-          await tx.orderBundle.create({
-            data: {
-              orderId: order.id,
-              bundleCampaignId: campaign.id,
-              bundleName: campaign.title,
-              bundlePrice,
-              actualPrice,
-              savings,
-              selectedProducts: selectedProductIds.map((pid) => {
-                const product = products.find((p) => p.id === pid);
-                const variant = product?.variants[0];
-                return {
-                  productId: pid,
-                  variantId: variant?.id,
-                  name: product?.name,
-                  price: parseFloat(variant?.salePrice || variant?.price || 0),
-                };
-              }),
-            },
-          });
-
-          // Create individual OrderItems for each selected product and decrement inventory
-          for (const product of products) {
-            const variant = product.variants[0];
-            if (!variant) continue;
-
-            const productPrice = parseFloat(variant.salePrice || variant.price);
-
-            await tx.orderItem.create({
-              data: {
-                orderId: order.id,
-                productId: product.id,
-                variantId: variant.id,
-                price: productPrice,
-                quantity: 1,
-                subtotal: productPrice,
-              },
-            });
-
-            // Decrement inventory
-            await tx.productVariant.update({
-              where: { id: variant.id },
-              data: { quantity: { decrement: 1 } },
-            });
-
-            // Log inventory change
-            await tx.inventoryLog.create({
-              data: {
-                variantId: variant.id,
-                quantityChange: -1,
-                reason: "bundle_sale",
-                referenceId: order.id,
-                previousQuantity: variant.quantity,
-                newQuantity: variant.quantity - 1,
-                createdBy: userId,
-              },
-            });
-          }
-        }
-
-        // Clear cart
-        await tx.cartItem.deleteMany({
-          where: { userId },
-        });
-
-        // Update transaction status
-        await tx.phonePeTransaction.update({
-          where: { transactionId },
-          data: { status: "SUCCESS", orderId: order.id },
-        });
-
-        return order;
-      });
-
-      // Redirect to success page
-      res.redirect(`${process.env.CLIENT_URL || "http://localhost:3000"}/account/orders?success=true&orderId=${result.id}`);
-    } else {
-      // Payment failed
-      await prisma.phonePeTransaction.update({
-        where: { transactionId },
-        data: { status: "FAILED", errorMessage: message || code },
-      });
-
-      res.redirect(`${process.env.CLIENT_URL || "http://localhost:3000"}/payment/failed?transactionId=${transactionId}&error=${encodeURIComponent(message || code)}`);
-    }
-  } catch (error) {
-    console.error("PhonePe callback error:", error);
-    res.redirect(`${process.env.CLIENT_URL || "http://localhost:3000"}/payment/failed?error=${encodeURIComponent(error.message)}`);
-  }
-});
-
-export const createCashOrder = asyncHandler(async (req, res) => {
-  const {
-    shippingAddressId,
-    billingAddressSameAsShipping = true,
-    billingAddress,
-    couponCode: requestCouponCode,
-    couponId: requestCouponId,
-    discountAmount: requestDiscount,
-    notes,
-  } = req.body;
-
-  if (!shippingAddressId) {
-    throw new ApiError(400, "Shipping address is required");
-  }
-
-  // Check payment settings
-  const paymentSettings = await prisma.paymentSettings.findFirst();
-  if (!paymentSettings || !paymentSettings.cashEnabled) {
-    throw new ApiError(400, "Cash on Delivery is not enabled");
-  }
-
-  try {
-    // Get user's cart items
-    const userId = req.user.id;
-    const cartItems = await prisma.cartItem.findMany({
-      where: { userId },
-      include: {
-        productVariant: {
-          include: {
-            images: true,
-            product: {
-              include: {
-                images: {
-                  where: { isPrimary: true },
-                  take: 1,
-                },
-                pricingSlabs: {
-                  orderBy: { minQty: 'desc' }
-                }
-              },
-            },
-            attributes: {
-              include: {
-                attributeValue: {
-                  include: {
-                    attribute: true,
-                  },
-                },
-              },
-            },
-            pricingSlabs: {
-              orderBy: { minQty: 'desc' }
-            }
-          },
-        },
-        bundleCampaign: {
-          include: {
-            pricingSlabs: {
-              orderBy: { itemCount: 'asc' }
-            }
-          }
-        },
-      },
-    });
-
-    // Separate normal and bundle items
-    const normalCartItems = cartItems.filter(
-      (item) => item.cartItemType === "NORMAL" || !item.cartItemType
-    );
-    const bundleCartItems = cartItems.filter(
-      (item) => item.cartItemType === "BUNDLE"
-    );
-
-    if (!cartItems.length) {
-      throw new ApiError(400, "No items in cart");
-    }
-
-    // Check if user has an active coupon
-    const userCoupon = await prisma.userCoupon.findFirst({
-      where: {
-        userId,
-        isActive: true,
-      },
-      include: {
-        coupon: true,
-      },
-    });
-
-    // Verify shipping address
-    const shippingAddress = await prisma.address.findFirst({
-      where: {
-        id: shippingAddressId,
-        userId,
-      },
-    });
-
-    if (!shippingAddress) {
-      throw new ApiError(404, "Shipping address not found");
-    }
-
-    // Calculate order totals
-    let subTotal = 0;
-    let tax = 0;
-    let shippingCost = 0;
-    let discount = 0;
-    let couponCode = null;
-    let couponId = null;
-
-    // Helper to calculate effective price based on quantity (Slab Pricing)
-    const calculateSlabPrice = (variant, quantity) => {
-      const qty = parseInt(quantity);
-
-      // 1. Check variant specific slabs
-      if (variant.pricingSlabs && variant.pricingSlabs.length > 0) {
-        // Since we ordered by desc in query, we can find the first match
-        const match = variant.pricingSlabs.find(slab =>
-          qty >= slab.minQty && (slab.maxQty === null || qty <= slab.maxQty)
-        );
-        if (match) return parseFloat(match.price);
-      }
-
-      // 2. Check product specific slabs
-      if (variant.product.pricingSlabs && variant.product.pricingSlabs.length > 0) {
-        const match = variant.product.pricingSlabs.find(slab =>
-          qty >= slab.minQty && (slab.maxQty === null || qty <= slab.maxQty)
-        );
-        if (match) return parseFloat(match.price);
-      }
-
-      // 3. Fallback to default price
-      return parseFloat(variant.salePrice || variant.price);
-    };
-
-    // Check inventory and calculate totals
-    const processedItems = [];
-    const processedBundles = [];
-    const now = new Date();
-
-    for (const item of normalCartItems) {
-      const variant = item.productVariant;
-      const product = variant.product;
-
-      // Validate product is still available
-      if (product.isDeleted) {
-        throw new ApiError(400, `"${product.name}" has been removed from the store`);
-      }
-      if (!product.isActive) {
-        throw new ApiError(400, `"${product.name}" is currently unavailable`);
-      }
-
-      let price = calculateSlabPrice(variant, item.quantity);
-      let flashSaleInfo = null;
-      let priceBeforeFlashSale = price;
-
-      // Check for active flash sale for this product
-      const flashSaleProduct = await prisma.flashSaleProduct.findFirst({
-        where: {
-          productId: variant.product.id,
-          flashSale: {
-            isActive: true,
-            startTime: { lte: now },
-            endTime: { gte: now },
-          },
-        },
-        include: {
-          flashSale: {
-            select: {
-              id: true,
-              name: true,
-              discountPercentage: true,
-            },
-          },
-        },
-      });
-
-      // Apply flash sale discount if applicable
-      if (flashSaleProduct) {
-        const discountAmount = (price * flashSaleProduct.flashSale.discountPercentage) / 100;
-        price = Math.round((price - discountAmount) * 100) / 100;
-        flashSaleInfo = {
-          flashSaleId: flashSaleProduct.flashSale.id,
-          flashSaleName: flashSaleProduct.flashSale.name,
-          flashSaleDiscount: flashSaleProduct.flashSale.discountPercentage,
-          originalPrice: priceBeforeFlashSale,
-        };
-      }
-
-      const itemTotal = price * item.quantity;
-      subTotal += itemTotal;
-
-      // Check stock availability
-      if (variant.quantity < item.quantity) {
-        throw new ApiError(400, `Not enough stock for ${variant.product.name}`);
-      }
-
-      processedItems.push({
-        item,
-        price,
-        subtotal: itemTotal,
-        flashSaleInfo
-      });
-    }
-
-    // Process bundle items - recalculate price server-side
-    for (const item of bundleCartItems) {
-      const bundleData = item.bundleData || {};
-      const campaign = item.bundleCampaign;
-
-      if (!campaign || campaign.isDeleted) {
-        throw new ApiError(400, "A bundle in your cart is no longer available");
-      }
-      if (!campaign.isActive) {
-        throw new ApiError(400, `Bundle "${campaign.title}" is no longer active`);
-      }
-
-      const bundleNow = new Date();
-      if (campaign.startDate && new Date(campaign.startDate) > bundleNow) {
-        throw new ApiError(400, `Bundle "${campaign.title}" has not started yet`);
-      }
-      if (campaign.endDate && new Date(campaign.endDate) < bundleNow) {
-        throw new ApiError(400, `Bundle "${campaign.title}" has expired`);
-      }
-
-      const selectedProductIds = bundleData.selectedProductIds || [];
-      const itemCount = selectedProductIds.length;
-
-      const matchingSlab = campaign.pricingSlabs.find(
-        (s) => s.itemCount === itemCount
-      );
-
-      let bundlePrice;
-      if (matchingSlab) {
-        bundlePrice = parseFloat(matchingSlab.price);
-      } else if (campaign.bundlePrice) {
-        bundlePrice = parseFloat(campaign.bundlePrice);
-      } else {
-        throw new ApiError(400, `No pricing configured for ${itemCount} items in bundle`);
-      }
-
-      const products = await prisma.product.findMany({
-        where: { id: { in: selectedProductIds } },
-        include: {
-          variants: { take: 1, select: { price: true, salePrice: true, id: true } },
-        },
-      });
-
-      // Validate bundle products
-      for (const pid of selectedProductIds) {
-        const p = products.find((bp) => bp.id === pid);
-        if (!p) throw new ApiError(400, "A product in a bundle no longer exists");
-        if (p.isDeleted) throw new ApiError(400, `"${p.name}" in a bundle has been removed`);
-        if (!p.isActive) throw new ApiError(400, `"${p.name}" in a bundle is unavailable`);
-      }
-
-      let actualPrice = 0;
-      for (const product of products) {
-        const variant = product.variants[0];
-        if (variant) {
-          actualPrice += parseFloat(variant.salePrice || variant.price);
-        }
-      }
-
-      subTotal += bundlePrice;
-      processedBundles.push({
-        item,
-        campaign,
-        selectedProductIds,
-        bundlePrice,
-        actualPrice,
-        savings: actualPrice - bundlePrice,
-        products,
-      });
-    }
-
-    // Calculate shipping cost based on Shiprocket settings
-    const shiprocketSettings = await prisma.shiprocketSettings.findFirst();
-    if (shiprocketSettings) {
-      const threshold = parseFloat(shiprocketSettings.freeShippingThreshold || 0);
-      const charge = parseFloat(shiprocketSettings.shippingCharge || 0);
-
-      if (threshold > 0 && subTotal >= threshold) {
-        shippingCost = 0;
-      } else {
-        shippingCost = charge;
-      }
-    }
-
-    // Apply coupon discount if available
-    if (userCoupon && userCoupon.coupon) {
-      // Validate coupon is still valid
-      if (userCoupon.coupon.isDeleted) {
-        throw new ApiError(400, "The applied coupon is no longer valid");
-      }
-      if (!userCoupon.coupon.isActive) {
-        throw new ApiError(400, "The applied coupon has been deactivated");
-      }
-
-      couponCode = userCoupon.coupon.code;
-      couponId = userCoupon.coupon.id;
-
-      if (userCoupon.coupon.discountType === "PERCENTAGE") {
-        let discountPercentage = parseFloat(userCoupon.coupon.discountValue);
-        if (discountPercentage > 90 || userCoupon.coupon.isDiscountCapped) {
-          discountPercentage = Math.min(discountPercentage, 90);
-        }
-        discount = (subTotal * discountPercentage) / 100;
-      } else {
-        discount = Math.min(
-          parseFloat(userCoupon.coupon.discountValue),
-          subTotal
-        );
-      }
-    } else if (requestCouponCode || requestCouponId || requestDiscount) {
-      if (requestCouponCode) couponCode = requestCouponCode;
-      if (requestCouponId) couponId = requestCouponId;
-      if (requestDiscount) discount = parseFloat(requestDiscount);
-    }
-
-    tax = 0;
-
-    // Generate order number
-    const orderNumber = `ORD-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
-
-    // Get COD charge from payment settings
-    const codCharge = parseFloat(paymentSettings.codCharge) || 0;
-
-    // Create order in a transaction
-    const result = await prisma.$transaction(async (tx) => {
-      // 1. Create the order
-      const order = await tx.order.create({
-        data: {
-          orderNumber,
-          currency: "USD",
-          userId,
-          subTotal: subTotal.toFixed(2),
-          tax: tax.toFixed(2),
-          shippingCost: shippingCost.toFixed(2),
-          discount,
-          codCharge: codCharge.toFixed(2),
-          total: (subTotal + shippingCost + codCharge - discount).toFixed(2),
-          paymentMethod: "CASH",
-          shippingAddressId,
-          billingAddressSameAsShipping,
-          billingAddress: !billingAddressSameAsShipping
-            ? billingAddress
-            : undefined,
-          notes,
-          status: "PENDING", // COD orders start as PENDING
-          couponCode,
-          couponId: couponId,
-        },
-      });
-
-      // If a coupon was used, mark it as inactive for this user
-      if (userCoupon && userCoupon.coupon) {
-        await tx.userCoupon.update({
-          where: {
-            id: userCoupon.id,
-          },
-          data: {
-            isActive: false,
-          },
-        });
-
-        await tx.coupon.update({
-          where: {
-            id: userCoupon.coupon.id,
-          },
-          data: {
-            usedCount: {
-              increment: 1,
-            },
-          },
-        });
-      }
-
-      // 2. Create order items and update inventory
-      const orderItems = [];
-      for (const processedItem of processedItems) {
-        const { item, price, subtotal, flashSaleInfo } = processedItem;
-        const variant = item.productVariant;
-
-        // Create immutable product snapshot
-        const primaryImageUrl = getPrimaryProductImage(variant);
-        const productSnapshot = {
-          name: variant.product.name,
-          slug: variant.product.slug,
-          image: primaryImageUrl ? getFileUrl(primaryImageUrl) : null,
-          sku: variant.sku,
-          brand: variant.product.brand ? { id: variant.product.brand.id, name: variant.product.brand.name } : null,
-          categories: (variant.product.categories || []).map(pc => ({ id: pc.categoryId, name: pc.category?.name })),
-          variantAttributes: variant.attributes?.map(a => ({
-            name: a.attributeValue?.attribute?.name,
-            value: a.attributeValue?.value,
-          })) || [],
-          originalPrice: parseFloat(variant.price),
-          salePrice: variant.salePrice ? parseFloat(variant.salePrice) : null,
-          paidPrice: price,
-        };
-
-        const orderItem = await tx.orderItem.create({
-          data: {
-            orderId: order.id,
-            productId: variant.product.id,
-            variantId: variant.id,
-            price,
-            quantity: item.quantity,
-            subtotal,
-            productSnapshot,
-            ...(flashSaleInfo || {})
-          },
-        });
-        orderItems.push(orderItem);
-
-        // Update inventory
-        await tx.productVariant.update({
-          where: { id: variant.id },
-          data: {
-            quantity: {
-              decrement: item.quantity,
-            },
-          },
-        });
-
-        // Update Flash Sale Sold Count
-        if (flashSaleInfo?.flashSaleId) {
-          await tx.flashSale.update({
-            where: { id: flashSaleInfo.flashSaleId },
-            data: { soldCount: { increment: item.quantity } },
-          });
-        }
-
-        // Log inventory change
-        await tx.inventoryLog.create({
-          data: {
-            variantId: variant.id,
-            quantityChange: -item.quantity,
-            reason: "sale",
-            referenceId: order.id,
-            previousQuantity: variant.quantity,
-            newQuantity: variant.quantity - item.quantity,
-            createdBy: userId,
-          },
-        });
-      }
-
-      // 2b. Process bundle items
-      for (const bundle of processedBundles) {
-        const { item, campaign, selectedProductIds, bundlePrice, actualPrice, savings, products } = bundle;
-
-        // Create OrderBundle record
-        await tx.orderBundle.create({
-          data: {
-            orderId: order.id,
-            bundleCampaignId: campaign.id,
-            bundleName: campaign.title,
-            bundlePrice,
-            actualPrice,
-            savings,
-            selectedProducts: selectedProductIds.map((pid) => {
-              const product = products.find((p) => p.id === pid);
-              const variant = product?.variants[0];
-              return {
-                productId: pid,
-                variantId: variant?.id,
-                name: product?.name,
-                price: parseFloat(variant?.salePrice || variant?.price || 0),
-              };
-            }),
-          },
-        });
-
-        // Create individual OrderItems for each selected product and decrement inventory
-        for (const product of products) {
-          const variant = product.variants[0];
-          if (!variant) continue;
-
-          const productPrice = parseFloat(variant.salePrice || variant.price);
-
-          await tx.orderItem.create({
-            data: {
-              orderId: order.id,
-              productId: product.id,
-              variantId: variant.id,
-              price: productPrice,
-              quantity: 1,
-              subtotal: productPrice,
-            },
-          });
-
-          // Decrement inventory
-          await tx.productVariant.update({
-            where: { id: variant.id },
-            data: { quantity: { decrement: 1 } },
-          });
-
-          // Log inventory change
-          await tx.inventoryLog.create({
-            data: {
-              variantId: variant.id,
-              quantityChange: -1,
-              reason: "bundle_sale",
-              referenceId: order.id,
-              previousQuantity: variant.quantity,
-              newQuantity: variant.quantity - 1,
-              createdBy: userId,
-            },
-          });
-        }
-      }
-
-      // 3. Clear the user's cart
-      await tx.cartItem.deleteMany({
-        where: { userId },
-      });
-
-      return { order, orderItems };
-    });
-
-    // Process referral reward (outside transaction to avoid blocking)
-    processReferralReward(result.order.id, userId).catch((err) => {
-      console.error("Referral reward processing error:", err);
-    });
-
-    // Process Shiprocket shipping (outside transaction, non-blocking)
-    processOrderForShipping(result.order.id).catch((err) => {
-      console.error("Shiprocket order processing error:", err);
-    });
-
-    // Send order confirmation email
-    try {
-      const user = await prisma.user.findUnique({
-        where: { id: userId },
-      });
-
-      if (user && user.email) {
-        const orderItems = await prisma.orderItem.findMany({
-          where: { orderId: result.order.id },
-          include: {
-            product: true,
-            variant: {
-              include: {
-                attributes: {
-                  include: {
-                    attributeValue: {
-                      include: {
-                        attribute: true,
-                      },
-                    },
-                  },
-                },
-              },
-            },
-          },
-        });
-
-        const emailItems = orderItems.map((item) => ({
-          name: item.product.name,
-          variant: item.variant.attributes
-            .map((va) => va.attributeValue.value)
-            .join(" "),
-          quantity: item.quantity,
-          price: parseFloat(item.price).toFixed(2),
-        }));
-
-        await sendEmail({
-          email: user.email,
-          subject: `Order Confirmation - #${result.order.orderNumber}`,
-          html: getOrderConfirmationTemplate({
-            userName: user.name || "Valued Customer",
-            orderNumber: result.order.orderNumber,
-            orderDate: result.order.createdAt,
-            paymentMethod: "Cash on Delivery",
-            items: emailItems,
-            subtotal: parseFloat(result.order.subTotal).toFixed(2),
-            shipping: parseFloat(result.order.shippingCost || 0).toFixed(2),
-            tax: parseFloat(result.order.tax || 0).toFixed(2),
-            discount: parseFloat(result.order.discount || 0).toFixed(2),
-            codCharge: parseFloat(result.order.codCharge || 0).toFixed(2),
-            couponCode: result.order.couponCode || "",
-            total: parseFloat(result.order.total).toFixed(2),
-            shippingAddress: shippingAddress,
-          }),
-        });
-
-        // Send admin notification email for COD order
-        try {
-          const adminEmail = process.env.ADMIN_EMAIL || process.env.SMTP_USER || process.env.STORE_EMAIL;
-          if (adminEmail) {
-            await sendEmail({
-              email: adminEmail,
-              subject: `🔔 New COD Order #${result.order.orderNumber} - $${parseFloat(result.order.total).toFixed(2)}`,
-              html: getAdminNewOrderTemplate({
-                orderNumber: result.order.orderNumber,
-                customerName: user.name || "Guest",
-                customerEmail: user.email,
-                customerPhone: user.phone || "",
-                orderDate: result.order.createdAt,
-                paymentMethod: "Cash on Delivery",
-                total: parseFloat(result.order.total).toFixed(2),
-                items: emailItems,
-                shippingAddress: shippingAddress,
-              }),
-            });
-            console.log(`Admin notification email sent for COD order ${result.order.orderNumber}`);
-          }
-        } catch (adminEmailError) {
-          console.error("Admin notification email error:", adminEmailError);
-        }
-      }
-    } catch (emailError) {
-      console.error("Order confirmation email error:", emailError);
-    }
-
-    // Return success response
-    return res.status(200).json(
-      new ApiResponsive(
-        200,
-        {
-          orderId: result.order.id,
-          orderNumber: result.order.orderNumber,
-          paymentMethod: "CASH",
-        },
-        "Cash on Delivery order created successfully"
-      )
-    );
-  } catch (error) {
-    console.error("Cash Order Creation Error:", error);
-
-    if (error.code === "P2002") {
-      throw new ApiError(400, "Duplicate order record");
-    }
-
-    if (error.code === "P2025") {
-      throw new ApiError(404, "Related record not found");
-    }
-
-    throw new ApiError(
-      error.statusCode || 500,
-      error.message || "Cash order creation failed"
-    );
-  }
-});
-
-// Helper function to map Razorpay payment method to our enum
-function mapRazorpayMethod(method) {
-  const methodMap = {
-    card: "CARD",
-    netbanking: "NETBANKING",
-    wallet: "WALLET",
-    upi: "UPI",
-    emi: "EMI",
-  };
-
-  return methodMap[method] || "OTHER";
-}

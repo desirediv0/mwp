@@ -19,7 +19,7 @@ const sections = [
         <Steps
           steps={[
             { title: "Record an unboxing video", text: "Film the parcel and the unopened product in one continuous video, starting before you open the box." },
-            { title: "Report within 48 hours", text: `Email the video and your order number to ${SITE_CONTACT.email} within 48 hours of delivery.` },
+            { title: "Report within 7 days", text: `Email the video and your order number to ${SITE_CONTACT.email} within 7 days of delivery.` },
             { title: "Quality review", text: "Our team checks for transit damage, a broken seal or a fulfillment mistake." },
             { title: "Priority replacement", text: "Approved replacements are shipped as a priority." },
           ]}
@@ -40,7 +40,7 @@ const sections = [
             "We sent the wrong product or formula.",
           ]}
         />
-        <Note>All damage or wrong-item requests must be reported within 48 hours of delivery, with unboxing video proof.</Note>
+        <Note>All damage or wrong-item requests must be reported within 7 days of delivery, with unboxing video proof.</Note>
       </>
     ),
   },
@@ -126,7 +126,7 @@ export default function ReturnPolicyPage() {
       intro="Supplements are consumables, so we protect every customer with clear safety rules. If something arrives wrong, we make it right."
       updated="October 2026"
       highlights={[
-        { title: "Report in 48 hours", text: "Damaged or wrong item? Send us your order number and an unboxing video within 48 hours." },
+        { title: "Report in 7 days", text: "Damaged or wrong item? Send us your order number and an unboxing video within 7 days of delivery." },
         { title: "Free replacements", text: "Approved damage or fulfillment mistakes are replaced at no cost, as a priority." },
         { title: "Sealed for your safety", text: "Opened or unsealed containers cannot be returned, for health and safety." },
       ]}
