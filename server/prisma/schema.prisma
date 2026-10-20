@@ -2015,3 +2015,19 @@ model QuickBooksSettings {
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
 }
+
+// -----------------------
+// Marketing tracking IDs, edited by the admin (no code change or redeploy needed). Singleton row.
+// -----------------------
+model TrackingSettings {
+  id                     String   @id @default(uuid())
+  googleAnalyticsId      String? // GA4, e.g. G-XXXXXXXXXX
+  googleTagManagerId     String? // e.g. GTM-XXXXXXX
+  googleSiteVerification String? // content value of the google-site-verification meta tag
+  metaPixelId            String?
+  metaCapiToken          String? // Encrypted. Meta Conversions API access token
+  metaTestEventCode      String? // optional, only while testing in Meta Events Manager
+  updatedBy              String?
+  createdAt              DateTime @default(now())
+  updatedAt              DateTime @updatedAt
+}

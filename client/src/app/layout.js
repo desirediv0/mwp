@@ -9,12 +9,12 @@ import { SiteChrome } from "@/components/layout/SiteChrome";
 import { Toaster } from "sonner";
 import Tracking, { TrackingNoscript } from "@/components/analytics/Tracking";
 import { SITE_URL, ORGANIZATION_JSON_LD, jsonLd } from "@/lib/seo";
+import { getTrackingConfig } from "@/lib/tracking-config";
 
-export const metadata = {
+const baseMetadata = {
   metadataBase: new URL(SITE_URL),
   alternates: { canonical: "/" },
   applicationName: "MWP SUPPLEMENTS",
-  verification: process.env.NEXT_PUBLIC_GSC_VERIFICATION ? { google: process.env.NEXT_PUBLIC_GSC_VERIFICATION } : undefined,
   robots: { index: true, follow: true, googleBot: { index: true, follow: true, "max-image-preview": "large", "max-snippet": -1 } },
   title: {
     default: "MWP SUPPLEMENTS — Men | Women | Power | Premium Wellness",
@@ -41,13 +41,20 @@ export const metadata = {
   },
 };
 
-export default function RootLayout({ children }) {
+// The Google verification tag comes from Admin > Tracking
+export async function generateMetadata() {
+  const { googleSiteVerification } = await getTrackingConfig();
+  return { ...baseMetadata, ...(googleSiteVerification ? { verification: { google: googleSiteVerification } } : {}) };
+}
+
+export default async function RootLayout({ children }) {
+  const tracking = await getTrackingConfig();
   const isMaintenance = headers().get("x-maintenance-active") === "1";
 
   return (
     <html lang="en">
       <body className="antialiased font-sans bg-white text-neutral-900">
-        <TrackingNoscript />
+        <TrackingNoscript gtmId={tracking.googleTagManagerId} pixelId={tracking.metaPixelId} />
         <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLd(ORGANIZATION_JSON_LD) }} />
         <script
           type="application/ld+json"
@@ -61,7 +68,7 @@ export default function RootLayout({ children }) {
             }),
           }}
         />
-        <Tracking />
+        <Tracking gaId={tracking.googleAnalyticsId} gtmId={tracking.googleTagManagerId} pixelId={tracking.metaPixelId} />
         <AuthProvider>
           <CartProvider>
             <CompareProvider>

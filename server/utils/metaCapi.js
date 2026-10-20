@@ -1,16 +1,22 @@
 import crypto from "crypto";
 import { prisma } from "../config/db.js";
+import { getMetaCapiConfig } from "./trackingSettings.js";
 
 // Meta Conversions API (server-side Purchase event). Works together with the browser pixel:
 // both send the same event_id (the order id), so Meta counts the purchase once.
-// Needs META_PIXEL_ID and META_CAPI_TOKEN in the server environment. Without them this does nothing.
+// Pixel ID and access token come from Admin > Tracking (server env META_PIXEL_ID / META_CAPI_TOKEN still work as a fallback).
 
 const sha = (v) => (v ? crypto.createHash("sha256").update(String(v).trim().toLowerCase()).digest("hex") : undefined);
 const digits = (v) => String(v || "").replace(/\D/g, "");
 
 export async function sendMetaPurchase(orderId, { clientIp, userAgent, sourceUrl } = {}) {
-  const pixelId = process.env.META_PIXEL_ID;
-  const token = process.env.META_CAPI_TOKEN;
+  let cfg;
+  try {
+    cfg = await getMetaCapiConfig();
+  } catch {
+    return { skipped: "settings-unavailable" };
+  }
+  const { pixelId, token, testEventCode } = cfg;
   if (!pixelId || !token) return { skipped: "not-configured" };
 
   try {
@@ -54,7 +60,7 @@ export async function sendMetaPurchase(orderId, { clientIp, userAgent, sourceUrl
       },
     };
 
-    const body = { data: [event], ...(process.env.META_TEST_EVENT_CODE ? { test_event_code: process.env.META_TEST_EVENT_CODE } : {}) };
+    const body = { data: [event], ...(testEventCode ? { test_event_code: testEventCode } : {}) };
     const base = process.env.META_GRAPH_URL || "https://graph.facebook.com";
     const res = await fetch(`${base}/v19.0/${pixelId}/events?access_token=${encodeURIComponent(token)}`, {
       method: "POST",

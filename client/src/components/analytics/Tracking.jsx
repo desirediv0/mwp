@@ -4,12 +4,8 @@ import Script from "next/script";
 import { Suspense, useEffect } from "react";
 import { usePathname, useSearchParams } from "next/navigation";
 
-const GTM_ID = process.env.NEXT_PUBLIC_GTM_ID;
-const GA_ID = process.env.NEXT_PUBLIC_GA_ID;
-const PIXEL_ID = process.env.NEXT_PUBLIC_META_PIXEL_ID;
-
 // Fires page views on client-side navigation (the first view is sent by the base snippets)
-function RouteEvents() {
+function RouteEvents({ GA_ID, GTM_ID }) {
   const pathname = usePathname();
   const search = useSearchParams();
   useEffect(() => {
@@ -26,7 +22,7 @@ function RouteEvents() {
   return null;
 }
 
-export default function Tracking() {
+export default function Tracking({ gaId: GA_ID, gtmId: GTM_ID, pixelId: PIXEL_ID }) {
   if (!GTM_ID && !GA_ID && !PIXEL_ID) return null;
   return (
     <>
@@ -60,13 +56,13 @@ export default function Tracking() {
         `}</Script>
       )}
       <Suspense fallback={null}>
-        <RouteEvents />
+        <RouteEvents GA_ID={GA_ID} GTM_ID={GTM_ID} />
       </Suspense>
     </>
   );
 }
 
-export function TrackingNoscript() {
+export function TrackingNoscript({ gtmId: GTM_ID, pixelId: PIXEL_ID }) {
   return (
     <>
       {GTM_ID && (
