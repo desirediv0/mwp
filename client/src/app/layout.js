@@ -7,8 +7,15 @@ import { CompareProvider } from "@/lib/compare-context";
 import { LanguageProvider } from "@/lib/language-context";
 import { SiteChrome } from "@/components/layout/SiteChrome";
 import { Toaster } from "sonner";
+import Tracking, { TrackingNoscript } from "@/components/analytics/Tracking";
+import { SITE_URL, ORGANIZATION_JSON_LD, jsonLd } from "@/lib/seo";
 
 export const metadata = {
+  metadataBase: new URL(SITE_URL),
+  alternates: { canonical: "/" },
+  applicationName: "MWP SUPPLEMENTS",
+  verification: process.env.NEXT_PUBLIC_GSC_VERIFICATION ? { google: process.env.NEXT_PUBLIC_GSC_VERIFICATION } : undefined,
+  robots: { index: true, follow: true, googleBot: { index: true, follow: true, "max-image-preview": "large", "max-snippet": -1 } },
   title: {
     default: "MWP SUPPLEMENTS — Men | Women | Power | Premium Wellness",
     template: "%s | MWP SUPPLEMENTS",
@@ -40,6 +47,21 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en">
       <body className="antialiased font-sans bg-white text-neutral-900">
+        <TrackingNoscript />
+        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLd(ORGANIZATION_JSON_LD) }} />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: jsonLd({
+              "@context": "https://schema.org",
+              "@type": "WebSite",
+              name: "MWP SUPPLEMENTS",
+              url: SITE_URL,
+              potentialAction: { "@type": "SearchAction", target: `${SITE_URL}/products?search={search_term_string}`, "query-input": "required name=search_term_string" },
+            }),
+          }}
+        />
+        <Tracking />
         <AuthProvider>
           <CartProvider>
             <CompareProvider>
@@ -49,7 +71,7 @@ export default function RootLayout({ children }) {
                   style={{ zIndex: 999999 }}
                   toastOptions={{
                     style: {
-                      background: "#121216",
+                      background: "#12213F",
                       color: "#FFFFFF",
                       border: "1px solid rgba(201, 162, 39, 0.45)",
                       borderRadius: "8px",

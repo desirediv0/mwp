@@ -7,6 +7,7 @@ import { useAuth } from "@/lib/auth-context";
 import { useCart } from "@/lib/cart-context";
 import { fetchApi, formatCurrency } from "@/lib/utils";
 import { playSuccessSound, fireConfetti } from "@/lib/sound-utils";
+import { trackEvent } from "@/lib/track";
 import { Button } from "@/components/ui/button";
 import {
     CreditCard,
@@ -30,7 +31,7 @@ import Image from "next/image";
 import CheckoutRecommendations from "@/components/sections/CheckoutRecommendations";
 
 const getImageUrl = (image) => {
-    if (!image) return "/logo.png";
+    if (!image) return "/mwp-logo.png";
     if (image.startsWith("http") || image.startsWith("/")) return image;
     return `https://desirediv-storage.blr1.digitaloceanspaces.com/${image}`;
 };
@@ -53,6 +54,8 @@ export default function CheckoutPage() {
     const [error, setError] = useState("");
     const [showAddressForm, setShowAddressForm] = useState(false);
     const [orderNumber, setOrderNumber] = useState("");
+    const purchaseTracked = useRef(false);
+    const checkoutTracked = useRef(false);
     const [successAnimation, setSuccessAnimation] = useState(false);
     const [redirectCountdown, setRedirectCountdown] = useState(2);
     const [confettiCannon, setConfettiCannon] = useState(false);
@@ -133,6 +136,15 @@ export default function CheckoutPage() {
 
     const cartSignature = (cart.items || []).map((i) => `${i.id}:${i.quantity}`).join(",");
     useEffect(() => {
+        if (checkoutTracked.current || !isAuthenticated || !cart.items?.length || returningFromStripe) return;
+        checkoutTracked.current = true;
+        trackEvent("begin_checkout", {
+            value: totals.subtotal - totals.discount,
+            items: cart.items.map((i) => ({ item_id: i.variant?.sku || i.variantId || i.id, item_name: i.product?.name || i.name, price: parseFloat(i.price || i.variant?.price || 0), quantity: i.quantity })),
+        });
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [isAuthenticated, cartSignature]);
+    useEffect(() => {
         if (!isAuthenticated || !selectedAddressId || !cartSignature || returningFromStripe) return;
         let cancelled = false;
         setLoadingRates(true);
@@ -189,6 +201,15 @@ export default function CheckoutPage() {
     }, [successAnimation]);
 
     const handleSuccessfulPayment = (paymentResponse = null, orderData = null) => {
+        if (orderData?.analytics && !purchaseTracked.current) {
+            purchaseTracked.current = true;
+            trackEvent("purchase", {
+                value: orderData.analytics.value,
+                eventId: orderData.orderId,
+                items: orderData.analytics.items,
+                extra: { transaction_id: orderData.orderNumber, tax: orderData.analytics.tax, shipping: orderData.analytics.shipping, coupon: orderData.analytics.coupon },
+            });
+        }
         if (orderData?.orderNumber) setOrderNumber(orderData.orderNumber);
         setSuccessAnimation(true);
         playSuccessSound();
@@ -421,7 +442,7 @@ export default function CheckoutPage() {
                                                 <div className="flex justify-between items-center mb-2">
                                                     <span className="text-[11px] text-black/70 uppercase tracking-wider font-medium">{address.name}</span>
                                                     {address.isDefault && (
-                                                        <span className="text-[8px] uppercase tracking-[0.15em] bg-black text-white px-2 py-0.5 rounded-sm font-medium">
+                                                        <span className="text-[8px] uppercase tracking-[0.15em] bg-[#12213F] text-white px-2 py-0.5 rounded-sm font-medium">
                                                             Default
                                                         </span>
                                                     )}
@@ -481,7 +502,7 @@ export default function CheckoutPage() {
                                                     <span>
                                                         <span className="block text-[12px] font-medium text-black">
                                                             {rate.carrier} {prettyService(rate.service)}
-                                                            {idx === 0 && <span className="ml-2 text-[9px] uppercase tracking-wider bg-black text-white px-1.5 py-0.5 rounded-sm">Best value</span>}
+                                                            {idx === 0 && <span className="ml-2 text-[9px] uppercase tracking-wider bg-[#12213F] text-white px-1.5 py-0.5 rounded-sm">Best value</span>}
                                                         </span>
                                                         <span className="block text-[11px] text-black/40 mt-0.5">
                                                             {rate.days ? `Delivery in about ${rate.days} business day${rate.days === 1 ? "" : "s"}` : "Standard delivery"}

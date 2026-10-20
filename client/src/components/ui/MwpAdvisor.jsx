@@ -816,7 +816,7 @@ export default function MwpAdvisor() {
           <button
             type="button"
             onClick={() => setOpen((v) => !v)}
-            className="w-auto px-4 flex items-center justify-center gap-2.5 h-12 bg-neutral-900 hover:bg-black text-white rounded-full border border-white/15 shadow-[0_10px_28px_-6px_rgba(0,0,0,0.5)] active:scale-[0.98] transition-all"
+            className="w-auto px-4 flex items-center justify-center gap-2.5 h-12 bg-neutral-900 hover:bg-[#12213F] text-white rounded-full border border-white/15 shadow-[0_10px_28px_-6px_rgba(0,0,0,0.5)] active:scale-[0.98] transition-all"
             aria-label={open ? copy.close : copy.open}
             aria-expanded={open}
           >
@@ -837,7 +837,7 @@ export default function MwpAdvisor() {
         <button
           type="button"
           onClick={() => setOpen((v) => !v)}
-          className={`${open ? "hidden" : "hidden sm:flex"} pointer-events-auto group items-center gap-2.5 h-11 pl-3 pr-4 bg-neutral-900 hover:bg-black text-white rounded-full border border-white/15 shadow-[0_10px_28px_-6px_rgba(0,0,0,0.5)] focus:outline-none focus-visible:ring-2 focus-visible:ring-white/40 focus-visible:ring-offset-2 focus-visible:ring-offset-black transition-all active:scale-95 self-end`}
+          className={`${open ? "hidden" : "hidden sm:flex"} pointer-events-auto group items-center gap-2.5 h-11 pl-3 pr-4 bg-neutral-900 hover:bg-[#12213F] text-white rounded-full border border-white/15 shadow-[0_10px_28px_-6px_rgba(0,0,0,0.5)] focus:outline-none focus-visible:ring-2 focus-visible:ring-white/40 focus-visible:ring-offset-2 focus-visible:ring-offset-black transition-all active:scale-95 self-end`}
           aria-label={open ? copy.close : copy.open}
           aria-expanded={open}
         >

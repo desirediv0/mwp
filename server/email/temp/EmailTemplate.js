@@ -5,21 +5,21 @@ import { getStoreConfig } from "../../utils/storeConfig.js";
 const BASE_STYLES = `
   body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; line-height: 1.6; color: #111111; background-color: #0d0d11; margin: 0; padding: 0; }
   .container { max-width: 600px; margin: 40px auto; background-color: #ffffff; border-radius: 12px; overflow: hidden; box-shadow: 0 20px 40px rgba(0,0,0,0.3); border: 1px solid #27272a; }
-  .header { background: linear-gradient(135deg, #09090b, #18181b); color: #ffffff; text-align: center; padding: 40px 30px; border-bottom: 3px solid #ef4444; }
-  .header.danger-header { background: linear-gradient(135deg, #7f1d1d, #991b1b); border-bottom: 3px solid #ef4444; }
-  .header-accent { display: inline-block; background: rgba(239,68,68,0.15); color: #f87171; font-size: 11px; font-weight: 700; letter-spacing: 0.18em; text-transform: uppercase; padding: 5px 14px; border-radius: 4px; margin-bottom: 14px; border: 1px solid rgba(239,68,68,0.3); }
+  .header { background: linear-gradient(135deg, #0B1530, #12213F); color: #ffffff; text-align: center; padding: 40px 30px; border-bottom: 3px solid #B3001B; }
+  .header.danger-header { background: linear-gradient(135deg, #7f1d1d, #991b1b); border-bottom: 3px solid #B3001B; }
+  .header-accent { display: inline-block; background: rgba(179,0,27,0.15); color: #f87171; font-size: 11px; font-weight: 700; letter-spacing: 0.18em; text-transform: uppercase; padding: 5px 14px; border-radius: 4px; margin-bottom: 14px; border: 1px solid rgba(179,0,27,0.3); }
   .content { padding: 36px 32px; background-color: #ffffff; }
   h1 { margin: 0; font-size: 24px; font-weight: 700; letter-spacing: 0.02em; color: #ffffff; text-transform: uppercase; }
   h2 { color: #111111; font-size: 20px; margin-top: 0; font-weight: 700; letter-spacing: -0.01em; }
   p { margin-bottom: 18px; font-size: 14px; color: #3f3f46; line-height: 1.7; }
   .button-container { text-align: center; margin: 28px 0; }
-  .button { display: inline-block; padding: 14px 36px; background: linear-gradient(135deg, #dc2626, #991b1b); color: #ffffff !important; text-decoration: none; border-radius: 6px; font-weight: 700; font-size: 13px; text-transform: uppercase; letter-spacing: 0.1em; box-shadow: 0 4px 14px rgba(220,38,38,0.3); }
+  .button { display: inline-block; padding: 14px 36px; background: linear-gradient(135deg, #B3001B, #8C0016); color: #ffffff !important; text-decoration: none; border-radius: 6px; font-weight: 700; font-size: 13px; text-transform: uppercase; letter-spacing: 0.1em; box-shadow: 0 4px 14px rgba(220,38,38,0.3); }
   .info-box { background: #f8fafc; border: 1px solid #e2e8f0; padding: 20px; border-radius: 8px; margin: 22px 0; }
   .info-box h3 { margin-top: 0; color: #0f172a; font-size: 12px; text-transform: uppercase; letter-spacing: 0.1em; font-weight: 700; border-bottom: 1px solid #e2e8f0; padding-bottom: 8px; }
   .feature-item { margin-bottom: 8px; padding-left: 22px; position: relative; color: #334155; font-weight: 500; font-size: 13px; }
-  .feature-item:before { content: '✓'; position: absolute; left: 0; color: #ef4444; font-weight: bold; font-size: 12px; }
+  .feature-item:before { content: '✓'; position: absolute; left: 0; color: #B3001B; font-weight: bold; font-size: 12px; }
   .footer { text-align: center; padding: 28px 24px; font-size: 12px; color: #71717a; background: #f4f4f5; border-top: 1px solid #e4e4e7; }
-  .footer a { color: #ef4444; text-decoration: none; font-weight: 600; }
+  .footer a { color: #B3001B; text-decoration: none; font-weight: 600; }
   .wa-cta { display: inline-block; margin-top: 10px; padding: 8px 18px; background: #09090b; color: #ffffff !important; text-decoration: none; border-radius: 4px; font-weight: 600; font-size: 12px; text-transform: uppercase; letter-spacing: 0.05em; border: 1px solid #3f3f46; }
 `;
 
@@ -38,7 +38,7 @@ const FOOTER_HTML = (store) => `
   <div class="footer">
     <strong style="color: #18181b; font-size: 12px; letter-spacing: 0.1em; text-transform: uppercase;">MWP SUPPLEMENTS &bull; MEN | WOMEN | POWER</strong><br>
     <a href="mailto:${store.storeEmail || 'support@mwpsupplements.com'}">${store.storeEmail || 'support@mwpsupplements.com'}</a> &nbsp;·&nbsp; ${store.storePhone || '+1 (562) 524-3557'}<br>
-    <a href="https://wa.me/${store.socialWhatsapp || '917678336268'}" class="wa-cta">Support via WhatsApp</a><br><br>
+    <br>
     <span style="font-size: 11px; color: #a1a1aa;">© ${new Date().getFullYear()} MWP SUPPLEMENTS. All rights reserved. Clean formulations &bull; Lab tested.</span>
   </div>
 `;
@@ -94,7 +94,7 @@ export const getEmailOtpTemplate = (otp, expiresInMinutes = 10, storeConfig = nu
     <title>Your OTP - MWP SUPPLEMENTS</title>
     <style>
         ${BASE_STYLES}
-        .otp { font-size: 38px; letter-spacing: 12px; font-weight: 900; color: #ffffff; background: #09090b; padding: 18px 24px; border-radius: 8px; display: inline-block; margin: 18px 0; border: 1px solid #ef4444; }
+        .otp { font-size: 38px; letter-spacing: 12px; font-weight: 900; color: #ffffff; background: #09090b; padding: 18px 24px; border-radius: 8px; display: inline-block; margin: 18px 0; border: 1px solid #B3001B; }
     </style>
 </head>
 <body>
@@ -137,7 +137,7 @@ export const getDeleteTemplate = (deletionLink, storeConfig = null) => {
             <div style="text-align: center; margin: 30px 0;">
                 <a href="${deletionLink}" style="display:inline-block;padding:15px 35px;background:#dc2626;color:#fff!important;text-decoration:none;border-radius:12px;font-weight:700;">Confirm Account Deletion</a>
             </div>
-            <p style="color: #ef4444; font-size: 14px;"><strong>Warning:</strong> This action cannot be undone.</p>
+            <p style="color: #B3001B; font-size: 14px;"><strong>Warning:</strong> This action cannot be undone.</p>
         </div>
         ${FOOTER_HTML(store)}
     </div>
@@ -567,7 +567,7 @@ export const getAdminNewOrderTemplate = (data, storeConfig = null) => {
     <div class="container">
         <div class="header" style="background: linear-gradient(135deg, #1e40af, #1e3a8a);">
             <div style="margin-bottom: 18px;">
-                <img src="${store.websiteUrl}/logo.png" alt="${store.storeName}" style="max-height: 55px; width: auto; display: inline-block;" />
+                <img src="${store.websiteUrl}/mwp-logo.png" alt="${store.storeName}" style="max-height: 55px; width: auto; display: inline-block;" />
             </div>
             <div class="header-accent" style="background: rgba(255,255,255,0.15); color: #fff; border-color: rgba(255,255,255,0.2);">🔔 New Order Alert</div>
             <h1>New Order Received!</h1>

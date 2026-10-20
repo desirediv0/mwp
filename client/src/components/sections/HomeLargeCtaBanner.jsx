@@ -11,7 +11,7 @@ export default function HomeLargeCtaBanner() {
         <Reveal>
           <Link
             href="/products"
-            className="group relative block overflow-hidden rounded-md bg-[#09090b] border border-gray-200/90 shadow-md hover:shadow-2xl transition-all duration-500"
+            className="group relative block overflow-hidden rounded-md bg-[#0B1530] border border-gray-200/90 shadow-md hover:shadow-2xl transition-all duration-500"
             aria-label="Shop MWP Supplements Featured Collection"
           >
             {/* Aspect ratio container: wide cinematic on desktop, proportionate on mobile */}

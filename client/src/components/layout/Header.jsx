@@ -85,16 +85,16 @@ function FormulaMenuCard({ item, active, onClick }) {
       href={item.href}
       onClick={onClick}
       aria-current={active ? "page" : undefined}
-      className={cn("group flex min-h-[96px] items-center gap-3 rounded-2xl border bg-white p-3 transition-colors sm:gap-4", active ? "border-[#886b40]" : "border-neutral-200 hover:border-[#886b40]")}
+      className={cn("group flex min-h-[96px] items-center gap-3 rounded-2xl border bg-white p-3 transition-colors sm:gap-4", active ? "border-[#A8741F]" : "border-neutral-200 hover:border-[#A8741F]")}
     >
       <span className="relative h-[72px] w-10 shrink-0 sm:w-12">
-        <Image src={item.image || `/products/cutouts/${item.slug}.webp`} alt="" fill sizes="48px" className="object-contain" />
+        <Image src={item.image || `/products/cutouts/${item.slug}.webp`} alt={item.name || item.slug} fill sizes="48px" className="object-contain" />
       </span>
       <span className="min-w-0 flex-1">
         <span className="block text-[12px] leading-5 text-neutral-900 sm:text-sm">{item.label.replace(/^MWP /, "")}</span>
         <span className="mt-1 block text-[10px] leading-4 text-neutral-500 sm:text-[11px]">{item.tag}</span>
       </span>
-      <IconArrowUpRight className="hidden h-4 w-4 shrink-0 text-neutral-400 transition-colors group-hover:text-[#886b40] sm:block" stroke={1.5} />
+      <IconArrowUpRight className="hidden h-4 w-4 shrink-0 text-neutral-400 transition-colors group-hover:text-[#A8741F] sm:block" stroke={1.5} />
     </Link>
   );
 }
@@ -185,7 +185,7 @@ export function Navbar() {
         <div className="h-8 overflow-hidden bg-white border-b border-neutral-100">
           <div className="max-w-[1440px] mx-auto px-5 sm:px-8 flex items-center justify-center lg:justify-between h-8 gap-6 text-[9px] sm:text-[10px] text-neutral-500">
             <span className="flex min-w-0 items-center gap-2 tracking-[0.08em]">
-              <span className="h-1 w-1 shrink-0 rounded-full bg-[#886b40]" />
+              <span className="h-1 w-1 shrink-0 rounded-full bg-[#A8741F]" />
               <span className="sm:hidden">Eight formulas. One everyday routine.</span>
               <span className="hidden sm:block truncate">{ANNOUNCEMENTS[0]}</span>
             </span>
@@ -196,18 +196,18 @@ export function Navbar() {
         {/* Main Header Bar — Logo on left, Menu in center, Actions on right (NEVER hides on scroll) */}
         <div className="max-w-[1440px] mx-auto px-5 sm:px-8">
           <div className="flex h-[72px] sm:h-[80px] items-center justify-between gap-3 sm:gap-5">
-            {/* 1. Left — Brand Logo (chrome logo needs a dark backing to stay legible on white) */}
+            {/* 1. Left — Brand Logo */}
             <Link
               href="/"
               aria-label="MWP home"
-              className="flex items-center shrink-0 rounded-xl bg-neutral-950 px-3 py-2 focus-visible:outline-offset-4"
+              className="flex items-center shrink-0 focus-visible:outline-offset-4"
             >
               <Image
-                src="/logo.png"
+                src="/mwp-logo.png"
                 alt="MWP SUPPLEMENTS"
                 width={200}
                 height={72}
-                className="h-9 sm:h-11 w-auto object-contain"
+                className="h-11 sm:h-14 w-auto object-contain"
                 priority
               />
             </Link>
@@ -255,7 +255,7 @@ export function Navbar() {
                       className="absolute left-0 top-full mt-4 flex max-h-[calc(100dvh-144px)] w-[720px] max-w-[90vw] flex-col bg-white border border-neutral-200 rounded-3xl shadow-[0_24px_60px_-24px_rgba(20,35,28,0.24)] overflow-hidden z-[70]"
                     >
                       <div className="flex shrink-0 items-center justify-between gap-6 px-6 py-5 border-b border-neutral-100">
-                        <div><span className="text-[9px] uppercase tracking-[0.2em] text-[#886b40]">
+                        <div><span className="text-[9px] uppercase tracking-[0.2em] text-[#A8741F]">
                           {t("allProducts")}
                         </span>
                         <p className="mt-1.5 text-xl tracking-tight">Find your everyday formula.</p></div>
@@ -294,7 +294,7 @@ export function Navbar() {
                   >
                     {label || t(labelKey)}
                     {active && (
-                      <span className="absolute bottom-1 left-2.5 right-2.5 h-px bg-[#886b40]" />
+                      <span className="absolute bottom-1 left-2.5 right-2.5 h-px bg-[#A8741F]" />
                     )}
                   </Link>
                 );
@@ -495,7 +495,7 @@ function SearchDialog({ open, onOpenChange, categories }) {
         <DialogPrimitive.Overlay className="fixed inset-0 z-[90] bg-neutral-950/40 backdrop-blur-sm data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=open]:fade-in-0 data-[state=closed]:fade-out-0 motion-reduce:animate-none" />
       <DialogPrimitive.Content aria-describedby="mwp-search-description" className="mwp-search fixed left-1/2 top-1/2 z-[100] -translate-x-1/2 -translate-y-1/2 flex w-[calc(100%-24px)] max-w-[760px] max-h-[88dvh] flex-col gap-0 bg-white text-neutral-900 p-0 overflow-hidden border border-neutral-200 shadow-[0_24px_70px_rgba(20,35,28,0.18)] rounded-3xl sm:rounded-3xl">
         <div className="shrink-0 px-5 pt-6 pb-4 sm:px-7 sm:pt-7">
-          <p className="mb-2 text-[9px] uppercase tracking-[0.2em] text-[#886b40]">Discover your everyday</p>
+          <p className="mb-2 text-[9px] uppercase tracking-[0.2em] text-[#A8741F]">Discover your everyday</p>
           <DialogPrimitive.Title className="pr-8 text-2xl tracking-tight sm:text-3xl">Search MWP</DialogPrimitive.Title>
           <p id="mwp-search-description" className="mt-2 text-xs leading-5 text-neutral-500 sm:text-sm">Find a formula, explore an ingredient, or shop by your goal.</p>
         </div>
@@ -519,7 +519,7 @@ function SearchDialog({ open, onOpenChange, categories }) {
                 <div className="space-y-2">
                   {results.map(p => {
                     const cat = p.category?.name || p.categories?.[0]?.category?.name;
-                    return <button key={p.id || p.slug} type="button" onClick={() => handleSelectProduct(p.slug)} className="group flex w-full items-center gap-4 rounded-2xl border border-neutral-200 p-3 text-left transition-colors hover:border-[#886b40]"><span className="relative h-16 w-12 shrink-0"><Image src={getImg(p)} alt="" fill sizes="48px" className="object-contain" /></span><span className="min-w-0 flex-1"><span className="block text-sm leading-5 text-neutral-900">{p.name}</span>{cat && <span className="mt-1 block text-[11px] leading-5 text-neutral-500">{cat}</span>}{p.price && <span className="mt-1 block text-xs text-[#886b40]">$ {Number(p.price).toLocaleString("en-IN")}</span>}</span><IconArrowUpRight className="h-4 w-4 shrink-0 text-neutral-400 group-hover:text-[#886b40]" /></button>;
+                    return <button key={p.id || p.slug} type="button" onClick={() => handleSelectProduct(p.slug)} className="group flex w-full items-center gap-4 rounded-2xl border border-neutral-200 p-3 text-left transition-colors hover:border-[#A8741F]"><span className="relative h-16 w-12 shrink-0"><Image src={getImg(p)} alt={p.name} fill sizes="48px" className="object-contain" /></span><span className="min-w-0 flex-1"><span className="block text-sm leading-5 text-neutral-900">{p.name}</span>{cat && <span className="mt-1 block text-[11px] leading-5 text-neutral-500">{cat}</span>}{p.price && <span className="mt-1 block text-xs text-[#A8741F]">$ {Number(p.price).toLocaleString("en-US")}</span>}</span><IconArrowUpRight className="h-4 w-4 shrink-0 text-neutral-400 group-hover:text-[#A8741F]" /></button>;
                   })}
                   <button type="button" onClick={handleSearch} className="!mt-4 flex w-full items-center justify-between rounded-xl border border-neutral-200 px-4 py-3.5 text-xs text-neutral-700 hover:border-neutral-900">View all results <IconArrowRight className="h-4 w-4" /></button>
                 </div>
@@ -528,8 +528,8 @@ function SearchDialog({ open, onOpenChange, categories }) {
           ) : (
             <div className="space-y-6">
               <div><p className="mb-3 text-[10px] uppercase tracking-[0.15em] text-neutral-500">Popular searches</p><div className="flex flex-wrap gap-2">{popularProducts.slice(0,8).map(product => <button key={product.id || product.slug} type="button" onClick={() => handleTagClick(product.name.replace(/[\u2122\u00ae]/g,""))} className="min-h-10 rounded-full border border-neutral-200 px-3.5 text-xs text-neutral-600 transition-colors hover:border-neutral-900 hover:text-neutral-900">{product.name.replace(/[\u2122\u00ae]/g,"").replace(/^MWP /,"")}</button>)}</div></div>
-              {categories.length > 0 && <div><p className="mb-3 text-[10px] uppercase tracking-[0.15em] text-neutral-500">Shop by goal</p><div className="grid grid-cols-1 gap-2 min-[380px]:grid-cols-2">{categories.slice(0,8).map(c => <Link key={c.id || c.slug} href={"/category/" + c.slug} onClick={() => onOpenChange(false)} className="flex min-h-12 items-center justify-between gap-3 rounded-xl border border-neutral-200 px-4 py-3 text-xs leading-5 text-neutral-700 transition-colors hover:border-[#886b40]"><span>{c.name}</span><IconArrowUpRight className="h-3.5 w-3.5 shrink-0 text-[#886b40]" /></Link>)}</div></div>}
-              <div><p className="mb-3 text-[10px] uppercase tracking-[0.15em] text-neutral-500">Explore the collection</p><div className="grid grid-cols-1 gap-2 sm:grid-cols-2">{popularProducts.slice(0,4).map(p => <button key={p.id || p.slug} type="button" onClick={() => handleSelectProduct(p.slug)} className="flex min-h-20 items-center gap-3 rounded-2xl border border-neutral-200 p-3 text-left transition-colors hover:border-[#886b40]"><span className="relative h-14 w-9 shrink-0"><Image src={getImg(p)} alt="" fill sizes="36px" className="object-contain" /></span><span className="min-w-0 flex-1 text-xs leading-5 text-neutral-900">{p.name.replace(/[\u2122\u00ae]/g,"").replace(/^MWP /,"")}</span><IconArrowUpRight className="h-3.5 w-3.5 shrink-0 text-neutral-400" /></button>)}</div></div>
+              {categories.length > 0 && <div><p className="mb-3 text-[10px] uppercase tracking-[0.15em] text-neutral-500">Shop by goal</p><div className="grid grid-cols-1 gap-2 min-[380px]:grid-cols-2">{categories.slice(0,8).map(c => <Link key={c.id || c.slug} href={"/category/" + c.slug} onClick={() => onOpenChange(false)} className="flex min-h-12 items-center justify-between gap-3 rounded-xl border border-neutral-200 px-4 py-3 text-xs leading-5 text-neutral-700 transition-colors hover:border-[#A8741F]"><span>{c.name}</span><IconArrowUpRight className="h-3.5 w-3.5 shrink-0 text-[#A8741F]" /></Link>)}</div></div>}
+              <div><p className="mb-3 text-[10px] uppercase tracking-[0.15em] text-neutral-500">Explore the collection</p><div className="grid grid-cols-1 gap-2 sm:grid-cols-2">{popularProducts.slice(0,4).map(p => <button key={p.id || p.slug} type="button" onClick={() => handleSelectProduct(p.slug)} className="flex min-h-20 items-center gap-3 rounded-2xl border border-neutral-200 p-3 text-left transition-colors hover:border-[#A8741F]"><span className="relative h-14 w-9 shrink-0"><Image src={getImg(p)} alt="" fill sizes="36px" className="object-contain" /></span><span className="min-w-0 flex-1 text-xs leading-5 text-neutral-900">{p.name.replace(/[\u2122\u00ae]/g,"").replace(/^MWP /,"")}</span><IconArrowUpRight className="h-3.5 w-3.5 shrink-0 text-neutral-400" /></button>)}</div></div>
             </div>
           )}
         </div>
@@ -569,9 +569,9 @@ function MobileMenu({
             <DialogPrimitive.Title className="sr-only">MWP navigation menu</DialogPrimitive.Title>
             {/* 1. Header with Logo & Close button */}
             <div className="flex items-center justify-between px-6 py-5 border-b border-neutral-100 bg-white">
-              <div className="rounded-lg bg-neutral-950 px-3 py-2 flex items-center">
+              <div className="flex items-center">
                 <Image
-                  src="/logo.png"
+                  src="/mwp-logo.png"
                   alt="MWP SUPPLEMENTS"
                   width={130}
                   height={50}
@@ -602,7 +602,7 @@ function MobileMenu({
                 <Link
                   href="/wishlist"
                   onClick={onClose}
-                  className="flex items-center justify-center gap-1.5 py-2 px-2 bg-white border border-neutral-200 rounded-lg text-[11px] font-semibold text-neutral-700 hover:text-[#886b40] hover:bg-white transition-colors"
+                  className="flex items-center justify-center gap-1.5 py-2 px-2 bg-white border border-neutral-200 rounded-lg text-[11px] font-semibold text-neutral-700 hover:text-[#A8741F] hover:bg-white transition-colors"
                 >
                   <IconHeart className="h-3.5 w-3.5 text-neutral-400" />
                   <span>Wishlist</span>
@@ -610,7 +610,7 @@ function MobileMenu({
                 <Link
                   href="/compare"
                   onClick={onClose}
-                  className="flex items-center justify-center gap-1.5 py-2 px-2 bg-white border border-neutral-200 rounded-lg text-[11px] font-semibold text-neutral-700 hover:text-[#886b40] hover:bg-white transition-colors relative"
+                  className="flex items-center justify-center gap-1.5 py-2 px-2 bg-white border border-neutral-200 rounded-lg text-[11px] font-semibold text-neutral-700 hover:text-[#A8741F] hover:bg-white transition-colors relative"
                 >
                   <IconGitCompare className="h-3.5 w-3.5 text-neutral-400" />
                   <span>Compare</span>
@@ -720,7 +720,7 @@ function MobileMenu({
                     >
                       <div className="flex items-center gap-2.5">
                         {Icon && (
-                          <Icon className="h-4 w-4 text-[#886b40]" stroke={2} />
+                          <Icon className="h-4 w-4 text-[#A8741F]" stroke={2} />
                         )}
                         <span>{label || t(labelKey)}</span>
                       </div>
@@ -740,7 +740,7 @@ function MobileMenu({
                     <Link
                       href="/categories"
                       onClick={onClose}
-                      className="text-[10px] uppercase font-bold text-neutral-500 hover:text-[#886b40] inline-flex items-center gap-0.5"
+                      className="text-[10px] uppercase font-bold text-neutral-500 hover:text-[#A8741F] inline-flex items-center gap-0.5"
                     >
                       {t("viewAll")} <IconArrowUpRight className="h-3 w-3" />
                     </Link>
@@ -798,7 +798,7 @@ function MobileMenu({
                   <IconBrandFacebook className="h-4 w-4" />
                 </a>
                 <span className="text-neutral-300">|</span>
-                <span className="text-[10px] text-[#886b40] font-semibold inline-flex items-center gap-1">
+                <span className="text-[10px] text-[#A8741F] font-semibold inline-flex items-center gap-1">
                   <IconShieldCheck className="h-3.5 w-3.5" /> 100% Lab Tested
                 </span>
               </div>

@@ -346,7 +346,7 @@ export function CartProvider({ children }) {
                     price: bPrice,
                     subtotal: bPrice.toFixed(2),
                     quantity: 1,
-                    image: bundleMeta.banner || "/logo.png",
+                    image: bundleMeta.banner || "/mwp-logo.png",
                     isBundle: true,
                     bundleCampaignId,
                     selectedProductIds,

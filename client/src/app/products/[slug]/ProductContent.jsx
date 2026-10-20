@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { fetchApi, formatCurrency } from "@/lib/utils";
@@ -30,6 +30,8 @@ import { useAuth } from "@/lib/auth-context";
 import { useRouter } from "next/navigation";
 import ReviewSection from "./ReviewSection";
 import ProductFormulaSections from "./ProductFormulaSections";
+import ProductExtras from "./ProductExtras";
+import { trackEvent, toItem } from "@/lib/track";
 import { useAddVariantToCart } from "@/lib/cart-utils";
 import { useCompare } from "@/lib/compare-context";
 import { Playfair_Display } from "next/font/google";
@@ -61,14 +63,31 @@ const PRODUCT_THEMES = {
   "titan-force": { background: "#faf1e9", surface: "#edcfb4", deep: "#ba855d", accent: "#975e32", line: "#ebd5c2" },
 };
 
-export default function ProductContent({ slug }) {
-  const [product, setProduct] = useState(null);
-  const [loading, setLoading] = useState(true);
+// Derives the first-render state from a product fetched on the server, so the HTML Google sees already has the product.
+function seedFromProduct(pd) {
+  if (!pd) return {};
+  const combos = (pd.variants || [])
+    .filter((v) => v.isActive)
+    .map((v) => ({ attributeValueIds: v.attributes?.map((a) => a.attributeValueId) || [], variant: v }));
+  const variant = combos.find((c) => (c.variant.stock ?? c.variant.quantity ?? 0) > 0)?.variant || combos[0]?.variant || null;
+  return {
+    mainImage: pd.images?.[0] || null,
+    combos,
+    variant,
+    attributes: variant ? Object.fromEntries((variant.attributes || []).map((a) => [a.attributeId, a.attributeValueId])) : {},
+    quantity: variant?.moq || 1,
+  };
+}
+
+export default function ProductContent({ slug, initialProduct = null }) {
+  const seed = seedFromProduct(initialProduct);
+  const [product, setProduct] = useState(initialProduct);
+  const [loading, setLoading] = useState(!initialProduct);
   const [error, setError] = useState(null);
-  const [mainImage, setMainImage] = useState(null);
-  const [selectedAttributes, setSelectedAttributes] = useState({});
-  const [selectedVariant, setSelectedVariant] = useState(null);
-  const [quantity, setQuantity] = useState(1);
+  const [mainImage, setMainImage] = useState(seed.mainImage || null);
+  const [selectedAttributes, setSelectedAttributes] = useState(seed.attributes || {});
+  const [selectedVariant, setSelectedVariant] = useState(seed.variant || null);
+  const [quantity, setQuantity] = useState(seed.quantity || 1);
   const [effectivePriceInfo, setEffectivePriceInfo] = useState(null);
   const [openSections, setOpenSections] = useState({
     fragranceNotes: true,
@@ -78,8 +97,8 @@ export default function ProductContent({ slug }) {
   const [isInWishlist, setIsInWishlist] = useState(false);
   const [isAddingToCart, setIsAddingToCart] = useState(false);
   const [cartSuccess, setCartSuccess] = useState(false);
-  const [availableCombinations, setAvailableCombinations] = useState([]);
-  const [initialLoading, setInitialLoading] = useState(true);
+  const [availableCombinations, setAvailableCombinations] = useState(seed.combos || []);
+  const [initialLoading, setInitialLoading] = useState(!initialProduct);
   const [priceSettings, setPriceSettings] = useState(null);
   const [showStickyBar, setShowStickyBar] = useState(false);
   const [activeThumb, setActiveThumb] = useState(0);
@@ -129,6 +148,15 @@ export default function ProductContent({ slug }) {
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [isZoomModalOpen, galleryLength]);
 
+  const viewedRef = useRef(null);
+  useEffect(() => {
+    if (!product || viewedRef.current === product.id) return;
+    viewedRef.current = product.id;
+    const v = selectedVariant || product.variants?.[0];
+    trackEvent("view_item", { value: v?.salePrice || v?.price || product.basePrice, items: [toItem(product, v, 1)] });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [product?.id]);
+
   const { isAuthenticated, openAuthModal } = useAuth();
   const router = useRouter();
   const { addVariantToCart } = useAddVariantToCart();
@@ -153,6 +181,10 @@ export default function ProductContent({ slug }) {
 
   useEffect(() => {
     if (!slug) return;
+    if (initialProduct && initialProduct.slug === slug) {
+      if (seed.variant) setEffectivePriceInfo(getEffectivePrice(seed.variant, seed.quantity || 1));
+      return;
+    }
     setLoading(true); setInitialLoading(true); setError(null); setCartSuccess(false);
     fetchApi(`/public/products/${slug}`)
       .then((res) => {
@@ -254,6 +286,7 @@ export default function ProductContent({ slug }) {
     try {
       const result = await addVariantToCart(v, quantity, product.name);
       if (result.success) {
+        trackEvent("add_to_cart", { value: (parseFloat(v.salePrice && parseFloat(v.salePrice) < parseFloat(v.price) ? v.salePrice : v.price) || 0) * quantity, items: [toItem(product, v, quantity)] });
         setCartSuccess(true); setTimeout(() => setCartSuccess(false), 3000);
         if (buyNow === true) router.push(isAuthenticated ? "/checkout" : "/auth?redirect=%2Fcheckout");
       }
@@ -296,7 +329,7 @@ export default function ProductContent({ slug }) {
   const PriceDisplay = () => {
     if (initialLoading) return <div className="h-11 w-40 bg-neutral-100 animate-pulse rounded-md" />;
     const hidePrices = priceSettings?.hidePricesForGuests && !isAuthenticated;
-    if (hidePrices || priceSettings === null)
+    if (hidePrices)
       return (
         <div>
           <p className="text-xl text-neutral-500">Sign in to view price</p>
@@ -435,7 +468,7 @@ export default function ProductContent({ slug }) {
                       backgroundColor: productTheme.surface,
                     }}
                   >
-                    <Image src={getImageUrl(img.url)} alt="" fill className="object-contain p-2" sizes="64px" />
+                    <Image src={getImageUrl(img.url)} alt={img.alt || product.name} fill className="object-contain p-2" sizes="64px" />
                   </button>
                 ))}
               </div>
@@ -756,7 +789,7 @@ export default function ProductContent({ slug }) {
                   title="Copy Link"
                   aria-label="Copy Link"
                 >
-                  {copied ? <IconCheck className="w-3.5 h-3.5 text-[#886b40]" stroke={2} /> : <IconLink className="w-3.5 h-3.5" stroke={1.8} />}
+                  {copied ? <IconCheck className="w-3.5 h-3.5 text-[#A8741F]" stroke={2} /> : <IconLink className="w-3.5 h-3.5" stroke={1.8} />}
                   {copied && (
                     <span className="absolute -top-8 left-1/2 -translate-x-1/2 bg-neutral-900 text-white text-[10px] px-2 py-1 rounded-full shadow whitespace-nowrap">
                       Copied!
@@ -771,6 +804,7 @@ export default function ProductContent({ slug }) {
       </div>
 
       <ProductFormulaSections product={product} />
+      <ProductExtras product={product} />
 
       {/* Accordion Sections */}
       <div className="max-w-6xl mx-auto px-6 lg:px-10 mb-16 md:mb-20">
@@ -910,7 +944,7 @@ export default function ProductContent({ slug }) {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   {product.videos.map((video, i) => (
                     <div key={video.id || i} className="rounded-2xl overflow-hidden bg-neutral-50">
-                      <div className="aspect-video w-full bg-black">
+                      <div className="aspect-video w-full bg-[#12213F]">
                         <video
                           src={video.videoUrl}
                           controls
@@ -972,7 +1006,7 @@ export default function ProductContent({ slug }) {
           <div className="max-w-6xl mx-auto px-6 lg:px-10 flex items-center justify-between gap-3">
             <div className="flex items-center gap-3.5 min-w-0">
               <div className="relative w-11 h-11 rounded-xl overflow-hidden bg-neutral-50 flex-shrink-0">
-                <Image src={getImageUrl(primary?.url)} alt="" fill className="object-cover" sizes="44px" />
+                <Image src={getImageUrl(primary?.url)} alt={product.name} fill className="object-cover" sizes="44px" />
               </div>
               <div className="min-w-0">
                 <h4 className="text-[13.5px] font-normal text-neutral-900 truncate">{product.name}</h4>
@@ -1115,7 +1149,7 @@ export default function ProductContent({ slug }) {
                   className={`relative flex-shrink-0 w-14 h-14 rounded-xl overflow-hidden transition-all border-2 ${activeThumb === idx ? "border-white opacity-100 scale-105" : "border-transparent opacity-50 hover:opacity-80"
                     }`}
                 >
-                  <Image src={getImageUrl(img.url)} alt="" fill className="object-cover" sizes="56px" />
+                  <Image src={getImageUrl(img.url)} alt={img.alt || product.name} fill className="object-cover" sizes="56px" />
                 </button>
               ))}
             </div>

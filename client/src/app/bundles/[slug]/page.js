@@ -107,7 +107,7 @@ export default function BundleDetailPage({ params }) {
         title: bundle.title || "Curated Bundle",
         price: bPrice || aPrice || 0,
         actualPrice: aPrice,
-        banner: bundle.banner || products.find(p => selectedProducts.includes(p.id))?.images?.[0]?.url || "/logo.png",
+        banner: bundle.banner || products.find(p => selectedProducts.includes(p.id))?.images?.[0]?.url || "/mwp-logo.png",
         slug: bundle.slug,
         selectedProductDetails: products.filter(p => selectedProducts.includes(p.id)),
       });
@@ -131,7 +131,7 @@ export default function BundleDetailPage({ params }) {
   if (!bundle) {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center">
-        <h1 className="text-2xl font-light text-[#111111] mb-4">
+        <h1 className="text-2xl font-light text-[#12213F] mb-4">
           Bundle Not Found
         </h1>
         <a
@@ -188,7 +188,7 @@ export default function BundleDetailPage({ params }) {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Products Grid */}
           <div className="lg:col-span-2">
-            <h2 className="text-lg font-medium text-[#111111] mb-6 uppercase tracking-wider">
+            <h2 className="text-lg font-medium text-[#12213F] mb-6 uppercase tracking-wider">
               Select Your Products
             </h2>
 
@@ -268,7 +268,7 @@ export default function BundleDetailPage({ params }) {
                         <p className="text-xs text-gray-500 uppercase tracking-wider mb-1">
                           {product.brand?.name || product.categories?.[0]?.name}
                         </p>
-                        <h3 className="text-sm font-medium text-[#111111] line-clamp-2">
+                        <h3 className="text-sm font-medium text-[#12213F] line-clamp-2">
                           {product.name}
                         </h3>
                         {variant && variant.attributes && variant.attributes.length > 0 && (
@@ -297,7 +297,7 @@ export default function BundleDetailPage({ params }) {
               className="bg-white p-6 sticky top-24"
               style={{ border: "1px solid #EAEAEA", borderRadius: "8px" }}
             >
-              <h3 className="text-lg font-medium text-[#111111] mb-4 uppercase tracking-wider">
+              <h3 className="text-lg font-medium text-[#12213F] mb-4 uppercase tracking-wider">
                 Bundle Summary
               </h3>
 
@@ -350,7 +350,7 @@ export default function BundleDetailPage({ params }) {
                     <>
                       <div className="flex justify-between text-sm mb-2">
                         <span className="text-gray-500">Bundle Price</span>
-                        <span className="font-medium text-[#111111]">
+                        <span className="font-medium text-[#12213F]">
                           ${bundlePrice.toLocaleString()}
                         </span>
                       </div>

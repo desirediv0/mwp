@@ -277,7 +277,7 @@ export const ProductCard = ({ product, viewMode = "grid" }) => {
           <button
             onClick={handleAddToCart}
             disabled={!showPrice || isAddingToCart || isOutOfStock}
-            className="mt-4 self-start inline-flex items-center gap-2 rounded-full py-2.5 px-5 text-[11px] font-semibold transition-all bg-neutral-900 text-white hover:bg-black disabled:opacity-50 disabled:cursor-not-allowed"
+            className="mt-4 self-start inline-flex items-center gap-2 rounded-full py-2.5 px-5 text-[11px] font-semibold transition-all bg-neutral-900 text-white hover:bg-[#12213F] disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {isAddingToCart ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : addedToCart ? <><Check className="w-3.5 h-3.5" /> Added</> : isOutOfStock ? "Out of Stock" : <><ShoppingBag className="w-3.5 h-3.5" /> Add to Cart</>}
           </button>
@@ -418,7 +418,7 @@ export const ProductCard = ({ product, viewMode = "grid" }) => {
         <button
           onClick={handleAddToCart}
           disabled={!showPrice || isAddingToCart || isOutOfStock}
-          className="mt-4 w-full min-h-11 flex items-center justify-center gap-2 rounded-full bg-neutral-900 px-4 py-2.5 text-[12px] font-semibold text-white transition-colors hover:bg-black disabled:cursor-not-allowed disabled:opacity-50"
+          className="mt-4 w-full min-h-11 flex items-center justify-center gap-2 rounded-full bg-neutral-900 px-4 py-2.5 text-[12px] font-semibold text-white transition-colors hover:bg-[#12213F] disabled:cursor-not-allowed disabled:opacity-50"
         >
           {isAddingToCart
             ? <Loader2 className="h-4 w-4 animate-spin" />

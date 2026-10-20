@@ -104,7 +104,7 @@ export const MWP_PLAYBOOK_PRODUCTS = [
 
 export default function MwpPlaybookSection() {
   return (
-    <section className="py-20 bg-[#09090b] text-white relative">
+    <section className="py-20 bg-[#0B1530] text-white relative">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <div className="text-center max-w-3xl mx-auto mb-16">
@@ -179,11 +179,11 @@ export default function MwpPlaybookSection() {
                 <div className="mt-8 pt-5 border-t border-white/10">
                   <div className="flex items-baseline justify-between mb-4">
                     <div>
-                      <span className="text-2xl font-extrabold text-white">${prod.price.toLocaleString("en-IN")}</span>
-                      <span className="text-xs text-slate-500 line-through ml-2">${prod.mrp.toLocaleString("en-IN")}</span>
+                      <span className="text-2xl font-extrabold text-white">${prod.price.toLocaleString("en-US")}</span>
+                      <span className="text-xs text-slate-500 line-through ml-2">${prod.mrp.toLocaleString("en-US")}</span>
                     </div>
                     <span className="text-xs font-bold text-emerald-400 uppercase tracking-wider">
-                      Save ${(prod.mrp - prod.price).toLocaleString("en-IN")}
+                      Save ${(prod.mrp - prod.price).toLocaleString("en-US")}
                     </span>
                   </div>
 

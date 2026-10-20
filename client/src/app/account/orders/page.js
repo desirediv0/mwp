@@ -69,7 +69,7 @@ export default function OrdersPage() {
         <div className="bg-white border border-[#e6ded2] rounded-2xl p-6 md:p-8">
           <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
             <div>
-              <span className="text-[10px] uppercase tracking-[0.2em] text-[#886b40] font-semibold block mb-2">Latest Order</span>
+              <span className="text-[10px] uppercase tracking-[0.2em] text-[#A8741F] font-semibold block mb-2">Latest Order</span>
               <p className="text-xl text-neutral-900 tracking-tight font-semibold">#{orders[0].orderNumber}</p>
               <p className="text-[12px] text-neutral-600 mt-1">
                 {formatDate(orders[0].date)} &middot; {orders[0].items.length} {orders[0].items.length === 1 ? "item" : "items"} &middot; {formatCurrency(orders[0].total)}

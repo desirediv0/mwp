@@ -61,10 +61,10 @@ html body *::after {
 
 @layer base {
   :root {
-    --mwp-ink: #171717;
+    --mwp-ink: #12213F;
     --mwp-cream: #ffffff;
     --mwp-cream-deep: #ffffff;
-    --mwp-gold: #886b40;
+    --mwp-gold: #A8741F;
     --mwp-muted: #656561;
     --mwp-line: #e6ded2;
     --background: 0 0% 100%;
@@ -93,19 +93,19 @@ html body *::after {
     --ring: 42 70% 40%;
     --radius: 4px;
 
-    --brand-black: #09090B;
+    --brand-black: #0B1530;
     --brand-white: #FFFFFF;
     --brand-gray: #F4F4F5;
     --brand-silver: #E2E8F0;
     --brand-gold: #C9A227;
     --brand-gold-light: #E5C56A;
     --brand-gold-dark: #8B6914;
-    --brand-heading: #09090B;
+    --brand-heading: #0B1530;
     --brand-paragraph: #52525B;
     --brand-success: #10B981;
     --brand-error: #C9A227;
 
-    --noir: #09090B;
+    --noir: #0B1530;
     --noir-soft: #18181B;
     --ivory: #FAFAFA;
     --ivory-deep: #F4F4F5;
@@ -132,7 +132,7 @@ html body *::after {
   }
   ::selection {
     background: rgba(184, 151, 106, 0.2);
-    color: #111111;
+    color: #12213F;
   }
   :focus-visible {
     outline: 1px solid var(--gold);

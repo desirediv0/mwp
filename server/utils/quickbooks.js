@@ -408,6 +408,9 @@ const orderInclude = {
 
 const locks = new Set();
 
+// TEST payments <-> sandbox company, LIVE payments <-> production company (orders with no recorded mode are allowed anywhere)
+const modesMatch = (order, settings) => !order.paymentMode || (order.paymentMode === "TEST") === (settings.environment !== "PRODUCTION");
+
 export async function syncOrder(orderId, { force = false } = {}) {
   if (locks.has(orderId)) return { skipped: "busy" };
   locks.add(orderId);
@@ -420,6 +423,8 @@ export async function syncOrder(orderId, { force = false } = {}) {
     }
     const settings = await getQbSettings();
     if (!isConnected(settings)) throw new ApiError(400, "QuickBooks is not connected.");
+    // Stripe test orders belong in the QuickBooks sandbox, live orders in the real company, never mixed
+    if (!modesMatch(order, settings)) return { skipped: "mode-mismatch" };
 
     // Safety net against duplicates (for example the app crashed after QuickBooks saved the receipt)
     const dup = (await qbQuery(`select Id from SalesReceipt where DocNumber = '${esc(order.orderNumber.slice(0, 21))}'`)).SalesReceipt?.[0];
@@ -477,6 +482,7 @@ export async function refundOrder(orderId, { amount = null, description = null }
   if (order.qbSyncStatus === "REFUNDED") return { skipped: "already-refunded" };
 
   const settings = await getQbSettings();
+  if (!modesMatch(order, settings)) return { skipped: "mode-mismatch" };
   const customerId = await findOrCreateCustomer(order);
   const full = amount === null || money(amount) >= money(order.total);
   const refundNumber = `${order.orderNumber}-R${(order.qbRefundIds?.length || 0) + 1}`.slice(0, 21);

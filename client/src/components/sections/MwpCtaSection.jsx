@@ -19,7 +19,7 @@ export default function MwpCtaSection() {
   };
 
   return (
-    <section className="py-20 bg-gradient-to-b from-[#09090b] to-[#141418] text-white border-t border-white/[0.08] relative overflow-hidden">
+    <section className="py-20 bg-gradient-to-b from-[#0B1530] to-[#141418] text-white border-t border-white/[0.08] relative overflow-hidden">
       <div className="absolute inset-0 pointer-events-none opacity-20">
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[300px] bg-neutral-600/30 blur-[140px]" />
       </div>

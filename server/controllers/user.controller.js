@@ -1582,6 +1582,12 @@ export const addReview = asyncHandler(async (req, res, next) => {
   if (!productId || !rating) {
     throw new ApiError(400, "Product ID and rating are required");
   }
+  const stars = Number(rating);
+  if (!Number.isInteger(stars) || stars < 1 || stars > 5) {
+    throw new ApiError(400, "Rating must be a whole number from 1 to 5");
+  }
+  if (comment && String(comment).length > 2000) throw new ApiError(400, "Review is too long (2000 characters max)");
+  if (title && String(title).length > 150) throw new ApiError(400, "Review title is too long (150 characters max)");
 
   // Check if product exists
   const product = await prisma.product.findUnique({
@@ -1610,7 +1616,7 @@ export const addReview = asyncHandler(async (req, res, next) => {
       order: {
         userId: req.user.id,
         status: {
-          in: ["DELIVERED", "SHIPPED"],
+          in: ["DELIVERED"],
         },
       },
       productId,
@@ -1618,7 +1624,7 @@ export const addReview = asyncHandler(async (req, res, next) => {
   });
 
   if (!hasPurchased) {
-    throw new ApiError(403, "You can only review products you have purchased");
+    throw new ApiError(403, "Only customers with a delivered order for this product can leave a review (verified purchase).");
   }
 
   // Add review
@@ -1626,7 +1632,7 @@ export const addReview = asyncHandler(async (req, res, next) => {
     data: {
       userId: req.user.id,
       productId,
-      rating,
+      rating: stars,
       title,
       comment,
       status: "PENDING", // Reviews need approval before display

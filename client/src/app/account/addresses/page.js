@@ -111,7 +111,7 @@ export default function AddressesPage() {
           {addresses.map((address) => (
             <div key={address.id} className="bg-white border border-[#e6ded2] rounded-2xl p-5 relative">
               {address.isDefault && (
-                <span className="absolute top-4 right-4 text-[10px] uppercase tracking-[0.12em] text-[#886b40] font-semibold bg-white border border-[#e6ded2] rounded-full px-2.5 py-1 flex items-center gap-1">
+                <span className="absolute top-4 right-4 text-[10px] uppercase tracking-[0.12em] text-[#A8741F] font-semibold bg-white border border-[#e6ded2] rounded-full px-2.5 py-1 flex items-center gap-1">
                   <IconCheck className="h-2.5 w-2.5" stroke={2} /> Default
                 </span>
               )}

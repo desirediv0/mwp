@@ -272,7 +272,7 @@ function ProductsContent() {
       {/* Search */}
       <div className="pb-5" style={{ borderBottom: "1px solid #EAEAEA" }}>
         <div className="relative">
-          <IconSearch className="absolute left-0 top-1/2 -translate-y-1/2 h-4 w-4" style={{ color: "#111111" }} stroke={1.5} />
+          <IconSearch className="absolute left-0 top-1/2 -translate-y-1/2 h-4 w-4" style={{ color: "#12213F" }} stroke={1.5} />
           <input
             type="text"
             placeholder="Search supplements & formulas..."
@@ -297,7 +297,7 @@ function ProductsContent() {
                 onClick={() => handleFilterChange("category", filters.category === cat.slug ? "" : cat.slug)}
                 className="text-[12px] tracking-wide flex items-center justify-between w-full py-2.5 px-3 transition-all duration-300"
                 style={{
-                  color: filters.category === cat.slug ? "#111111" : "#666666",
+                  color: filters.category === cat.slug ? "#12213F" : "#666666",
                   backgroundColor: filters.category === cat.slug ? "rgba(184,151,106,0.06)" : "transparent",
                   borderRadius: "6px",
                 }}
@@ -330,8 +330,8 @@ function ProductsContent() {
                 onClick={() => handleFilterChange("gender", active ? "" : value)}
                 className="px-4 py-2 text-[11px] tracking-[0.08em] transition-all duration-300 font-light"
                 style={{
-                  border: active ? "1px solid #111111" : "1px solid #EAEAEA",
-                  backgroundColor: active ? "#111111" : "transparent",
+                  border: active ? "1px solid #12213F" : "1px solid #EAEAEA",
+                  backgroundColor: active ? "#12213F" : "transparent",
                   color: active ? "#fff" : "#666666",
                   borderRadius: "6px",
                 }}
@@ -418,7 +418,7 @@ function ProductsContent() {
                   style={{
                     backgroundColor: c.hexCode || "#fff",
                     borderRadius: "50%",
-                    border: active ? "2px solid #111111" : "1px solid #EAEAEA",
+                    border: active ? "2px solid #12213F" : "1px solid #EAEAEA",
                     transform: active ? "scale(1.1)" : "scale(1)",
                     boxShadow: active ? "0 0 0 3px rgba(184,151,106,0.15)" : "none",
                   }}
@@ -446,8 +446,8 @@ function ProductsContent() {
                   onClick={() => handleAttrChange("Size", s.id)}
                   className="min-w-[44px] px-3 py-2 text-[11px] tracking-[0.08em] transition-all duration-300 font-light"
                   style={{
-                    border: active ? "1px solid #111111" : "1px solid #EAEAEA",
-                    backgroundColor: active ? "#111111" : "transparent",
+                    border: active ? "1px solid #12213F" : "1px solid #EAEAEA",
+                    backgroundColor: active ? "#12213F" : "transparent",
                     color: active ? "#fff" : "#666666",
                     borderRadius: "6px",
                   }}
@@ -473,12 +473,12 @@ function ProductsContent() {
             <div className="md:max-w-[60%]">
               <div className="flex items-center gap-2 text-[10px] uppercase tracking-[0.25em] mb-5 text-gray-500">
                 <Link href="/" className="hover:text-neutral-800 transition-colors">Home</Link>
-                <span style={{ color: "#111111" }}>·</span>
+                <span style={{ color: "#12213F" }}>·</span>
                 <span className="text-gray-900">Shop</span>
               </div>
               <h1 className="mwp-title text-neutral-900">
                 {filters.search ? (
-                  <>Results for <em className="italic" style={{ color: "#111111" }}>&ldquo;{filters.search}&rdquo;</em></>
+                  <>Results for <em className="italic" style={{ color: "#12213F" }}>&ldquo;{filters.search}&rdquo;</em></>
                 ) : (
                   <>Find your formula.</>
                 )}
@@ -505,7 +505,7 @@ function ProductsContent() {
                 uppercase: true,
                 letterSpacing: "0.2em",
                 fontWeight: 500,
-                color: "#111111",
+                color: "#12213F",
               }}
             >
               <IconAdjustments className="h-4 w-4" stroke={1.5} />
@@ -513,7 +513,7 @@ function ProductsContent() {
               {activeCount > 0 && (
                 <span
                   className="w-5 h-5 flex items-center justify-center text-[10px] font-bold"
-                  style={{ backgroundColor: "#111111", color: "#fff", borderRadius: "50%" }}
+                  style={{ backgroundColor: "#12213F", color: "#fff", borderRadius: "50%" }}
                 >
                   {activeCount}
                 </span>
@@ -529,7 +529,7 @@ function ProductsContent() {
           {/* Desktop Sidebar */}
           <aside className="hidden lg:block lg:col-span-3">
             <div className="sticky top-28 rounded-2xl border border-[#e6ded2] bg-white p-5">
-              <div className="flex items-center justify-between mb-6 pb-4" style={{ borderBottom: "2px solid #111111" }}>
+              <div className="flex items-center justify-between mb-6 pb-4" style={{ borderBottom: "2px solid #12213F" }}>
                 <h3 className="text-[10px] uppercase tracking-[0.3em] font-medium text-gray-900">
                   Refine
                 </h3>
@@ -537,7 +537,7 @@ function ProductsContent() {
                   <button
                     onClick={clearFilters}
                     className="text-[9px] uppercase tracking-[0.15em] font-medium hover:underline transition-colors"
-                    style={{ color: "#111111" }}
+                    style={{ color: "#12213F" }}
                   >
                     Clear All
                   </button>
@@ -563,8 +563,8 @@ function ProductsContent() {
                   onClick={() => handleFilterChange("productType", filters.productType === type ? "" : type)}
                   className="rounded-full px-4 py-2 text-[12px] font-medium transition-all duration-300"
                   style={{
-                    border: filters.productType === type ? "1px solid #111111" : "1px solid rgba(0,0,0,0.08)",
-                    backgroundColor: filters.productType === type ? "#111111" : "rgba(255,255,255,0.72)",
+                    border: filters.productType === type ? "1px solid #12213F" : "1px solid rgba(0,0,0,0.08)",
+                    backgroundColor: filters.productType === type ? "#12213F" : "rgba(255,255,255,0.72)",
                     color: filters.productType === type ? "#fff" : "#4b4b4d",
                   }}
                 >
@@ -624,7 +624,7 @@ function ProductsContent() {
                     padding: "10px 14px",
                     border: "1px solid rgba(0,0,0,0.08)",
                     borderRadius: "999px",
-                    color: "#111111",
+                    color: "#12213F",
                   }}
                 >
                   <option value="default">Latest</option>
@@ -649,7 +649,7 @@ function ProductsContent() {
                 <button
                   onClick={clearFilters}
                   className="inline-flex items-center gap-2 px-7 py-3.5 text-[11px] uppercase tracking-[0.15em] font-medium transition-colors duration-300"
-                  style={{ backgroundColor: "#111111", color: "#fff", borderRadius: "8px" }}
+                  style={{ backgroundColor: "#12213F", color: "#fff", borderRadius: "8px" }}
                 >
                   Reset Filters
                 </button>
@@ -674,7 +674,7 @@ function ProductsContent() {
                     borderRadius: "8px",
                     color: "#666666",
                   }}
-                  onMouseEnter={(e) => { if (!e.currentTarget.disabled) { e.currentTarget.style.borderColor = "#111111"; e.currentTarget.style.color = "#111111"; } }}
+                  onMouseEnter={(e) => { if (!e.currentTarget.disabled) { e.currentTarget.style.borderColor = "#12213F"; e.currentTarget.style.color = "#12213F"; } }}
                   onMouseLeave={(e) => { e.currentTarget.style.borderColor = "#EAEAEA"; e.currentTarget.style.color = "#666666"; }}
                   aria-label="Previous page"
                 >
@@ -693,7 +693,7 @@ function ProductsContent() {
                       className="w-11 h-11 text-[12px] font-medium flex items-center justify-center transition-all duration-300"
                       style={{
                         border: p === pagination.page ? "none" : "1px solid #EAEAEA",
-                        backgroundColor: p === pagination.page ? "#111111" : "transparent",
+                        backgroundColor: p === pagination.page ? "#12213F" : "transparent",
                         color: p === pagination.page ? "#fff" : "#666666",
                         borderRadius: "8px",
                       }}
@@ -711,7 +711,7 @@ function ProductsContent() {
                     borderRadius: "8px",
                     color: "#666666",
                   }}
-                  onMouseEnter={(e) => { if (!e.currentTarget.disabled) { e.currentTarget.style.borderColor = "#111111"; e.currentTarget.style.color = "#111111"; } }}
+                  onMouseEnter={(e) => { if (!e.currentTarget.disabled) { e.currentTarget.style.borderColor = "#12213F"; e.currentTarget.style.color = "#12213F"; } }}
                   onMouseLeave={(e) => { e.currentTarget.style.borderColor = "#EAEAEA"; e.currentTarget.style.color = "#666666"; }}
                   aria-label="Next page"
                 >
@@ -755,7 +755,7 @@ function ProductsContent() {
                 className="w-full text-[11px] uppercase tracking-[0.2em] font-medium transition-colors duration-300"
                 style={{
                   height: "52px",
-                  backgroundColor: "#111111",
+                  backgroundColor: "#12213F",
                   color: "#fff",
                   borderRadius: "8px",
                 }}

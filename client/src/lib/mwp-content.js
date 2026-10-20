@@ -17,7 +17,7 @@ export const CORE_PRODUCTS = [
       "Recovery Support",
     ],
     accent: "#C9A227",
-    bg: "from-[#0A0A0A] via-[#121216] to-[#1A1408]",
+    bg: "from-[#0A0A0A] via-[#12213F] to-[#1A1408]",
     quizGoals: ["mens-performance"],
     signature: "KSM-66 Ashwagandha · Tongkat Ali · Shilajit",
   },

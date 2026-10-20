@@ -43,10 +43,10 @@ const LOCAL_FALLBACKS = [
 function SkeletonLoader({ heightStyle }) {
   return (
     <div
-      className="relative w-full bg-[#09090b] animate-pulse overflow-hidden"
+      className="relative w-full bg-[#0B1530] animate-pulse overflow-hidden"
       style={heightStyle}
     >
-      <div className="absolute inset-0 bg-gradient-to-br from-[#09090b] via-[#0f0f12] to-[#09090b]" />
+      <div className="absolute inset-0 bg-gradient-to-br from-[#0B1530] via-[#0f0f12] to-[#0B1530]" />
       <div className="absolute inset-0 flex items-center justify-center">
         <div className="text-center space-y-4 px-6">
           <div className="h-px w-16 bg-white/10 mx-auto" />
@@ -191,7 +191,7 @@ export default function MwpHeroSection() {
 
   return (
     <section
-      className="relative w-full bg-[#09090b] text-white overflow-hidden"
+      className="relative w-full bg-[#0B1530] text-white overflow-hidden"
       style={heightStyle}
       onMouseEnter={() => setIsPaused(true)}
       onMouseLeave={() => setIsPaused(false)}
@@ -353,7 +353,7 @@ export default function MwpHeroSection() {
         </div>
       </div>
 
-      <div className="absolute bottom-0 left-0 right-0 h-14 sm:h-20 z-[5] bg-gradient-to-t from-[#09090b] to-transparent pointer-events-none" />
+      <div className="absolute bottom-0 left-0 right-0 h-14 sm:h-20 z-[5] bg-gradient-to-t from-[#0B1530] to-transparent pointer-events-none" />
     </section>
   );
 }

@@ -33,7 +33,11 @@ export async function getStripeContext() {
     }
   }
 
-  return { stripe: new Stripe(secretKey), settings, webhookSecret };
+  // STRIPE_API_HOST is only for local tests against a fake Stripe server
+  const options = process.env.STRIPE_API_HOST
+    ? { host: process.env.STRIPE_API_HOST, port: Number(process.env.STRIPE_API_PORT || 80), protocol: process.env.STRIPE_API_PROTOCOL || "http" }
+    : undefined;
+  return { stripe: new Stripe(secretKey, options), settings, webhookSecret };
 }
 
 export function mapStripeCardMethod(session) {

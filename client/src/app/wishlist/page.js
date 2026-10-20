@@ -48,7 +48,7 @@ export default function WishlistPage() {
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-white">
-        <IconLoader2 className="h-6 w-6 animate-spin text-[#886b40]" stroke={1.5} />
+        <IconLoader2 className="h-6 w-6 animate-spin text-[#A8741F]" stroke={1.5} />
       </div>
     );
   }
@@ -62,13 +62,13 @@ export default function WishlistPage() {
           <div className="relative z-10 max-w-7xl mx-auto px-5 text-center">
             <div className="flex items-center justify-center gap-2 text-[11px] text-neutral-500 mb-7">
               <Link href="/" className="hover:text-neutral-900 transition-colors">Home</Link>
-              <span className="text-[#886b40]">/</span>
+              <span className="text-[#A8741F]">/</span>
               <span className="text-neutral-800">Wishlist</span>
             </div>
             <h1 className="text-4xl md:text-5xl font-semibold text-neutral-900 tracking-tight mb-4">
               My Wishlist
             </h1>
-            <span className="mx-auto block h-px w-16 bg-[#886b40] mb-4" />
+            <span className="mx-auto block h-px w-16 bg-[#A8741F] mb-4" />
             {!loadingItems && wishlistItems.length > 0 && (
               <p className="text-neutral-600 text-[13px]">
                 {wishlistItems.length} {wishlistItems.length === 1 ? "item" : "items"} saved

@@ -280,7 +280,7 @@ function ReelViewer({ reels, currentIndex, onClose, onNavigate }) {
 
       {/* Video container */}
       <div
-        className="relative w-full max-w-[380px] md:max-w-[420px] h-[85vh] max-h-[700px] flex flex-col bg-black overflow-hidden"
+        className="relative w-full max-w-[380px] md:max-w-[420px] h-[85vh] max-h-[700px] flex flex-col bg-[#12213F] overflow-hidden"
         style={{ borderRadius: "12px" }}
         onTouchStart={handleTouchStart}
         onTouchEnd={handleTouchEnd}

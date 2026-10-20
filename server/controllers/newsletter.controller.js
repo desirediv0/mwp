@@ -179,7 +179,7 @@ async function sendAdminNotification(email) {
       <h2 style="color: #4A2478; margin-top: 0;">New Newsletter Subscription</h2>
       <p style="font-size: 15px;"><strong>Email:</strong> ${email}</p>
       <p style="font-size: 15px;"><strong>Source:</strong> Join the Cult (Homepage)</p>
-      <p style="font-size: 15px;"><strong>Time:</strong> ${new Date().toLocaleString("en-IN")}</p>
+      <p style="font-size: 15px;"><strong>Time:</strong> ${new Date().toLocaleString("en-US")}</p>
     </div>
   `;
 

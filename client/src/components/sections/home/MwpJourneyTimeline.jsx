@@ -135,7 +135,7 @@ const allJourneyItems = [...topJourneyData, ...bottomJourneyData];
 export default function MwpJourneyTimeline({
   title = "How An MWP Formula\nEarns Your Trust",
   periodLabel = "Source To Shelf",
-  textColor = "#111111",
+  textColor = "#12213F",
   mutedTextColor = "#6b6b6b",
   activeColor = "#C9A227",
   backgroundColor = "#ffffff",

@@ -46,7 +46,7 @@ export function CompareTray() {
             {items.map(product => (
               <div key={product.id} className="relative flex shrink-0 items-center rounded-xl border border-neutral-200 pr-9" style={{ background: productPalette(product.slug).background }}>
                 <Link href={`/products/${product.slug}`} className="flex min-h-14 items-center gap-2 px-2 py-1 focus-visible:outline-green-700">
-                  <span className="relative h-11 w-7 shrink-0"><Image src={imageUrl(product.image)} alt="" fill sizes="28px" className="object-contain" /></span>
+                  <span className="relative h-11 w-7 shrink-0"><Image src={imageUrl(product.image)} alt={product.name} fill sizes="28px" className="object-contain" /></span>
                   <span className="max-w-[95px] text-[11px] leading-4 text-neutral-800">{product.name.replace(/[\u2122\u00ae]/g, "")}</span>
                 </Link>
                 <button onClick={() => removeFromCompare(product.id)} aria-label={`Remove ${product.name} from comparison`} className="absolute right-0 top-1/2 flex h-10 w-9 -translate-y-1/2 items-center justify-center rounded-lg text-neutral-500 hover:text-neutral-900 focus-visible:outline-green-700"><X size={14} /></button>
@@ -54,7 +54,7 @@ export function CompareTray() {
             ))}
             {count < max && <Link href="/products" aria-label="Add another formula to compare" className="flex min-h-14 w-14 shrink-0 items-center justify-center rounded-xl border border-dashed border-neutral-300 text-green-700 hover:bg-green-50"><Plus size={18} /></Link>}
           </div>
-          <Link href={count < 2 ? "/products" : "/compare"} className="inline-flex min-h-12 shrink-0 items-center justify-center gap-3 rounded-xl bg-neutral-900 px-5 text-xs text-white transition-colors hover:bg-green-800 focus-visible:outline-green-700">
+          <Link href={count < 2 ? "/products" : "/compare"} className="inline-flex min-h-12 shrink-0 items-center justify-center gap-3 rounded-xl bg-neutral-900 px-5 text-xs text-white transition-colors hover:bg-[#B3001B] focus-visible:outline-green-700">
             {count < 2 ? "Choose another formula" : `Compare ${count} formulas`} <ArrowRight size={16} />
           </Link>
         </div>

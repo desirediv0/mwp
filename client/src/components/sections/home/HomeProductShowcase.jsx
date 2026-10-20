@@ -76,13 +76,13 @@ export default function HomeProductShowcase() {
 
   if (loading && !slide) {
     return (
-      <section className="relative min-h-[78vh] sm:min-h-[86vh] bg-[#09090b] animate-pulse" />
+      <section className="relative min-h-[78vh] sm:min-h-[86vh] bg-[#0B1530] animate-pulse" />
     );
   }
 
   return (
     <section
-      className="relative w-full overflow-hidden bg-[#09090b] text-white"
+      className="relative w-full overflow-hidden bg-[#0B1530] text-white"
       style={{ minHeight: "min(88vh, 900px)" }}
       onMouseEnter={() => setPaused(true)}
       onMouseLeave={() => setPaused(false)}
@@ -99,7 +99,7 @@ export default function HomeProductShowcase() {
           transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1] }}
           className={cn(
             "absolute inset-0 bg-gradient-to-br",
-            slide.bg || "from-[#0A0A0A] via-[#121216] to-[#0A0A0A]"
+            slide.bg || "from-[#0A0A0A] via-[#12213F] to-[#0A0A0A]"
           )}
         >
           <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,rgba(255,255,255,0.06),transparent_55%)]" />

@@ -216,7 +216,7 @@ function ProfileContent() {
                                                 <input
                                                     type="tel"
                                                     defaultValue={user?.phone || ""}
-                                                    placeholder="+91 9876543210"
+                                                    placeholder="(555) 123-4567"
                                                     className="w-full px-4 py-3 border border-border rounded-xl focus:outline-none focus:ring-2 focus:ring-primary"
                                                 />
                                             </div>

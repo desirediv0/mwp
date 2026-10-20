@@ -26,7 +26,7 @@ import { formatCurrency } from "@/lib/utils";
 import { toast } from "sonner";
 
 const getImageUrl = (image) => {
-    if (!image) return "/logo.png";
+    if (!image) return "/mwp-logo.png";
     if (image.startsWith("http") || image.startsWith("/")) return image;
     return `https://desirediv-storage.blr1.digitaloceanspaces.com/${image}`;
 };
@@ -43,7 +43,7 @@ const CartItem = React.memo(
                 if (item.bundleCampaign?.banner) {
                     return getImageUrl(item.bundleCampaign.banner);
                 }
-                return "/logo.png";
+                return "/mwp-logo.png";
             }
             if (item.variant?.images && Array.isArray(item.variant.images) && item.variant.images.length > 0) {
                 const primaryImage = item.variant.images.find((img) => img.isPrimary);
@@ -52,7 +52,7 @@ const CartItem = React.memo(
             }
             if (item.product?.image) return getImageUrl(item.product.image);
             if (item.image) return getImageUrl(item.image);
-            return "/logo.png";
+            return "/mwp-logo.png";
         };
 
         const getVariantName = () => {
@@ -128,7 +128,7 @@ const CartItem = React.memo(
                                     <p><strong>Heart:</strong> {item.customDetails.heartNotes || "N/A"}</p>
                                     <p><strong>Top:</strong> {item.customDetails.topNotes || "N/A"}</p>
                                     {item.customDetails.engraving && item.customDetails.engraving !== "N/A" && (
-                                        <p className="text-[#B8976A] font-semibold"><strong>Engraving:</strong> &quot;{item.customDetails.engraving}&quot;</p>
+                                        <p className="text-[#C9992F] font-semibold"><strong>Engraving:</strong> &quot;{item.customDetails.engraving}&quot;</p>
                                     )}
                                 </div>
                             )}

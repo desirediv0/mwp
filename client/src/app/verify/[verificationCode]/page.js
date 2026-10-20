@@ -26,7 +26,7 @@ const img = (raw) => {
 const formatDate = (d) => {
   if (!d) return null;
   try {
-    return new Date(d).toLocaleDateString("en-IN", { day: "2-digit", month: "2-digit", year: "numeric" });
+    return new Date(d).toLocaleDateString("en-US", { day: "2-digit", month: "2-digit", year: "numeric" });
   } catch {
     return null;
   }

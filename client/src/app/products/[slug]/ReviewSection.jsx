@@ -102,14 +102,14 @@ export default function ReviewSection({ product }) {
   const ReviewFormComponent = () => (
     <form onSubmit={handleReviewSubmit} className="space-y-5">
       <div>
-        <label className="block text-[11px] font-normal uppercase tracking-[0.2em] mb-3" style={{ color: "#111111" }}>Rating <span style={{ color: "#C24B42" }}>*</span></label>
+        <label className="block text-[11px] font-normal uppercase tracking-[0.2em] mb-3" style={{ color: "#12213F" }}>Rating <span style={{ color: "#C24B42" }}>*</span></label>
         <div className="flex justify-center gap-1">
           {[1, 2, 3, 4, 5].map((rating) => (
             <button type="button" key={rating} onClick={() => handleRatingClick(rating)}>
               <IconStar
                 className="h-8 w-8 cursor-pointer transition-colors"
-                style={{ color: reviewForm.rating >= rating ? "#B8976A" : formErrors.rating ? "#fca5a5" : "#d1d5db" }}
-                fill={reviewForm.rating >= rating ? "#B8976A" : "none"}
+                style={{ color: reviewForm.rating >= rating ? "#C9992F" : formErrors.rating ? "#fca5a5" : "#d1d5db" }}
+                fill={reviewForm.rating >= rating ? "#C9992F" : "none"}
                 stroke={1.5}
               />
             </button>
@@ -119,26 +119,26 @@ export default function ReviewSection({ product }) {
       </div>
 
       <div>
-        <label htmlFor="title" className="block text-[11px] font-normal uppercase tracking-[0.2em] mb-2" style={{ color: "#111111" }}>Review Title</label>
+        <label htmlFor="title" className="block text-[11px] font-normal uppercase tracking-[0.2em] mb-2" style={{ color: "#12213F" }}>Review Title</label>
         <input type="text" id="title" name="title" value={reviewForm.title} onChange={handleInputChange}
           className="w-full px-4 py-3 text-[13px] focus:outline-none transition-colors"
           style={{
             border: formErrors.title ? "1px solid #C24B42" : "1px solid #EAEAEA",
             borderRadius: "8px",
-            color: "#111111",
+            color: "#12213F",
           }}
           placeholder="Give your review a title (optional)" />
         {formErrors.title && <p className="text-[12px] mt-1" style={{ color: "#C24B42" }}>{formErrors.title}</p>}
       </div>
 
       <div>
-        <label htmlFor="comment" className="block text-[11px] font-normal uppercase tracking-[0.2em] mb-2" style={{ color: "#111111" }}>Review <span style={{ color: "#C24B42" }}>*</span></label>
+        <label htmlFor="comment" className="block text-[11px] font-normal uppercase tracking-[0.2em] mb-2" style={{ color: "#12213F" }}>Review <span style={{ color: "#C24B42" }}>*</span></label>
         <textarea id="comment" name="comment" value={reviewForm.comment} onChange={handleInputChange} rows={4}
           className="w-full px-4 py-3 text-[13px] focus:outline-none transition-colors resize-none"
           style={{
             border: formErrors.comment ? "1px solid #C24B42" : "1px solid #EAEAEA",
             borderRadius: "8px",
-            color: "#111111",
+            color: "#12213F",
           }}
           placeholder="Write your review here"></textarea>
         {formErrors.comment && <p className="text-[12px] mt-1" style={{ color: "#C24B42" }}>{formErrors.comment}</p>}
@@ -147,7 +147,7 @@ export default function ReviewSection({ product }) {
       <div className="flex gap-3 justify-center pt-2">
         <button type="submit" disabled={isSubmitting}
           className="px-8 py-3 text-[11px] uppercase tracking-[0.18em] font-normal transition-colors duration-300 disabled:opacity-40"
-          style={{ backgroundColor: "#111111", color: "#fff", borderRadius: "8px" }}>
+          style={{ backgroundColor: "#12213F", color: "#fff", borderRadius: "8px" }}>
           {isSubmitting ? (
             <div className="flex items-center gap-2">
               <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
@@ -170,10 +170,10 @@ export default function ReviewSection({ product }) {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
           <div>
             <div className="flex items-center justify-between mb-6">
-              <h3 className="font-display text-lg" style={{ color: "#111111" }}>Customer Reviews</h3>
+              <h3 className="font-display text-lg" style={{ color: "#12213F" }}>Customer Reviews</h3>
               <div className="flex items-center">
                 <div className="flex mr-2">
-                  {[...Array(5)].map((_, i) => <IconStar key={i} className="h-4 w-4" style={{ color: i < Math.round(product.avgRating || 0) ? "#B8976A" : "#EAEAEA" }} fill={i < Math.round(product.avgRating || 0) ? "#B8976A" : "none"} stroke={0} />)}
+                  {[...Array(5)].map((_, i) => <IconStar key={i} className="h-4 w-4" style={{ color: i < Math.round(product.avgRating || 0) ? "#C9992F" : "#EAEAEA" }} fill={i < Math.round(product.avgRating || 0) ? "#C9992F" : "none"} stroke={0} />)}
                 </div>
                 <span className="text-[12px]" style={{ color: "#666666" }}>Based on {product.reviewCount} reviews</span>
               </div>
@@ -184,20 +184,20 @@ export default function ReviewSection({ product }) {
                 <div key={review.id} className="pb-8" style={{ borderBottom: "1px solid #EAEAEA" }}>
                   <div className="flex justify-between items-start mb-2">
                     <div>
-                      <p className="font-normal text-[14px]" style={{ color: "#111111" }}>{review.user.name}</p>
+                      <p className="font-normal text-[14px]" style={{ color: "#12213F" }}>{review.user.name}<span className="ml-2 rounded-full bg-green-50 px-2 py-0.5 text-[10px] font-medium uppercase tracking-wider text-green-700">Verified purchase</span></p>
                       <div className="flex mt-1">
-                        {[...Array(5)].map((_, i) => <IconStar key={i} className="h-3.5 w-3.5" style={{ color: i < review.rating ? "#B8976A" : "#EAEAEA" }} fill={i < review.rating ? "#B8976A" : "none"} stroke={0} />)}
+                        {[...Array(5)].map((_, i) => <IconStar key={i} className="h-3.5 w-3.5" style={{ color: i < review.rating ? "#C9992F" : "#EAEAEA" }} fill={i < review.rating ? "#C9992F" : "none"} stroke={0} />)}
                       </div>
                     </div>
                     <span className="text-[12px]" style={{ color: "#666666" }}>{new Date(review.createdAt).toLocaleDateString()}</span>
                   </div>
 
-                  <h4 className="font-normal text-[14px] mt-3" style={{ color: "#111111" }}>{review.title}</h4>
+                  <h4 className="font-normal text-[14px] mt-3" style={{ color: "#12213F" }}>{review.title}</h4>
                   <p className="mt-2 text-[13px] leading-relaxed font-light" style={{ color: "#666666" }}>{review.comment}</p>
 
                   {review.adminReply && (
                     <div className="mt-4 p-4" style={{ backgroundColor: "#FAFAFA", border: "1px solid #EAEAEA", borderRadius: "8px" }}>
-                      <p className="text-[11px] font-normal uppercase tracking-[0.15em]" style={{ color: "#B8976A" }}>Response from MWP SUPPLEMENTS:</p>
+                      <p className="text-[11px] font-normal uppercase tracking-[0.15em]" style={{ color: "#C9992F" }}>Response from MWP SUPPLEMENTS:</p>
                       <p className="mt-2 text-[13px] leading-relaxed font-light" style={{ color: "#666666" }}>{review.adminReply}</p>
                       {review.adminReplyDate && <p className="mt-2 text-[11px]" style={{ color: "#999999" }}>Replied on {new Date(review.adminReplyDate).toLocaleDateString()}</p>}
                     </div>
@@ -208,18 +208,19 @@ export default function ReviewSection({ product }) {
           </div>
 
           <div className="p-6" style={{ backgroundColor: "#FAFAFA", border: "1px solid #EAEAEA", borderRadius: "8px" }}>
-            <h3 className="font-display text-lg mb-5" style={{ color: "#111111" }}>Write a Review</h3>
+            <h3 className="font-display text-lg mb-5" style={{ color: "#12213F" }}>Write a Review</h3>
+            <p className="-mt-3 mb-4 text-[12px]" style={{ color: "#666666" }}>Reviews are open to customers with a delivered order for this product. Every review is checked before it is published.</p>
 
             {!showForm ? (
               <button onClick={() => { if (!isAuthenticated) { router.push(`/auth?redirect=/products/${product.slug}&review=true`); return; } setShowForm(true); }}
                 className="px-8 py-3 text-[11px] uppercase tracking-[0.18em] font-normal transition-colors duration-300"
-                style={{ backgroundColor: "#111111", color: "#fff", borderRadius: "8px" }}>
+                style={{ backgroundColor: "#12213F", color: "#fff", borderRadius: "8px" }}>
                 Write a Review
               </button>
             ) : ReviewFormComponent()}
 
             {!canReview() && (
-              <div className="mt-4 p-3 flex items-center text-[12px]" style={{ backgroundColor: "#FAFAFA", border: "1px solid rgba(184,151,106,0.3)", color: "#B8976A", borderRadius: "8px" }}>
+              <div className="mt-4 p-3 flex items-center text-[12px]" style={{ backgroundColor: "#FAFAFA", border: "1px solid rgba(184,151,106,0.3)", color: "#C9992F", borderRadius: "8px" }}>
                 <IconAlertCircle className="h-4 w-4 mr-2 flex-shrink-0" stroke={1.5} />
                 You need to purchase this product to write a review
               </div>
@@ -231,7 +232,7 @@ export default function ReviewSection({ product }) {
           <p className="text-[14px] mb-6 font-light" style={{ color: "#666666" }}>No reviews yet. Be the first to review this product!</p>
           <button onClick={() => { if (!isAuthenticated) { router.push(`/auth?redirect=/products/${product.slug}&review=true`); return; } setShowForm(true); }}
             className="px-8 py-3 text-[11px] uppercase tracking-[0.18em] font-normal transition-colors duration-300"
-            style={{ backgroundColor: "#111111", color: "#fff", borderRadius: "8px" }}>
+            style={{ backgroundColor: "#12213F", color: "#fff", borderRadius: "8px" }}>
             Write a Review
           </button>
 

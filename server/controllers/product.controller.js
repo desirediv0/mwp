@@ -465,6 +465,13 @@ export const getProductBySlug = asyncHandler(async (req, res) => {
     throw new ApiError(404, "Product not found");
   }
 
+  // Average over ALL approved reviews (the list above only carries the latest few)
+  const ratingAgg = await prisma.review.aggregate({
+    where: { productId: product.id, status: "APPROVED" },
+    _avg: { rating: true },
+  });
+  const approvedAvg = ratingAgg._avg.rating;
+
   // Get the category ID from the product's categories
   const categoryId =
     product.categories.length > 0 ? product.categories[0].category.id : null;
@@ -674,13 +681,7 @@ export const getProductBySlug = asyncHandler(async (req, res) => {
       }));
     })(),
     // Average rating
-    avgRating:
-      product.reviews.length > 0
-        ? (
-          product.reviews.reduce((sum, review) => sum + review.rating, 0) /
-          product.reviews.length
-        ).toFixed(1)
-        : null,
+    avgRating: approvedAvg !== null && approvedAvg !== undefined ? Number(approvedAvg).toFixed(1) : null,
     reviewCount: product._count.reviews,
     // Include SEO fields
     metaTitle: product.metaTitle || product.name,

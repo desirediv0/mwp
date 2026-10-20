@@ -22,6 +22,10 @@ export default {
 				'luxe-xl': '0.4em',
 			},
 			colors: {
+				neutral: { 700: '#2a3a5e', 800: '#1b2d52', 900: '#12213F', 950: '#0B1530' },
+				brandnavy: '#12213F',
+				brandred: '#B3001B',
+				branddgold: '#D4A437',
 				background: 'hsl(var(--background))',
 				foreground: 'hsl(var(--foreground))',
 				card: {

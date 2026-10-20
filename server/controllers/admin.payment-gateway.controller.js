@@ -92,9 +92,12 @@ export const saveStripeSettings = asyncHandler(async (req, res) => {
     }
     // Make sure the key really works before saving it
     try {
-      await new Stripe(newSecret).balance.retrieve();
+      await new Stripe(newSecret, process.env.STRIPE_API_HOST ? { host: process.env.STRIPE_API_HOST, port: Number(process.env.STRIPE_API_PORT || 80), protocol: process.env.STRIPE_API_PROTOCOL || "http" } : undefined).balance.retrieve();
     } catch (err) {
-      throw new ApiError(400, `Stripe rejected this key: ${err.message}`);
+      // a restricted key may not be allowed to read the balance: the key itself is still valid
+      if (!(err?.type === "StripePermissionError" || err?.code === "permission_error")) {
+        throw new ApiError(400, `Stripe rejected this key: ${err.message}`);
+      }
     }
   }
   if (newWebhook && !newWebhook.startsWith("whsec_")) {

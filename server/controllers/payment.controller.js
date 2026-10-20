@@ -5,6 +5,7 @@ import { asyncHandler } from "../utils/asyncHandler.js";
 import sendEmail from "../utils/sendEmail.js";
 import { notifyAdmin } from "../utils/notify.js";
 import { autoSyncOrder, autoRefundOrder } from "../utils/quickbooks.js";
+import { sendMetaPurchase } from "../utils/metaCapi.js";
 import { getOrderConfirmationTemplate, getAdminNewOrderTemplate, getOrderCancelledTemplate, getAdminOrderCancelledTemplate } from "../email/temp/EmailTemplate.js";
 import { getFileUrl } from "../utils/deleteFromS3.js";
 import { getPrimaryProductImage } from "../utils/product-image.js";
@@ -278,10 +279,30 @@ export const confirmStripePayment = asyncHandler(async (req, res) => {
   const session = await stripe.checkout.sessions.retrieve(sessionId);
   const result = await fulfillStripeSession(session, req.user.id);
 
+  // Numbers the browser needs for its purchase tracking event
+  const full = await prisma.order.findUnique({
+    where: { id: result.order.id },
+    include: { items: { include: { variant: { select: { sku: true } }, product: { select: { name: true } } } } },
+  });
+  const analytics = full
+    ? {
+        value: parseFloat(full.total),
+        tax: parseFloat(full.tax),
+        shipping: parseFloat(full.shippingCost),
+        coupon: full.couponCode || undefined,
+        items: full.items.map((i) => ({
+          item_id: i.variant?.sku || i.variantId,
+          item_name: i.productSnapshot?.name || i.product?.name,
+          price: parseFloat(i.price),
+          quantity: i.quantity,
+        })),
+      }
+    : null;
+
   res.status(200).json(
     new ApiResponsive(
       200,
-      { orderId: result.order.id, orderNumber: result.order.orderNumber, paymentId: result.payment.id },
+      { orderId: result.order.id, orderNumber: result.order.orderNumber, paymentId: result.payment.id, analytics },
       "Payment confirmed and order created successfully"
     )
   );
@@ -292,9 +313,13 @@ export const confirmStripePayment = asyncHandler(async (req, res) => {
 export const stripeWebhook = async (req, res) => {
   let event;
   try {
-    const { stripe, webhookSecret } = await getStripeContext();
+    const { stripe, webhookSecret, settings } = await getStripeContext();
     if (!webhookSecret) return res.status(400).send("Stripe webhook secret is not configured");
     event = stripe.webhooks.constructEvent(req.body, req.headers["stripe-signature"], webhookSecret);
+    // A test-mode event must never create a live order (or the other way round)
+    if (typeof event.livemode === "boolean" && settings?.mode && event.livemode !== (settings.mode === "LIVE")) {
+      return res.status(200).send("Ignored: event mode does not match the saved Stripe mode");
+    }
   } catch (err) {
     return res.status(400).send(`Webhook Error: ${err.message}`);
   }
@@ -337,6 +362,13 @@ export async function fulfillStripeSession(session, expectedUserId = null) {
 
   if (stripePayment.orderId) return loadFulfilled(stripePayment);
   if (session.payment_status !== "paid") throw new ApiError(400, "Payment has not been completed");
+  if (session.currency && String(session.currency).toLowerCase() !== "usd") {
+    throw new ApiError(400, "Payment currency must be USD");
+  }
+  const savedMode = stripePayment.checkoutPayload?.paymentMode;
+  if (typeof session.livemode === "boolean" && savedMode && session.livemode !== (savedMode === "LIVE")) {
+    throw new ApiError(409, "This payment was made in a different Stripe mode than the one it was started in");
+  }
 
   // Claim the session so the webhook and the success page can never create two orders.
   const paymentIntentId =
@@ -907,6 +939,9 @@ export async function fulfillStripeSession(session, expectedUserId = null) {
 
     // Record the sale in QuickBooks (non-blocking; admin can retry from the order)
     autoSyncOrder(result.order.id);
+
+    // Server-side Purchase event for Meta (deduplicated with the browser pixel by order id)
+    sendMetaPurchase(result.order.id);
 
     // Send order confirmation email
     try {

@@ -1,4 +1,4 @@
-.mwp-compare-page { background: #fff; color: #171717; min-height: 60vh; }
+.mwp-compare-page { background: #fff; color: #12213F; min-height: 60vh; }
 .mwp-compare-shell { max-width: 1320px; margin-inline: auto; padding: 44px 32px 64px; }
 .mwp-compare-eyebrow { display: flex; align-items: center; gap: 9px; font-size: 10px; letter-spacing: .18em; color: #15803d; margin-bottom: 16px; }
 .mwp-compare-title { font-size: clamp(30px, 3.7vw, 50px); line-height: 1.12; letter-spacing: -.045em; }
@@ -21,7 +21,7 @@
 .mwp-compare-product-image { border-radius: 18px; }
 .mwp-compare-product button[aria-label^='Remove'] { width: 32px; height: 32px; top: -8px; right: -8px; color: #737373; }
 .mwp-compare-product button:not([aria-label]) { min-height: 44px; text-transform: none; letter-spacing: 0; border-radius: 11px; font-size: 12px; }
-.mwp-compare-product button:not([aria-label]):hover { background: #166534; }
+.mwp-compare-product button:not([aria-label]):hover { background: #B3001B; }
 .mwp-compare-table tr[id] { scroll-margin-top: 140px; }
 .mwp-compare-table tr[id] td { background: #eef5e9; color: #42633b; text-transform: none; letter-spacing: .02em; font-size: 13px; padding: 13px 18px; }
 .mwp-compare-row:hover td { background: #fcfcfa; }
@@ -32,8 +32,8 @@
 .mwp-compare-welcome h1 { font-size: clamp(42px, 4.6vw, 65px); letter-spacing: -.05em; line-height: 1.05; margin-bottom: 20px; }
 .mwp-compare-welcome h1 span { color: #527044; }
 .mwp-compare-welcome p:not(.mwp-compare-eyebrow) { max-width: 420px; font-size: 15px; line-height: 1.75; color: #72776d; }
-.mwp-compare-primary { display: inline-flex; min-height: 48px; align-items: center; justify-content: center; gap: 20px; background: #171717; border-radius: 99px; padding: 12px 22px; color: #fff; font-size: 13px; margin-top: 26px; }
-.mwp-compare-primary:hover { background: #166534; }
+.mwp-compare-primary { display: inline-flex; min-height: 48px; align-items: center; justify-content: center; gap: 20px; background: #12213F; border-radius: 99px; padding: 12px 22px; color: #fff; font-size: 13px; margin-top: 26px; }
+.mwp-compare-primary:hover { background: #B3001B; }
 .mwp-compare-note { display: block; font-size: 11px; color: #7b8375; margin-top: 12px; }
 .mwp-compare-welcome-bottles { display: flex; gap: 12px; justify-content: center; align-items: center; padding-top: 16px; }
 .mwp-compare-welcome-bottles > div { display: flex; justify-content: center; align-items: center; flex: 1; min-width: 0; border-radius: 70px; height: 290px; border: 1px solid #ffffffb3; box-shadow: 0 15px 25px -22px #8e9a7b; }

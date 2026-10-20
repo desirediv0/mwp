@@ -371,7 +371,7 @@ export default function DashboardLayout() {
             to="/dashboard"
             className="flex items-center gap-2.5 font-semibold text-white text-base"
           >
-            <img src="/logo.png" alt="MWP SUPPLEMENTS" className="h-8 w-auto object-contain" />
+            <img src="/mwp-logo.png" alt="MWP SUPPLEMENTS" className="h-8 w-auto object-contain" />
             <div className="flex flex-col">
               <span className="font-extrabold text-xs tracking-wider text-white">MWP ADMIN</span>
               <span className="text-[9px] text-red-400 font-semibold tracking-widest uppercase">MEN | WOMEN | POWER</span>
@@ -771,7 +771,7 @@ export default function DashboardLayout() {
             className="flex items-center gap-2.5 font-semibold text-white text-base"
             onClick={toggleMobileMenu}
           >
-            <img src="/logo.png" alt="MWP SUPPLEMENTS" className="h-8 w-auto object-contain" />
+            <img src="/mwp-logo.png" alt="MWP SUPPLEMENTS" className="h-8 w-auto object-contain" />
             <div className="flex flex-col">
               <span className="font-extrabold text-xs tracking-wider text-white">MWP ADMIN</span>
               <span className="text-[9px] text-red-400 font-semibold tracking-widest uppercase">MEN | WOMEN | POWER</span>

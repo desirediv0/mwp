@@ -38,7 +38,7 @@ export const getStoreConfig = () => {
     socialTwitter: process.env.SOCIAL_TWITTER || "",
     socialInstagram: process.env.SOCIAL_INSTAGRAM || "https://www.instagram.com/mwpsupplements",
     socialYoutube: process.env.SOCIAL_YOUTUBE || "",
-    socialWhatsapp: process.env.SOCIAL_WHATSAPP || "917678336268",
+    socialWhatsapp: process.env.SOCIAL_WHATSAPP || "",
   };
 };
 

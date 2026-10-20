@@ -93,7 +93,7 @@ export default function CheckoutRecommendations({ title = "You May Also Like" })
                   sizes="(max-width: 640px) 45vw, 20vw"
                 />
                 {!p.inStock && (
-                  <span className="absolute top-2 left-2 bg-black text-white text-[8px] uppercase tracking-[0.15em] px-2 py-1 rounded">
+                  <span className="absolute top-2 left-2 bg-[#12213F] text-white text-[8px] uppercase tracking-[0.15em] px-2 py-1 rounded">
                     Sold Out
                   </span>
                 )}
@@ -121,7 +121,7 @@ export default function CheckoutRecommendations({ title = "You May Also Like" })
                 <button
                   onClick={() => handleAdd(p)}
                   disabled={!p.inStock || !p.variantId || busy || inCart}
-                  className="mt-2 flex items-center justify-center gap-1.5 py-2 text-[9px] uppercase tracking-[0.18em] font-semibold border border-black/15 rounded-md text-black hover:bg-black hover:text-white transition-colors disabled:opacity-40 disabled:hover:bg-transparent disabled:hover:text-black"
+                  className="mt-2 flex items-center justify-center gap-1.5 py-2 text-[9px] uppercase tracking-[0.18em] font-semibold border border-black/15 rounded-md text-black hover:bg-[#12213F] hover:text-white transition-colors disabled:opacity-40 disabled:hover:bg-transparent disabled:hover:text-black"
                 >
                   {inCart || justAdded ? (
                     <>

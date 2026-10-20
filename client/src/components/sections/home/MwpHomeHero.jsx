@@ -11,7 +11,7 @@ import { TRUST_CLAIMS } from "@/lib/trustClaims";
 // Composition reference: 21st.dev's Product Spotlight Hero Section.
 // Adapted for MWP with existing assets and a controllable product carousel.
 const FORMULAS = [
-  { key: "ultra-pro", name: "Ultra Pro", category: "Men's vitality", purpose: "Everyday support for vitality, stamina and confidence.", color: "#886b40" },
+  { key: "ultra-pro", name: "Ultra Pro", category: "Men's vitality", purpose: "Everyday support for vitality, stamina and confidence.", color: "#A8741F" },
   { key: "power-max", name: "Power Max", category: "Strength & stamina", purpose: "Herbal support for strength, stamina and performance.", color: "#395577" },
   { key: "rapid-boost", name: "Rapid Boost", category: "Energy & focus", purpose: "Support for energy, focus and everyday performance.", color: "#a33a37" },
   { key: "her-power", name: "Her Power", category: "Women's wellness", purpose: "Daily wellness support for balance and vitality.", color: "#a94b70" },
@@ -77,9 +77,9 @@ export default function MwpHomeHero() {
             <h1 id="mwp-hero-title" className="text-[46px] leading-[1.04] tracking-[-0.045em] sm:text-[64px] xl:text-[78px]">
               Your everyday.
               <br />
-              <span className="text-[#886b40]">Your kind of</span>
+              <span className="text-[#A8741F]">Your kind of</span>
               <br />
-              <span className="text-[#886b40]">power.</span>
+              <span className="text-[#A8741F]">power.</span>
             </h1>
             <p className="mt-6 max-w-[390px] text-[15px] leading-7 text-neutral-600 sm:text-base">
               Supplements for men, women and everyday wellness. Explore eight formulas for energy, vitality and performance—and find the one that fits your routine.

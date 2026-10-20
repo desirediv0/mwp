@@ -5,15 +5,12 @@ import Image from "next/image";
 import {
   IconBrandInstagram,
   IconBrandFacebook,
-  IconBrandWhatsapp,
   IconLeaf,
   IconFlask2,
   IconShieldCheck,
   IconTrophy,
 } from "@tabler/icons-react";
 import { useLanguage } from "@/lib/language-context";
-
-const WHATSAPP_NUMBER = "917678336268";
 
 export const Footer = () => {
   const { t } = useLanguage();
@@ -55,7 +52,6 @@ export const Footer = () => {
   const socials = [
     { href: "https://www.instagram.com/mwpsupplements", Icon: IconBrandInstagram, label: "Instagram" },
     { href: "https://www.facebook.com/mwpsupplements", Icon: IconBrandFacebook, label: "Facebook" },
-    { href: `https://wa.me/${WHATSAPP_NUMBER}`, Icon: IconBrandWhatsapp, label: "WhatsApp" },
   ];
 
   return (
@@ -65,7 +61,7 @@ export const Footer = () => {
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-[1.2fr_0.85fr_0.95fr_0.85fr_1.2fr] gap-x-10 gap-y-12 xl:gap-x-12">
           <div className="sm:col-span-2 lg:col-span-4 xl:col-span-1">
             <Image
-              src="/logo.png"
+              src="/mwp-logo.png"
               alt="MWP SUPPLEMENTS"
               width={160}
               height={64}
@@ -119,13 +115,8 @@ export const Footer = () => {
               </a>
             </li>
             <li>
-              <a href={`https://wa.me/${WHATSAPP_NUMBER}`} target="_blank" rel="noopener noreferrer" className="inline-block py-1 text-[13px] leading-6 text-neutral-500 hover:text-neutral-900 transition-colors">
-                WhatsApp
-              </a>
-            </li>
-            <li>
-              <a href="tel:+917678336268" className="inline-block py-1 text-[13px] leading-6 text-neutral-500 hover:text-neutral-900 transition-colors whitespace-nowrap">
-                +91 76783 36268
+              <a href="tel:+15625243557" className="inline-block py-1 text-[13px] leading-6 text-neutral-500 hover:text-neutral-900 transition-colors whitespace-nowrap">
+                (562) 524-3557
               </a>
             </li>
             <li>
