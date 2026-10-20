@@ -26,6 +26,7 @@ import {
   Eye,
   Truck,
   BookOpen,
+  BarChart3,
   Video,
   BadgeCheck,
   ShieldCheck,
@@ -284,7 +285,7 @@ export default function DashboardLayout() {
         secretAccess: false,
         fragranceQuiz: false,
       });
-    } else if (path.startsWith("/settings") || path.startsWith("/moq-settings") || path.startsWith("/pricing-slabs") || path.startsWith("/payment-settings") || path.startsWith("/payment-gateway-settings") || path.startsWith("/price-visibility-settings") || path.startsWith("/shipping-settings") || path.startsWith("/quickbooks-settings")) {
+    } else if (path.startsWith("/settings") || path.startsWith("/moq-settings") || path.startsWith("/pricing-slabs") || path.startsWith("/payment-settings") || path.startsWith("/payment-gateway-settings") || path.startsWith("/price-visibility-settings") || path.startsWith("/shipping-settings") || path.startsWith("/quickbooks-settings") || path.startsWith("/tracking-settings")) {
       setOpenSections({
         products: false,
         orders: false,
@@ -685,6 +686,16 @@ export default function DashboardLayout() {
                     ),
                   },
                   {
+                    href: "/tracking-settings",
+                    title: "Tracking & Pixels",
+                    icon: <BarChart3 className="h-3 w-3" />,
+                    hasPermission: hasPermissionFor(
+                      admin,
+                      Resource.SETTINGS,
+                      Action.UPDATE
+                    ),
+                  },
+                  {
                     href: "/quickbooks-settings",
                     title: "QuickBooks",
                     icon: <BookOpen className="h-3 w-3" />,
@@ -1076,6 +1087,16 @@ export default function DashboardLayout() {
                     href: "/payment-gateway-settings",
                     title: t("nav.gateway_keys"),
                     icon: <CreditCard className="h-3 w-3" />,
+                    hasPermission: hasPermissionFor(
+                      admin,
+                      Resource.SETTINGS,
+                      Action.UPDATE
+                    ),
+                  },
+                  {
+                    href: "/tracking-settings",
+                    title: "Tracking & Pixels",
+                    icon: <BarChart3 className="h-3 w-3" />,
                     hasPermission: hasPermissionFor(
                       admin,
                       Resource.SETTINGS,

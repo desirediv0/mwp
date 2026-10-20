@@ -11,7 +11,7 @@ const FALLBACK = {
 
 export async function getTrackingConfig() {
   try {
-    const res = await fetch(`${API_URL.replace(//$/, "")}/tracking-config`, { next: { revalidate: 60 } });
+    const res = await fetch(`${API_URL.replace(/\/$/, "")}/tracking-config`, { next: { revalidate: 60 } });
     if (!res.ok) return FALLBACK;
     const json = await res.json();
     const d = json?.data || {};

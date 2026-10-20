@@ -52,6 +52,7 @@ import PricingSlabsPage from "./pages/PricingSlabsPage";
 import PaymentGatewaySettingsPage from "./pages/PaymentGatewaySettingsPage";
 import ShippingSettingsPage from "./pages/ShippingSettingsPage";
 import QuickBooksSettingsPage from "./pages/QuickBooksSettingsPage";
+import TrackingSettingsPage from "./pages/TrackingSettingsPage";
 import EmailMarketingPage from "./pages/EmailMarketingPage";
 import AdminHelpPage from "./pages/AdminHelpPage";
 import SettingsPage from "./pages/SettingsPage";
@@ -415,6 +416,18 @@ const App = () => {
               }
             />
 
+
+            <Route
+              path="tracking-settings"
+              element={
+                <ProtectedRoute
+                  resource={Resource.SETTINGS}
+                  action={Action.UPDATE}
+                >
+                  <TrackingSettingsPage />
+                </ProtectedRoute>
+              }
+            />
 
             <Route
               path="quickbooks-settings"
