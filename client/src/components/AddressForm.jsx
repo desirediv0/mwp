@@ -30,7 +30,7 @@ export default function AddressForm({ onSuccess, onCancel, existingAddress = nul
         city: (v) => (!v.trim() ? "City is required" : !/^[A-Za-z][A-Za-z .'-]*$/.test(v.trim()) ? "Enter a valid city" : ""),
         state: (v) => (!v ? "Choose a state" : ""),
         postalCode: (v) => (!v.trim() ? "ZIP code is required" : !isValidUsZip(v) ? "Enter a valid ZIP code (12345 or 12345-6789)" : ""),
-        phone: (v) => (!v.trim() ? "Phone number is required" : !isValidUsPhone(v) ? "Enter a valid US phone number, like (562) 524-3557" : ""),
+        phone: (v) => (!v.trim() ? "Phone number is required" : !isValidUsPhone(v) ? (/^[01]/.test(String(v).replace(/\D/g, "").replace(/^1(?=\d{10}$)/, "")) ? "A US area code cannot start with 0 or 1. Use a number like (562) 524-3557" : "Enter a valid US phone number, like (562) 524-3557") : ""),
     };
 
     const handleChange = (e) => {
@@ -56,7 +56,16 @@ export default function AddressForm({ onSuccess, onCancel, existingAddress = nul
     const handleSubmit = async (e) => {
         e.preventDefault();
         if (!validateForm()) {
-            toast.error("Please fix the errors in the form");
+            // name the first problem and jump to it, so it is obvious what to fix
+            const order = ["name", "street", "city", "state", "postalCode", "phone"];
+            const bad = order.find((f) => validations[f]?.(formData[f]));
+            const message = bad ? validations[bad](formData[bad]) : "";
+            toast.error(message ? `Please fix: ${message}` : "Please fix the errors in the form");
+            if (bad && typeof document !== "undefined") {
+                const el = document.getElementById(bad);
+                el?.scrollIntoView({ behavior: "smooth", block: "center" });
+                el?.focus({ preventScroll: true });
+            }
             return;
         }
         setLoading(true);
@@ -79,8 +88,8 @@ export default function AddressForm({ onSuccess, onCancel, existingAddress = nul
         }
     };
 
-    const errorClass = "border-neutral-900";
-    const fieldError = (name) => errors[name] && <p className="text-neutral-900 text-sm mt-1">{errors[name]}</p>;
+    const errorClass = "border-red-500 bg-red-50/40 focus-visible:ring-red-500";
+    const fieldError = (name) => errors[name] && <p role="alert" className="mt-1 text-sm font-medium text-red-600">{errors[name]}</p>;
 
     return (
         <div className={isInline ? "p-4 border rounded-lg mb-4" : ""}>
@@ -90,7 +99,7 @@ export default function AddressForm({ onSuccess, onCancel, existingAddress = nul
                     <button type="button" onClick={onCancel} className="text-gray-500 hover:text-gray-700"><XCircle className="h-5 w-5" /></button>
                 </div>
             )}
-            {errors.general && <div className="mb-4 p-3 bg-neutral-50 text-neutral-900 text-sm rounded-md">{errors.general}</div>}
+            {errors.general && <div role="alert" className="mb-4 rounded-md border border-red-200 bg-red-50 p-3 text-sm font-medium text-red-700">{errors.general}</div>}
             <form onSubmit={handleSubmit} className="space-y-4" noValidate>
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                     <div className="sm:col-span-2 lg:col-span-3">
