@@ -74,7 +74,7 @@ export default function ReturnsPage() {
                         <div className="bg-white rounded-lg shadow p-8 flex justify-center"><div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div></div>
                     ) : returnRequests.length === 0 ? (
                         <div className="bg-white rounded-lg shadow p-8 text-center">
-                            <DynamicIcon name="RotateCcw" className="h-16 w-16 mx-auto text-gray-400 mb-4" />
+                            <DynamicIcon name="RotateCcw" className="h-16 w-16 mx-auto text-neutral-600 mb-4" />
                             <h2 className="text-xl font-semibold mb-2">No Return Requests</h2>
                             <p className="text-gray-600 mb-6">You haven&apos;t submitted any return requests yet.</p>
                             <Link href="/account/orders"><Button>View My Orders</Button></Link>

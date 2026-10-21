@@ -51,11 +51,11 @@ export default function ChangePasswordPage() {
             <label htmlFor={name} className="block text-sm font-medium text-gray-700 mb-1">{label}</label>
             <div className="relative">
                 <Input id={name} name={name} type={showPassword[field] ? "text" : "password"} value={formData[name]} onChange={handleChange} required minLength={name === "newPassword" ? 8 : undefined} className="pr-10" />
-                <button type="button" className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600" onClick={() => togglePasswordVisibility(field)}>
+                <button type="button" className="absolute inset-y-0 right-0 pr-3 flex items-center text-neutral-600 hover:text-gray-600" onClick={() => togglePasswordVisibility(field)}>
                     <DynamicIcon name={showPassword[field] ? "EyeOff" : "Eye"} className="h-5 w-5" />
                 </button>
             </div>
-            {name === "newPassword" && <p className="text-xs text-gray-500 mt-1">Password must be at least 8 characters long</p>}
+            {name === "newPassword" && <p className="text-xs text-neutral-600 mt-1">Password must be at least 8 characters long</p>}
         </div>
     );
 

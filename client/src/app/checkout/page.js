@@ -310,7 +310,7 @@ export default function CheckoutPage() {
         return (
             <div className="min-h-screen bg-white flex flex-col items-center justify-center gap-4">
                 <div className="w-8 h-8 border border-black/10 border-t-black rounded-full animate-spin" />
-                <p className="text-[10px] text-black/30 uppercase tracking-[0.2em] font-medium">Loading Checkout</p>
+                <p className="text-[11px] text-neutral-600 uppercase tracking-[0.2em] font-medium">Loading Checkout</p>
             </div>
         );
     }
@@ -324,18 +324,18 @@ export default function CheckoutPage() {
                     </div>
                     <h1 className="text-3xl font-light text-black mb-2 tracking-tight">Order Confirmed</h1>
                     {orderNumber && (
-                        <p className="text-[11px] text-black/40 uppercase tracking-[0.2em] font-medium mb-4">
+                        <p className="text-[11px] text-neutral-600 uppercase tracking-[0.2em] font-medium mb-4">
                             Order #{orderNumber}
                         </p>
                     )}
                     <div className="inline-flex items-center gap-2 bg-green-50/50 border border-green-100 px-4 py-2 rounded-full mb-6">
                         <CheckCircle className="h-3.5 w-3.5 text-green-600" />
-                        <span className="text-[10px] font-medium text-green-700 uppercase tracking-wider">Payment Received</span>
+                        <span className="text-[11px] font-medium text-green-700 uppercase tracking-wider">Payment Received</span>
                     </div>
-                    <p className="text-[13px] text-black/40 font-light leading-relaxed max-w-sm mx-auto mb-8">
+                    <p className="text-[13px] text-neutral-600 font-light leading-relaxed max-w-sm mx-auto mb-8">
                         Thank you for your order. A confirmation email has been sent to your registered address.
                     </p>
-                    <div className="flex items-center justify-center gap-2 text-[10px] text-black/30 mb-8">
+                    <div className="flex items-center justify-center gap-2 text-[11px] text-neutral-600 mb-8">
                         <Loader2 className="h-3 w-3 animate-spin" />
                         <span>Redirecting in {redirectCountdown}s · <Link href="/account/orders" className="underline hover:text-black">Go now</Link></span>
                     </div>
@@ -346,7 +346,7 @@ export default function CheckoutPage() {
                             </button>
                         </Link>
                         <Link href="/products">
-                            <button className="border border-black/10 text-black text-[10px] uppercase tracking-[0.2em] font-medium px-6 py-3 hover:border-black/30 transition-all">
+                            <button className="border border-black/10 text-black text-[11px] uppercase tracking-[0.2em] font-medium px-6 py-3 hover:border-black/30 transition-all">
                                 Continue Shopping
                             </button>
                         </Link>
@@ -366,7 +366,7 @@ export default function CheckoutPage() {
                             <Loader2 className="h-6 w-6 text-black animate-spin" />
                         </div>
                         <h3 className="text-sm uppercase tracking-[0.15em] text-black font-medium">Processing</h3>
-                        <p className="text-[11px] text-black/40 font-light">Do not close this window</p>
+                        <p className="text-[11px] text-neutral-600 font-light">Do not close this window</p>
                     </div>
                 </div>
             )}
@@ -374,19 +374,19 @@ export default function CheckoutPage() {
             <div className="max-w-6xl mx-auto px-4 sm:px-6 pt-10 sm:pt-16">
                 {/* Header */}
                 <div className="mb-8 sm:mb-12">
-                    <Link href="/cart" className="inline-flex items-center gap-2 text-[10px] uppercase tracking-[0.2em] text-black/30 hover:text-black transition-colors mb-4 sm:mb-6">
+                    <Link href="/cart" className="inline-flex items-center gap-2 text-[11px] uppercase tracking-[0.2em] text-neutral-600 hover:text-black transition-colors mb-4 sm:mb-6">
                         <ArrowLeft className="h-3 w-3" strokeWidth={1.5} />
                         Back to Cart
                     </Link>
                     <h1 className="text-3xl sm:text-4xl font-semibold text-black tracking-tight">Checkout</h1>
-                    <p className="text-[11px] text-black/30 mt-1 uppercase tracking-widest">Secure · Encrypted · SSL</p>
+                    <p className="text-[11px] text-neutral-600 mt-1 uppercase tracking-widest">Secure · Encrypted · SSL</p>
                 </div>
 
                 {error && (
                     <div className="mb-6 p-4 bg-neutral-100/50 border border-neutral-200 rounded-lg flex items-start gap-3 text-xs text-neutral-800">
                         <AlertCircle className="flex-shrink-0 mt-0.5 h-4 w-4" />
                         <div>
-                            <p className="font-medium uppercase tracking-wider text-[10px]">Payment Error</p>
+                            <p className="font-medium uppercase tracking-wider text-[11px]">Payment Error</p>
                             <p className="mt-0.5 text-[11px]">{error}</p>
                         </div>
                     </div>
@@ -399,12 +399,12 @@ export default function CheckoutPage() {
                         <div className="bg-white border border-[#e6ded2] rounded-2xl p-5 sm:p-6">
                             <div className="flex items-center justify-between mb-5 pb-4 border-b border-black/5">
                                 <h2 className="text-sm uppercase tracking-[0.15em] text-black font-medium flex items-center gap-2">
-                                    <MapPin className="h-4 w-4 text-black/40" strokeWidth={1.5} />
+                                    <MapPin className="h-4 w-4 text-neutral-600" strokeWidth={1.5} />
                                     Shipping Address
                                 </h2>
                                 <button
                                     onClick={() => setShowAddressForm(!showAddressForm)}
-                                    className="text-[10px] uppercase tracking-widest text-black/40 hover:text-black transition-colors flex items-center gap-1 font-medium"
+                                    className="text-[11px] uppercase tracking-widest text-neutral-600 hover:text-black transition-colors flex items-center gap-1 font-medium"
                                 >
                                     {showAddressForm ? <X className="h-3 w-3" /> : <Plus className="h-3 w-3" />}
                                     {showAddressForm ? "Cancel" : "Add New"}
@@ -422,7 +422,7 @@ export default function CheckoutPage() {
                             )}
 
                             {addresses.length === 0 && !showAddressForm ? (
-                                <div className="text-center py-8 text-[12px] text-black/30 font-light">
+                                <div className="text-center py-8 text-[12px] text-neutral-600 font-light">
                                     No addresses found. Please add one to continue.
                                 </div>
                             ) : (
@@ -447,17 +447,17 @@ export default function CheckoutPage() {
                                                         </span>
                                                     )}
                                                 </div>
-                                                <div className="text-[11px] text-black/40 leading-relaxed mb-3">
+                                                <div className="text-[11px] text-neutral-600 leading-relaxed mb-3">
                                                     <p>{address.street}</p>
                                                     <p>{formatCityLine(address)}</p>
                                                     <p>{formatCountry(address.country)}</p>
-                                                    {address.phone && <p className="mt-1 text-black/50 font-medium">{formatUsPhone(address.phone)}</p>}
+                                                    {address.phone && <p className="mt-1 text-neutral-600 font-medium">{formatUsPhone(address.phone)}</p>}
                                                 </div>
                                                 <div className="flex items-center gap-2 pt-2 border-t border-black/5">
                                                     <div className={`w-3.5 h-3.5 rounded-full border flex items-center justify-center ${selected ? "border-black" : "border-black/20"}`}>
                                                         {selected && <div className="w-1.5 h-1.5 rounded-full bg-neutral-900" />}
                                                     </div>
-                                                    <span className="text-[10px] text-black/40 font-medium">Ship here</span>
+                                                    <span className="text-[11px] text-neutral-600 font-medium">Ship here</span>
                                                 </div>
                                             </div>
                                         );
@@ -469,13 +469,13 @@ export default function CheckoutPage() {
                         {/* Shipping method */}
                         <div className="bg-white border border-[#e6ded2] rounded-2xl p-5 sm:p-6">
                             <h2 className="text-sm uppercase tracking-[0.15em] text-black font-medium mb-5 pb-4 border-b border-black/5 flex items-center gap-2">
-                                <Truck className="h-4 w-4 text-black/40" strokeWidth={1.5} />
+                                <Truck className="h-4 w-4 text-neutral-600" strokeWidth={1.5} />
                                 Shipping Method
                             </h2>
                             {!selectedAddressId ? (
-                                <p className="text-[12px] text-black/40">Choose a shipping address to see delivery options.</p>
+                                <p className="text-[12px] text-neutral-600">Choose a shipping address to see delivery options.</p>
                             ) : loadingRates ? (
-                                <div className="flex items-center gap-2 text-[12px] text-black/40">
+                                <div className="flex items-center gap-2 text-[12px] text-neutral-600">
                                     <Loader2 className="h-4 w-4 animate-spin" /> Getting live rates from USPS, UPS and FedEx…
                                 </div>
                             ) : ratesError ? (
@@ -502,9 +502,9 @@ export default function CheckoutPage() {
                                                     <span>
                                                         <span className="block text-[12px] font-medium text-black">
                                                             {rate.carrier} {prettyService(rate.service)}
-                                                            {idx === 0 && <span className="ml-2 text-[9px] uppercase tracking-wider bg-[#12213F] text-white px-1.5 py-0.5 rounded-sm">Best value</span>}
+                                                            {idx === 0 && <span className="ml-2 text-[11px] uppercase tracking-wider bg-[#12213F] text-white px-1.5 py-0.5 rounded-sm">Best value</span>}
                                                         </span>
-                                                        <span className="block text-[11px] text-black/40 mt-0.5">
+                                                        <span className="block text-[11px] text-neutral-600 mt-0.5">
                                                             {rate.days ? `Delivery in about ${rate.days} business day${rate.days === 1 ? "" : "s"}` : "Standard delivery"}
                                                         </span>
                                                     </span>
@@ -516,7 +516,7 @@ export default function CheckoutPage() {
                                         );
                                     })}
                                     {shippingQuote?.freeShipping && (
-                                        <p className="text-[10px] text-green-600">Your order qualifies for free shipping on the first option.</p>
+                                        <p className="text-[11px] text-green-600">Your order qualifies for free shipping on the first option.</p>
                                     )}
                                 </div>
                             )}
@@ -533,10 +533,10 @@ export default function CheckoutPage() {
                                         <div className="w-3.5 h-3.5 rounded-full border border-black flex items-center justify-center">
                                             <div className="w-1.5 h-1.5 rounded-full bg-neutral-900" />
                                         </div>
-                                        <CreditCard className="h-4 w-4 text-black/40" strokeWidth={1.5} />
+                                        <CreditCard className="h-4 w-4 text-neutral-600" strokeWidth={1.5} />
                                     </div>
                                     <h3 className="text-[11px] uppercase tracking-wider text-black/70 font-medium">Credit / Debit Card</h3>
-                                    <p className="text-[10px] text-black/30 mt-1 font-light">
+                                    <p className="text-[11px] text-neutral-600 mt-1 font-light">
                                         You will pay on Stripe&apos;s secure page, then come straight back here. All prices are in USD.
                                     </p>
                                 </div>
@@ -581,18 +581,18 @@ export default function CheckoutPage() {
                                                 )}
                                             </div>
                                             <div className="flex-1 min-w-0">
-                                                <h4 className="text-[10px] text-black/70 uppercase tracking-wider truncate font-medium">{name}</h4>
+                                                <h4 className="text-[11px] text-black/70 uppercase tracking-wider truncate font-medium">{name}</h4>
                                                 {isBundle && item.bundleData?.selectedProducts?.length > 0 && (
-                                                    <p className="text-[9px] text-black/30 mt-0.5">{item.bundleData.selectedProducts.length} items</p>
+                                                    <p className="text-[11px] text-neutral-600 mt-0.5">{item.bundleData.selectedProducts.length} items</p>
                                                 )}
                                                 {!isBundle && (
-                                                    <p className="text-[9px] text-black/30 mt-0.5">Qty: {item.quantity}</p>
+                                                    <p className="text-[11px] text-neutral-600 mt-0.5">Qty: {item.quantity}</p>
                                                 )}
                                             </div>
                                             <div className="text-right">
                                                 <span className="text-[11px] text-black font-medium">{formatCurrency(item.subtotal)}</span>
                                                 {isBundle && item.bundleData?.actualPrice > item.bundleData?.bundlePrice && (
-                                                    <p className="text-[8px] text-black/20 line-through">{formatCurrency(item.bundleData.actualPrice)}</p>
+                                                    <p className="text-[8px] text-neutral-600 line-through">{formatCurrency(item.bundleData.actualPrice)}</p>
                                                 )}
                                             </div>
                                         </div>
@@ -605,9 +605,9 @@ export default function CheckoutPage() {
                                 <div className="flex items-center justify-between bg-green-50/50 border border-green-100 p-2.5 rounded-md mb-4">
                                     <div className="flex items-center gap-2">
                                         <Tag className="h-3 w-3 text-green-600" />
-                                        <span className="text-[10px] text-green-700 font-medium uppercase tracking-wider">{coupon.code}</span>
+                                        <span className="text-[11px] text-green-700 font-medium uppercase tracking-wider">{coupon.code}</span>
                                     </div>
-                                    <span className="text-[10px] text-green-600 font-medium">-{formatCurrency(totals.discount)}</span>
+                                    <span className="text-[11px] text-green-600 font-medium">-{formatCurrency(totals.discount)}</span>
                                 </div>
                             )}
 
@@ -630,7 +630,7 @@ export default function CheckoutPage() {
                                     ) : selectedRate.price > 0 ? (
                                         <span className="font-medium text-black">{formatCurrency(selectedRate.price)}</span>
                                     ) : (
-                                        <span className="font-medium text-green-600 uppercase tracking-widest text-[10px]">Free</span>
+                                        <span className="font-medium text-green-600 uppercase tracking-widest text-[11px]">Free</span>
                                     )}
                                 </div>
                                 {selectedRate && (

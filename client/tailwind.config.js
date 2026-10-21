@@ -87,8 +87,8 @@ export default {
 					error: '#C9A227',
 				},
 				noir: {
-					DEFAULT: '#09090B',
-					soft: '#18181B',
+					DEFAULT: '#12213F',
+					soft: '#1B2D52',
 					mist: '#27272A',
 				},
 				ivory: {
@@ -125,7 +125,7 @@ export default {
 					950: '#2E2206',
 				},
 				stone: {
-					DEFAULT: '#71717A',
+					DEFAULT: '#52525B',
 					dark: '#3F3F46',
 				},
 				line: '#E4E4E7',

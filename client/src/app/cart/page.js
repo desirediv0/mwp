@@ -121,7 +121,7 @@ const CartItem = React.memo(
                             {/* Custom Bespoke Perfume Details */}
                             {item.isCustom && item.customDetails && (
                                 <div className="mt-2 space-y-1 p-2.5 bg-neutral-100 border border-neutral-200 rounded-lg text-[11px] text-neutral-900">
-                                    <div className="flex items-center gap-1 font-bold uppercase text-[9px] tracking-wider text-[#7E52BC]">
+                                    <div className="flex items-center gap-1 font-bold uppercase text-[11px] tracking-wider text-[#7E52BC]">
                                         ✨ Bespoke Formula Specification
                                     </div>
                                     <p><strong>Base:</strong> {item.customDetails.baseNotes || "N/A"}</p>
@@ -135,14 +135,14 @@ const CartItem = React.memo(
 
                             {isBundle && item.bundleData?.selectedProducts?.length > 0 && (
                                 <div className="mt-2 space-y-1 p-2.5 bg-black/[0.02] border border-black/5 rounded-lg">
-                                    <p className="text-[10px] text-black/60 uppercase tracking-widest font-semibold">
+                                    <p className="text-[11px] text-neutral-600 uppercase tracking-widest font-semibold">
                                         Included Fragrances ({item.bundleData.selectedProducts.length}):
                                     </p>
                                     <div className="flex flex-wrap gap-1.5 pt-1">
                                         {item.bundleData.selectedProducts.map((product) => (
                                             <span
                                                 key={product.id}
-                                                className="inline-flex items-center text-[10px] font-medium text-black/70 bg-white border border-black/10 px-2 py-0.5 rounded"
+                                                className="inline-flex items-center text-[11px] font-medium text-black/70 bg-white border border-black/10 px-2 py-0.5 rounded"
                                             >
                                                 ✨ {product.name}
                                             </span>
@@ -152,7 +152,7 @@ const CartItem = React.memo(
                             )}
 
                             {isBundle && item.isValid === false && item.validationMessage && (
-                                <div className="mt-1.5 inline-flex items-center gap-1 text-[10px] font-medium text-neutral-800 bg-neutral-100 px-2 py-0.5 rounded-sm">
+                                <div className="mt-1.5 inline-flex items-center gap-1 text-[11px] font-medium text-neutral-800 bg-neutral-100 px-2 py-0.5 rounded-sm">
                                     <AlertCircle className="h-3 w-3" />
                                     {item.validationMessage}
                                 </div>
@@ -166,16 +166,16 @@ const CartItem = React.memo(
                                             style={{ backgroundColor: item.variant?.color?.hexCode || item.color?.hexCode }}
                                         />
                                     )}
-                                    <p className="text-[11px] text-black/40 font-medium">{variantName}</p>
+                                    <p className="text-[11px] text-neutral-600 font-medium">{variantName}</p>
                                 </div>
                             )}
 
                             {!isBundle && sku && (
-                                <p className="text-[10px] text-black/30 font-medium mt-0.5 font-mono">SKU: {sku}</p>
+                                <p className="text-[11px] text-neutral-600 font-medium mt-0.5 font-mono">SKU: {sku}</p>
                             )}
 
                             {!isBundle && item.moq && item.moq > 1 && (
-                                <p className="text-[10px] text-black/40 font-medium mt-1">
+                                <p className="text-[11px] text-neutral-600 font-medium mt-1">
                                     Min. order: {item.moq} units
                                 </p>
                             )}
@@ -190,7 +190,7 @@ const CartItem = React.memo(
                                             {formatCurrency(item.bundleData?.bundlePrice || item.price || item.subtotal)}
                                         </span>
                                         {item.bundleData?.actualPrice > (item.bundleData?.bundlePrice || item.price) && (
-                                            <span className="text-[10px] text-black/30 line-through">
+                                            <span className="text-[11px] text-neutral-600 line-through">
                                                 {formatCurrency(item.bundleData.actualPrice)}
                                             </span>
                                         )}
@@ -199,12 +199,12 @@ const CartItem = React.memo(
                                     <div className="flex items-baseline gap-2">
                                         <span className="text-sm font-semibold text-black">{formatCurrency(item.price)}</span>
                                         {item.originalPrice && item.originalPrice !== item.price && (
-                                            <span className="text-[10px] text-black/30 line-through">{formatCurrency(item.originalPrice)}</span>
+                                            <span className="text-[11px] text-neutral-600 line-through">{formatCurrency(item.originalPrice)}</span>
                                         )}
                                     </div>
                                 )}
                                 {isBundle && item.bundleData?.savings > 0 && (
-                                    <p className="text-[10px] text-green-600 font-medium">Save {formatCurrency(item.bundleData.savings)}</p>
+                                    <p className="text-[11px] text-green-600 font-medium">Save {formatCurrency(item.bundleData.savings)}</p>
                                 )}
                             </div>
                             <span className="text-sm font-semibold text-black">{formatCurrency(item.subtotal)}</span>
@@ -216,7 +216,7 @@ const CartItem = React.memo(
                         {/* Price */}
                         <div className="flex flex-col items-end min-w-[80px]">
                             {!isLoading && !item.isAuthenticated && item.hidePricesForGuests ? (
-                                <span className="text-[11px] text-black/30">Login to view</span>
+                                <span className="text-[11px] text-neutral-600">Login to view</span>
                             ) : isBundle ? (
                                 <>
                                     <div className="flex items-baseline gap-2">
@@ -224,13 +224,13 @@ const CartItem = React.memo(
                                             {formatCurrency(item.bundleData?.bundlePrice || item.price || item.subtotal)}
                                         </span>
                                         {item.bundleData?.actualPrice > (item.bundleData?.bundlePrice || item.price) && (
-                                            <span className="text-[10px] text-black/30 line-through">
+                                            <span className="text-[11px] text-neutral-600 line-through">
                                                 {formatCurrency(item.bundleData.actualPrice)}
                                             </span>
                                         )}
                                     </div>
                                     {item.bundleData?.savings > 0 && (
-                                        <p className="text-[10px] text-green-600 font-medium mt-0.5">Save {formatCurrency(item.bundleData.savings)}</p>
+                                        <p className="text-[11px] text-green-600 font-medium mt-0.5">Save {formatCurrency(item.bundleData.savings)}</p>
                                     )}
                                 </>
                             ) : (
@@ -238,7 +238,7 @@ const CartItem = React.memo(
                                     <div className="flex items-baseline gap-2">
                                         <span className="text-sm font-semibold text-black">{formatCurrency(item.price)}</span>
                                         {item.originalPrice && item.originalPrice !== item.price && (
-                                            <span className="text-[10px] text-black/30 line-through">{formatCurrency(item.originalPrice)}</span>
+                                            <span className="text-[11px] text-neutral-600 line-through">{formatCurrency(item.originalPrice)}</span>
                                         )}
                                     </div>
                                 </>
@@ -248,19 +248,19 @@ const CartItem = React.memo(
                         {/* Quantity */}
                         {isBundle ? (
                             <div className="flex flex-col items-center min-w-[60px]">
-                                <span className="text-[10px] text-black/30 uppercase tracking-widest font-medium mb-1">Qty</span>
+                                <span className="text-[11px] text-neutral-600 uppercase tracking-widest font-medium mb-1">Qty</span>
                                 <span className="text-sm font-semibold text-black h-9 flex items-center">1</span>
                             </div>
                         ) : (
                             <div className="flex flex-col items-center min-w-[60px]">
-                                <span className="text-[10px] text-black/30 uppercase tracking-widest font-medium mb-1">Qty</span>
+                                <span className="text-[11px] text-neutral-600 uppercase tracking-widest font-medium mb-1">Qty</span>
                                 <div className="flex items-center border border-black/10 rounded-md overflow-hidden h-9">
                                     <button
                                         onClick={() => onUpdateQuantity(item.id, item.quantity, -1)}
                                         className="w-8 h-full flex items-center justify-center hover:bg-black/[0.03] transition-colors disabled:opacity-30"
                                         disabled={isLoading || item.quantity <= (item.moq || 1)}
                                     >
-                                        <Minus className="h-3 w-3 text-black/60" />
+                                        <Minus className="h-3 w-3 text-neutral-600" />
                                     </button>
                                     <span className="w-8 text-center text-xs font-semibold text-black">
                                         {isLoading ? (
@@ -274,7 +274,7 @@ const CartItem = React.memo(
                                         className="w-8 h-full flex items-center justify-center hover:bg-black/[0.03] transition-colors disabled:opacity-30"
                                         disabled={isLoading}
                                     >
-                                        <Plus className="h-3 w-3 text-black/60" />
+                                        <Plus className="h-3 w-3 text-neutral-600" />
                                     </button>
                                 </div>
                             </div>
@@ -282,7 +282,7 @@ const CartItem = React.memo(
 
                         {/* Subtotal */}
                         <div className="flex flex-col items-end min-w-[90px]">
-                            <span className="text-[10px] text-black/30 uppercase tracking-widest font-medium mb-1">Total</span>
+                            <span className="text-[11px] text-neutral-600 uppercase tracking-widest font-medium mb-1">Total</span>
                             <span className="text-sm font-semibold text-black">
                                 {!isLoading && !item.isAuthenticated && item.hidePricesForGuests ? "-" : formatCurrency(item.subtotal)}
                             </span>
@@ -291,7 +291,7 @@ const CartItem = React.memo(
                         {/* Remove */}
                         <button
                             onClick={() => onRemove(item.id)}
-                            className="text-black/20 hover:text-neutral-600 p-2 rounded-md hover:bg-neutral-100 transition-all disabled:opacity-30 ml-2"
+                            className="text-neutral-600 hover:text-neutral-600 p-2 rounded-md hover:bg-neutral-100 transition-all disabled:opacity-30 ml-2"
                             aria-label="Remove item"
                             disabled={isLoading}
                         >
@@ -308,7 +308,7 @@ const CartItem = React.memo(
                 <div className="flex sm:hidden justify-end mt-2">
                     <button
                         onClick={() => onRemove(item.id)}
-                        className="text-[10px] text-black/30 hover:text-neutral-600 font-medium uppercase tracking-wider flex items-center gap-1 transition-colors"
+                        className="text-[11px] text-neutral-600 hover:text-neutral-600 font-medium uppercase tracking-wider flex items-center gap-1 transition-colors"
                         disabled={isLoading}
                     >
                         <Trash2 className="h-3 w-3" />
@@ -444,7 +444,7 @@ export default function CartPage() {
         return (
             <div className="min-h-screen bg-white flex flex-col items-center justify-center gap-4">
                 <div className="w-8 h-8 border border-black/10 border-t-black rounded-full animate-spin" />
-                <p className="text-[10px] text-black/30 uppercase tracking-[0.2em] font-medium">Loading</p>
+                <p className="text-[11px] text-neutral-600 uppercase tracking-[0.2em] font-medium">Loading</p>
             </div>
         );
     }
@@ -454,11 +454,11 @@ export default function CartPage() {
             <div className="mwp-cart min-h-screen bg-white flex flex-col items-center justify-center py-20 px-4">
                 <div className="text-center max-w-md mx-auto rounded-3xl bg-white border border-[#e6ded2] px-8 py-12">
                     <div className="w-16 h-16 mx-auto mb-6 border border-[#e6ded2] rounded-full flex items-center justify-center bg-white">
-                        <ShoppingBag className="h-7 w-7 text-black/20" strokeWidth={1} />
+                        <ShoppingBag className="h-7 w-7 text-neutral-600" strokeWidth={1} />
                     </div>
                     <h2 className="text-2xl font-semibold text-black mb-2 tracking-tight">Your bag is empty</h2>
                     <span className="block w-8 h-px bg-black/10 mx-auto my-4" />
-                    <p className="text-[13px] text-black/40 font-light leading-relaxed mb-8">
+                    <p className="text-[13px] text-neutral-600 font-light leading-relaxed mb-8">
                         Explore the MWP formulas and find what fits your routine.
                     </p>
                     <Link href="/products">
@@ -476,21 +476,21 @@ export default function CartPage() {
             <div className="max-w-6xl mx-auto px-4 sm:px-6 pt-10 sm:pt-16">
                 {/* Header */}
                 <div className="mb-8 sm:mb-12">
-                    <Link href="/products" className="inline-flex items-center gap-2 text-[10px] uppercase tracking-[0.2em] text-black/30 hover:text-black transition-colors mb-4 sm:mb-6">
+                    <Link href="/products" className="inline-flex items-center gap-2 text-[11px] uppercase tracking-[0.2em] text-neutral-600 hover:text-black transition-colors mb-4 sm:mb-6">
                         <ArrowLeft className="h-3 w-3" strokeWidth={1.5} />
                         Continue Shopping
                     </Link>
                     <div className="flex items-baseline justify-between">
                         <div>
                             <h1 className="text-3xl sm:text-4xl font-semibold text-black tracking-tight">Shopping Bag</h1>
-                            <p className="text-[11px] text-black/30 mt-1 uppercase tracking-widest">
+                            <p className="text-[11px] text-neutral-600 mt-1 uppercase tracking-widest">
                                 {itemCount} {itemCount === 1 ? "item" : "items"}
                                 {bundleCount > 0 && ` · ${bundleCount} bundle${bundleCount > 1 ? "s" : ""}`}
                             </p>
                         </div>
                         <button
                             onClick={handleClearCart}
-                            className="text-[10px] text-black/30 hover:text-neutral-600 uppercase tracking-widest font-medium transition-colors flex items-center gap-1.5"
+                            className="text-[11px] text-neutral-600 hover:text-neutral-600 uppercase tracking-widest font-medium transition-colors flex items-center gap-1.5"
                             disabled={loading}
                         >
                             <Trash2 className="h-3 w-3" />
@@ -503,7 +503,7 @@ export default function CartPage() {
                 {!isAuthenticated && cart.items.length > 0 && (
                     <div className="bg-white border border-[#e6ded2] p-4 sm:p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6 sm:mb-8 rounded-2xl">
                         <div>
-                            <p className="text-xs text-black/60 font-medium">Sign in to save your cart and access express checkout</p>
+                            <p className="text-xs text-neutral-600 font-medium">Sign in to save your cart and access express checkout</p>
                         </div>
                         <Link href="/auth?redirect=cart">
                             <button className="bg-neutral-900 text-white text-[11px] uppercase tracking-[0.15em] font-bold px-5 py-2.5 rounded-xl hover:bg-neutral-900 transition-all whitespace-nowrap">
@@ -517,7 +517,7 @@ export default function CartPage() {
                 {mergeProgress && (
                     <div className="bg-gray-900 text-white p-3 rounded-lg flex items-center gap-3 mb-6 sm:mb-8">
                         <Loader2 className="h-3.5 w-3.5 animate-spin flex-shrink-0" />
-                        <span className="text-[10px] uppercase tracking-widest font-medium">{mergeProgress}</span>
+                        <span className="text-[11px] uppercase tracking-widest font-medium">{mergeProgress}</span>
                     </div>
                 )}
 
@@ -557,8 +557,8 @@ export default function CartPage() {
                                             <div className="flex items-center gap-2">
                                                 <Tag className="h-3.5 w-3.5 text-green-600" />
                                                 <div>
-                                                    <p className="text-[10px] font-semibold text-green-700 uppercase tracking-wider">{coupon.code}</p>
-                                                    <p className="text-[10px] text-green-600 mt-0.5">
+                                                    <p className="text-[11px] font-semibold text-green-700 uppercase tracking-wider">{coupon.code}</p>
+                                                    <p className="text-[11px] text-green-600 mt-0.5">
                                                         {coupon.discountType === "PERCENTAGE"
                                                             ? `${coupon.discountValue}% off`
                                                             : `$${coupon.discountValue} off`}
@@ -581,7 +581,7 @@ export default function CartPage() {
                                                     placeholder="Coupon code"
                                                     value={couponCode}
                                                     onChange={(e) => setCouponCode(e.target.value.toUpperCase())}
-                                                    className="flex-1 border border-black/10 text-[11px] font-medium tracking-wider px-3 py-2.5 rounded-md bg-black/[0.01] focus:outline-none focus:border-black/30 transition-colors placeholder:text-black/20"
+                                                    className="flex-1 border border-black/10 text-[11px] font-medium tracking-wider px-3 py-2.5 rounded-md bg-black/[0.01] focus:outline-none focus:border-black/30 transition-colors placeholder:text-neutral-600"
                                                 />
                                                 <button
                                                     type="submit"
@@ -592,7 +592,7 @@ export default function CartPage() {
                                                 </button>
                                             </form>
                                             {couponError && (
-                                                <div className="mt-2 flex items-start gap-1.5 text-neutral-600 text-[10px] font-medium">
+                                                <div className="mt-2 flex items-start gap-1.5 text-neutral-600 text-[11px] font-medium">
                                                     <AlertCircle className="h-3 w-3 flex-shrink-0 mt-0.5" />
                                                     <p>{couponError}</p>
                                                 </div>
@@ -605,10 +605,10 @@ export default function CartPage() {
                             {/* Breakdown */}
                             <div className="space-y-3 text-xs mb-5 pb-5 border-b border-black/5">
                                 <div className="flex justify-between">
-                                    <span className="text-black/40 uppercase tracking-wider">Subtotal</span>
+                                    <span className="text-neutral-600 uppercase tracking-wider">Subtotal</span>
                                     <span className="font-medium text-black">
                                         {!isAuthenticated && hidePricesForGuests ? (
-                                            <Link href="/auth?redirect=cart" className="underline text-black/30">Login</Link>
+                                            <Link href="/auth?redirect=cart" className="underline text-neutral-600">Login</Link>
                                         ) : formatCurrency(totals.subtotal)}
                                     </span>
                                 </div>
@@ -621,12 +621,12 @@ export default function CartPage() {
                                 )}
 
                                 <div className="flex justify-between">
-                                    <span className="text-black/40 uppercase tracking-wider">Shipping</span>
-                                    <span className="font-medium text-black/50 text-[10px] uppercase tracking-widest">Calculated at checkout</span>
+                                    <span className="text-neutral-600 uppercase tracking-wider">Shipping</span>
+                                    <span className="font-medium text-neutral-600 text-[11px] uppercase tracking-widest">Calculated at checkout</span>
                                 </div>
 
                                 {totals.subtotal < cart.freeShippingThreshold && cart.freeShippingThreshold > 0 && (
-                                    <div className="text-[10px] text-black/50 bg-black/[0.02] p-2.5 rounded-md text-center">
+                                    <div className="text-[11px] text-neutral-600 bg-black/[0.02] p-2.5 rounded-md text-center">
                                         Add <strong className="text-black/70">{formatCurrency(cart.freeShippingThreshold - totals.subtotal)}</strong> more for free shipping
                                     </div>
                                 )}
@@ -634,10 +634,10 @@ export default function CartPage() {
 
                             {/* Total */}
                             <div className="flex justify-between items-baseline mb-5">
-                                <span className="text-[11px] uppercase tracking-[0.15em] text-black/50 font-medium">Total</span>
+                                <span className="text-[11px] uppercase tracking-[0.15em] text-neutral-600 font-medium">Total</span>
                                 <span className="text-xl font-light text-black">
                                     {!isAuthenticated && hidePricesForGuests ? (
-                                        <Link href="/auth?redirect=cart" className="underline text-black/30 text-sm">Login to view</Link>
+                                        <Link href="/auth?redirect=cart" className="underline text-neutral-600 text-sm">Login to view</Link>
                                     ) : formatCurrency(totals.total)}
                                 </span>
                             </div>
@@ -658,7 +658,7 @@ export default function CartPage() {
                                 )}
                             </button>
 
-                            <p className="text-[9px] text-black/20 text-center mt-3">
+                            <p className="text-[11px] text-neutral-600 text-center mt-3">
                                 Shipping & taxes calculated at checkout
                             </p>
                         </div>

@@ -162,7 +162,7 @@ export default function OrderDetailPage() {
           <p className="text-[12px] text-stone font-light mt-1">Placed on {formatDate(order.createdAt)}</p>
         </div>
         <div className="flex items-center gap-3">
-          <span className={`px-4 py-2 text-[9px] uppercase tracking-[0.2em] font-medium border ${statusStyles[order.status] || "bg-gray-50 text-gray-700 border-gray-200"}`}>
+          <span className={`px-4 py-2 text-[11px] uppercase tracking-[0.2em] font-medium border ${statusStyles[order.status] || "bg-gray-50 text-gray-700 border-gray-200"}`}>
             {order.status}
           </span>
           {order.status !== "CANCELLED" && order.status !== "DELIVERED" && order.status !== "SHIPPED" && (
@@ -212,7 +212,7 @@ export default function OrderDetailPage() {
         <div className="lg:col-span-2 space-y-6">
           <div className="bg-white border border-line overflow-hidden">
             <div className="px-6 py-4 border-b border-line">
-              <h3 className="text-[10px] uppercase tracking-[0.2em] text-stone font-medium">
+              <h3 className="text-[11px] uppercase tracking-[0.2em] text-stone font-medium">
                 Items ({(order.items?.length || 0) + (order.orderBundles?.length || 0)})
               </h3>
             </div>
@@ -233,7 +233,7 @@ export default function OrderDetailPage() {
                       {item.variant?.options && item.variant.options.length > 0 && (
                         <div className="flex flex-wrap gap-1.5 mt-1">
                           {item.variant.options.map((opt, idx) => (
-                            <span key={idx} className="text-[10px] text-stone bg-ivory px-2 py-0.5">{opt.name}: {opt.value}</span>
+                            <span key={idx} className="text-[11px] text-stone bg-ivory px-2 py-0.5">{opt.name}: {opt.value}</span>
                           ))}
                         </div>
                       )}
@@ -252,7 +252,7 @@ export default function OrderDetailPage() {
                 return (
                   <div key={bundle.id} className="p-5">
                     <div className="flex items-start gap-3 mb-3">
-                      <span className="inline-flex items-center gap-1 bg-[#A958A4]/10 text-[#A958A4] text-[9px] font-bold uppercase tracking-wider px-2 py-0.5 rounded">
+                      <span className="inline-flex items-center gap-1 bg-[#A958A4]/10 text-[#A958A4] text-[11px] font-bold uppercase tracking-wider px-2 py-0.5 rounded">
                         <IconShoppingBag className="h-3 w-3" />
                         Bundle
                       </span>
@@ -262,7 +262,7 @@ export default function OrderDetailPage() {
                       <div className="text-right">
                         <p className="text-[13px] text-noir font-medium">{formatCurrency(bundle.bundlePrice)}</p>
                         {bundle.actualPrice > bundle.bundlePrice && (
-                          <p className="text-[10px] text-stone line-through">{formatCurrency(bundle.actualPrice)}</p>
+                          <p className="text-[11px] text-stone line-through">{formatCurrency(bundle.actualPrice)}</p>
                         )}
                       </div>
                     </div>
@@ -281,7 +281,7 @@ export default function OrderDetailPage() {
                     {/* Savings */}
                     {bundle.savings > 0 && (
                       <div className="ml-6 mt-2">
-                        <span className="text-[10px] text-green-600 font-medium">
+                        <span className="text-[11px] text-green-600 font-medium">
                           You saved {formatCurrency(bundle.savings)} on this bundle
                         </span>
                       </div>
@@ -296,7 +296,7 @@ export default function OrderDetailPage() {
           {order.tracking && (
             <div className="bg-white border border-line overflow-hidden">
               <div className="px-6 py-4 border-b border-line">
-                <h3 className="text-[10px] uppercase tracking-[0.2em] text-stone font-medium">Tracking</h3>
+                <h3 className="text-[11px] uppercase tracking-[0.2em] text-stone font-medium">Tracking</h3>
               </div>
               <div className="p-6">
                 <div className="flex items-center gap-4 mb-4">
@@ -310,7 +310,7 @@ export default function OrderDetailPage() {
                       href={order.trackingUrl}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="ml-auto inline-flex items-center gap-1.5 px-4 h-9 bg-noir text-ivory text-[10px] uppercase tracking-[0.15em] font-medium hover:bg-gold transition-all duration-500"
+                      className="ml-auto inline-flex items-center gap-1.5 px-4 h-9 bg-noir text-ivory text-[11px] uppercase tracking-[0.15em] font-medium hover:bg-gold transition-all duration-500"
                     >
                       Track package
                     </a>
@@ -340,7 +340,7 @@ export default function OrderDetailPage() {
           {/* Summary */}
           <div className="bg-white border border-line overflow-hidden">
             <div className="px-6 py-4 border-b border-line">
-              <h3 className="text-[10px] uppercase tracking-[0.2em] text-stone font-medium">Order Summary</h3>
+              <h3 className="text-[11px] uppercase tracking-[0.2em] text-stone font-medium">Order Summary</h3>
             </div>
             <div className="p-6 space-y-3">
               <div className="flex justify-between text-[13px]">
@@ -371,7 +371,7 @@ export default function OrderDetailPage() {
           {/* Payment */}
           <div className="bg-white border border-line overflow-hidden">
             <div className="px-6 py-4 border-b border-line">
-              <h3 className="text-[10px] uppercase tracking-[0.2em] text-stone font-medium">Payment</h3>
+              <h3 className="text-[11px] uppercase tracking-[0.2em] text-stone font-medium">Payment</h3>
             </div>
             <div className="p-6 space-y-3">
               <div className="flex justify-between text-[13px]">
@@ -395,7 +395,7 @@ export default function OrderDetailPage() {
           {order.shippingAddress && (
             <div className="bg-white border border-line overflow-hidden">
               <div className="px-6 py-4 border-b border-line">
-                <h3 className="text-[10px] uppercase tracking-[0.2em] text-stone font-medium">Shipping Address</h3>
+                <h3 className="text-[11px] uppercase tracking-[0.2em] text-stone font-medium">Shipping Address</h3>
               </div>
               <div className="p-6">
                 <p className="text-[13px] text-noir font-medium">{order.shippingAddress.name}</p>

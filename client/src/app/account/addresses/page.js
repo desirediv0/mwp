@@ -95,9 +95,9 @@ export default function AddressesPage() {
       {/* Empty State */}
       {addresses.length === 0 && !showAddForm && !editingAddress && (
         <div className="bg-white border border-[#e6ded2] rounded-2xl p-12 text-center">
-          <IconMapPin className="h-8 w-8 text-gray-500 mx-auto mb-4" stroke={1.2} />
+          <IconMapPin className="h-8 w-8 text-neutral-600 mx-auto mb-4" stroke={1.2} />
           <h3 className="text-xl text-gray-900 mb-2">No Addresses Yet</h3>
-          <p className="text-[13px] text-gray-500 font-light mb-6">Add a shipping address for your orders</p>
+          <p className="text-[13px] text-neutral-600 font-light mb-6">Add a shipping address for your orders</p>
           <button onClick={() => setShowAddForm(true)}
             className="inline-flex items-center gap-2 px-6 h-12 bg-neutral-900 text-white text-[12px] font-semibold rounded-full hover:bg-neutral-800 transition-colors">
             <IconPlus className="h-4 w-4" stroke={1.5} /> Add Address
@@ -111,30 +111,30 @@ export default function AddressesPage() {
           {addresses.map((address) => (
             <div key={address.id} className="bg-white border border-[#e6ded2] rounded-2xl p-5 relative">
               {address.isDefault && (
-                <span className="absolute top-4 right-4 text-[10px] uppercase tracking-[0.12em] text-[#A8741F] font-semibold bg-white border border-[#e6ded2] rounded-full px-2.5 py-1 flex items-center gap-1">
+                <span className="absolute top-4 right-4 text-[11px] uppercase tracking-[0.12em] text-[#A8741F] font-semibold bg-white border border-[#e6ded2] rounded-full px-2.5 py-1 flex items-center gap-1">
                   <IconCheck className="h-2.5 w-2.5" stroke={2} /> Default
                 </span>
               )}
               <div className="mb-4">
                 <p className="text-[14px] text-gray-900 font-medium">{address.name}</p>
-                <p className="text-[12px] text-gray-500 font-light mt-1">{address.street}</p>
-                <p className="text-[12px] text-gray-500 font-light">{formatCityLine(address)}</p>
-                <p className="text-[12px] text-gray-500 font-light">{formatCountry(address.country)}</p>
-                {address.phone && <p className="text-[12px] text-gray-500 font-light mt-1">Phone: {formatUsPhone(address.phone)}</p>}
+                <p className="text-[12px] text-neutral-600 font-light mt-1">{address.street}</p>
+                <p className="text-[12px] text-neutral-600 font-light">{formatCityLine(address)}</p>
+                <p className="text-[12px] text-neutral-600 font-light">{formatCountry(address.country)}</p>
+                {address.phone && <p className="text-[12px] text-neutral-600 font-light mt-1">Phone: {formatUsPhone(address.phone)}</p>}
               </div>
               <div className="flex gap-2 flex-wrap pt-4 border-t border-gray-200">
                 {!address.isDefault && (
                   <button onClick={() => handleSetDefaultAddress(address.id)}
-                    className="inline-flex items-center gap-1.5 px-3 h-8 border border-gray-200 text-[10px] uppercase tracking-[0.15em] text-gray-500 hover:border-gray-900 hover:text-gray-900 transition-all duration-300">
+                    className="inline-flex items-center gap-1.5 px-3 h-8 border border-gray-200 text-[11px] uppercase tracking-[0.15em] text-neutral-600 hover:border-gray-900 hover:text-gray-900 transition-all duration-300">
                     <IconHome className="h-3 w-3" stroke={1.5} /> Default
                   </button>
                 )}
                 <button onClick={() => setEditingAddress(address)}
-                  className="inline-flex items-center gap-1.5 px-3 h-8 border border-gray-200 text-[10px] uppercase tracking-[0.15em] text-gray-500 hover:border-gray-900 hover:text-gray-900 transition-all duration-300">
+                  className="inline-flex items-center gap-1.5 px-3 h-8 border border-gray-200 text-[11px] uppercase tracking-[0.15em] text-neutral-600 hover:border-gray-900 hover:text-gray-900 transition-all duration-300">
                   <IconEdit className="h-3 w-3" stroke={1.5} /> Edit
                 </button>
                 <button onClick={() => handleDeleteAddress(address.id)} disabled={deletingId === address.id}
-                  className="inline-flex items-center gap-1.5 px-3 h-8 border border-gray-200 text-[10px] uppercase tracking-[0.15em] text-gray-500 hover:border-neutral-900 hover:text-neutral-600 transition-all duration-300 disabled:opacity-50">
+                  className="inline-flex items-center gap-1.5 px-3 h-8 border border-gray-200 text-[11px] uppercase tracking-[0.15em] text-neutral-600 hover:border-neutral-900 hover:text-neutral-600 transition-all duration-300 disabled:opacity-50">
                   {deletingId === address.id ? <IconLoader2 className="h-3 w-3 animate-spin" stroke={1.5} /> : <IconTrash className="h-3 w-3" stroke={1.5} />} Delete
                 </button>
               </div>

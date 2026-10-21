@@ -96,7 +96,7 @@ export default function AddressForm({ onSuccess, onCancel, existingAddress = nul
             {isInline && (
                 <div className="flex justify-between items-center mb-4">
                     <h3 className="font-semibold">Add New Address</h3>
-                    <button type="button" onClick={onCancel} className="text-gray-500 hover:text-gray-700"><XCircle className="h-5 w-5" /></button>
+                    <button type="button" onClick={onCancel} className="text-neutral-600 hover:text-gray-700"><XCircle className="h-5 w-5" /></button>
                 </div>
             )}
             {errors.general && <div role="alert" className="mb-4 rounded-md border border-red-200 bg-red-50 p-3 text-sm font-medium text-red-700">{errors.general}</div>}
