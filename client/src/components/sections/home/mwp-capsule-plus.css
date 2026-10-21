@@ -1,0 +1,814 @@
+/* MWP Capsule hero (plus) — the reference design with interaction layered on: headline lines light
+   up their capsule half, the capsule can be dragged, tapped or scrolled open, and every lock fires one
+   shared beat across the ripples, the Power chip and the "Power for both." line. */
+
+.mwp-cplus {
+  --mcp-navy: #14224a;
+  --mcp-muted: #5c6680;
+  --mcp-gold: #c9962e;
+  --mcp-gold-hi: #f2d27a;
+  --mcp-mist: #f4f6fa;
+  --mcp-line: #e6e9f0;
+  --mcp-ease: cubic-bezier(0.16, 1, 0.3, 1);
+  position: relative;
+  overflow: hidden;
+  color: var(--mcp-navy);
+  background:
+    radial-gradient(ellipse 60% 70% at 72% 50%, #fff8e6 0%, rgb(255 248 230 / 0) 60%),
+    linear-gradient(180deg, #fff 0%, var(--mcp-mist) 100%);
+}
+.mwp-cplus__dust {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+.mwp-cplus__grid {
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.05fr);
+  gap: 40px;
+  align-items: center;
+  max-width: 1240px;
+  margin: 0 auto;
+  padding: 72px 20px 88px;
+}
+
+/* ── Copy ─────────────────────────────────────────────── */
+/* The storefront keeps text at 400; this hero follows the reference's heavier display weights. */
+.mwp-cplus__kicker,
+.mwp-cplus__btn,
+.mwp-cplus__assure,
+.mwp-cplus__label {
+  font-weight: 700 !important;
+}
+.mwp-cplus__title,
+.mwp-cplus__title * {
+  font-weight: 800 !important;
+}
+
+.mwp-cplus__kicker {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 12px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--mcp-gold);
+  opacity: 0;
+  animation: mcp-fade 0.8s 0.1s var(--mcp-ease) forwards;
+}
+.mwp-cplus__kicker::before {
+  content: "";
+  width: 28px;
+  height: 1.5px;
+  background: currentColor;
+}
+.mwp-cplus__title {
+  margin: 18px 0 0;
+  font-size: clamp(38px, 5.2vw, 74px);
+  line-height: 1;
+  letter-spacing: -0.035em;
+}
+.mwp-cplus__line {
+  display: block;
+  overflow: hidden;
+  padding-bottom: 0.04em;
+}
+.mwp-cplus__line > span {
+  display: inline-block;
+  transform: translateY(105%);
+  animation: mcp-rise 1s var(--mcp-ease) forwards;
+}
+.mwp-cplus__line--men > span {
+  color: var(--mcp-navy);
+  animation-delay: 0.25s;
+}
+.mwp-cplus__line--women > span {
+  color: #6e7a8e;
+  animation-delay: 0.85s;
+}
+.mwp-cplus__line--power > span {
+  animation-delay: 1.55s;
+  color: transparent;
+  background: linear-gradient(180deg, #e9c46a 0%, #c9962e 55%, #8f6516 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+}
+.mwp-cplus__lede {
+  max-width: 26em;
+  margin: 26px 0 34px;
+  font-size: clamp(17px, 1.6vw, 20px);
+  line-height: 1.6;
+  color: var(--mcp-muted);
+  opacity: 0;
+  animation: mcp-fade 1s 2s var(--mcp-ease) forwards;
+}
+.mwp-cplus__ctas {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px;
+  opacity: 0;
+  animation: mcp-fade 1s 2.2s var(--mcp-ease) forwards;
+}
+.mwp-cplus__btn {
+  position: relative;
+  overflow: hidden;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  min-height: 56px;
+  padding: 0 32px;
+  border-radius: 999px;
+  font-size: 16px;
+  transition:
+    transform 0.25s var(--mcp-ease),
+    background 0.25s;
+}
+.mwp-cplus__btn:hover {
+  transform: translateY(-2px);
+}
+.mwp-cplus__btn svg {
+  width: 18px;
+  height: 18px;
+  transition: transform 0.25s var(--mcp-ease);
+}
+.mwp-cplus__btn:hover svg {
+  transform: translateX(4px);
+}
+.mwp-cplus__btn--primary {
+  color: #fff;
+  background: var(--mcp-navy);
+  box-shadow: 0 14px 30px rgb(20 34 74 / 0.25);
+}
+.mwp-cplus__btn--primary::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: -50%;
+  width: 35%;
+  background: linear-gradient(90deg, transparent, rgb(242 210 122 / 0.45), transparent);
+  transform: skewX(-20deg);
+  animation: mcp-glint 4s 3s ease-in-out infinite;
+}
+.mwp-cplus__btn--outline {
+  color: var(--mcp-navy);
+  border: 1.5px solid var(--mcp-navy);
+}
+.mwp-cplus__assure {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px 24px;
+  margin-top: 34px;
+  font-size: 14px;
+  color: var(--mcp-muted);
+  opacity: 0;
+  animation: mcp-fade 1s 2.4s var(--mcp-ease) forwards;
+}
+.mwp-cplus__assure li {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+.mwp-cplus__assure svg {
+  width: 18px;
+  height: 18px;
+  color: var(--mcp-gold);
+}
+
+/* ── Capsule stage ────────────────────────────────────── */
+.mwp-cplus__stage-wrap {
+  position: relative;
+  width: 100%;
+  max-width: 560px;
+  justify-self: center;
+}
+.mwp-cplus__stage {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  perspective: 1200px;
+}
+.mwp-cplus__gl {
+  position: absolute;
+  inset: -6%;
+}
+.mwp-cplus__halo {
+  position: absolute;
+  inset: 14%;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgb(242 210 122 / 0.55) 0%, rgb(242 210 122 / 0) 62%);
+  opacity: 0;
+  animation:
+    mcp-halo-in 1.4s 1.55s var(--mcp-ease) forwards,
+    mcp-breathe 6s 3s ease-in-out infinite;
+}
+.mwp-cplus__ripples {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+.mwp-cplus__ripple {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 46%;
+  aspect-ratio: 1 / 1;
+  border-radius: 50%;
+  border: 1.5px solid rgb(201 150 46 / 0.6);
+  transform: translate(-50%, -50%) scale(0.4);
+  opacity: 0;
+  animation: mcp-ripple 1.8s var(--mcp-ease) forwards;
+}
+.mwp-cplus__ripple--2 {
+  animation-delay: 0.2s;
+  border-color: rgb(20 34 74 / 0.35);
+}
+.mwp-cplus__ripple--3 {
+  animation-delay: 0.4s;
+  border-color: rgb(185 194 206 / 0.7);
+}
+.mwp-cplus__orbit {
+  position: absolute;
+  inset: 5%;
+  border-radius: 50%;
+  border: 1px dashed rgb(20 34 74 / 0.18);
+  opacity: 0;
+  animation:
+    mcp-fade-in 1.2s 2s forwards,
+    mcp-spin 60s 2s linear infinite;
+}
+.mwp-cplus__orbit::after {
+  content: "";
+  position: absolute;
+  top: -5px;
+  left: 50%;
+  width: 10px;
+  height: 10px;
+  margin-left: -5px;
+  border-radius: 50%;
+  background: var(--mcp-gold);
+  box-shadow: 0 0 0 5px rgb(201 150 46 / 0.18);
+}
+.mwp-cplus__floor {
+  position: absolute;
+  left: 22%;
+  right: 22%;
+  bottom: 14%;
+  height: 7%;
+  border-radius: 50%;
+  background: radial-gradient(ellipse, rgb(12 22 54 / 0.28), rgb(12 22 54 / 0) 70%);
+  filter: blur(4px);
+  opacity: 0;
+  scale: var(--mcp-shadow, 1);
+  animation: mcp-fade-in 1s 1.5s forwards;
+}
+.mwp-cplus__label {
+  position: absolute;
+  padding: 8px 14px;
+  border-radius: 999px;
+  font-size: 12px;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  background: #fff;
+  box-shadow: 0 10px 26px rgb(20 34 74 / 0.12);
+  opacity: 0;
+  transition:
+    opacity 0.4s,
+    scale 0.45s var(--mcp-ease),
+    box-shadow 0.45s var(--mcp-ease);
+}
+.mwp-cplus__label--men {
+  left: 2%;
+  top: 18%;
+  color: var(--mcp-gold);
+  animation: mcp-tag-in 0.8s 0.9s var(--mcp-ease) forwards;
+}
+.mwp-cplus__label--women {
+  right: 2%;
+  bottom: 20%;
+  color: #6e7a8e;
+  animation: mcp-tag-in 0.8s 1.5s var(--mcp-ease) forwards;
+}
+.mwp-cplus__label--power {
+  left: 50%;
+  bottom: 4%;
+  transform: translateX(-50%);
+  color: var(--mcp-gold-hi);
+  background: var(--mcp-navy);
+  animation: mcp-tag-in-centre 0.8s 2.1s var(--mcp-ease) forwards;
+}
+/* While the capsule is open the Men / Women / Power chips step aside for the trust labels. */
+.mwp-cplus__stage[data-open="true"] .mwp-cplus__label {
+  opacity: 0 !important;
+}
+
+/* CSS capsule, only shown when WebGL is unavailable */
+.mwp-cplus__css {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 76%;
+  transform: translate(-50%, -50%) rotate(-28deg);
+}
+.mwp-cplus__css-float {
+  animation: mcp-float 7s 2.4s ease-in-out infinite;
+}
+.mwp-cplus__css-body {
+  position: relative;
+  height: 0;
+  padding-bottom: 34%;
+}
+.mwp-cplus__half {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 50.5%;
+  filter: drop-shadow(0 30px 28px rgb(12 22 54 / 0.28));
+  background-size: 100% 160%;
+}
+.mwp-cplus__half--l {
+  left: 0;
+  border-radius: 999px 0 0 999px;
+  background-image: linear-gradient(180deg, #fff7dc 0%, #f2d27a 16%, #d9ae4e 34%, #c9962e 50%, #a57620 68%, #7c5714 84%, #c79a3e 100%);
+  animation:
+    mcp-in-left 1.3s 0.2s var(--mcp-ease) both,
+    mcp-roll 6s 2.4s ease-in-out infinite;
+}
+.mwp-cplus__half--r {
+  right: 0;
+  border-radius: 0 999px 999px 0;
+  background-image: linear-gradient(180deg, #fff 0%, #f3f5f9 16%, #dce1e8 34%, #c2cad5 50%, #9ea9b8 68%, #7a8697 84%, #d0d7e0 100%);
+  animation:
+    mcp-in-right 1.3s 0.8s var(--mcp-ease) both,
+    mcp-roll 6s 2.4s ease-in-out infinite;
+}
+.mwp-cplus__half::before {
+  content: "";
+  position: absolute;
+  top: 9%;
+  height: 24%;
+  border-radius: 999px;
+  background: linear-gradient(180deg, rgb(255 255 255 / 0.95), rgb(255 255 255 / 0));
+}
+.mwp-cplus__half--l::before {
+  left: 9%;
+  right: 0;
+}
+.mwp-cplus__half--r::before {
+  left: 0;
+  right: 9%;
+}
+.mwp-cplus__seam {
+  position: absolute;
+  top: 2%;
+  bottom: 2%;
+  left: calc(50% - 1.5px);
+  width: 3px;
+  border-radius: 2px;
+  background: rgb(12 22 54 / 0.28);
+  opacity: 0;
+  animation: mcp-fade-in 0.3s 1.6s forwards;
+}
+.mwp-cplus__mark {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  font-size: clamp(24px, 3.6vw, 44px);
+  font-weight: 800 !important;
+  letter-spacing: 0.16em;
+  color: var(--mcp-navy);
+  opacity: 0;
+  animation: mcp-fade-in 0.8s 1.9s forwards;
+}
+.mwp-cplus__flash {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 18%;
+  aspect-ratio: 1 / 1;
+  border-radius: 50%;
+  transform: translate(-50%, -50%) scale(0);
+  background: radial-gradient(circle, #fff 0%, rgb(255 240 200 / 0.8) 30%, rgb(255 240 200 / 0) 70%);
+  animation: mcp-flash 0.9s 1.55s ease-out forwards;
+}
+
+.mwp-cplus__pause {
+  position: absolute;
+  top: 0;
+  right: 0;
+  z-index: 2;
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 999px;
+  color: var(--mcp-navy);
+  background: rgb(255 255 255 / 0.85);
+  border: 1px solid var(--mcp-line);
+  box-shadow: 0 6px 16px rgb(20 34 74 / 0.08);
+  opacity: 0;
+  transition:
+    opacity 0.4s,
+    background 0.2s,
+    color 0.2s;
+}
+.mwp-cplus[data-play="true"] .mwp-cplus__pause {
+  opacity: 1;
+}
+.mwp-cplus__pause:hover {
+  color: #fff;
+  background: var(--mcp-navy);
+}
+
+/* ── Timing ───────────────────────────────────────────── */
+/* Nothing starts until the capsule scene is ready, so the words and the halves land on the same beat. */
+.mwp-cplus[data-play="false"] *,
+.mwp-cplus[data-play="false"] *::before,
+.mwp-cplus[data-play="false"] *::after {
+  animation-play-state: paused !important;
+}
+/* The pause button stops the looping motion (the intro still completes). */
+.mwp-cplus[data-motion="off"] .mwp-cplus__orbit,
+.mwp-cplus[data-motion="off"] .mwp-cplus__halo,
+.mwp-cplus[data-motion="off"] .mwp-cplus__btn--primary::after,
+.mwp-cplus[data-motion="off"] .mwp-cplus__css-float,
+.mwp-cplus[data-motion="off"] .mwp-cplus__half {
+  animation-play-state: paused !important;
+}
+
+@keyframes mcp-rise {
+  to {
+    transform: translateY(0);
+  }
+}
+@keyframes mcp-fade {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+@keyframes mcp-glint {
+  0% {
+    left: -50%;
+  }
+  30%,
+  100% {
+    left: 130%;
+  }
+}
+@keyframes mcp-in-left {
+  0% {
+    transform: translateX(-120%) rotate(-25deg);
+    opacity: 0;
+  }
+  60% {
+    opacity: 1;
+  }
+  100% {
+    transform: translateX(0) rotate(0);
+    opacity: 1;
+  }
+}
+@keyframes mcp-in-right {
+  0% {
+    transform: translateX(120%) rotate(25deg);
+    opacity: 0;
+  }
+  60% {
+    opacity: 1;
+  }
+  100% {
+    transform: translateX(0) rotate(0);
+    opacity: 1;
+  }
+}
+@keyframes mcp-roll {
+  0%,
+  100% {
+    background-position: 0 0;
+  }
+  50% {
+    background-position: 0 100%;
+  }
+}
+@keyframes mcp-flash {
+  0% {
+    transform: translate(-50%, -50%) scale(0);
+    opacity: 1;
+  }
+  100% {
+    transform: translate(-50%, -50%) scale(6);
+    opacity: 0;
+  }
+}
+@keyframes mcp-ripple {
+  0% {
+    transform: translate(-50%, -50%) scale(0.4);
+    opacity: 1;
+  }
+  100% {
+    transform: translate(-50%, -50%) scale(2);
+    opacity: 0;
+  }
+}
+@keyframes mcp-halo-in {
+  to {
+    opacity: 1;
+  }
+}
+@keyframes mcp-breathe {
+  0%,
+  100% {
+    transform: scale(0.94);
+  }
+  50% {
+    transform: scale(1.06);
+  }
+}
+@keyframes mcp-fade-in {
+  to {
+    opacity: 1;
+  }
+}
+@keyframes mcp-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+@keyframes mcp-float {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-14px);
+  }
+}
+@keyframes mcp-tag-in {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+@keyframes mcp-tag-in-centre {
+  from {
+    opacity: 0;
+    transform: translate(-50%, 10px);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, 0);
+  }
+}
+
+/* ── Interaction layer ────────────────────────────────── */
+/* Hovering a headline line focuses its half: the other lines dim and the matching chip lifts. */
+.mwp-cplus__line > span {
+  transition: opacity 0.45s var(--mcp-ease);
+}
+.mwp-cplus__line {
+  cursor: default;
+}
+.mwp-cplus[data-focus="men"] .mwp-cplus__line:not(.mwp-cplus__line--men) > span,
+.mwp-cplus[data-focus="women"] .mwp-cplus__line:not(.mwp-cplus__line--women) > span,
+.mwp-cplus[data-focus="both"] .mwp-cplus__line:not(.mwp-cplus__line--power) > span {
+  opacity: 0.28;
+}
+.mwp-cplus[data-focus="men"] .mwp-cplus__label--men,
+.mwp-cplus[data-focus="women"] .mwp-cplus__label--women,
+.mwp-cplus[data-focus="both"] .mwp-cplus__label--power {
+  scale: 1.1;
+  box-shadow:
+    0 0 0 4px rgb(201 150 46 / 0.22),
+    0 14px 30px rgb(20 34 74 / 0.18);
+}
+
+/* Lock beat: a gold sheen runs across "Power for both." and the Power chip pulses. data-beat flips
+   between a/b so only the sheen/pulse restart — the entrance animations keep their place in the list. */
+.mwp-cplus__line--power > span[data-beat] {
+  background-image:
+    linear-gradient(110deg, transparent 40%, rgb(255 250 230 / 0.95) 50%, transparent 60%),
+    linear-gradient(180deg, #e9c46a 0%, #c9962e 55%, #8f6516 100%);
+  background-size:
+    260% 100%,
+    100% 100%;
+  background-repeat: no-repeat;
+  background-position:
+    150% 0,
+    0 0;
+}
+.mwp-cplus__line--power > span[data-beat="a"] {
+  animation:
+    mcp-rise 1s var(--mcp-ease) 1.55s forwards,
+    mcp-sheen-a 1.4s var(--mcp-ease) 0.1s both;
+}
+.mwp-cplus__line--power > span[data-beat="b"] {
+  animation:
+    mcp-rise 1s var(--mcp-ease) 1.55s forwards,
+    mcp-sheen-b 1.4s var(--mcp-ease) 0.1s both;
+}
+.mwp-cplus__label--power[data-beat="a"] {
+  animation:
+    mcp-tag-in-centre 0.8s var(--mcp-ease) 2.1s forwards,
+    mcp-pulse-a 0.9s var(--mcp-ease);
+}
+.mwp-cplus__label--power[data-beat="b"] {
+  animation:
+    mcp-tag-in-centre 0.8s var(--mcp-ease) 2.1s forwards,
+    mcp-pulse-b 0.9s var(--mcp-ease);
+}
+
+/* The capsule can be grabbed (horizontal drag spins it; vertical drags still scroll the page). */
+.mwp-cplus__stage {
+  cursor: grab;
+  touch-action: pan-y;
+  user-select: none;
+  -webkit-user-select: none;
+}
+.mwp-cplus__stage[data-dragging="true"] {
+  cursor: grabbing;
+}
+
+/* "Look inside" row under the capsule */
+.mwp-cplus__peek {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 8px 16px;
+  margin-top: 6px;
+  min-height: 40px;
+  font-size: 13px;
+  color: var(--mcp-muted);
+  opacity: 0;
+  animation: mcp-fade 1s 2.4s var(--mcp-ease) forwards;
+}
+.mwp-cplus__peek-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  height: 38px;
+  padding: 0 16px 0 12px;
+  border-radius: 999px;
+  color: var(--mcp-navy);
+  background: rgb(255 255 255 / 0.85);
+  border: 1px solid var(--mcp-line);
+  box-shadow: 0 8px 20px rgb(20 34 74 / 0.08);
+  font-weight: 700 !important;
+  transition:
+    background 0.25s,
+    color 0.25s,
+    border-color 0.25s;
+}
+.mwp-cplus__peek-btn:hover,
+.mwp-cplus__peek-btn[aria-pressed="true"] {
+  color: #fff;
+  background: var(--mcp-navy);
+  border-color: var(--mcp-navy);
+}
+.mwp-cplus__peek-pill {
+  display: inline-block;
+  width: 22px;
+  height: 10px;
+  border-radius: 999px;
+  background: linear-gradient(90deg, var(--mcp-gold) 0 50%, #cfd6df 50% 100%);
+  rotate: -20deg;
+  transition: rotate 0.4s var(--mcp-ease);
+}
+.mwp-cplus__peek-btn[aria-pressed="true"] .mwp-cplus__peek-pill {
+  rotate: 20deg;
+  background: linear-gradient(90deg, var(--mcp-gold-hi) 0 42%, transparent 42% 58%, #e6ebf1 58% 100%);
+}
+.mwp-cplus__peek-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--mcp-navy);
+  border-bottom: 1.5px solid currentColor;
+  font-weight: 700 !important;
+  opacity: 0;
+  translate: 0 6px;
+  pointer-events: none;
+  transition:
+    opacity 0.4s var(--mcp-ease),
+    translate 0.4s var(--mcp-ease);
+}
+.mwp-cplus__peek-link svg {
+  width: 15px;
+  height: 15px;
+}
+.mwp-cplus__stage-wrap[data-open="true"] .mwp-cplus__peek-link {
+  opacity: 1;
+  translate: 0 0;
+  pointer-events: auto;
+}
+.mwp-cplus__peek-swap {
+  display: grid;
+  justify-items: start;
+}
+.mwp-cplus__peek-swap > * {
+  grid-area: 1 / 1;
+}
+.mwp-cplus__peek-hint {
+  align-self: center;
+  white-space: nowrap;
+  transition: opacity 0.4s;
+}
+.mwp-cplus__peek-hint[data-hidden="true"] {
+  opacity: 0;
+}
+
+@keyframes mcp-sheen-a {
+  from {
+    background-position:
+      150% 0,
+      0 0;
+  }
+  to {
+    background-position:
+      -60% 0,
+      0 0;
+  }
+}
+@keyframes mcp-sheen-b {
+  from {
+    background-position:
+      150% 0,
+      0 0;
+  }
+  to {
+    background-position:
+      -60% 0,
+      0 0;
+  }
+}
+@keyframes mcp-pulse-a {
+  0%,
+  100% {
+    scale: 1;
+  }
+  35% {
+    scale: 1.14;
+  }
+}
+@keyframes mcp-pulse-b {
+  0%,
+  100% {
+    scale: 1;
+  }
+  35% {
+    scale: 1.14;
+  }
+}
+
+@media (max-width: 860px) {
+  .mwp-cplus__grid {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 16px;
+    padding-block: 40px 64px;
+  }
+  .mwp-cplus__stage-wrap {
+    order: -1;
+    max-width: 420px;
+  }
+}
+@media (max-width: 1023px) {
+  .mwp-cplus__peek {
+    flex-direction: column;
+  }
+  .mwp-cplus__peek-swap {
+    justify-items: center;
+  }
+  .mwp-cplus__peek-hint {
+    display: none;
+  }
+}
+@media (max-width: 480px) {
+  .mwp-cplus__label {
+    padding: 6px 10px;
+    font-size: 10px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .mwp-cplus *,
+  .mwp-cplus *::before,
+  .mwp-cplus *::after {
+    animation-duration: 0.001s !important;
+    animation-delay: 0s !important;
+    animation-iteration-count: 1 !important;
+    transition: none !important;
+  }
+}

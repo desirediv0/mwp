@@ -2,7 +2,11 @@
 // import MwpHomeHero from "@/components/sections/home/MwpHomeHero";
 // Light 3D "orbit" hero — kept for rollback. Swap it back in by re-enabling this import and <MwpOrbitHero /> below.
 // import MwpOrbitHero from "@/components/sections/home/MwpOrbitHero";
-import MwpParticleHero from "@/components/sections/home/MwpParticleHero";
+// Particle hero — kept for rollback. Swap it back in by re-enabling this import and <MwpParticleHero /> below.
+// import MwpParticleHero from "@/components/sections/home/MwpParticleHero";
+// Reference capsule hero (straight build of the client's HTML) — kept for rollback. Re-enable this import and <MwpCapsuleHero /> below.
+// import MwpCapsuleHero from "@/components/sections/home/MwpCapsuleHero";
+import MwpCapsuleHeroPlus from "@/components/sections/home/MwpCapsuleHeroPlus";
 import MwpProductShowcase from "@/components/sections/home/MwpProductShowcase";
 import MwpTrustReveal from "@/components/sections/home/MwpTrustReveal";
 
@@ -19,7 +23,9 @@ export default function Home() {
     <>
       {/* <MwpHomeHero /> */}
       {/* <MwpOrbitHero /> */}
-      <MwpParticleHero />
+      {/* <MwpParticleHero /> */}
+      {/* <MwpCapsuleHero /> */}
+      <MwpCapsuleHeroPlus />
       <MwpTrustReveal />
       <MwpProductShowcase />
     </>

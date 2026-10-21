@@ -1,0 +1,593 @@
+/* MWP Capsule hero — built from the client's MWP-Homepage reference. A gold half (Men) and a silver
+   half (Women) fly in and lock into one capsule (Power) while the headline lands line by line. */
+
+.mwp-capsule {
+  --mc-navy: #14224a;
+  --mc-muted: #5c6680;
+  --mc-gold: #c9962e;
+  --mc-gold-hi: #f2d27a;
+  --mc-mist: #f4f6fa;
+  --mc-line: #e6e9f0;
+  --mc-ease: cubic-bezier(0.16, 1, 0.3, 1);
+  position: relative;
+  overflow: hidden;
+  color: var(--mc-navy);
+  background:
+    radial-gradient(ellipse 60% 70% at 72% 50%, #fff8e6 0%, rgb(255 248 230 / 0) 60%),
+    linear-gradient(180deg, #fff 0%, var(--mc-mist) 100%);
+}
+.mwp-capsule__dust {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+.mwp-capsule__grid {
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.05fr);
+  gap: 40px;
+  align-items: center;
+  max-width: 1240px;
+  margin: 0 auto;
+  padding: 72px 20px 88px;
+}
+
+/* ── Copy ─────────────────────────────────────────────── */
+/* The storefront keeps text at 400; this hero follows the reference's heavier display weights. */
+.mwp-capsule__kicker,
+.mwp-capsule__btn,
+.mwp-capsule__assure,
+.mwp-capsule__label {
+  font-weight: 700 !important;
+}
+.mwp-capsule__title,
+.mwp-capsule__title * {
+  font-weight: 800 !important;
+}
+
+.mwp-capsule__kicker {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 12px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--mc-gold);
+  opacity: 0;
+  animation: mc-fade 0.8s 0.1s var(--mc-ease) forwards;
+}
+.mwp-capsule__kicker::before {
+  content: "";
+  width: 28px;
+  height: 1.5px;
+  background: currentColor;
+}
+.mwp-capsule__title {
+  margin: 18px 0 0;
+  font-size: clamp(38px, 5.2vw, 74px);
+  line-height: 1;
+  letter-spacing: -0.035em;
+}
+.mwp-capsule__line {
+  display: block;
+  overflow: hidden;
+  padding-bottom: 0.04em;
+}
+.mwp-capsule__line > span {
+  display: inline-block;
+  transform: translateY(105%);
+  animation: mc-rise 1s var(--mc-ease) forwards;
+}
+.mwp-capsule__line--men > span {
+  color: var(--mc-navy);
+  animation-delay: 0.25s;
+}
+.mwp-capsule__line--women > span {
+  color: #6e7a8e;
+  animation-delay: 0.85s;
+}
+.mwp-capsule__line--power > span {
+  animation-delay: 1.55s;
+  color: transparent;
+  background: linear-gradient(180deg, #e9c46a 0%, #c9962e 55%, #8f6516 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+}
+.mwp-capsule__lede {
+  max-width: 26em;
+  margin: 26px 0 34px;
+  font-size: clamp(17px, 1.6vw, 20px);
+  line-height: 1.6;
+  color: var(--mc-muted);
+  opacity: 0;
+  animation: mc-fade 1s 2s var(--mc-ease) forwards;
+}
+.mwp-capsule__ctas {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px;
+  opacity: 0;
+  animation: mc-fade 1s 2.2s var(--mc-ease) forwards;
+}
+.mwp-capsule__btn {
+  position: relative;
+  overflow: hidden;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  min-height: 56px;
+  padding: 0 32px;
+  border-radius: 999px;
+  font-size: 16px;
+  transition:
+    transform 0.25s var(--mc-ease),
+    background 0.25s;
+}
+.mwp-capsule__btn:hover {
+  transform: translateY(-2px);
+}
+.mwp-capsule__btn svg {
+  width: 18px;
+  height: 18px;
+  transition: transform 0.25s var(--mc-ease);
+}
+.mwp-capsule__btn:hover svg {
+  transform: translateX(4px);
+}
+.mwp-capsule__btn--primary {
+  color: #fff;
+  background: var(--mc-navy);
+  box-shadow: 0 14px 30px rgb(20 34 74 / 0.25);
+}
+.mwp-capsule__btn--primary::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: -50%;
+  width: 35%;
+  background: linear-gradient(90deg, transparent, rgb(242 210 122 / 0.45), transparent);
+  transform: skewX(-20deg);
+  animation: mc-glint 4s 3s ease-in-out infinite;
+}
+.mwp-capsule__btn--outline {
+  color: var(--mc-navy);
+  border: 1.5px solid var(--mc-navy);
+}
+.mwp-capsule__assure {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px 24px;
+  margin-top: 34px;
+  font-size: 14px;
+  color: var(--mc-muted);
+  opacity: 0;
+  animation: mc-fade 1s 2.4s var(--mc-ease) forwards;
+}
+.mwp-capsule__assure li {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+.mwp-capsule__assure svg {
+  width: 18px;
+  height: 18px;
+  color: var(--mc-gold);
+}
+
+/* ── Capsule stage ────────────────────────────────────── */
+.mwp-capsule__stage-wrap {
+  position: relative;
+  width: 100%;
+  max-width: 560px;
+  justify-self: center;
+}
+.mwp-capsule__stage {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  perspective: 1200px;
+}
+.mwp-capsule__gl {
+  position: absolute;
+  inset: -6%;
+}
+.mwp-capsule__halo {
+  position: absolute;
+  inset: 14%;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgb(242 210 122 / 0.55) 0%, rgb(242 210 122 / 0) 62%);
+  opacity: 0;
+  animation:
+    mc-halo-in 1.4s 1.55s var(--mc-ease) forwards,
+    mc-breathe 6s 3s ease-in-out infinite;
+}
+.mwp-capsule__ripple {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 46%;
+  aspect-ratio: 1 / 1;
+  border-radius: 50%;
+  border: 1.5px solid rgb(201 150 46 / 0.6);
+  transform: translate(-50%, -50%) scale(0.4);
+  opacity: 0;
+  animation: mc-ripple 1.8s 1.55s var(--mc-ease) forwards;
+}
+.mwp-capsule__ripple--2 {
+  animation-delay: 1.75s;
+  border-color: rgb(20 34 74 / 0.35);
+}
+.mwp-capsule__ripple--3 {
+  animation-delay: 1.95s;
+  border-color: rgb(185 194 206 / 0.7);
+}
+.mwp-capsule__orbit {
+  position: absolute;
+  inset: 5%;
+  border-radius: 50%;
+  border: 1px dashed rgb(20 34 74 / 0.18);
+  opacity: 0;
+  animation:
+    mc-fade-in 1.2s 2s forwards,
+    mc-spin 60s 2s linear infinite;
+}
+.mwp-capsule__orbit::after {
+  content: "";
+  position: absolute;
+  top: -5px;
+  left: 50%;
+  width: 10px;
+  height: 10px;
+  margin-left: -5px;
+  border-radius: 50%;
+  background: var(--mc-gold);
+  box-shadow: 0 0 0 5px rgb(201 150 46 / 0.18);
+}
+.mwp-capsule__floor {
+  position: absolute;
+  left: 22%;
+  right: 22%;
+  bottom: 14%;
+  height: 7%;
+  border-radius: 50%;
+  background: radial-gradient(ellipse, rgb(12 22 54 / 0.28), rgb(12 22 54 / 0) 70%);
+  filter: blur(4px);
+  opacity: 0;
+  animation: mc-fade-in 1s 1.5s forwards;
+}
+.mwp-capsule__label {
+  position: absolute;
+  padding: 8px 14px;
+  border-radius: 999px;
+  font-size: 12px;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  background: #fff;
+  box-shadow: 0 10px 26px rgb(20 34 74 / 0.12);
+  opacity: 0;
+  transition: opacity 0.4s;
+}
+.mwp-capsule__label--men {
+  left: 2%;
+  top: 18%;
+  color: var(--mc-gold);
+  animation: mc-tag-in 0.8s 0.9s var(--mc-ease) forwards;
+}
+.mwp-capsule__label--women {
+  right: 2%;
+  bottom: 20%;
+  color: #6e7a8e;
+  animation: mc-tag-in 0.8s 1.5s var(--mc-ease) forwards;
+}
+.mwp-capsule__label--power {
+  left: 50%;
+  bottom: 4%;
+  transform: translateX(-50%);
+  color: var(--mc-gold-hi);
+  background: var(--mc-navy);
+  animation: mc-tag-in-centre 0.8s 2.1s var(--mc-ease) forwards;
+}
+/* While the capsule is open the Men / Women / Power chips step aside for the trust labels. */
+.mwp-capsule__stage[data-open="true"] .mwp-capsule__label {
+  opacity: 0 !important;
+}
+
+/* CSS capsule, only shown when WebGL is unavailable */
+.mwp-capsule__css {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 76%;
+  transform: translate(-50%, -50%) rotate(-28deg);
+}
+.mwp-capsule__css-float {
+  animation: mc-float 7s 2.4s ease-in-out infinite;
+}
+.mwp-capsule__css-body {
+  position: relative;
+  height: 0;
+  padding-bottom: 34%;
+}
+.mwp-capsule__half {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 50.5%;
+  filter: drop-shadow(0 30px 28px rgb(12 22 54 / 0.28));
+  background-size: 100% 160%;
+}
+.mwp-capsule__half--l {
+  left: 0;
+  border-radius: 999px 0 0 999px;
+  background-image: linear-gradient(180deg, #fff7dc 0%, #f2d27a 16%, #d9ae4e 34%, #c9962e 50%, #a57620 68%, #7c5714 84%, #c79a3e 100%);
+  animation:
+    mc-in-left 1.3s 0.2s var(--mc-ease) both,
+    mc-roll 6s 2.4s ease-in-out infinite;
+}
+.mwp-capsule__half--r {
+  right: 0;
+  border-radius: 0 999px 999px 0;
+  background-image: linear-gradient(180deg, #fff 0%, #f3f5f9 16%, #dce1e8 34%, #c2cad5 50%, #9ea9b8 68%, #7a8697 84%, #d0d7e0 100%);
+  animation:
+    mc-in-right 1.3s 0.8s var(--mc-ease) both,
+    mc-roll 6s 2.4s ease-in-out infinite;
+}
+.mwp-capsule__half::before {
+  content: "";
+  position: absolute;
+  top: 9%;
+  height: 24%;
+  border-radius: 999px;
+  background: linear-gradient(180deg, rgb(255 255 255 / 0.95), rgb(255 255 255 / 0));
+}
+.mwp-capsule__half--l::before {
+  left: 9%;
+  right: 0;
+}
+.mwp-capsule__half--r::before {
+  left: 0;
+  right: 9%;
+}
+.mwp-capsule__seam {
+  position: absolute;
+  top: 2%;
+  bottom: 2%;
+  left: calc(50% - 1.5px);
+  width: 3px;
+  border-radius: 2px;
+  background: rgb(12 22 54 / 0.28);
+  opacity: 0;
+  animation: mc-fade-in 0.3s 1.6s forwards;
+}
+.mwp-capsule__mark {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  font-size: clamp(24px, 3.6vw, 44px);
+  font-weight: 800 !important;
+  letter-spacing: 0.16em;
+  color: var(--mc-navy);
+  opacity: 0;
+  animation: mc-fade-in 0.8s 1.9s forwards;
+}
+.mwp-capsule__flash {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 18%;
+  aspect-ratio: 1 / 1;
+  border-radius: 50%;
+  transform: translate(-50%, -50%) scale(0);
+  background: radial-gradient(circle, #fff 0%, rgb(255 240 200 / 0.8) 30%, rgb(255 240 200 / 0) 70%);
+  animation: mc-flash 0.9s 1.55s ease-out forwards;
+}
+
+.mwp-capsule__pause {
+  position: absolute;
+  top: 0;
+  right: 0;
+  z-index: 2;
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 999px;
+  color: var(--mc-navy);
+  background: rgb(255 255 255 / 0.85);
+  border: 1px solid var(--mc-line);
+  box-shadow: 0 6px 16px rgb(20 34 74 / 0.08);
+  opacity: 0;
+  transition:
+    opacity 0.4s,
+    background 0.2s,
+    color 0.2s;
+}
+.mwp-capsule[data-play="true"] .mwp-capsule__pause {
+  opacity: 1;
+}
+.mwp-capsule__pause:hover {
+  color: #fff;
+  background: var(--mc-navy);
+}
+
+/* ── Timing ───────────────────────────────────────────── */
+/* Nothing starts until the capsule scene is ready, so the words and the halves land on the same beat. */
+.mwp-capsule[data-play="false"] *,
+.mwp-capsule[data-play="false"] *::before,
+.mwp-capsule[data-play="false"] *::after {
+  animation-play-state: paused !important;
+}
+/* The pause button stops the looping motion (the intro still completes). */
+.mwp-capsule[data-motion="off"] .mwp-capsule__orbit,
+.mwp-capsule[data-motion="off"] .mwp-capsule__halo,
+.mwp-capsule[data-motion="off"] .mwp-capsule__btn--primary::after,
+.mwp-capsule[data-motion="off"] .mwp-capsule__css-float,
+.mwp-capsule[data-motion="off"] .mwp-capsule__half {
+  animation-play-state: paused !important;
+}
+
+@keyframes mc-rise {
+  to {
+    transform: translateY(0);
+  }
+}
+@keyframes mc-fade {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+@keyframes mc-glint {
+  0% {
+    left: -50%;
+  }
+  30%,
+  100% {
+    left: 130%;
+  }
+}
+@keyframes mc-in-left {
+  0% {
+    transform: translateX(-120%) rotate(-25deg);
+    opacity: 0;
+  }
+  60% {
+    opacity: 1;
+  }
+  100% {
+    transform: translateX(0) rotate(0);
+    opacity: 1;
+  }
+}
+@keyframes mc-in-right {
+  0% {
+    transform: translateX(120%) rotate(25deg);
+    opacity: 0;
+  }
+  60% {
+    opacity: 1;
+  }
+  100% {
+    transform: translateX(0) rotate(0);
+    opacity: 1;
+  }
+}
+@keyframes mc-roll {
+  0%,
+  100% {
+    background-position: 0 0;
+  }
+  50% {
+    background-position: 0 100%;
+  }
+}
+@keyframes mc-flash {
+  0% {
+    transform: translate(-50%, -50%) scale(0);
+    opacity: 1;
+  }
+  100% {
+    transform: translate(-50%, -50%) scale(6);
+    opacity: 0;
+  }
+}
+@keyframes mc-ripple {
+  0% {
+    transform: translate(-50%, -50%) scale(0.4);
+    opacity: 1;
+  }
+  100% {
+    transform: translate(-50%, -50%) scale(2);
+    opacity: 0;
+  }
+}
+@keyframes mc-halo-in {
+  to {
+    opacity: 1;
+  }
+}
+@keyframes mc-breathe {
+  0%,
+  100% {
+    transform: scale(0.94);
+  }
+  50% {
+    transform: scale(1.06);
+  }
+}
+@keyframes mc-fade-in {
+  to {
+    opacity: 1;
+  }
+}
+@keyframes mc-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+@keyframes mc-float {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-14px);
+  }
+}
+@keyframes mc-tag-in {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+@keyframes mc-tag-in-centre {
+  from {
+    opacity: 0;
+    transform: translate(-50%, 10px);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, 0);
+  }
+}
+
+@media (max-width: 860px) {
+  .mwp-capsule__grid {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 16px;
+    padding-block: 40px 64px;
+  }
+  .mwp-capsule__stage-wrap {
+    order: -1;
+    max-width: 420px;
+  }
+}
+@media (max-width: 480px) {
+  .mwp-capsule__label {
+    padding: 6px 10px;
+    font-size: 10px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .mwp-capsule *,
+  .mwp-capsule *::before,
+  .mwp-capsule *::after {
+    animation-duration: 0.001s !important;
+    animation-delay: 0s !important;
+    animation-iteration-count: 1 !important;
+    transition: none !important;
+  }
+}
