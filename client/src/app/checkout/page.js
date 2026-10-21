@@ -612,9 +612,9 @@ export default function CheckoutPage() {
                             )}
 
                             {/* Breakdown */}
-                            <div className="space-y-2.5 text-[11px] mb-4 pb-4 border-b border-black/5">
+                            <div className="space-y-3 text-[12px] mb-4 pb-4 border-b border-black/5">
                                 <div className="flex justify-between">
-                                    <span className="text-black/40 uppercase tracking-wider">Subtotal</span>
+                                    <span className="text-neutral-600 uppercase tracking-wider">Subtotal</span>
                                     <span className="font-medium text-black">{formatCurrency(totals.subtotal)}</span>
                                 </div>
                                 {totals.discount > 0 && (
@@ -624,13 +624,9 @@ export default function CheckoutPage() {
                                     </div>
                                 )}
                                 <div className="flex justify-between">
-                                    <span className="text-black/40 uppercase tracking-wider">Tax (0%)</span>
-                                    <span className="font-medium text-black">$0.00</span>
-                                </div>
-                                <div className="flex justify-between">
-                                    <span className="text-black/40 uppercase tracking-wider">Shipping</span>
+                                    <span className="text-neutral-600 uppercase tracking-wider">Shipping</span>
                                     {!selectedRate ? (
-                                        <span className="font-medium text-black/40 text-[10px] uppercase tracking-widest">{loadingRates ? "Calculating…" : "Choose option"}</span>
+                                        <span className="font-medium text-neutral-600 text-[11px] uppercase tracking-widest">{loadingRates ? "Calculating…" : "Choose option"}</span>
                                     ) : selectedRate.price > 0 ? (
                                         <span className="font-medium text-black">{formatCurrency(selectedRate.price)}</span>
                                     ) : (
@@ -638,13 +634,13 @@ export default function CheckoutPage() {
                                     )}
                                 </div>
                                 {selectedRate && (
-                                    <p className="text-[9px] text-black/40 text-right">{selectedRate.carrier} {prettyService(selectedRate.service)}</p>
+                                    <p className="text-[11px] text-neutral-600 text-right">{selectedRate.carrier} {prettyService(selectedRate.service)}</p>
                                 )}
                             </div>
 
                             {/* Total */}
                             <div className="flex justify-between items-baseline mb-5">
-                                <span className="text-[11px] uppercase tracking-[0.15em] text-black/50 font-medium">Total</span>
+                                <span className="text-[11px] uppercase tracking-[0.15em] text-neutral-700 font-medium">Total</span>
                                 <span className="text-xl font-light text-black">{formatCurrency(checkoutTotal)}</span>
                             </div>
 
@@ -657,7 +653,7 @@ export default function CheckoutPage() {
                                 {processing ? "Processing…" : loadingPaymentSettings ? "Loading payment options…" : `Pay ${formatCurrency(checkoutTotal)}`}
                             </button>
 
-                            <p className="text-[9px] text-black/20 text-center mt-3">
+                            <p className="text-[11px] text-neutral-500 text-center mt-3">
                                 Secure payment by Stripe · SSL encrypted
                             </p>
                         </div>
