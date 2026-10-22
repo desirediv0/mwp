@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { IconArrowUpRight, IconShieldCheck } from "@tabler/icons-react";
+import { IconArrowUpRight } from "@tabler/icons-react";
 import { useLanguage } from "@/lib/language-context";
 import { fetchApi } from "@/lib/utils";
 
@@ -19,7 +19,6 @@ const SLIDES = [
     tint: "from-[#F1E4BF] to-[#E3CC8C]",
     glow: "#C9A227",
     image: "/products/cutouts/ultra-pro.webp",
-    badge: "Natural Heal",
   },
   {
     n: "02",
@@ -31,7 +30,6 @@ const SLIDES = [
     tint: "from-[#D7E1F6] to-[#B9CAEC]",
     glow: "#3B4E8A",
     image: "/products/cutouts/power-max.webp",
-    badge: "Natural Heal",
   },
   {
     n: "03",
@@ -43,7 +41,6 @@ const SLIDES = [
     tint: "from-[#F4DEC6] to-[#EBC49C]",
     glow: "#A15C2C",
     image: "/products/cutouts/rapid-boost.webp",
-    badge: "Natural Heal",
   },
   {
     n: "04",
@@ -55,7 +52,6 @@ const SLIDES = [
     tint: "from-[#F6D8D0] to-[#EBB6AB]",
     glow: "#9C5A4A",
     image: "/products/cutouts/her-power.webp",
-    badge: "Natural Heal",
   },
   {
     n: "05",
@@ -67,7 +63,6 @@ const SLIDES = [
     tint: "from-[#E6D8F6] to-[#CFB8EA]",
     glow: "#6B4E92",
     image: "/products/cutouts/her-energy.webp",
-    badge: "Natural Heal",
   },
   {
     n: "06",
@@ -79,7 +74,6 @@ const SLIDES = [
     tint: "from-[#E7E4D8] to-[#D1CCB8]",
     glow: "#5C5648",
     image: "/products/cutouts/daily-vitality.webp",
-    badge: "Natural Heal",
   },
   {
     n: "07",
@@ -91,7 +85,6 @@ const SLIDES = [
     tint: "from-[#F1D9BE] to-[#E0B88D]",
     glow: "#AA652B",
     image: "/products/cutouts/alpha-prime.webp",
-    badge: "Natural Heal",
   },
   {
     n: "08",
@@ -103,7 +96,6 @@ const SLIDES = [
     tint: "from-[#EFD8BF] to-[#DEB78C]",
     glow: "#AF6028",
     image: "/products/cutouts/titan-force.webp",
-    badge: "Natural Heal",
   },
 ];
 
@@ -121,35 +113,6 @@ function ProductTile({ slide }) {
         aria-label={`View ${slide.name}`}
         className="absolute inset-0 z-[5] cursor-pointer focus-visible:outline focus-visible:outline-2 focus-visible:-outline-offset-4 focus-visible:outline-neutral-900"
       />
-      {/* Shield-shaped ribbon badge, top-left corner — smaller on mobile, full size from sm: up */}
-      {slide.badge && (
-        <div className="pointer-events-none absolute top-0 left-4 sm:left-6 z-20 w-14 sm:w-20">
-          {/* Ambient glow behind the badge, tinted per product */}
-          <div
-            className="absolute -inset-1.5 sm:-inset-2 -top-1 rounded-full blur-lg opacity-60"
-            style={{ background: slide.glow }}
-          />
-          {/* Golden outline: gold shape with a slightly inset green shape on top */}
-          <div
-            className="relative bg-gradient-to-b from-[#E5C56A] via-[#C9A227] to-[#8B6914] p-[2px] pb-[3px] drop-shadow-[0_8px_14px_rgba(0,0,0,0.3)]"
-            style={{ clipPath: "polygon(0 0, 100% 0, 100% 100%, 50% 84%, 0 100%)" }}
-          >
-            <div
-              className="relative flex flex-col items-center justify-center bg-gradient-to-b from-emerald-600 to-emerald-900 pt-2.5 sm:pt-3.5 pb-3.5 sm:pb-5 text-white"
-              style={{ clipPath: "polygon(0 0, 100% 0, 100% 100%, 50% 84%, 0 100%)" }}
-            >
-              <div className="pointer-events-none absolute inset-x-0 top-0 h-6 bg-gradient-to-b from-white/20 to-transparent" />
-              <IconShieldCheck className="h-3.5 w-3.5 sm:h-5 sm:w-5 mb-0.5 sm:mb-1 text-[#F5DE9A] drop-shadow-[0_0_4px_rgba(229,197,106,0.7)]" stroke={2} />
-              <span className="text-[7px] sm:text-[9.5px] font-bold uppercase tracking-wide leading-[1.15] text-center px-1">
-                {slide.badge.split(" ").map((word, i) => (
-                  <span key={i} className="block">{word}</span>
-                ))}
-              </span>
-            </div>
-          </div>
-        </div>
-      )}
-
       {/* Clean spotlight right behind the bottle (no wide blurry blob), brightens on hover */}
       <div
         data-tile-glow

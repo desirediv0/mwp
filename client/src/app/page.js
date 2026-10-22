@@ -4,7 +4,6 @@
 // import MwpOrbitHero from "@/components/sections/home/MwpOrbitHero";
 import MwpParticleHero from "@/components/sections/home/MwpParticleHero";
 import MwpProductShowcase from "@/components/sections/home/MwpProductShowcase";
-import MwpTrustReveal from "@/components/sections/home/MwpTrustReveal";
 
 export const metadata = {
   title: "MWP SUPPLEMENTS — Men | Women | Power",
@@ -20,7 +19,6 @@ export default function Home() {
       {/* <MwpHomeHero /> */}
       {/* <MwpOrbitHero /> */}
       <MwpParticleHero />
-      <MwpTrustReveal />
       <MwpProductShowcase />
     </>
   );
