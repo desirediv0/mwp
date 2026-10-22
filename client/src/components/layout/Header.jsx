@@ -203,7 +203,7 @@ export function Navbar() {
               className="flex items-center shrink-0 focus-visible:outline-offset-4"
             >
               <Image
-                src="/mwp-logo.png"
+                src="/mwp-logo-2.png"
                 alt="MWP SUPPLEMENTS"
                 width={200}
                 height={72}
@@ -419,8 +419,11 @@ function SearchDialog({ open, onOpenChange, categories }) {
   const [results, setResults] = useState([]);
   const [loading, setLoading] = useState(false);
   const [suggestedProducts, setSuggestedProducts] = useState([]);
+  const [active, setActive] = useState(-1);
   const searchInputRef = useRef(null);
-  const debRef = useRef(null);
+  const cacheRef = useRef(new Map());
+
+  const term = searchQuery.trim();
 
   useEffect(() => {
     if (!open) return;
@@ -433,109 +436,190 @@ function SearchDialog({ open, onOpenChange, categories }) {
 
   useEffect(() => {
     if (open) {
-      const timer = setTimeout(() => searchInputRef.current?.focus(), 100);
+      const timer = setTimeout(() => searchInputRef.current?.focus(), 80);
       return () => clearTimeout(timer);
     }
     setSearchQuery("");
     setResults([]);
+    setActive(-1);
   }, [open]);
 
+  // Debounced live search: waits 250ms after the last keystroke, ignores stale answers, remembers earlier terms
   useEffect(() => {
-    if (debRef.current) clearTimeout(debRef.current);
-    const term = searchQuery.trim();
+    setActive(-1);
     if (!open || term.length < 2) {
       setResults([]);
       setLoading(false);
       return;
     }
+    const key = term.toLowerCase();
+    if (cacheRef.current.has(key)) {
+      setResults(cacheRef.current.get(key));
+      setLoading(false);
+      return;
+    }
     setLoading(true);
     let cancelled = false;
-    debRef.current = setTimeout(async () => {
+    const timer = setTimeout(async () => {
       try {
         const res = await fetchApi(`/public/products?search=${encodeURIComponent(term)}&limit=6`);
-        if (!cancelled) setResults(res?.data?.products || []);
+        const list = res?.data?.products || [];
+        cacheRef.current.set(key, list);
+        if (!cancelled) setResults(list);
       } catch {
         if (!cancelled) setResults([]);
       } finally {
         if (!cancelled) setLoading(false);
       }
-    }, 200);
-    return () => { cancelled = true; if (debRef.current) clearTimeout(debRef.current); };
-  }, [searchQuery, open]);
+    }, 250);
+    return () => { cancelled = true; clearTimeout(timer); };
+  }, [term, open]);
 
-  const handleSearch = event => {
-    event?.preventDefault();
-    const term = searchQuery.trim();
+  const goAll = () => {
     if (!term) return;
     onOpenChange(false);
     router.push(`/products?search=${encodeURIComponent(term)}`);
   };
 
-  const handleSelectProduct = slug => {
+  const goProduct = slug => {
     onOpenChange(false);
     router.push(`/products/${slug}`);
   };
 
-  const handleTagClick = term => {
-    setSearchQuery(term);
-    searchInputRef.current?.focus();
+  const handleSubmit = event => {
+    event?.preventDefault();
+    if (active >= 0 && results[active]) return goProduct(results[active].slug);
+    goAll();
   };
 
+  const handleKeyDown = event => {
+    if (!results.length) return;
+    if (event.key === "ArrowDown") { event.preventDefault(); setActive(i => (i + 1) % results.length); }
+    else if (event.key === "ArrowUp") { event.preventDefault(); setActive(i => (i <= 0 ? results.length - 1 : i - 1)); }
+  };
+
+  const clean = name => String(name || "").replace(/[\u2122\u00ae]/g, "").replace(/^MWP /, "");
   const popularProducts = suggestedProducts.length ? suggestedProducts : PRODUCT_MENU.map(item => ({
     id: item.slug,
     slug: item.slug,
     name: item.label,
     image: `/products/cutouts/${item.slug}.webp`,
-    category: { name: item.tag },
   }));
+  const priceOf = p => {
+    const n = parseFloat(p.salePrice || p.price || p.basePrice || p.minPrice);
+    return Number.isFinite(n) && n > 0 ? `$${n.toFixed(2)}` : null;
+  };
+  // bold the part of the name that matches what was typed
+  const highlight = text => {
+    const i = term ? text.toLowerCase().indexOf(term.toLowerCase()) : -1;
+    if (i < 0) return text;
+    return <>{text.slice(0, i)}<mark className="rounded-sm bg-[#F3E2B3] px-0.5 text-inherit">{text.slice(i, i + term.length)}</mark>{text.slice(i + term.length)}</>;
+  };
 
   return (
     <DialogPrimitive.Root open={open} onOpenChange={onOpenChange}>
       <DialogPrimitive.Portal>
-        <DialogPrimitive.Overlay className="fixed inset-0 z-[90] bg-neutral-950/40 backdrop-blur-sm data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=open]:fade-in-0 data-[state=closed]:fade-out-0 motion-reduce:animate-none" />
-      <DialogPrimitive.Content aria-describedby="mwp-search-description" className="mwp-search fixed left-1/2 top-1/2 z-[100] -translate-x-1/2 -translate-y-1/2 flex w-[calc(100%-24px)] max-w-[760px] max-h-[88dvh] flex-col gap-0 bg-white text-neutral-900 p-0 overflow-hidden border border-neutral-200 shadow-[0_24px_70px_rgba(20,35,28,0.18)] rounded-3xl sm:rounded-3xl">
-        <div className="shrink-0 px-5 pt-6 pb-4 sm:px-7 sm:pt-7">
-          <p className="mb-2 text-[9px] uppercase tracking-[0.2em] text-[#A8741F]">Discover your everyday</p>
-          <DialogPrimitive.Title className="pr-8 text-2xl tracking-tight sm:text-3xl">Search MWP</DialogPrimitive.Title>
-          <p id="mwp-search-description" className="mt-2 text-xs leading-5 text-neutral-500 sm:text-sm">Find a formula, explore an ingredient, or shop by your goal.</p>
-        </div>
-        <form onSubmit={handleSearch} className="shrink-0 px-5 pb-5 sm:px-7">
-          <div className="flex min-h-14 items-center gap-2 rounded-2xl border border-neutral-300 bg-white px-3 transition-shadow focus-within:border-neutral-800 focus-within:ring-2 focus-within:ring-neutral-900/10 sm:gap-3 sm:px-4">
-            <IconSearch className="h-5 w-5 shrink-0 text-neutral-400" stroke={1.5} />
-            <input ref={searchInputRef} type="search" aria-label="Search formulas and ingredients" placeholder="Search formulas..." value={searchQuery} onChange={e => setSearchQuery(e.target.value)} className="min-w-0 flex-1 border-0 bg-transparent py-4 text-[16px] text-neutral-900 placeholder:text-neutral-400 focus:!outline-none focus-visible:!outline-none [&::-webkit-search-cancel-button]:hidden" />
-            {searchQuery && <button type="button" onClick={() => setSearchQuery("")} className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-neutral-500 hover:text-neutral-900" aria-label="Clear search"><IconX className="h-4 w-4" /></button>}
-            <button type="submit" aria-label="Search" className="flex h-10 w-10 shrink-0 items-center justify-center gap-2 rounded-xl bg-neutral-900 text-xs text-white transition-colors hover:bg-neutral-700 sm:w-auto sm:px-4"><span className="hidden sm:inline">Search</span><IconArrowUpRight className="h-4 w-4" stroke={1.5} /></button>
-          </div>
-        </form>
-        <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain border-t border-neutral-100 px-5 py-5 sm:px-7 sm:py-6">
-          {searchQuery.trim().length >= 2 ? (
-            <div>
-              <div className="mb-4 flex items-center justify-between text-[10px] uppercase tracking-[0.15em] text-neutral-500"><span>Search results</span>{!loading && <span>{results.length} matches</span>}</div>
-              {loading ? (
-                <div role="status" className="flex min-h-[160px] items-center justify-center gap-3 text-sm text-neutral-500"><span className="h-4 w-4 animate-spin rounded-full border border-neutral-200 border-t-neutral-800" />Searching formulas...</div>
-              ) : results.length === 0 ? (
-                <div className="rounded-2xl border border-neutral-200 px-5 py-9 text-center"><IconSearch className="mx-auto mb-4 h-7 w-7 text-neutral-400" stroke={1.5} /><p className="text-base text-neutral-900">No matches for &ldquo;{searchQuery.trim()}&rdquo;</p><p className="mt-2 text-xs leading-5 text-neutral-500">Try a different name or explore the full collection.</p><Link href="/products" onClick={() => onOpenChange(false)} className="mt-5 inline-flex items-center gap-3 rounded-full bg-neutral-900 px-5 py-3 text-xs text-white">Browse all formulas <IconArrowUpRight className="h-4 w-4" /></Link></div>
-              ) : (
-                <div className="space-y-2">
-                  {results.map(p => {
-                    const cat = p.category?.name || p.categories?.[0]?.category?.name;
-                    return <button key={p.id || p.slug} type="button" onClick={() => handleSelectProduct(p.slug)} className="group flex w-full items-center gap-4 rounded-2xl border border-neutral-200 p-3 text-left transition-colors hover:border-[#A8741F]"><span className="relative h-16 w-12 shrink-0"><Image src={getImg(p)} alt={p.name} fill sizes="48px" className="object-contain" /></span><span className="min-w-0 flex-1"><span className="block text-sm leading-5 text-neutral-900">{p.name}</span>{cat && <span className="mt-1 block text-[11px] leading-5 text-neutral-500">{cat}</span>}{p.price && <span className="mt-1 block text-xs text-[#A8741F]">$ {Number(p.price).toLocaleString("en-US")}</span>}</span><IconArrowUpRight className="h-4 w-4 shrink-0 text-neutral-400 group-hover:text-[#A8741F]" /></button>;
-                  })}
-                  <button type="button" onClick={handleSearch} className="!mt-4 flex w-full items-center justify-between rounded-xl border border-neutral-200 px-4 py-3.5 text-xs text-neutral-700 hover:border-neutral-900">View all results <IconArrowRight className="h-4 w-4" /></button>
+        <DialogPrimitive.Overlay className="fixed inset-0 z-[90] bg-neutral-950/40 backdrop-blur-[2px] data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=open]:fade-in-0 data-[state=closed]:fade-out-0 motion-reduce:animate-none" />
+        <DialogPrimitive.Content
+          aria-describedby="mwp-search-description"
+          className="mwp-search fixed left-1/2 top-[72px] z-[100] flex w-[calc(100%-24px)] max-w-[520px] -translate-x-1/2 flex-col overflow-hidden rounded-2xl border border-neutral-200 bg-white p-0 text-neutral-900 shadow-[0_20px_60px_rgba(18,33,63,0.22)] sm:top-[88px]"
+        >
+          <DialogPrimitive.Title className="sr-only">Search MWP</DialogPrimitive.Title>
+          <p id="mwp-search-description" className="sr-only">Type to find a formula. Use the arrow keys to move through results and Enter to open one.</p>
+
+          <form onSubmit={handleSubmit} className="flex items-center gap-2 border-b border-neutral-200 px-4">
+            <IconSearch className="h-5 w-5 shrink-0 text-neutral-500" stroke={1.6} />
+            <input
+              ref={searchInputRef}
+              type="search"
+              role="combobox"
+              aria-expanded={results.length > 0}
+              aria-controls="mwp-search-results"
+              aria-label="Search formulas"
+              autoComplete="off"
+              placeholder="Search formulas..."
+              value={searchQuery}
+              onChange={e => setSearchQuery(e.target.value)}
+              onKeyDown={handleKeyDown}
+              className="min-w-0 flex-1 border-0 bg-transparent py-4 text-[15px] text-neutral-900 placeholder:text-neutral-500 focus:!outline-none focus-visible:!outline-none [&::-webkit-search-cancel-button]:hidden"
+            />
+            {loading && <span aria-hidden="true" className="h-4 w-4 shrink-0 animate-spin rounded-full border-2 border-neutral-200 border-t-neutral-800" />}
+            {searchQuery && !loading && (
+              <button type="button" onClick={() => { setSearchQuery(""); searchInputRef.current?.focus(); }} className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-neutral-500 hover:bg-neutral-100 hover:text-neutral-900" aria-label="Clear search">
+                <IconX className="h-4 w-4" />
+              </button>
+            )}
+            <DialogPrimitive.Close aria-label="Close search" className="hidden shrink-0 rounded-md border border-neutral-300 px-1.5 py-0.5 text-[10px] font-medium text-neutral-600 hover:bg-neutral-100 sm:block">Esc</DialogPrimitive.Close>
+          </form>
+
+          <div id="mwp-search-results" className="max-h-[min(60dvh,420px)] overflow-y-auto overscroll-contain p-2">
+            {term.length >= 2 ? (
+              loading && results.length === 0 ? (
+                <div role="status" aria-label="Searching" className="space-y-2 p-1">
+                  {[0, 1, 2].map(i => <div key={i} className="h-12 animate-pulse rounded-xl bg-neutral-100" />)}
                 </div>
-              )}
-            </div>
-          ) : (
-            <div className="space-y-6">
-              <div><p className="mb-3 text-[10px] uppercase tracking-[0.15em] text-neutral-500">Popular searches</p><div className="flex flex-wrap gap-2">{popularProducts.slice(0,8).map(product => <button key={product.id || product.slug} type="button" onClick={() => handleTagClick(product.name.replace(/[\u2122\u00ae]/g,""))} className="min-h-10 rounded-full border border-neutral-200 px-3.5 text-xs text-neutral-600 transition-colors hover:border-neutral-900 hover:text-neutral-900">{product.name.replace(/[\u2122\u00ae]/g,"").replace(/^MWP /,"")}</button>)}</div></div>
-              {categories.length > 0 && <div><p className="mb-3 text-[10px] uppercase tracking-[0.15em] text-neutral-500">Shop by goal</p><div className="grid grid-cols-1 gap-2 min-[380px]:grid-cols-2">{categories.slice(0,8).map(c => <Link key={c.id || c.slug} href={"/category/" + c.slug} onClick={() => onOpenChange(false)} className="flex min-h-12 items-center justify-between gap-3 rounded-xl border border-neutral-200 px-4 py-3 text-xs leading-5 text-neutral-700 transition-colors hover:border-[#A8741F]"><span>{c.name}</span><IconArrowUpRight className="h-3.5 w-3.5 shrink-0 text-[#A8741F]" /></Link>)}</div></div>}
-              <div><p className="mb-3 text-[10px] uppercase tracking-[0.15em] text-neutral-500">Explore the collection</p><div className="grid grid-cols-1 gap-2 sm:grid-cols-2">{popularProducts.slice(0,4).map(p => <button key={p.id || p.slug} type="button" onClick={() => handleSelectProduct(p.slug)} className="flex min-h-20 items-center gap-3 rounded-2xl border border-neutral-200 p-3 text-left transition-colors hover:border-[#A8741F]"><span className="relative h-14 w-9 shrink-0"><Image src={getImg(p)} alt="" fill sizes="36px" className="object-contain" /></span><span className="min-w-0 flex-1 text-xs leading-5 text-neutral-900">{p.name.replace(/[\u2122\u00ae]/g,"").replace(/^MWP /,"")}</span><IconArrowUpRight className="h-3.5 w-3.5 shrink-0 text-neutral-400" /></button>)}</div></div>
-            </div>
-          )}
-        </div>
-        <div className="flex shrink-0 items-center justify-between gap-3 border-t border-neutral-100 px-5 py-4 sm:px-7"><span className="text-[10px] text-neutral-500">Eight formulas. Find your fit.</span><Link href="/products" onClick={() => onOpenChange(false)} className="inline-flex items-center gap-2 text-xs text-green-700">Browse all <IconArrowUpRight className="h-3.5 w-3.5" /></Link></div>
-        <DialogPrimitive.Close aria-label="Close search" className="absolute right-3 top-3 flex h-10 w-10 items-center justify-center rounded-full text-neutral-500 transition-colors hover:bg-neutral-100 hover:text-neutral-900"><IconX className="h-4 w-4" /></DialogPrimitive.Close>
-      </DialogPrimitive.Content>
+              ) : results.length === 0 ? (
+                <div className="px-4 py-8 text-center">
+                  <p className="text-sm text-neutral-900">No matches for &ldquo;{term}&rdquo;</p>
+                  <p className="mt-1 text-xs text-neutral-600">Try another name, or browse every formula.</p>
+                  <Link href="/products" onClick={() => onOpenChange(false)} className="mt-4 inline-flex items-center gap-2 rounded-full bg-neutral-900 px-4 py-2 text-xs text-white">Browse all formulas <IconArrowUpRight className="h-3.5 w-3.5" /></Link>
+                </div>
+              ) : (
+                <ul role="listbox" aria-label="Search results">
+                  {results.map((p, i) => {
+                    const price = priceOf(p);
+                    return (
+                      <li key={p.id || p.slug} role="option" aria-selected={i === active}>
+                        <button
+                          type="button"
+                          onClick={() => goProduct(p.slug)}
+                          onMouseEnter={() => setActive(i)}
+                          className={`flex w-full items-center gap-3 rounded-xl px-2.5 py-2 text-left transition-colors ${i === active ? "bg-neutral-100" : "hover:bg-neutral-50"}`}
+                        >
+                          <span className="relative h-11 w-9 shrink-0"><Image src={getImg(p)} alt={p.name} fill sizes="36px" className="object-contain" /></span>
+                          <span className="min-w-0 flex-1 truncate text-sm text-neutral-900">{highlight(clean(p.name))}</span>
+                          {price && <span className="shrink-0 text-xs text-[#A8741F]">{price}</span>}
+                          <IconArrowRight className="h-3.5 w-3.5 shrink-0 text-neutral-400" />
+                        </button>
+                      </li>
+                    );
+                  })}
+                  <li>
+                    <button type="button" onClick={goAll} className="mt-1 flex w-full items-center justify-between rounded-xl border-t border-neutral-100 px-3 py-2.5 text-xs text-neutral-700 hover:bg-neutral-50">
+                      <span>See all results for &ldquo;{term}&rdquo;</span><IconArrowRight className="h-3.5 w-3.5" />
+                    </button>
+                  </li>
+                </ul>
+              )
+            ) : (
+              <div className="space-y-4 p-2">
+                <div>
+                  <p className="mb-2 text-[11px] uppercase tracking-[0.14em] text-neutral-600">Popular</p>
+                  <div className="flex flex-wrap gap-1.5">
+                    {popularProducts.slice(0, 8).map(p => (
+                      <button key={p.id || p.slug} type="button" onClick={() => setSearchQuery(clean(p.name))} className="rounded-full border border-neutral-200 px-3 py-1.5 text-xs text-neutral-700 transition-colors hover:border-neutral-900 hover:text-neutral-900">{clean(p.name)}</button>
+                    ))}
+                  </div>
+                </div>
+                {categories.length > 0 && (
+                  <div>
+                    <p className="mb-2 text-[11px] uppercase tracking-[0.14em] text-neutral-600">Shop by goal</p>
+                    <div className="flex flex-wrap gap-1.5">
+                      {categories.slice(0, 6).map(c => (
+                        <Link key={c.id || c.slug} href={"/category/" + c.slug} onClick={() => onOpenChange(false)} className="inline-flex items-center gap-1 rounded-full bg-neutral-100 px-3 py-1.5 text-xs text-neutral-800 transition-colors hover:bg-neutral-200">{c.name}</Link>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
+
+          <div className="flex items-center justify-between gap-3 border-t border-neutral-100 bg-neutral-50 px-4 py-2.5 text-[11px] text-neutral-600">
+            <span className="hidden sm:inline">Use &uarr; &darr; to move, Enter to open</span>
+            <Link href="/products" onClick={() => onOpenChange(false)} className="ml-auto inline-flex items-center gap-1 text-neutral-800 hover:underline">Browse all <IconArrowUpRight className="h-3 w-3" /></Link>
+          </div>
+        </DialogPrimitive.Content>
       </DialogPrimitive.Portal>
     </DialogPrimitive.Root>
   );
@@ -571,7 +655,7 @@ function MobileMenu({
             <div className="flex items-center justify-between px-6 py-5 border-b border-neutral-100 bg-white">
               <div className="flex items-center">
                 <Image
-                  src="/mwp-logo.png"
+                  src="/mwp-logo-2.png"
                   alt="MWP SUPPLEMENTS"
                   width={130}
                   height={50}

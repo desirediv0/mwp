@@ -96,7 +96,7 @@ export default function AddressForm({ onSuccess, onCancel, existingAddress = nul
             {isInline && (
                 <div className="flex justify-between items-center mb-4">
                     <h3 className="font-semibold">Add New Address</h3>
-                    <button type="button" onClick={onCancel} className="text-neutral-600 hover:text-gray-700"><XCircle className="h-5 w-5" /></button>
+                    <button type="button" onClick={onCancel} className="text-neutral-600 hover:text-neutral-600"><XCircle className="h-5 w-5" /></button>
                 </div>
             )}
             {errors.general && <div role="alert" className="mb-4 rounded-md border border-red-200 bg-red-50 p-3 text-sm font-medium text-red-700">{errors.general}</div>}
@@ -151,7 +151,7 @@ export default function AddressForm({ onSuccess, onCancel, existingAddress = nul
                     </div>
                     <div className="lg:col-span-3">
                         <div className="flex items-center space-x-2">
-                            <input type="checkbox" id="isDefault" name="isDefault" checked={formData.isDefault} onChange={handleChange} className="h-4 w-4 rounded border-gray-300 text-primary focus:ring-primary" />
+                            <input type="checkbox" id="isDefault" name="isDefault" checked={formData.isDefault} onChange={handleChange} className="h-4 w-4 rounded border-[#E6DFC9] text-primary focus:ring-primary" />
                             <Label htmlFor="isDefault" className="font-normal cursor-pointer">Set as default address</Label>
                         </div>
                     </div>

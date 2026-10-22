@@ -4,7 +4,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import * as Dialog from "@radix-ui/react-dialog";
-import { IconArrowRight, IconArrowUpRight, IconSearch, IconX, IconLeaf, IconMapPin, IconAdjustmentsHorizontal } from "@tabler/icons-react";
+import { IconArrowRight, IconArrowUpRight, IconSearch, IconX, IconMapPin, IconAdjustmentsHorizontal } from "@tabler/icons-react";
 import { PageBreadcrumb } from "@/components/layout/Editorial";
 import { INGREDIENT_LIBRARY } from "@/lib/ingredient-library";
 import "./ingredients.css";
@@ -17,7 +17,15 @@ const FILTERS = [
   { name: "Metabolism & circulation", test: /metabol|glucose|circulation|blood flow|cardiovascular/i },
 ];
 const ORIGINS = [...new Set(INGREDIENT_LIBRARY.map(ingredient => ingredient.origin))].sort();
-const HERO_INGREDIENTS = [INGREDIENT_LIBRARY[0], INGREDIENT_LIBRARY[25], INGREDIENT_LIBRARY[19]];
+
+// Country flags (small local images in /public/flags)
+const FLAGS = { India: "in", Malaysia: "my", USA: "us", Japan: "jp", Iran: "ir", "South Korea": "kr", Peru: "pe", Germany: "de", France: "fr", Sweden: "se", China: "cn", Italy: "it" };
+function Flag({ country }) {
+  const code = FLAGS[country];
+  if (!code) return <IconMapPin size={12} stroke={1.5} />;
+  // eslint-disable-next-line @next/next/no-img-element
+  return <img src={`/flags/${code}.png`} alt="" width={20} height={14} className="mwp-flag" loading="lazy" />;
+}
 
 function IngredientPhoto({ ingredient, eager = false }) {
   return (
@@ -40,11 +48,11 @@ function IngredientCard({ ingredient, index }) {
     <article className="mwp-ingredient-card">
       <div className={`mwp-ingredient-visual mwp-ingredient-tone-${index % 4}`}>
         <span className="mwp-ingredient-number">{String(index + 1).padStart(2, "0")} / {INGREDIENT_LIBRARY.length}</span>
-        <span className="mwp-ingredient-origin"><IconMapPin size={12} stroke={1.5} /> {ingredient.origin}</span>
+        <span className="mwp-ingredient-origin"><Flag country={ingredient.origin} /> {ingredient.origin}</span>
         <div className="mwp-ingredient-photo-wrap"><IngredientPhoto ingredient={ingredient} /></div>
       </div>
       <div className="mwp-ingredient-copy">
-        <p className="mwp-ingredient-reference">Reference origin: {ingredient.origin}</p>
+        <p className="mwp-ingredient-reference"><Flag country={ingredient.origin} /> Reference origin: {ingredient.origin}</p>
         <h2>{ingredient.name}</h2>
         <p className="mwp-ingredient-description">{ingredient.description}</p>
         <Dialog.Root>
@@ -62,7 +70,7 @@ function IngredientCard({ ingredient, index }) {
                 <p className="mwp-ingredients-kicker">Inside the ingredient library</p>
                 <Dialog.Title>{ingredient.name}</Dialog.Title>
                 <Dialog.Description>{ingredient.description}</Dialog.Description>
-                <div className="mwp-ingredient-dialog-origin"><IconMapPin size={18} /><div><span>Reference origin</span><p>{ingredient.origin}</p></div></div>
+                <div className="mwp-ingredient-dialog-origin"><Flag country={ingredient.origin} /><div><span>Reference origin</span><p>{ingredient.origin}</p></div></div>
                 <p className="mwp-ingredient-dialog-note">The origin shown is a sourcing target from the ingredient preview. Check the product label for current formula and sourcing details.</p>
                 <Link href="/products" className="mwp-ingredients-primary">Explore the formulas <IconArrowRight size={17} /></Link>
               </div>
@@ -99,6 +107,22 @@ export default function IngredientsPage() {
     );
   }, [debouncedQuery, category, origin]);
 
+  // Lazy loading: only the first cards are rendered, the rest appear as the visitor scrolls
+  const PAGE = 9;
+  const [visible, setVisible] = useState(PAGE);
+  const moreRef = useRef(null);
+  useEffect(() => { setVisible(PAGE); }, [debouncedQuery, category, origin]);
+  useEffect(() => {
+    const node = moreRef.current;
+    if (!node || visible >= filtered.length) return;
+    const io = new IntersectionObserver(entries => {
+      if (entries.some(e => e.isIntersecting)) setVisible(v => Math.min(v + PAGE, filtered.length));
+    }, { rootMargin: "500px 0px" });
+    io.observe(node);
+    return () => io.disconnect();
+  }, [visible, filtered.length]);
+  const shown = useMemo(() => filtered.slice(0, visible), [filtered, visible]);
+
   useEffect(() => {
     let mounted = true;
     let media;
@@ -114,36 +138,18 @@ export default function IngredientsPage() {
       }, gridRef);
     })().catch(() => media?.revert());
     return () => { mounted = false; media?.revert(); };
-  }, [filtered]);
+  }, [shown]);
 
   return (
     <main className="mwp-page mwp-ingredients">
       <div className="mwp-container">
         <PageBreadcrumb current="Ingredient library" />
-        <header className="mwp-ingredients-header">
-          <div className="mwp-ingredients-hero-copy">
-            <p className="mwp-ingredients-kicker"><IconLeaf size={17} stroke={1.5} /> THE MWP INGREDIENT LIBRARY</p>
-            <h1>Good ingredients.<br /><span>Clear intentions.</span></h1>
-            <a href="#ingredient-collection" className="mwp-ingredients-primary">Explore the library <IconArrowRight size={18} stroke={1.5} /></a>
-          </div>
-          <div className="mwp-ingredients-hero-art">
-            <span className="mwp-ingredients-art-caption">ROOTED IN NATURE. EXPLAINED SIMPLY.</span>
-            {HERO_INGREDIENTS.map((ingredient, index) => (
-              <div key={ingredient.id} className={`mwp-ingredients-specimen mwp-ingredients-specimen-${index}`}>
-                <IngredientPhoto ingredient={ingredient} eager />
-                <span>{ingredient.name}</span>
-                <small>{ingredient.origin}</small>
-              </div>
-            ))}
-            <span className="mwp-ingredients-art-foot"><IconLeaf size={16} /> From root to routine.</span>
-          </div>
-        </header>
       </div>
 
       <section className="mwp-ingredients-section" id="ingredient-collection" aria-label="Ingredient collection">
         <div className="mwp-container">
           <div className="mwp-ingredients-toolbar">
-            <div><p className="mwp-ingredients-kicker">A CLOSER LOOK</p><h2>Meet your ingredients.</h2></div>
+            <div><p className="mwp-ingredients-kicker">GLOBALLY SOURCED</p><h1>Ingredients from around the world.</h1></div>
             <div className="mwp-ingredients-search">
               <IconSearch aria-hidden="true" size={20} stroke={1.5} />
               <label htmlFor="ingredient-search" className="sr-only">Search ingredients, benefits, or origins</label>
@@ -151,20 +157,15 @@ export default function IngredientsPage() {
               {query && <button type="button" aria-label="Clear search" onClick={clearSearch}><IconX size={18} /></button>}
             </div>
           </div>
-          <div className="mwp-ingredients-filters">
-            <div className="mwp-ingredients-filter-tabs" role="group" aria-label="Filter ingredients by benefit">
-              {FILTERS.map((filter, index) => <button key={filter.name} type="button" aria-pressed={category === index} onClick={() => setCategory(index)}>{filter.name}</button>)}
-            </div>
-            <div className="mwp-ingredients-origin-filter"><IconAdjustmentsHorizontal size={16} /><label htmlFor="ingredient-origin" className="sr-only">Filter by reference origin</label><select id="ingredient-origin" value={origin} onChange={event => setOrigin(event.target.value)}><option value="">All origins</option>{ORIGINS.map(country => <option key={country} value={country}>{country}</option>)}</select></div>
-          </div>
           <div className="mwp-ingredients-results">
             <p aria-live="polite">{query !== debouncedQuery ? "Searching ingredients..." : <><span>{filtered.length}</span> of {INGREDIENT_LIBRARY.length} ingredients</>}</p>
-            {(query || category > 0 || origin) ? <button onClick={resetFilters}>Reset filters <IconX size={13} /></button> : <span>Every ingredient has a story.</span>}
+            {(query || category > 0 || origin) ? <button onClick={resetFilters}>Clear search <IconX size={13} /></button> : <span>Every ingredient has a story.</span>}
           </div>
           <div ref={gridRef}>
-            {filtered.length ? <div className="mwp-ingredients-grid">{filtered.map(ingredient => <IngredientCard key={ingredient.id} ingredient={ingredient} index={INGREDIENT_LIBRARY.indexOf(ingredient)} />)}</div>
+            {filtered.length ? <div className="mwp-ingredients-grid">{shown.map(ingredient => <IngredientCard key={ingredient.id} ingredient={ingredient} index={INGREDIENT_LIBRARY.indexOf(ingredient)} />)}</div>
               : <div className="mwp-ingredients-empty"><IconSearch size={30} stroke={1.2} /><h2>No matching ingredients.</h2><p>Try another name, benefit or origin, or reset your filters.</p><button className="mwp-ingredients-primary" onClick={resetFilters}>Show all ingredients <IconArrowRight size={16} /></button></div>}
           </div>
+          {visible < filtered.length && <div ref={moreRef} className="mwp-ingredients-more" aria-hidden="true" />}
           <p className="mwp-ingredients-note"><IconMapPin size={15} /> Origins reflect the sourcing targets in the supplied ingredient preview. Check the product label for current details.</p>
         </div>
       </section>

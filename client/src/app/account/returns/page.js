@@ -42,7 +42,7 @@ export default function ReturnsPage() {
 
     const getStatusColor = (status) => {
         const statusColors = { PENDING: "bg-yellow-100 text-yellow-800", APPROVED: "bg-green-100 text-green-800", REJECTED: "bg-red-100 text-neutral-900", PROCESSING: "bg-blue-100 text-blue-800", COMPLETED: "bg-purple-100 text-purple-800" };
-        return statusColors[status] || "bg-gray-100 text-gray-800";
+        return statusColors[status] || "bg-[#F3EEDF] text-neutral-900";
     };
 
     const changePage = (newPage) => {
@@ -76,7 +76,7 @@ export default function ReturnsPage() {
                         <div className="bg-white rounded-lg shadow p-8 text-center">
                             <DynamicIcon name="RotateCcw" className="h-16 w-16 mx-auto text-neutral-600 mb-4" />
                             <h2 className="text-xl font-semibold mb-2">No Return Requests</h2>
-                            <p className="text-gray-600 mb-6">You haven&apos;t submitted any return requests yet.</p>
+                            <p className="text-neutral-600 mb-6">You haven&apos;t submitted any return requests yet.</p>
                             <Link href="/account/orders"><Button>View My Orders</Button></Link>
                         </div>
                     ) : (
@@ -86,12 +86,12 @@ export default function ReturnsPage() {
                                     <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
                                         <div className="flex-1">
                                             <div className="flex items-center gap-4 mb-3">
-                                                <div><p className="text-sm text-gray-600">Order Number</p><p className="font-semibold">#{returnReq.order.orderNumber}</p></div>
+                                                <div><p className="text-sm text-neutral-600">Order Number</p><p className="font-semibold">#{returnReq.order.orderNumber}</p></div>
                                                 <span className={`px-3 py-1 inline-flex text-sm font-semibold rounded-md ${getStatusColor(returnReq.status)}`}>{returnReq.status}</span>
                                             </div>
-                                            <div className="mb-3"><p className="text-sm text-gray-600">Product</p><p className="font-medium">{returnReq.orderItem.product.name}</p><p className="text-sm text-gray-600">Quantity: {returnReq.orderItem.quantity} × {formatCurrency(returnReq.orderItem.price)}</p></div>
-                                            <div className="mb-3"><p className="text-sm text-gray-600">Return Reason</p><p className="font-medium">{returnReq.reason}</p>{returnReq.customReason && <p className="text-sm text-gray-600 mt-1">{returnReq.customReason}</p>}</div>
-                                            <div className="text-sm text-gray-600"><p>Requested on: {formatDate(returnReq.createdAt)}</p>{returnReq.processedAt && <p>Processed on: {formatDate(returnReq.processedAt)}</p>}</div>
+                                            <div className="mb-3"><p className="text-sm text-neutral-600">Product</p><p className="font-medium">{returnReq.orderItem.product.name}</p><p className="text-sm text-neutral-600">Quantity: {returnReq.orderItem.quantity} × {formatCurrency(returnReq.orderItem.price)}</p></div>
+                                            <div className="mb-3"><p className="text-sm text-neutral-600">Return Reason</p><p className="font-medium">{returnReq.reason}</p>{returnReq.customReason && <p className="text-sm text-neutral-600 mt-1">{returnReq.customReason}</p>}</div>
+                                            <div className="text-sm text-neutral-600"><p>Requested on: {formatDate(returnReq.createdAt)}</p>{returnReq.processedAt && <p>Processed on: {formatDate(returnReq.processedAt)}</p>}</div>
                                             {returnReq.adminNotes && <div className="mt-3 p-3 bg-yellow-50 rounded border border-yellow-200"><p className="text-sm font-medium text-yellow-800 mb-1">Admin Notes:</p><p className="text-sm text-yellow-700">{returnReq.adminNotes}</p></div>}
                                         </div>
                                         <div className="flex flex-col gap-2">

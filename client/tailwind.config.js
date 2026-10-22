@@ -92,14 +92,14 @@ export default {
 					mist: '#27272A',
 				},
 				ivory: {
-					DEFAULT: '#FAFAFA',
-					deep: '#F4F4F5',
+					DEFAULT: '#FAF8F2',
+					deep: '#F3EEDF',
 					warm: '#FFFFFF',
 				},
 				gold: {
-					DEFAULT: '#C9A227',
-					light: '#E5C56A',
-					dark: '#8B6914',
+					DEFAULT: '#A8741F',
+					light: '#D4A437',
+					dark: '#7A5214',
 					50: '#FBF7EA',
 					100: '#F5ECCF',
 					200: '#EBD9A0',
@@ -125,10 +125,10 @@ export default {
 					950: '#2E2206',
 				},
 				stone: {
-					DEFAULT: '#52525B',
+					DEFAULT: '#4A5470',
 					dark: '#3F3F46',
 				},
-				line: '#E4E4E7',
+				line: '#E6DFC9',
 				chart: {
 					'1': 'hsl(var(--chart-1))',
 					'2': 'hsl(var(--chart-2))',

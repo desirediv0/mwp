@@ -1,3 +1,4 @@
+import { notifyAdmin, emailUser } from "../utils/notify.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
 import { ApiError } from "../utils/ApiError.js";
 import { ApiResponsive } from "../utils/ApiResponsive.js";
@@ -322,6 +323,12 @@ const submitContactForm = asyncHandler(async (req, res) => {
   if (!name || !email || !message) {
     throw new ApiError(400, "Name, email and message are required");
   }
+  if (!/^[^s@]+@[^s@]+.[^s@]{2,}$/.test(String(email).trim())) {
+    throw new ApiError(400, "Please enter a valid email address");
+  }
+  if (String(name).length > 100 || String(message).length > 5000) {
+    throw new ApiError(400, "Your name or message is too long");
+  }
 
   try {
     // Create contact form submission in database
@@ -334,6 +341,20 @@ const submitContactForm = asyncHandler(async (req, res) => {
         message,
         status: "NEW",
       },
+    });
+
+    // Let the team know and confirm to the customer (a mail problem never blocks the form)
+    notifyAdmin(`New contact message: ${String(subject || "General").slice(0, 60)}`, {
+      title: "New contact message",
+      paragraphs: [String(message).slice(0, 1500)],
+      rows: [["Name", name], ["Email", email], ["Phone", phone], ["Subject", subject]],
+    });
+    emailUser(String(email).trim(), "We received your message - MWP Supplements", {
+      title: "We got your message",
+      accent: "Support",
+      greeting: `Hi ${String(name).split(" ")[0]},`,
+      paragraphs: ["Thank you for contacting MWP Supplements. Our team will reply by email during support hours (Monday to Friday, 9 AM to 6 PM Pacific)."],
+      rows: [["Subject", subject]],
     });
 
     return res.status(201).json(

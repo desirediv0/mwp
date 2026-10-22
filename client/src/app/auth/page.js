@@ -6,33 +6,9 @@ import Link from "next/link";
 import { useAuth } from "@/lib/auth-context";
 import { toast } from "sonner";
 import { formatUsPhone, isValidUsPhone } from "@/lib/us";
-import {
-  IconMail,
-  IconLock,
-  IconUser,
-  IconPhone,
-  IconEye,
-  IconEyeOff,
-  IconLoader2,
-  IconArrowRight,
-  IconArrowLeft,
-  IconCheck,
-  IconX,
-  IconSparkles,
-} from "@tabler/icons-react";
+import { IconMail, IconUser, IconPhone, IconArrowRight, IconLoader2, IconLock } from "@tabler/icons-react";
+import { AuthShell, Alert, Field, PasswordField, SubmitButton, PasswordStrength, passwordChecks, isEmail } from "@/components/auth/AuthUI";
 
-/* ─── Password Strength ─────────────────────────────────── */
-const getPasswordStrength = (password) => {
-  let score = 0;
-  if (password.length >= 8) score++;
-  if (/[a-z]/.test(password) && /[A-Z]/.test(password)) score++;
-  if (/\d/.test(password)) score++;
-  if (/[^a-zA-Z0-9]/.test(password)) score++;
-  return score;
-};
-
-const strengthLabels = ["", "Weak", "Fair", "Good", "Strong"];
-const strengthColors = ["", "text-neutral-600", "text-orange-500", "text-neutral-800", "text-green-600"];
 const safeReturnPath = (value) => {
   try {
     const path = decodeURIComponent(value || "");
@@ -42,514 +18,241 @@ const safeReturnPath = (value) => {
   }
 };
 
-/* ─── Auth Form ─────────────────────────────────────────── */
+const needsVerification = (msg) => /verify|verification|not verified/i.test(msg || "");
+
+/* ─── Sign in ───────────────────────────────────────────── */
+function LoginForm({ redirect }) {
+  const { login } = useAuth();
+  const router = useRouter();
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [errors, setErrors] = useState({});
+  const [formError, setFormError] = useState("");
+  const [submitting, setSubmitting] = useState(false);
+
+  const validate = () => {
+    const next = {};
+    if (!email.trim()) next.email = "Enter your email address";
+    else if (!isEmail(email)) next.email = "That does not look like an email address";
+    if (!password) next.password = "Enter your password";
+    setErrors(next);
+    return Object.keys(next).length === 0;
+  };
+
+  const submit = async (e) => {
+    e.preventDefault();
+    setFormError("");
+    if (!validate()) return;
+    setSubmitting(true);
+    try {
+      await login(email.trim(), password);
+      sessionStorage.setItem("justLoggedIn", "true");
+      toast.success("Welcome back!");
+      setTimeout(() => router.push(safeReturnPath(redirect)), 250);
+    } catch (error) {
+      setFormError(error?.message || "We could not sign you in. Please try again.");
+      setSubmitting(false);
+    }
+  };
+
+  return (
+    <form onSubmit={submit} noValidate className="space-y-5">
+      {formError && (
+        <Alert
+          type={needsVerification(formError) ? "warning" : "error"}
+          action={
+            needsVerification(formError) && (
+              <Link href={`/verify-otp?email=${encodeURIComponent(email.trim())}`} className="inline-flex items-center gap-1.5 font-semibold underline underline-offset-4">
+                Enter your verification code <IconArrowRight size={14} />
+              </Link>
+            )
+          }
+        >
+          {formError}
+        </Alert>
+      )}
+
+      <Field
+        label="Email"
+        icon={IconMail}
+        type="email"
+        autoComplete="email"
+        placeholder="you@example.com"
+        value={email}
+        disabled={submitting}
+        onChange={(e) => { setEmail(e.target.value); setErrors((p) => ({ ...p, email: "" })); setFormError(""); }}
+        error={errors.email}
+      />
+
+      <PasswordField
+        label="Password"
+        icon={IconLock}
+        autoComplete="current-password"
+        placeholder="Your password"
+        value={password}
+        disabled={submitting}
+        onChange={(e) => { setPassword(e.target.value); setErrors((p) => ({ ...p, password: "" })); setFormError(""); }}
+        error={errors.password}
+        labelRight={<Link href={`/forgot-password${email ? `?email=${encodeURIComponent(email.trim())}` : ""}`} className="font-medium text-[#A8741F] hover:underline">Forgot password?</Link>}
+      />
+
+      <SubmitButton loading={submitting} loadingText="Signing in...">
+        Sign in <IconArrowRight size={18} stroke={1.8} />
+      </SubmitButton>
+    </form>
+  );
+}
+
+/* ─── Register ──────────────────────────────────────────── */
+function RegisterForm() {
+  const { register } = useAuth();
+  const router = useRouter();
+  const [form, setForm] = useState({ name: "", email: "", phone: "", password: "", confirmPassword: "" });
+  const [touched, setTouched] = useState({});
+  const [formError, setFormError] = useState("");
+  const [submitting, setSubmitting] = useState(false);
+
+  const rules = {
+    name: (v) => (v.trim().length < 3 ? "Enter your full name (at least 3 characters)" : ""),
+    email: (v) => (!v.trim() ? "Enter your email address" : !isEmail(v) ? "That does not look like an email address" : ""),
+    phone: (v) => (!isValidUsPhone(v) ? "Enter a valid US phone number, like (562) 524-3557" : ""),
+    password: (v) => (v.length < 8 ? "Use at least 8 characters" : !(passwordChecks(v)[1].ok && passwordChecks(v)[2].ok) ? "Add upper and lower case letters and a number" : ""),
+    confirmPassword: (v) => (!v ? "Confirm your password" : v !== form.password ? "The passwords do not match" : ""),
+  };
+  const errorOf = (name) => (touched[name] ? rules[name](form[name]) : "");
+
+  const change = (e) => {
+    const { name } = e.target;
+    const value = name === "phone" ? formatUsPhone(e.target.value) : e.target.value;
+    setForm((p) => ({ ...p, [name]: value }));
+    setFormError("");
+  };
+  const blur = (e) => setTouched((t) => ({ ...t, [e.target.name]: true }));
+
+  const submit = async (e) => {
+    e.preventDefault();
+    setFormError("");
+    setTouched({ name: true, email: true, phone: true, password: true, confirmPassword: true });
+    if (Object.keys(rules).some((k) => rules[k](form[k]))) {
+      setFormError("Please fix the highlighted fields.");
+      return;
+    }
+    setSubmitting(true);
+    try {
+      const res = await register({ name: form.name.trim(), email: form.email.trim(), phone: form.phone, password: form.password });
+      const payload = res?.data ?? res;
+      if (payload?.debugOtp) toast.success(`Verification code: ${payload.debugOtp}`, { duration: 25000 });
+      else if (payload?.emailSent !== false) toast.success("Account created. Check your email for the verification code.");
+      else toast.warning("Account created, but the email could not be sent. Use Resend on the next page.");
+      localStorage.setItem("registeredEmail", form.email.trim());
+      setTimeout(() => router.push(`/verify-otp?email=${encodeURIComponent(form.email.trim())}`), 500);
+    } catch (error) {
+      setFormError(error?.message || "We could not create your account. Please try again.");
+      setSubmitting(false);
+    }
+  };
+
+  const f = (name) => ({ name, value: form[name], onChange: change, onBlur: blur, error: errorOf(name), disabled: submitting });
+
+  return (
+    <form onSubmit={submit} noValidate className="space-y-4">
+      {formError && <Alert type="error">{formError}</Alert>}
+
+      <Field label="Full name" icon={IconUser} autoComplete="name" placeholder="Jane Doe" {...f("name")} />
+      <Field label="Email" icon={IconMail} type="email" autoComplete="email" placeholder="you@example.com" hint="We send your verification code here." {...f("email")} />
+      <Field label="Phone" icon={IconPhone} type="tel" inputMode="tel" autoComplete="tel-national" placeholder="(562) 524-3557" maxLength={14} {...f("phone")} />
+      <div>
+        <PasswordField label="Password" icon={IconLock} autoComplete="new-password" placeholder="Create a password" {...f("password")} />
+        <PasswordStrength password={form.password} />
+      </div>
+      <PasswordField label="Confirm password" icon={IconLock} autoComplete="new-password" placeholder="Repeat your password" {...f("confirmPassword")} />
+
+      <SubmitButton loading={submitting} loadingText="Creating your account..." className="mt-2">
+        Create account <IconArrowRight size={18} stroke={1.8} />
+      </SubmitButton>
+
+      <p className="text-center text-[12px] leading-relaxed text-[#6B7388]">
+        By continuing you agree to our{" "}
+        <Link href="/terms" className="font-medium text-[#12213F] underline underline-offset-2">Terms</Link> and{" "}
+        <Link href="/privacy-policy" className="font-medium text-[#12213F] underline underline-offset-2">Privacy Policy</Link>.
+      </p>
+    </form>
+  );
+}
+
+/* ─── Page ──────────────────────────────────────────────── */
 function AuthForm() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const { isAuthenticated } = useAuth();
 
-  const tabFromUrl = searchParams.get("tab") || "login";
+  const tab = searchParams.get("tab") === "register" ? "register" : "login";
   const redirect = searchParams.get("redirect") || searchParams.get("returnUrl");
-  const [activeTab, setActiveTab] = useState(tabFromUrl);
 
-  useEffect(() => { setActiveTab(tabFromUrl); }, [tabFromUrl]);
   useEffect(() => {
-    if (isAuthenticated) {
-      router.push(safeReturnPath(redirect));
-    }
+    if (isAuthenticated) router.push(safeReturnPath(redirect));
   }, [isAuthenticated, router, redirect]);
 
-  const handleTabChange = (tab) => {
-    setActiveTab(tab);
-    const params = new URLSearchParams({ tab });
+  const go = (next) => {
+    const params = new URLSearchParams({ tab: next });
     if (redirect) params.set("redirect", redirect);
     router.push(`/auth?${params.toString()}`, { scroll: false });
   };
 
-  return (
-    <div className="mwp-auth min-h-screen bg-white flex flex-col lg:flex-row overflow-x-hidden">
-
-      {/* ── Left Panel — Branding (Desktop) ──────────────── */}
-      <div className="mwp-auth-side hidden lg:flex lg:w-[46%] lg:shrink-0 relative overflow-hidden bg-white">
-        {/* Bottle artwork is provided by the shared auth panel style. */}
-        <div className="absolute inset-0 bg-gradient-to-r from-black/85 via-black/45 to-black/70" />
-        <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-transparent to-black/40" />
-
-        {/* Content */}
-        <div className="relative z-10 flex flex-col justify-between gap-8 p-8 sm:p-12 xl:p-16 w-full min-h-full overflow-y-auto">
-          {/* Logo */}
-          <Link href="/" className="inline-block">
-            <span className="text-lg font-semibold tracking-tight">MWP Supplements</span>
-          </Link>
-
-          {/* Center text */}
-          <div className="max-w-md">
-            <div className="inline-flex items-center gap-2 mb-6 px-3.5 py-2 rounded-full border border-white/15 bg-white/5 backdrop-blur-sm">
-              <span className="w-1.5 h-1.5 rounded-full bg-white/70 animate-pulse" />
-              <span className="text-[10px] uppercase tracking-[0.28em] text-white/70 font-bold">
-                Men &bull; Women &bull; Power
-              </span>
-            </div>
-            <h1 className="font-extrabold text-3xl xl:text-[3.25rem] text-white tracking-tight mb-5 leading-[1.05] uppercase">
-              Your routine,
-              <br />
-              <span className="text-white/70">in one place.</span>
-            </h1>
-            <span className="block h-1 w-16 rounded-full bg-gradient-to-r from-white/50 to-transparent mb-6" />
-            <p className="text-white/70 text-[15px] font-normal leading-relaxed max-w-sm">
-              Create an account to save your details, track your orders, and manage
-              your addresses in one place.
-            </p>
-            <div className="mt-8 flex flex-wrap gap-x-6 gap-y-2.5 text-[12px] font-semibold text-white/60">
-              <span className="inline-flex items-center gap-1.5"><IconCheck className="h-4 w-4 text-white/70" /> Track your orders</span>
-              <span className="inline-flex items-center gap-1.5"><IconCheck className="h-4 w-4 text-white/70" /> Save your addresses</span>
-              <span className="inline-flex items-center gap-1.5"><IconCheck className="h-4 w-4 text-white/70" /> Faster checkout</span>
-            </div>
-          </div>
-
-          {/* Bottom */}
-          <p className="text-[10px] uppercase tracking-[0.2em] text-white/40 mt-auto pt-4">
-            &copy; {new Date().getFullYear()} MWP SUPPLEMENTS &bull; All Rights Reserved
-          </p>
-        </div>
-      </div>
-
-      {/* ── Right Panel — Form ───────────────────────────── */}
-      <div className="flex-1 min-w-0 flex items-start lg:items-center justify-center px-5 sm:px-8 py-12 lg:py-16 min-h-screen">
-        <div className="w-full max-w-[420px]">
-
-          {/* Mobile logo */}
-          <div className="lg:hidden text-center mb-8">
-            <Link href="/" className="inline-block">
-              <span className="font-extrabold text-2xl text-gray-900 tracking-wider">
-                MWP SUPPLEMENTS
-              </span>
-            </Link>
-          </div>
-
-          {/* Tabs */}
-          <div className="flex gap-1 p-1.5 bg-gray-100 rounded-2xl mb-8">
-            {[
-              { key: "login", label: "Sign In" },
-              { key: "register", label: "Register" },
-            ].map(({ key, label }) => (
-              <button
-                key={key}
-                onClick={() => handleTabChange(key)}
-                className={`flex-1 py-3 rounded-xl text-[11px] uppercase tracking-[0.15em] font-bold transition-all duration-300 ${
-                  activeTab === key
-                    ? "bg-white text-gray-900 shadow-sm rounded-xl"
-                    : "text-gray-500 hover:text-gray-900"
-                }`}
-              >
-                {label}
-              </button>
-            ))}
-          </div>
-
-          {/* Form card */}
-          <div className="bg-white">
-            {activeTab === "login" && (
-              <LoginForm
-                onSwitch={() => handleTabChange("register")}
-                redirect={redirect}
-              />
-            )}
-            {activeTab === "register" && (
-              <RegisterForm
-                onSwitch={() => handleTabChange("login")}
-                redirect={redirect}
-              />
-            )}
-          </div>
-
-          {/* Terms */}
-          <p className="text-center text-[11px] text-gray-500 mt-6 sm:mt-8 font-light">
-            By continuing, you agree to our{" "}
-            <Link href="/terms" className="text-gray-900 hover:text-neutral-800 transition-colors underline underline-offset-2">Terms</Link>
-            {" "}&{" "}
-            <Link href="/privacy-policy" className="text-gray-900 hover:text-neutral-800 transition-colors underline underline-offset-2">Privacy Policy</Link>
-          </p>
-        </div>
-      </div>
-
-    </div>
-  );
-}
-
-/* ─── Login Form ────────────────────────────────────────── */
-function LoginForm({ onSwitch, redirect }) {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [showPassword, setShowPassword] = useState(false);
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [errorMsg, setErrorMsg] = useState("");
-
-  const { login } = useAuth();
-  const router = useRouter();
-  const searchParams = useSearchParams();
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setErrorMsg("");
-    if (!email || !password) {
-      const msg = "Email and password are required";
-      setErrorMsg(msg);
-      toast.error(msg);
-      return;
-    }
-    setIsSubmitting(true);
-    try {
-      await login(email, password);
-      sessionStorage.setItem("justLoggedIn", "true");
-      toast.success("Welcome back!");
-      const returnUrl = searchParams.get("returnUrl") || searchParams.get("redirect");
-      setTimeout(() => router.push(safeReturnPath(returnUrl)), 300);
-    } catch (error) {
-      const msg = error.message || "Login failed.";
-      setErrorMsg(msg);
-      if (msg.toLowerCase().includes("verify")) {
-        toast.error(
-          <div>
-            {msg}{" "}
-            <Link href={`/verify-otp?email=${encodeURIComponent(email)}`} className="font-medium underline text-white ml-1">
-              Verify OTP
-            </Link>
-          </div>
-        );
-      } else { toast.error(msg); }
-    } finally { setIsSubmitting(false); }
-  };
+  const isLogin = tab === "login";
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-6">
-      <div>
-        <h2 className="text-2xl text-gray-900 tracking-tight mb-1">Welcome back</h2>
-        <p className="text-[13px] text-gray-500 font-light">Sign in to access your account</p>
-      </div>
-
-      {errorMsg && (
-        <div className={`p-3.5 border text-xs font-medium rounded animate-in fade-in duration-200 ${
-          errorMsg.toLowerCase().includes("verify")
-            ? "bg-amber-50 border-amber-300 text-amber-900"
-            : "bg-neutral-100 border-neutral-200 text-neutral-900 flex items-center justify-between"
-        }`}>
-          <div>
-            <p>{errorMsg}</p>
-            {errorMsg.toLowerCase().includes("verify") && (
-              <Link
-                href={`/verify-otp?email=${encodeURIComponent(email)}`}
-                className="inline-block mt-2.5 px-4 py-2 bg-neutral-900 text-white text-[10px] uppercase tracking-wider font-semibold hover:bg-neutral-900 transition-colors shadow-sm"
-              >
-                Enter OTP to Verify Account &rarr;
-              </Link>
-            )}
-          </div>
-          {!errorMsg.toLowerCase().includes("verify") && (
-            <button type="button" onClick={() => setErrorMsg("")} className="text-neutral-600 hover:text-neutral-900 text-sm font-bold ml-2">
-              &times;
-            </button>
-          )}
-        </div>
-      )}
-
-      {/* Email */}
-      <div>
-        <label className="block text-[10px] uppercase tracking-[0.2em] text-gray-500 font-medium mb-2">Email</label>
-        <div className="relative">
-          <IconMail className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-500" stroke={1.5} />
-          <input
-            type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            required
-            placeholder="you@example.com"
-            className="w-full h-14 pl-12 pr-4 bg-gray-50 border border-gray-200 rounded-xl text-gray-900 text-[13.5px] placeholder:text-gray-400 focus:outline-none focus:border-neutral-800 focus:ring-4 focus:ring-neutral-900/10 transition-all duration-500"
-          />
-        </div>
-      </div>
-
-      {/* Password */}
-      <div>
-        <div className="flex items-center justify-between mb-2">
-          <label className="text-[10px] uppercase tracking-[0.2em] text-gray-500 font-medium">Password</label>
-          <Link href="/forgot-password" className="text-[11px] text-gray-500 hover:text-neutral-800 transition-colors font-light">
-            Forgot password?
-          </Link>
-        </div>
-        <div className="relative">
-          <IconLock className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-500" stroke={1.5} />
-          <input
-            type={showPassword ? "text" : "password"}
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            required
-            placeholder="Enter your password"
-            className="w-full h-14 pl-12 pr-12 bg-gray-50 border border-gray-200 rounded-xl text-gray-900 text-[13.5px] placeholder:text-gray-400 focus:outline-none focus:border-neutral-800 focus:ring-4 focus:ring-neutral-900/10 transition-all duration-500"
-          />
-          <button
-            type="button"
-            onClick={() => setShowPassword(!showPassword)}
-            className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-900 transition-colors"
-          >
-            {showPassword ? <IconEyeOff className="h-4 w-4" stroke={1.5} /> : <IconEye className="h-4 w-4" stroke={1.5} />}
-          </button>
-        </div>
-      </div>
-
-      {/* Submit */}
-      <button
-        type="submit"
-        disabled={isSubmitting}
-        className="w-full h-14 rounded-xl bg-neutral-900 text-white text-[12px] uppercase tracking-[0.15em] font-bold shadow-lg shadow-neutral-900/20 flex items-center justify-center gap-2.5 hover:bg-neutral-900 disabled:opacity-50 transition-all duration-500"
-      >
-        {isSubmitting ? (
-          <IconLoader2 className="h-4 w-4 animate-spin" stroke={1.5} />
+    <AuthShell
+      eyebrow={isLogin ? "Welcome back" : "Join MWP"}
+      title={isLogin ? "Sign in to your account" : "Create your account"}
+      subtitle={isLogin ? "Track orders, reorder faster and manage your addresses." : "It takes a minute. We will email you a code to verify your address."}
+      side={{
+        headline: isLogin ? "Good to see you again." : "Your routine, in one place.",
+        text: isLogin
+          ? "Pick up where you left off: your orders, saved addresses and wishlist are waiting."
+          : "Save your details, track your orders and check out faster, every time.",
+      }}
+      footer={
+        isLogin ? (
+          <>New to MWP? <button type="button" onClick={() => go("register")} className="font-semibold text-[#12213F] underline underline-offset-4 hover:text-[#B3001B]">Create an account</button></>
         ) : (
-          <>
-            Sign In
-            <IconArrowRight className="h-4 w-4" stroke={1.5} />
-          </>
-        )}
-      </button>
-
-      {/* Switch */}
-      <p className="text-center text-[13px] text-gray-500 font-light pt-2">
-        Don&apos;t have an account?{" "}
-        <button type="button" onClick={onSwitch} className="text-gray-900 font-medium hover:text-neutral-800 transition-colors">
-          Create one
-        </button>
-      </p>
-    </form>
-  );
-}
-
-/* ─── Register Form ─────────────────────────────────────── */
-function RegisterForm({ onSwitch, redirect }) {
-  const [formData, setFormData] = useState({ name: "", email: "", phone: "", password: "", confirmPassword: "" });
-  const [showPassword, setShowPassword] = useState(false);
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [errorMsg, setErrorMsg] = useState("");
-
-  const { register } = useAuth();
-  const router = useRouter();
-
-  const handleChange = (e) => {
-    const { name } = e.target;
-    const value = name === "phone" ? formatUsPhone(e.target.value) : e.target.value;
-    if (errorMsg) setErrorMsg("");
-    setFormData((prev) => ({ ...prev, [name]: value }));
-  };
-
-  const validateForm = () => {
-    if (formData.name.trim().length < 3) {
-      const msg = "Name should be at least 3 characters";
-      setErrorMsg(msg);
-      toast.error(msg);
-      return false;
-    }
-    if (!isValidUsPhone(formData.phone)) {
-      const msg = "Please enter a valid US phone number, like (562) 524-3557";
-      setErrorMsg(msg);
-      toast.error(msg);
-      return false;
-    }
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
-      const msg = "Please enter a valid email";
-      setErrorMsg(msg);
-      toast.error(msg);
-      return false;
-    }
-    if (formData.password.length < 8) {
-      const msg = "Password should be at least 8 characters";
-      setErrorMsg(msg);
-      toast.error(msg);
-      return false;
-    }
-    if (formData.password !== formData.confirmPassword) {
-      const msg = "Passwords do not match";
-      setErrorMsg(msg);
-      toast.error(msg);
-      return false;
-    }
-    return true;
-  };
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setErrorMsg("");
-    if (!validateForm()) return;
-    setIsSubmitting(true);
-    try {
-      const res = await register({ name: formData.name, email: formData.email, phone: formData.phone, password: formData.password });
-      const payload = res?.data ?? res;
-      const emailSent = payload?.emailSent !== false;
-      if (payload?.debugOtp) {
-        toast.success(`Verification code: ${payload.debugOtp}`, { duration: 25000 });
-      } else if (emailSent) {
-        toast.success("Account created! Check your email for OTP.", { duration: 4000 });
-      } else {
-        toast.warning(res?.message || "Account created but email could not be sent.");
+          <>Already have an account? <button type="button" onClick={() => go("login")} className="font-semibold text-[#12213F] underline underline-offset-4 hover:text-[#B3001B]">Sign in</button></>
+        )
       }
-      localStorage.setItem("registeredEmail", formData.email);
-      setTimeout(() => router.push(`/verify-otp?email=${encodeURIComponent(formData.email)}`), 600);
-    } catch (error) {
-      const msg = error.message || "Registration failed.";
-      setErrorMsg(msg);
-      toast.error(msg);
-    } finally { setIsSubmitting(false); }
-  };
-
-  const passwordStrength = getPasswordStrength(formData.password);
-
-  const fields = [
-    { label: "Full Name", name: "name", type: "text", icon: IconUser, placeholder: "John Doe" },
-    { label: "Email", name: "email", type: "email", icon: IconMail, placeholder: "you@example.com" },
-    { label: "Phone", name: "phone", type: "tel", icon: IconPhone, placeholder: "(562) 524-3557" },
-  ];
-
-  return (
-    <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-5">
-      <div>
-        <h2 className="text-2xl text-gray-900 tracking-tight mb-1">Create account</h2>
-        <p className="text-[13px] text-gray-500 font-light">Join the MWP SUPPLEMENTS family</p>
-      </div>
-
-      {errorMsg && (
-        <div className="p-3 bg-neutral-100 border border-neutral-200 text-neutral-900 text-xs font-medium rounded flex items-center justify-between animate-in fade-in duration-200">
-          <span>{errorMsg}</span>
-          <button type="button" onClick={() => setErrorMsg("")} className="text-neutral-600 hover:text-neutral-900 text-sm font-bold ml-2">
-            &times;
-          </button>
-        </div>
-      )}
-
-      {fields.map(({ label, name, type, icon: Icon, placeholder }) => (
-        <div key={name}>
-          <label className="block text-[10px] uppercase tracking-[0.2em] text-gray-500 font-medium mb-2">{label}</label>
-          <div className="relative">
-            <Icon className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-500" stroke={1.5} />
-            <input
-              type={type}
-              name={name}
-              value={formData[name]}
-              onChange={handleChange}
-              required
-              placeholder={placeholder}
-              className="w-full h-12 sm:h-14 pl-12 pr-4 bg-gray-50 border border-gray-200 rounded-xl text-gray-900 text-[13.5px] placeholder:text-gray-400 focus:outline-none focus:border-neutral-800 focus:ring-4 focus:ring-neutral-900/10 transition-all duration-500"
-            />
-          </div>
-        </div>
-      ))}
-
-      {/* Password */}
-      <div>
-        <label className="block text-[10px] uppercase tracking-[0.2em] text-gray-500 font-medium mb-2">Password</label>
-        <div className="relative">
-          <IconLock className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-500" stroke={1.5} />
-          <input
-            type={showPassword ? "text" : "password"}
-            name="password"
-            value={formData.password}
-            onChange={handleChange}
-            required
-            placeholder="Min 8 characters"
-            className="w-full h-12 sm:h-14 pl-12 pr-12 bg-gray-50 border border-gray-200 rounded-xl text-gray-900 text-[13.5px] placeholder:text-gray-400 focus:outline-none focus:border-neutral-800 focus:ring-4 focus:ring-neutral-900/10 transition-all duration-500"
-          />
+    >
+      {/* Tabs */}
+      <div role="tablist" aria-label="Sign in or register" className="mb-6 grid grid-cols-2 gap-1 rounded-2xl bg-[#F3EEDF] p-1">
+        {[
+          ["login", "Sign in"],
+          ["register", "Register"],
+        ].map(([key, label]) => (
           <button
+            key={key}
+            role="tab"
             type="button"
-            onClick={() => setShowPassword(!showPassword)}
-            className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-900 transition-colors"
+            aria-selected={tab === key}
+            onClick={() => go(key)}
+            className={`h-11 rounded-xl text-[13px] font-semibold transition-all ${tab === key ? "bg-white text-[#12213F] shadow-sm" : "text-[#5A6275] hover:text-[#12213F]"}`}
           >
-            {showPassword ? <IconEyeOff className="h-4 w-4" stroke={1.5} /> : <IconEye className="h-4 w-4" stroke={1.5} />}
+            {label}
           </button>
-        </div>
-        {/* Strength indicator */}
-        {formData.password && (
-          <div className="mt-2.5 flex items-center gap-3">
-            <div className="flex-1 flex gap-1">
-              {[1, 2, 3, 4].map((i) => (
-                <div
-                  key={i}
-                  className={`h-1 flex-1 transition-all duration-500 ${
-                    i <= passwordStrength
-                      ? passwordStrength <= 1 ? "bg-neutral-800"
-                        : passwordStrength === 2 ? "bg-orange-500"
-                        : passwordStrength === 3 ? "bg-neutral-900"
-                        : "bg-green-600"
-                      : "bg-gray-200"
-                  }`}
-                />
-              ))}
-            </div>
-            <span className={`text-[10px] uppercase tracking-wider font-medium ${strengthColors[passwordStrength]}`}>
-              {strengthLabels[passwordStrength]}
-            </span>
-          </div>
-        )}
+        ))}
       </div>
 
-      {/* Confirm Password */}
-      <div>
-        <label className="block text-[10px] uppercase tracking-[0.2em] text-gray-500 font-medium mb-2">Confirm Password</label>
-        <div className="relative">
-          <IconLock className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-500" stroke={1.5} />
-          <input
-            type={showPassword ? "text" : "password"}
-            name="confirmPassword"
-            value={formData.confirmPassword}
-            onChange={handleChange}
-            required
-            placeholder="Confirm your password"
-            className="w-full h-12 sm:h-14 pl-12 pr-12 bg-gray-50 border border-gray-200 rounded-xl text-gray-900 text-[13.5px] placeholder:text-gray-400 focus:outline-none focus:border-neutral-800 focus:ring-4 focus:ring-neutral-900/10 transition-all duration-500"
-          />
-          {formData.confirmPassword && (
-            <span className="absolute right-4 top-1/2 -translate-y-1/2">
-              {formData.password === formData.confirmPassword ? (
-                <IconCheck className="h-4 w-4 text-green-600" stroke={2} />
-              ) : (
-                <IconX className="h-4 w-4 text-neutral-600" stroke={2} />
-              )}
-            </span>
-          )}
-        </div>
-      </div>
-
-      {/* Submit */}
-      <button
-        type="submit"
-        disabled={isSubmitting}
-        className="w-full h-12 sm:h-14 rounded-xl bg-neutral-900 text-white text-[12px] uppercase tracking-[0.15em] font-bold shadow-lg shadow-neutral-900/20 flex items-center justify-center gap-2.5 hover:bg-neutral-900 disabled:opacity-50 transition-all duration-500"
-      >
-        {isSubmitting ? (
-          <IconLoader2 className="h-4 w-4 animate-spin" stroke={1.5} />
-        ) : (
-          <>
-            Create Account
-            <IconArrowRight className="h-4 w-4" stroke={1.5} />
-          </>
-        )}
-      </button>
-
-      {/* Switch */}
-      <p className="text-center text-[13px] text-gray-500 font-light pt-1 sm:pt-2">
-        Already have an account?{" "}
-        <button type="button" onClick={onSwitch} className="text-gray-900 font-medium hover:text-neutral-800 transition-colors">
-          Sign In
-        </button>
-      </p>
-    </form>
+      {isLogin ? <LoginForm redirect={redirect} /> : <RegisterForm />}
+    </AuthShell>
   );
 }
 
-/* ─── Page Export ───────────────────────────────────────── */
 export default function AuthPage() {
   return (
-    <Suspense fallback={
-      <div className="min-h-screen flex items-center justify-center bg-white">
-        <IconLoader2 className="h-6 w-6 animate-spin text-neutral-800" stroke={1.5} />
-      </div>
-    }>
+    <Suspense
+      fallback={
+        <div className="flex min-h-screen items-center justify-center bg-[#FAF8F2]">
+          <IconLoader2 className="h-6 w-6 animate-spin text-[#12213F]" stroke={1.5} />
+        </div>
+      }
+    >
       <AuthForm />
     </Suspense>
   );

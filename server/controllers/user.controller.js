@@ -4,6 +4,7 @@ import { asyncHandler } from "../utils/asyncHandler.js";
 import { prisma } from "../config/db.js";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
+import { checkEmail } from "../utils/emailCheck.js";
 import { normalizeUsPhone, validateUsAddress } from "../utils/usValidation.js";
 import sendEmail from "../utils/sendEmail.js";
 import {
@@ -51,6 +52,9 @@ export const registerUser = asyncHandler(async (req, res, next) => {
   if (existingUser) {
     throw new ApiError(409, "Email already registered");
   }
+
+  const emailProblem = await checkEmail(normalizedEmail);
+  if (emailProblem) throw new ApiError(400, emailProblem);
 
   // Validate password
   validatePassword(password);
@@ -553,8 +557,8 @@ export const resetPassword = asyncHandler(async (req, res, next) => {
 export const changePassword = asyncHandler(async (req, res, next) => {
   const { currentPassword, newPassword } = req.body;
 
-  if (!currentPassword || !newPassword) {
-    throw new ApiError(400, "Current password and new password are required");
+  if (!newPassword) {
+    throw new ApiError(400, "New password is required");
   }
 
   // Validate new password
@@ -565,11 +569,11 @@ export const changePassword = asyncHandler(async (req, res, next) => {
     where: { id: req.user.id },
   });
 
-  // Verify current password
-  const isPasswordValid = await bcrypt.compare(currentPassword, user.password);
-
-  if (!isPasswordValid) {
-    throw new ApiError(400, "Current password is incorrect");
+  // Accounts created at guest checkout have no password yet; they can set one without a current one
+  if (user.password) {
+    if (!currentPassword) throw new ApiError(400, "Current password is required");
+    const isPasswordValid = await bcrypt.compare(currentPassword, user.password);
+    if (!isPasswordValid) throw new ApiError(400, "Current password is incorrect");
   }
 
   // Hash new password
@@ -609,7 +613,7 @@ export const getCurrentUser = asyncHandler(async (req, res, next) => {
     }
 
     // Remove sensitive data
-    const userWithoutPassword = { ...user };
+    const userWithoutPassword = { ...user, hasPassword: !!user.password };
     delete userWithoutPassword.password;
     delete userWithoutPassword.otp;
     delete userWithoutPassword.otpVerifiedExpiry;

@@ -288,7 +288,7 @@ export default function ProductContent({ slug, initialProduct = null }) {
       if (result.success) {
         trackEvent("add_to_cart", { value: (parseFloat(v.salePrice && parseFloat(v.salePrice) < parseFloat(v.price) ? v.salePrice : v.price) || 0) * quantity, items: [toItem(product, v, quantity)] });
         setCartSuccess(true); setTimeout(() => setCartSuccess(false), 3000);
-        if (buyNow === true) router.push(isAuthenticated ? "/checkout" : "/auth?redirect=%2Fcheckout");
+        if (buyNow === true) router.push("/checkout");
       }
     } catch (err) { console.error(err); }
     finally { setIsAddingToCart(false); }

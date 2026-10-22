@@ -1,4 +1,5 @@
 "use client";
+import CheckoutSteps from "@/components/shop/CheckoutSteps";
 
 import React, { useState, useCallback, useMemo } from "react";
 import Link from "next/link";
@@ -21,12 +22,16 @@ import {
     X,
     Package,
     Gift,
+    Lock,
+    Truck,
+    ShieldCheck,
+    RotateCcw,
 } from "lucide-react";
 import { formatCurrency } from "@/lib/utils";
 import { toast } from "sonner";
 
 const getImageUrl = (image) => {
-    if (!image) return "/mwp-logo.png";
+    if (!image) return "/mwp-logo-2.png";
     if (image.startsWith("http") || image.startsWith("/")) return image;
     return `https://desirediv-storage.blr1.digitaloceanspaces.com/${image}`;
 };
@@ -43,7 +48,7 @@ const CartItem = React.memo(
                 if (item.bundleCampaign?.banner) {
                     return getImageUrl(item.bundleCampaign.banner);
                 }
-                return "/mwp-logo.png";
+                return "/mwp-logo-2.png";
             }
             if (item.variant?.images && Array.isArray(item.variant.images) && item.variant.images.length > 0) {
                 const primaryImage = item.variant.images.find((img) => img.isPrimary);
@@ -52,7 +57,7 @@ const CartItem = React.memo(
             }
             if (item.product?.image) return getImageUrl(item.product.image);
             if (item.image) return getImageUrl(item.image);
-            return "/mwp-logo.png";
+            return "/mwp-logo-2.png";
         };
 
         const getVariantName = () => {
@@ -86,7 +91,7 @@ const CartItem = React.memo(
                 <div className="flex gap-4 sm:gap-5">
                     {/* Image */}
                     <Link href={productHref} className="flex-shrink-0">
-                        <div className="relative h-24 w-20 sm:h-32 sm:w-28 bg-white rounded-xl overflow-hidden border border-[#e6ded2] group">
+                        <div className="relative h-28 w-24 sm:h-36 sm:w-32 bg-gradient-to-br from-[#FBF5E6] via-white to-[#EEF1F8] rounded-2xl overflow-hidden border border-[#E6DFC9] group">
                             <Image
                                 src={productImage}
                                 alt={productName}
@@ -100,43 +105,22 @@ const CartItem = React.memo(
                                     BUNDLE
                                 </div>
                             )}
-                            {item.isCustom && (
-                                <div className="absolute top-1.5 left-1.5 bg-neutral-900 text-white text-[7px] font-bold uppercase tracking-[0.15em] px-2 py-0.5 rounded-sm flex items-center gap-1">
-                                    <Package className="h-2.5 w-2.5" />
-                                    BESPOKE
-                                </div>
-                            )}
-                        </div>
+                                                    </div>
                     </Link>
 
                     {/* Details */}
                     <div className="flex-1 min-w-0 flex flex-col justify-between">
                         <div>
                             <Link href={productHref} className="group">
-                                <h3 className="text-sm sm:text-[15px] font-medium text-black leading-snug group-hover:text-black/70 transition-colors line-clamp-1">
+                                <h3 className="text-[15px] sm:text-[17px] font-semibold text-[#12213F] leading-snug group-hover:text-[#A8741F] transition-colors line-clamp-1">
                                     {productName}
                                 </h3>
                             </Link>
 
-                            {/* Custom Bespoke Perfume Details */}
-                            {item.isCustom && item.customDetails && (
-                                <div className="mt-2 space-y-1 p-2.5 bg-neutral-100 border border-neutral-200 rounded-lg text-[11px] text-neutral-900">
-                                    <div className="flex items-center gap-1 font-bold uppercase text-[11px] tracking-wider text-[#7E52BC]">
-                                        ✨ Bespoke Formula Specification
-                                    </div>
-                                    <p><strong>Base:</strong> {item.customDetails.baseNotes || "N/A"}</p>
-                                    <p><strong>Heart:</strong> {item.customDetails.heartNotes || "N/A"}</p>
-                                    <p><strong>Top:</strong> {item.customDetails.topNotes || "N/A"}</p>
-                                    {item.customDetails.engraving && item.customDetails.engraving !== "N/A" && (
-                                        <p className="text-[#C9992F] font-semibold"><strong>Engraving:</strong> &quot;{item.customDetails.engraving}&quot;</p>
-                                    )}
-                                </div>
-                            )}
-
                             {isBundle && item.bundleData?.selectedProducts?.length > 0 && (
                                 <div className="mt-2 space-y-1 p-2.5 bg-black/[0.02] border border-black/5 rounded-lg">
                                     <p className="text-[11px] text-neutral-600 uppercase tracking-widest font-semibold">
-                                        Included Fragrances ({item.bundleData.selectedProducts.length}):
+                                        Included formulas ({item.bundleData.selectedProducts.length}):
                                     </p>
                                     <div className="flex flex-wrap gap-1.5 pt-1">
                                         {item.bundleData.selectedProducts.map((product) => (
@@ -144,7 +128,7 @@ const CartItem = React.memo(
                                                 key={product.id}
                                                 className="inline-flex items-center text-[11px] font-medium text-black/70 bg-white border border-black/10 px-2 py-0.5 rounded"
                                             >
-                                                ✨ {product.name}
+                                                {product.name}
                                             </span>
                                         ))}
                                     </div>
@@ -204,7 +188,7 @@ const CartItem = React.memo(
                                     </div>
                                 )}
                                 {isBundle && item.bundleData?.savings > 0 && (
-                                    <p className="text-[11px] text-green-600 font-medium">Save {formatCurrency(item.bundleData.savings)}</p>
+                                    <p className="text-[11px] text-green-700 font-medium">Save {formatCurrency(item.bundleData.savings)}</p>
                                 )}
                             </div>
                             <span className="text-sm font-semibold text-black">{formatCurrency(item.subtotal)}</span>
@@ -230,7 +214,7 @@ const CartItem = React.memo(
                                         )}
                                     </div>
                                     {item.bundleData?.savings > 0 && (
-                                        <p className="text-[11px] text-green-600 font-medium mt-0.5">Save {formatCurrency(item.bundleData.savings)}</p>
+                                        <p className="text-[11px] text-green-700 font-medium mt-0.5">Save {formatCurrency(item.bundleData.savings)}</p>
                                     )}
                                 </>
                             ) : (
@@ -254,10 +238,10 @@ const CartItem = React.memo(
                         ) : (
                             <div className="flex flex-col items-center min-w-[60px]">
                                 <span className="text-[11px] text-neutral-600 uppercase tracking-widest font-medium mb-1">Qty</span>
-                                <div className="flex items-center border border-black/10 rounded-md overflow-hidden h-9">
+                                <div className="flex items-center border border-[#E6DFC9] bg-white rounded-full overflow-hidden h-10 shadow-sm">
                                     <button
                                         onClick={() => onUpdateQuantity(item.id, item.quantity, -1)}
-                                        className="w-8 h-full flex items-center justify-center hover:bg-black/[0.03] transition-colors disabled:opacity-30"
+                                        className="w-9 h-full flex items-center justify-center hover:bg-[#FBF5E6] transition-colors disabled:opacity-30"
                                         disabled={isLoading || item.quantity <= (item.moq || 1)}
                                     >
                                         <Minus className="h-3 w-3 text-neutral-600" />
@@ -271,7 +255,7 @@ const CartItem = React.memo(
                                     </span>
                                     <button
                                         onClick={() => onUpdateQuantity(item.id, item.quantity, 1)}
-                                        className="w-8 h-full flex items-center justify-center hover:bg-black/[0.03] transition-colors disabled:opacity-30"
+                                        className="w-9 h-full flex items-center justify-center hover:bg-[#FBF5E6] transition-colors disabled:opacity-30"
                                         disabled={isLoading}
                                     >
                                         <Plus className="h-3 w-3 text-neutral-600" />
@@ -425,16 +409,8 @@ export default function CartPage() {
             toast.info("Minimum order amount is $1");
             return;
         }
-        if (!isAuthenticated) {
-            if (typeof openAuthModal === "function") {
-                openAuthModal();
-            } else {
-                router.push("/auth?redirect=checkout");
-            }
-        } else {
-            router.push("/checkout");
-        }
-    }, [isAuthenticated, router, totals, openAuthModal]);
+        router.push("/checkout");
+    }, [router, totals]);
 
     const itemCount = cart.items?.length || 0;
     const bundleCount = cart.items?.filter(i => i.cartItemType === "BUNDLE").length || 0;
@@ -452,8 +428,8 @@ export default function CartPage() {
     if ((!cart.items || cart.items.length === 0) && !error) {
         return (
             <div className="mwp-cart min-h-screen bg-white flex flex-col items-center justify-center py-20 px-4">
-                <div className="text-center max-w-md mx-auto rounded-3xl bg-white border border-[#e6ded2] px-8 py-12">
-                    <div className="w-16 h-16 mx-auto mb-6 border border-[#e6ded2] rounded-full flex items-center justify-center bg-white">
+                <div className="text-center max-w-md mx-auto rounded-3xl bg-white border border-[#E6DFC9] px-8 py-12">
+                    <div className="w-16 h-16 mx-auto mb-6 border border-[#E6DFC9] rounded-full flex items-center justify-center bg-white">
                         <ShoppingBag className="h-7 w-7 text-neutral-600" strokeWidth={1} />
                     </div>
                     <h2 className="text-2xl font-semibold text-black mb-2 tracking-tight">Your bag is empty</h2>
@@ -472,36 +448,46 @@ export default function CartPage() {
     }
 
     return (
-        <div className="mwp-cart min-h-screen bg-white pb-20 sm:pb-24">
-            <div className="max-w-6xl mx-auto px-4 sm:px-6 pt-10 sm:pt-16">
-                {/* Header */}
-                <div className="mb-8 sm:mb-12">
-                    <Link href="/products" className="inline-flex items-center gap-2 text-[11px] uppercase tracking-[0.2em] text-neutral-600 hover:text-black transition-colors mb-4 sm:mb-6">
-                        <ArrowLeft className="h-3 w-3" strokeWidth={1.5} />
-                        Continue Shopping
-                    </Link>
-                    <div className="flex items-baseline justify-between">
+        <div className="mwp-cart min-h-screen bg-white pb-28 lg:pb-24">
+            <section className="mwp-cart-hero">
+                <div className="max-w-6xl mx-auto px-4 sm:px-6 pt-8 sm:pt-12 pb-16 sm:pb-20">
+                    <CheckoutSteps current={1} tone="light" />
+                    <div className="flex flex-wrap items-end justify-between gap-6">
                         <div>
-                            <h1 className="text-3xl sm:text-4xl font-semibold text-black tracking-tight">Shopping Bag</h1>
-                            <p className="text-[11px] text-neutral-600 mt-1 uppercase tracking-widest">
+                            <Link href="/products" className="inline-flex items-center gap-2 text-[11px] uppercase tracking-[0.2em] text-[#CDD4E6] hover:text-white transition-colors mb-3">
+                                <ArrowLeft className="h-3 w-3" strokeWidth={1.5} />
+                                Continue shopping
+                            </Link>
+                            <h1 className="text-4xl sm:text-5xl font-semibold tracking-tight text-white">Your bag</h1>
+                            <p className="mt-2 text-sm text-[#CDD4E6]">
                                 {itemCount} {itemCount === 1 ? "item" : "items"}
                                 {bundleCount > 0 && ` · ${bundleCount} bundle${bundleCount > 1 ? "s" : ""}`}
                             </p>
                         </div>
-                        <button
-                            onClick={handleClearCart}
-                            className="text-[11px] text-neutral-600 hover:text-neutral-600 uppercase tracking-widest font-medium transition-colors flex items-center gap-1.5"
-                            disabled={loading}
-                        >
-                            <Trash2 className="h-3 w-3" />
-                            Clear
-                        </button>
+                        <div className="mwp-ship-meter w-full sm:w-[340px]">
+                            {cart.freeShippingThreshold > 0 ? (
+                                totals.subtotal >= cart.freeShippingThreshold ? (
+                                    <p className="text-sm"><strong className="text-[#E6C26A]">You unlocked free shipping.</strong> Nice choice.</p>
+                                ) : (
+                                    <p className="text-sm">Add <strong className="text-[#E6C26A]">{formatCurrency(cart.freeShippingThreshold - totals.subtotal)}</strong> more for free shipping</p>
+                                )
+                            ) : (
+                                <p className="text-sm">Live <strong className="text-[#E6C26A]">USPS, UPS and FedEx</strong> rates at checkout</p>
+                            )}
+                            {cart.freeShippingThreshold > 0 && (
+                                <div className="mwp-ship-bar" role="progressbar" aria-valuemin={0} aria-valuemax={100} aria-valuenow={Math.min(100, Math.round((totals.subtotal / cart.freeShippingThreshold) * 100))}>
+                                    <span style={{ width: `${Math.min(100, (totals.subtotal / cart.freeShippingThreshold) * 100)}%` }} />
+                                </div>
+                            )}
+                        </div>
                     </div>
                 </div>
+            </section>
 
+            <div className="max-w-6xl mx-auto px-4 sm:px-6 -mt-9 sm:-mt-11 relative z-10">
                 {/* Guest notice */}
                 {!isAuthenticated && cart.items.length > 0 && (
-                    <div className="bg-white border border-[#e6ded2] p-4 sm:p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6 sm:mb-8 rounded-2xl">
+                    <div className="bg-white border border-[#E6DFC9] p-4 sm:p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6 sm:mb-8 rounded-2xl">
                         <div>
                             <p className="text-xs text-neutral-600 font-medium">Sign in to save your cart and access express checkout</p>
                         </div>
@@ -515,7 +501,7 @@ export default function CartPage() {
 
                 {/* Merge progress */}
                 {mergeProgress && (
-                    <div className="bg-gray-900 text-white p-3 rounded-lg flex items-center gap-3 mb-6 sm:mb-8">
+                    <div className="bg-neutral-900 text-white p-3 rounded-lg flex items-center gap-3 mb-6 sm:mb-8">
                         <Loader2 className="h-3.5 w-3.5 animate-spin flex-shrink-0" />
                         <span className="text-[11px] uppercase tracking-widest font-medium">{mergeProgress}</span>
                     </div>
@@ -524,7 +510,13 @@ export default function CartPage() {
                 <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8 items-start">
                     {/* Cart Items */}
                     <div className="lg:col-span-8 space-y-5">
-                        <div className="bg-white border border-[#e6ded2] rounded-2xl overflow-hidden">
+                        <div className="bg-white border border-[#E6DFC9] rounded-2xl overflow-hidden">
+                            <div className="flex items-center justify-between px-5 sm:px-6 py-4 border-b border-[#EEE8D6] bg-[#FAF8F2]">
+                                <h2 className="text-[12px] uppercase tracking-[0.18em] font-semibold text-[#12213F]">Items in your bag</h2>
+                                <button onClick={handleClearCart} disabled={loading} className="inline-flex items-center gap-1.5 text-[11px] uppercase tracking-widest font-medium text-neutral-600 hover:text-[#B3001B] transition-colors">
+                                    <Trash2 className="h-3 w-3" /> Clear
+                                </button>
+                            </div>
                             <div className="divide-y divide-black/[0.03]">
                                 {cart.items.map((item) => (
                                     <CartItem
@@ -544,21 +536,21 @@ export default function CartPage() {
 
                     {/* Summary */}
                     <div className="lg:col-span-4">
-                        <div className="bg-white border border-[#e6ded2] rounded-2xl p-5 sm:p-6 sticky top-24">
-                            <h2 className="text-sm uppercase tracking-[0.15em] text-black font-medium mb-5 pb-4 border-b border-black/5">
-                                Order Summary
+                        <div className="bg-white border border-[#E6DFC9] rounded-2xl p-5 sm:p-6 sticky top-24 mwp-summary-card">
+                            <h2 className="text-[13px] uppercase tracking-[0.18em] text-[#12213F] font-semibold mb-5 pb-4 border-b border-[#EEE8D6]">
+                                Order summary
                             </h2>
 
                             {/* Coupon */}
                             {(!hidePricesForGuests || isAuthenticated) && (
                                 <div className="mb-5 pb-5 border-b border-black/5">
                                     {coupon ? (
-                                        <div className="flex items-center justify-between bg-green-50/50 border border-green-100 p-3 rounded-md">
+                                        <div className="flex items-center justify-between bg-[#FBF5E6] border border-[#EADFC4] p-3 rounded-md">
                                             <div className="flex items-center gap-2">
-                                                <Tag className="h-3.5 w-3.5 text-green-600" />
+                                                <Tag className="h-3.5 w-3.5 text-green-700" />
                                                 <div>
                                                     <p className="text-[11px] font-semibold text-green-700 uppercase tracking-wider">{coupon.code}</p>
-                                                    <p className="text-[11px] text-green-600 mt-0.5">
+                                                    <p className="text-[11px] text-green-700 mt-0.5">
                                                         {coupon.discountType === "PERCENTAGE"
                                                             ? `${coupon.discountValue}% off`
                                                             : `$${coupon.discountValue} off`}
@@ -567,7 +559,7 @@ export default function CartPage() {
                                             </div>
                                             <button
                                                 onClick={handleRemoveCoupon}
-                                                className="text-green-600 hover:text-neutral-600 p-1 rounded transition-colors"
+                                                className="text-green-700 hover:text-neutral-600 p-1 rounded transition-colors"
                                                 disabled={couponLoading}
                                             >
                                                 <X className="h-3.5 w-3.5" />
@@ -614,7 +606,7 @@ export default function CartPage() {
                                 </div>
 
                                 {coupon && (
-                                    <div className="flex justify-between text-green-600">
+                                    <div className="flex justify-between text-green-700">
                                         <span className="uppercase tracking-wider">Discount</span>
                                         <span className="font-medium">-{formatCurrency(totals.discount)}</span>
                                     </div>
@@ -659,11 +651,28 @@ export default function CartPage() {
                             </button>
 
                             <p className="text-[11px] text-neutral-600 text-center mt-3">
-                                Shipping & taxes calculated at checkout
+                                Shipping is calculated at checkout from live carrier rates
                             </p>
+
+                            <ul className="mwp-trust-list">
+                                <li><Lock className="h-4 w-4" /> <span>Secure checkout with Stripe</span></li>
+                                <li><Truck className="h-4 w-4" /> <span>Ships across the USA with USPS, UPS and FedEx</span></li>
+                                <li><ShieldCheck className="h-4 w-4" /> <span>Lab tested, made in the USA</span></li>
+                                <li><RotateCcw className="h-4 w-4" /> <span>Damaged item? We make it right within 7 days</span></li>
+                            </ul>
                         </div>
                     </div>
                 </div>
+            </div>
+
+            <div className="mwp-mobile-bar lg:hidden">
+                <div>
+                    <p className="text-[11px] uppercase tracking-widest text-neutral-600">Total</p>
+                    <p className="text-lg font-semibold text-[#12213F]">{!isAuthenticated && hidePricesForGuests ? "Login" : formatCurrency(totals.total)}</p>
+                </div>
+                <button onClick={handleCheckout} className="mwp-mobile-bar-btn">
+                    {!isAuthenticated && hidePricesForGuests ? "Sign in" : "Checkout"}
+                </button>
             </div>
         </div>
     );

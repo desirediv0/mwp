@@ -67,7 +67,7 @@ export default function AddressesPage() {
 
       {/* Header */}
       <div className="flex items-center justify-between">
-        <h2 className="text-xl text-gray-900 tracking-tight">My Addresses</h2>
+        <h2 className="text-xl text-neutral-900 tracking-tight">My Addresses</h2>
         {!showAddForm && !editingAddress && (
           <button onClick={() => setShowAddForm(true)}
             className="inline-flex items-center gap-2 px-5 h-10 bg-neutral-900 text-white text-[12px] font-semibold rounded-full hover:bg-neutral-800 transition-colors">
@@ -79,7 +79,7 @@ export default function AddressesPage() {
       {/* Add Form */}
       {showAddForm && (
         <div className="bg-white border border-[#e6ded2] rounded-2xl p-6">
-          <h3 className="text-lg text-gray-900 tracking-tight mb-4">Add New Address</h3>
+          <h3 className="text-lg text-neutral-900 tracking-tight mb-4">Add New Address</h3>
           <AddressForm onSuccess={handleFormSuccess} onCancel={() => setShowAddForm(false)} />
         </div>
       )}
@@ -87,7 +87,7 @@ export default function AddressesPage() {
       {/* Edit Form */}
       {editingAddress && (
         <div className="bg-white border border-[#e6ded2] rounded-2xl p-6">
-          <h3 className="text-lg text-gray-900 tracking-tight mb-4">Edit Address</h3>
+          <h3 className="text-lg text-neutral-900 tracking-tight mb-4">Edit Address</h3>
           <AddressForm existingAddress={editingAddress} onSuccess={handleFormSuccess} onCancel={() => setEditingAddress(null)} />
         </div>
       )}
@@ -96,7 +96,7 @@ export default function AddressesPage() {
       {addresses.length === 0 && !showAddForm && !editingAddress && (
         <div className="bg-white border border-[#e6ded2] rounded-2xl p-12 text-center">
           <IconMapPin className="h-8 w-8 text-neutral-600 mx-auto mb-4" stroke={1.2} />
-          <h3 className="text-xl text-gray-900 mb-2">No Addresses Yet</h3>
+          <h3 className="text-xl text-neutral-900 mb-2">No Addresses Yet</h3>
           <p className="text-[13px] text-neutral-600 font-light mb-6">Add a shipping address for your orders</p>
           <button onClick={() => setShowAddForm(true)}
             className="inline-flex items-center gap-2 px-6 h-12 bg-neutral-900 text-white text-[12px] font-semibold rounded-full hover:bg-neutral-800 transition-colors">
@@ -116,25 +116,25 @@ export default function AddressesPage() {
                 </span>
               )}
               <div className="mb-4">
-                <p className="text-[14px] text-gray-900 font-medium">{address.name}</p>
+                <p className="text-[14px] text-neutral-900 font-medium">{address.name}</p>
                 <p className="text-[12px] text-neutral-600 font-light mt-1">{address.street}</p>
                 <p className="text-[12px] text-neutral-600 font-light">{formatCityLine(address)}</p>
                 <p className="text-[12px] text-neutral-600 font-light">{formatCountry(address.country)}</p>
                 {address.phone && <p className="text-[12px] text-neutral-600 font-light mt-1">Phone: {formatUsPhone(address.phone)}</p>}
               </div>
-              <div className="flex gap-2 flex-wrap pt-4 border-t border-gray-200">
+              <div className="flex gap-2 flex-wrap pt-4 border-t border-[#E6DFC9]">
                 {!address.isDefault && (
                   <button onClick={() => handleSetDefaultAddress(address.id)}
-                    className="inline-flex items-center gap-1.5 px-3 h-8 border border-gray-200 text-[11px] uppercase tracking-[0.15em] text-neutral-600 hover:border-gray-900 hover:text-gray-900 transition-all duration-300">
+                    className="inline-flex items-center gap-1.5 px-3 h-8 border border-[#E6DFC9] text-[11px] uppercase tracking-[0.15em] text-neutral-600 hover:border-neutral-900 hover:text-neutral-900 transition-all duration-300">
                     <IconHome className="h-3 w-3" stroke={1.5} /> Default
                   </button>
                 )}
                 <button onClick={() => setEditingAddress(address)}
-                  className="inline-flex items-center gap-1.5 px-3 h-8 border border-gray-200 text-[11px] uppercase tracking-[0.15em] text-neutral-600 hover:border-gray-900 hover:text-gray-900 transition-all duration-300">
+                  className="inline-flex items-center gap-1.5 px-3 h-8 border border-[#E6DFC9] text-[11px] uppercase tracking-[0.15em] text-neutral-600 hover:border-neutral-900 hover:text-neutral-900 transition-all duration-300">
                   <IconEdit className="h-3 w-3" stroke={1.5} /> Edit
                 </button>
                 <button onClick={() => handleDeleteAddress(address.id)} disabled={deletingId === address.id}
-                  className="inline-flex items-center gap-1.5 px-3 h-8 border border-gray-200 text-[11px] uppercase tracking-[0.15em] text-neutral-600 hover:border-neutral-900 hover:text-neutral-600 transition-all duration-300 disabled:opacity-50">
+                  className="inline-flex items-center gap-1.5 px-3 h-8 border border-[#E6DFC9] text-[11px] uppercase tracking-[0.15em] text-neutral-600 hover:border-neutral-900 hover:text-neutral-600 transition-all duration-300 disabled:opacity-50">
                   {deletingId === address.id ? <IconLoader2 className="h-3 w-3 animate-spin" stroke={1.5} /> : <IconTrash className="h-3 w-3" stroke={1.5} />} Delete
                 </button>
               </div>

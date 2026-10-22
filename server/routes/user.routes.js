@@ -33,6 +33,7 @@ import { cancelOrder } from "../controllers/payment.controller.js";
 import { verifyJWTToken } from "../middlewares/auth.middleware.js";
 import { uploadFiles } from "../middlewares/multer.middlerware.js";
 import otpRateLimiter from "../middlewares/rateLimiter.js";
+import { guestStart, guestVerify } from "../controllers/guest.controller.js";
 
 const router = express.Router();
 
@@ -44,6 +45,8 @@ router.post("/logout", logoutUser);
 router.post("/refresh-token", refreshAccessToken);
 router.get("/verify-email/:token", verifyEmail); // legacy link-based, kept for backward compatibility
 router.post("/verify-otp", verifyOtp);
+router.post("/guest/start", otpRateLimiter, guestStart);
+router.post("/guest/verify", otpRateLimiter, guestVerify);
 router.post("/resend-verification", otpRateLimiter, resendVerificationEmail);
 router.post("/forgot-password", otpRateLimiter, forgotPassword);
 router.post("/reset-password/:token", resetPassword);

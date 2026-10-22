@@ -37,6 +37,11 @@ export function normalizeUsPhone(input) {
   if (!/^[2-9]\d{2}[2-9]\d{6}$/.test(digits)) return null;
   // N11 numbers (411, 911...) are service codes, never area codes or exchanges
   if (digits.slice(1, 3) === "11" || digits.slice(4, 6) === "11") return null;
+  // obvious placeholders: 5555555555, 555-01xx fiction numbers, 1234567 runs
+  if (/^(\d)\1+$/.test(digits) || /^(\d)\1+$/.test(digits.slice(3))) return null;
+  if (digits.slice(3, 6) === "555" && /^01\d\d$/.test(digits.slice(6))) return null;
+  if (["1234567", "2345678", "3456789", "7654321", "9876543"].includes(digits.slice(3))) return null;
+  if (digits.slice(0, 3) === "555") return null;
   return `+1${digits}`;
 }
 

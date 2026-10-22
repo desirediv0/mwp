@@ -84,6 +84,17 @@ const blogPostSchema = z.object({
     .string()
     .max(200, "Keywords should be under 200 characters")
     .optional(),
+  slug: z.string().max(120).optional(),
+  writtenBy: z.string().max(120).optional(),
+  reviewedBy: z.string().max(160).optional(),
+  lastUpdatedLabel: z.string().max(60).optional(),
+  readingMinutes: z.string().max(3).optional(),
+  mainQuestion: z.string().max(300).optional(),
+  disclaimer: z.string().max(4000).optional(),
+  ctaText: z.string().max(80).optional(),
+  ctaNote: z.string().max(400).optional(),
+  ctaUrl: z.string().max(400).optional(),
+  referencesText: z.string().max(40000).optional(),
 });
 
 type BlogPostFormValues = {
@@ -97,6 +108,17 @@ type BlogPostFormValues = {
   metaTitle?: string;
   metaDescription?: string;
   keywords?: string;
+  slug?: string;
+  writtenBy?: string;
+  reviewedBy?: string;
+  lastUpdatedLabel?: string;
+  readingMinutes?: string;
+  mainQuestion?: string;
+  disclaimer?: string;
+  ctaText?: string;
+  ctaNote?: string;
+  ctaUrl?: string;
+  referencesText?: string;
 };
 
 const BlogPostForm = ({ postId, isEditing = false }: BlogPostFormProps) => {
@@ -105,6 +127,7 @@ const BlogPostForm = ({ postId, isEditing = false }: BlogPostFormProps) => {
   const [isLoading, setIsLoading] = useState(isEditing);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [showPreview, setShowPreview] = useState(false);
+  const [faq, setFaq] = useState<{ question: string; answer: string }[]>([]);
 
   const { toast } = useToast();
   const navigate = useNavigate();
@@ -122,6 +145,17 @@ const BlogPostForm = ({ postId, isEditing = false }: BlogPostFormProps) => {
       metaTitle: "",
       metaDescription: "",
       keywords: "",
+      slug: "",
+      writtenBy: "",
+      reviewedBy: "",
+      lastUpdatedLabel: "",
+      readingMinutes: "",
+      mainQuestion: "",
+      disclaimer: "",
+      ctaText: "",
+      ctaNote: "",
+      ctaUrl: "",
+      referencesText: "",
     },
   });
 
@@ -165,6 +199,21 @@ const BlogPostForm = ({ postId, isEditing = false }: BlogPostFormProps) => {
           form.setValue("metaTitle", post.metaTitle || "");
           form.setValue("metaDescription", post.metaDescription || "");
           form.setValue("keywords", post.keywords || "");
+          form.setValue("slug", post.slug || "");
+          form.setValue("writtenBy", post.writtenBy || "");
+          form.setValue("reviewedBy", post.reviewedBy || "");
+          form.setValue("lastUpdatedLabel", post.lastUpdatedLabel || "");
+          form.setValue("readingMinutes", post.readingMinutes ? String(post.readingMinutes) : "");
+          form.setValue("mainQuestion", post.mainQuestion || "");
+          form.setValue("disclaimer", post.disclaimer || "");
+          form.setValue("ctaText", post.ctaText || "");
+          form.setValue("ctaNote", post.ctaNote || "");
+          form.setValue("ctaUrl", post.ctaUrl || "");
+          form.setValue(
+            "referencesText",
+            Array.isArray(post.references) ? post.references.join("\n") : ""
+          );
+          setFaq(Array.isArray(post.faq) ? post.faq : []);
 
           // Set image preview if exists
           if (post.coverImageUrl) {
@@ -268,6 +317,31 @@ const BlogPostForm = ({ postId, isEditing = false }: BlogPostFormProps) => {
       if (values.keywords) {
         formData.append("keywords", values.keywords);
       }
+
+      // Article details (always sent, so clearing a field removes it)
+      if (values.slug?.trim()) formData.append("slug", values.slug.trim());
+      formData.append("writtenBy", values.writtenBy || "");
+      formData.append("reviewedBy", values.reviewedBy || "");
+      formData.append("lastUpdatedLabel", values.lastUpdatedLabel || "");
+      formData.append("readingMinutes", values.readingMinutes || "");
+      formData.append("mainQuestion", values.mainQuestion || "");
+      formData.append("disclaimer", values.disclaimer || "");
+      formData.append("ctaText", values.ctaText || "");
+      formData.append("ctaNote", values.ctaNote || "");
+      formData.append("ctaUrl", values.ctaUrl || "");
+      formData.append(
+        "references",
+        JSON.stringify(
+          (values.referencesText || "")
+            .split("\n")
+            .map((r) => r.trim())
+            .filter(Boolean)
+        )
+      );
+      formData.append(
+        "faq",
+        JSON.stringify(faq.filter((f) => f.question.trim() || f.answer.trim()))
+      );
 
       // Handle cover image
       if (values.coverImage instanceof File) {
@@ -454,6 +528,212 @@ const BlogPostForm = ({ postId, isEditing = false }: BlogPostFormProps) => {
                   </FormItem>
                 )}
               />
+
+              <div className="border-t pt-6 space-y-4">
+                <h3 className="text-base font-semibold">Article details</h3>
+                <p className="text-sm text-muted-foreground">
+                  Shown on the article page: the author line, review status, FAQ, references and the button at the end.
+                </p>
+
+              <FormField
+                control={form.control as any}
+                name="slug"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Page address (URL slug)</FormLabel>
+                    <FormControl>
+                      <Input placeholder="saffron-mood-emotional-wellness-research" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control as any}
+                name="writtenBy"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Written by</FormLabel>
+                    <FormControl>
+                      <Input placeholder="MWP University Editorial Team" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control as any}
+                name="reviewedBy"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Reviewed by</FormLabel>
+                    <FormControl>
+                      <Input placeholder="Pending Professional Review" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control as any}
+                name="lastUpdatedLabel"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Last updated</FormLabel>
+                    <FormControl>
+                      <Input placeholder="October 2026" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control as any}
+                name="readingMinutes"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Reading time (minutes)</FormLabel>
+                    <FormControl>
+                      <Input placeholder="5" {...field} inputMode="numeric" />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control as any}
+                name="mainQuestion"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Main customer question</FormLabel>
+                    <FormControl>
+                      <Input placeholder="Can saffron help support mood and emotional wellness?" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control as any}
+                name="referencesText"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>References (one per line)</FormLabel>
+                    <FormControl>
+                      <Textarea placeholder="Author, A. (2020). Title. Journal." rows={6} {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+                <div className="space-y-3">
+                  <div className="flex items-center justify-between">
+                    <FormLabel>Frequently asked questions</FormLabel>
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      onClick={() => setFaq((l) => [...l, { question: "", answer: "" }])}
+                    >
+                      Add question
+                    </Button>
+                  </div>
+                  {faq.length === 0 && (
+                    <p className="text-sm text-muted-foreground">No questions yet.</p>
+                  )}
+                  {faq.map((item, i) => (
+                    <div key={i} className="rounded-lg border p-3 space-y-2">
+                      <Input
+                        placeholder="Question"
+                        value={item.question}
+                        onChange={(e) =>
+                          setFaq((l) => l.map((x, j) => (j === i ? { ...x, question: e.target.value } : x)))
+                        }
+                      />
+                      <Textarea
+                        placeholder="Answer"
+                        rows={3}
+                        value={item.answer}
+                        onChange={(e) =>
+                          setFaq((l) => l.map((x, j) => (j === i ? { ...x, answer: e.target.value } : x)))
+                        }
+                      />
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="sm"
+                        className="text-red-600"
+                        onClick={() => setFaq((l) => l.filter((_, j) => j !== i))}
+                      >
+                        Remove
+                      </Button>
+                    </div>
+                  ))}
+                </div>
+
+              <FormField
+                control={form.control as any}
+                name="disclaimer"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Disclaimer</FormLabel>
+                    <FormControl>
+                      <Textarea placeholder="Shown in a note box under the article" rows={4} {...field} />
+                    </FormControl>
+                    <FormDescription>If left empty, a standard FDA disclaimer is shown.</FormDescription>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control as any}
+                name="ctaNote"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Sentence above the button</FormLabel>
+                    <FormControl>
+                      <Textarea placeholder="Explore the MWP Ingredient Library to learn more." rows={2} {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control as any}
+                name="ctaText"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Button text</FormLabel>
+                    <FormControl>
+                      <Input placeholder="Learn More About Saffron" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control as any}
+                name="ctaUrl"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Button link</FormLabel>
+                    <FormControl>
+                      <Input placeholder="/ingredients" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              </div>
             </div>
           </div>
 

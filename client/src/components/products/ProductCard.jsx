@@ -10,6 +10,7 @@ import { useAuth } from "@/lib/auth-context";
 import { useCart } from "@/lib/cart-context";
 import { useCompare } from "@/lib/compare-context";
 import { useRouter } from "next/navigation";
+import { getProductTone, productTagline, productBlurb } from "@/lib/product-tones";
 
 const getImageUrl = (image) => {
   if (!image) return "/placeholder.jpg";
@@ -200,236 +201,192 @@ export const ProductCard = ({ product, viewMode = "grid" }) => {
     finally { setIsAddingToCart(false); }
   };
 
-  const Stars = ({ size = 12 }) => (
-    <span className="inline-flex items-center gap-0.5">
+  const tone = getProductTone(product.slug);
+  const tagline = productTagline(product);
+  const blurb = productBlurb(product);
+  const hasReviews = reviewCount > 0 && rating > 0;
+  const productHref = `/products/${product.slug}`;
+
+  const Stars = ({ size = 13 }) => (
+    <span className="inline-flex items-center gap-0.5" aria-hidden="true">
       {[1, 2, 3, 4, 5].map((i) => (
-        <Star
-          key={i}
-          className={cn(
-            "shrink-0",
-            i <= Math.round(rating) ? "fill-amber-400 text-amber-400" : "fill-gray-200 text-gray-200"
-          )}
-          style={{ width: size, height: size }}
-        />
+        <Star key={i} className={cn("shrink-0", i <= Math.round(rating) ? "fill-[#D4A437] text-[#D4A437]" : "fill-[#E6E8EE] text-[#E6E8EE]")} style={{ width: size, height: size }} />
       ))}
     </span>
+  );
+
+  const PriceBlock = ({ large = false } = {}) =>
+    showPrice ? (
+      <div className="flex flex-wrap items-baseline gap-x-2 gap-y-0.5">
+        <span className={cn("font-semibold tracking-tight text-[#12213F]", large ? "text-[24px]" : "text-[20px]")}>{formatCurrency(displayPrice)}</span>
+        {originalPrice && <span className="text-[13px] text-[#6B7388] line-through">{formatCurrency(originalPrice)}</span>}
+      </div>
+    ) : (
+      <button onClick={() => openAuthModal && openAuthModal()} className="text-[13px] font-semibold text-[#12213F] underline underline-offset-4">
+        Sign in to see the price
+      </button>
+    );
+
+  const CartButton = ({ className = "" } = {}) => (
+    <button
+      onClick={handleAddToCart}
+      disabled={!showPrice || isAddingToCart || isOutOfStock}
+      className={cn(
+        "inline-flex min-h-[46px] items-center justify-center gap-2 rounded-full px-5 text-[13px] font-semibold transition-all active:scale-[0.98]",
+        addedToCart ? "bg-[#1F8A4C] text-white" : "bg-[#12213F] text-white hover:bg-[#B3001B]",
+        "disabled:cursor-not-allowed disabled:bg-[#C9CDD8] disabled:text-white",
+        className
+      )}
+    >
+      {isAddingToCart ? (
+        <><Loader2 className="h-4 w-4 animate-spin" /> Adding...</>
+      ) : addedToCart ? (
+        <><Check className="h-4 w-4" /> Added to bag</>
+      ) : isOutOfStock ? (
+        "Sold out"
+      ) : (
+        <><ShoppingBag className="h-4 w-4" /> Add to bag</>
+      )}
+    </button>
+  );
+
+  const RoundIcon = ({ onClick, active, label, children, disabled }) => (
+    <button
+      type="button"
+      onClick={onClick}
+      disabled={disabled}
+      aria-label={label}
+      aria-pressed={active}
+      title={label}
+      className={cn(
+        "grid h-10 w-10 place-items-center rounded-full border bg-white/95 shadow-sm backdrop-blur transition-all hover:scale-105 sm:h-9 sm:w-9",
+        active ? "border-[#B3001B] text-[#B3001B]" : "border-black/[0.06] text-[#4A5470] hover:text-[#12213F]"
+      )}
+    >
+      {children}
+    </button>
+  );
+
+  const Badges = () => (
+    <div className="pointer-events-none absolute left-3 top-3 z-20 flex flex-col items-start gap-1.5">
+      {discountPercent > 0 && (
+        <span className="rounded-full bg-[#B3001B] px-3 py-1 text-[11px] font-semibold tracking-wide text-white shadow-sm">Save {discountPercent}%</span>
+      )}
+      {showFlashSaleBadge && (
+        <span className="rounded-full bg-[#12213F] px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.12em] text-[#E6C26A] shadow-sm">Flash sale</span>
+      )}
+      {product.featured && !discountPercent && !showFlashSaleBadge && (
+        <span className="rounded-full bg-white/95 px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.14em] text-[#A8741F] shadow-sm ring-1 ring-[#EADFC4]">Best seller</span>
+      )}
+    </div>
+  );
+
+  const Actions = () => (
+    <div className="absolute right-3 top-3 z-20 flex flex-col gap-2">
+      <RoundIcon onClick={handleAddToWishlist} active={Boolean(inWishlist)} disabled={isAddingToWishlist[product.id]} label={inWishlist ? "Remove from wishlist" : "Add to wishlist"}>
+        {isAddingToWishlist[product.id] ? <Loader2 className="h-4 w-4 animate-spin" /> : <Heart className={cn("h-[17px] w-[17px]", inWishlist && "fill-current")} />}
+      </RoundIcon>
+      <RoundIcon onClick={(e) => { e.preventDefault(); e.stopPropagation(); toggleCompare(product); }} active={isInCompare(product.id)} label={isInCompare(product.id) ? "Remove from compare" : "Add to compare"}>
+        <GitCompareArrows className="h-[17px] w-[17px]" />
+      </RoundIcon>
+    </div>
+  );
+
+  const Visual = ({ className = "", sizes }) => (
+    <Link
+      href={productHref}
+      aria-label={`View ${product.name}`}
+      className={cn("relative block overflow-hidden", className)}
+      style={{ background: `radial-gradient(circle at 50% 46%, #ffffff 0%, ${tone.background} 52%, ${tone.surface} 135%)` }}
+    >
+      <span aria-hidden="true" className="absolute left-1/2 top-[52%] h-[62%] w-[62%] -translate-x-1/2 -translate-y-1/2 rounded-full blur-2xl transition-opacity duration-500 group-hover:opacity-100" style={{ background: tone.surface, opacity: 0.55 }} />
+      <Image
+        src={getAllProductImages[currentImageIndex] || "/placeholder.jpg"}
+        alt={product.name}
+        fill
+        className="object-contain p-5 drop-shadow-[0_22px_26px_rgba(18,33,63,0.22)] transition-transform duration-500 ease-out group-hover:-translate-y-1.5 group-hover:scale-[1.04] sm:p-7"
+        sizes={sizes}
+      />
+    </Link>
   );
 
   /* ── LIST MODE ── */
   if (isList) {
     return (
-      <div
-        className="group relative flex flex-row overflow-hidden rounded-lg border border-black/[0.06] bg-white transition-all duration-300 hover:border-black/[0.12] hover:shadow-[0_16px_40px_-20px_rgba(0,0,0,0.22)]"
+      <article
+        className="group relative flex overflow-hidden rounded-3xl border border-[#E6DFC9] bg-white transition-all duration-300 hover:border-[#D4A437] hover:shadow-[0_26px_50px_-36px_#12213F88]"
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
       >
-        <Link
-          href={`/products/${product.slug}`}
-          className="relative flex-shrink-0 overflow-hidden bg-white"
-          style={{
-            width: "180px",
-            minHeight: "180px",
-            backgroundColor: "var(--mwp-cream)",
-          }}
-        >
-          <Image
-            src={getAllProductImages[currentImageIndex] || "/placeholder.jpg"}
-            alt={product.name}
-            fill
-            className="object-contain p-4 transition-transform duration-500 group-hover:scale-[1.04]"
-            sizes="180px"
-          />
-          {discountPercent > 0 && (
-            <span className="absolute top-3 left-3 bg-gray-900 text-white text-[11px] font-extrabold px-2 py-1">
-              −{discountPercent}%
-            </span>
-          )}
-        </Link>
-        <div className="flex flex-col flex-1 p-5 justify-between min-w-0">
-          <div>
-            {categoryName && (
-              <span className="text-[10px] uppercase tracking-[0.14em] text-neutral-500 font-semibold">{categoryName}</span>
-            )}
-            <Link href={`/products/${product.slug}`}>
-              <h3 className="text-[15px] font-semibold text-neutral-900 mt-1 mb-1.5 line-clamp-1 hover:text-black transition-colors">
-                {product.name}
-              </h3>
-            </Link>
-            {(rating > 0 || reviewCount > 0) && (
-              <div className="flex items-center gap-1.5 mb-2">
-                <Stars />
-                <span className="text-[11px] text-gray-500">
-                  {rating > 0 ? rating.toFixed(1) : "New"}{reviewCount > 0 ? ` (${reviewCount})` : ""}
-                </span>
-              </div>
-            )}
-            {showPrice ? (
-              <div className="flex items-center gap-2">
-                <span className="text-[17px] font-extrabold text-gray-900">{formatCurrency(displayPrice)}</span>
-                {originalPrice && <span className="text-[13px] text-gray-400 line-through">{formatCurrency(originalPrice)}</span>}
-              </div>
-            ) : (
-              <button onClick={() => openAuthModal && openAuthModal()} className="text-[12px] text-gray-900 font-semibold hover:underline">
-                Login for Price
-              </button>
-            )}
-          </div>
-          <button
-            onClick={handleAddToCart}
-            disabled={!showPrice || isAddingToCart || isOutOfStock}
-            className="mt-4 self-start inline-flex items-center gap-2 rounded-full py-2.5 px-5 text-[11px] font-semibold transition-all bg-neutral-900 text-white hover:bg-[#12213F] disabled:opacity-50 disabled:cursor-not-allowed"
-          >
-            {isAddingToCart ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : addedToCart ? <><Check className="w-3.5 h-3.5" /> Added</> : isOutOfStock ? "Out of Stock" : <><ShoppingBag className="w-3.5 h-3.5" /> Add to Cart</>}
-          </button>
+        <div className="relative w-[150px] shrink-0 sm:w-[220px]">
+          {Visual({ className: "h-full min-h-[200px]", sizes: "220px" })}
+          {Badges()}
         </div>
-      </div>
+        <div className="flex min-w-0 flex-1 flex-col justify-between gap-3 p-4 sm:p-6">
+          <div>
+            {categoryName && <span className="text-[11px] font-semibold uppercase tracking-[0.16em]" style={{ color: tone.accent }}>{categoryName}</span>}
+            <Link href={productHref}><h3 className="mt-1 text-[18px] font-semibold leading-snug text-[#12213F] hover:text-[#A8741F]">{product.name}</h3></Link>
+            {tagline && <p className="mt-1 text-[13.5px] text-[#4A5470]">{tagline}</p>}
+            {hasReviews && <div className="mt-2 flex items-center gap-1.5"><Stars /><span className="text-[12px] text-[#4A5470]">{rating.toFixed(1)} ({reviewCount})</span></div>}
+          </div>
+          <div className="flex flex-wrap items-end justify-between gap-3">
+            {PriceBlock()}
+            {CartButton({ className: "min-w-[150px]" })}
+          </div>
+        </div>
+        {Actions()}
+      </article>
     );
   }
 
   /* ── GRID MODE ── */
   return (
-    <div
-      className="group relative flex flex-col h-full overflow-hidden rounded-2xl border border-neutral-200 bg-white transition-colors hover:border-neutral-500"
+    <article
+      className="group relative flex h-full flex-col overflow-hidden rounded-[1.6rem] border border-[#E6DFC9] bg-white transition-all duration-300 hover:-translate-y-1 hover:border-[#D4A437] hover:shadow-[0_30px_50px_-34px_#12213F88]"
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
-      {/* Image */}
-      <div
-        className="relative overflow-hidden"
-        style={{
-          aspectRatio: "4/5",
-          backgroundColor: "var(--mwp-cream)",
-        }}
-      >
-        <Link href={`/products/${product.slug}`} className="relative block w-full h-full">
-          <Image
-            src={getAllProductImages[currentImageIndex] || "/placeholder.jpg"}
-            alt={product.name}
-            fill
-            className="object-contain p-2 sm:p-3 transition-transform duration-300 ease-out group-hover:scale-[1.025]"
-            sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
-          />
-        </Link>
-
-        {/* Badges (top-left) */}
-        <div className="absolute top-3 left-3 z-20 flex flex-col gap-1.5 pointer-events-none">
-          {discountPercent > 0 && (
-            <span className="rounded-full bg-neutral-900 text-white text-[10px] font-semibold px-3 py-1.5 shadow-sm">
-              −{discountPercent}%
-            </span>
-          )}
-          {showFlashSaleBadge && (
-            <span className="rounded-full bg-white text-neutral-900 text-[10px] font-semibold uppercase tracking-wide px-3 py-1.5 shadow-sm">
-              Flash Sale
-            </span>
-          )}
-        </div>
-
-        {/* Wishlist + Compare (top-right) */}
-        <div className="absolute top-3 right-3 z-20 flex flex-col gap-1.5">
-          <button
-            onClick={handleAddToWishlist}
-            disabled={isAddingToWishlist[product.id]}
-            className={cn(
-              "w-9 h-9 flex items-center justify-center rounded-full bg-white/95 backdrop-blur-sm shadow-sm border border-black/[0.06] transition-all duration-300",
-              inWishlist ? "text-gray-900" : "text-gray-400 hover:text-gray-900"
-            )}
-            aria-label="Add to wishlist"
-          >
-            {isAddingToWishlist[product.id]
-              ? <Loader2 className="h-4 w-4 animate-spin" />
-              : <Heart className={cn("h-4 w-4", inWishlist && "fill-current")} />}
-          </button>
-          <button
-            onClick={(e) => { e.preventDefault(); e.stopPropagation(); toggleCompare(product); }}
-            className={cn(
-              "w-9 h-9 flex items-center justify-center rounded-full bg-white/95 backdrop-blur-sm shadow-sm border border-black/[0.06] transition-all duration-300",
-              isInCompare(product.id) ? "text-gray-900 bg-gray-100" : "text-gray-400 hover:text-gray-900"
-            )}
-            aria-label="Compare product"
-            title={isInCompare(product.id) ? "Remove from compare" : "Add to compare"}
-          >
-            <GitCompareArrows className="h-4 w-4" />
-          </button>
-        </div>
-
-        {/* Out of stock overlay */}
+      <div className="relative">
+        {Visual({ className: "aspect-[4/4.4]", sizes: "(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw" })}
+        {Badges()}
+        {Actions()}
         {isOutOfStock && (
-          <div className="absolute inset-0 z-10 bg-white/70 backdrop-blur-[2px] flex items-center justify-center">
-            <span className="rounded-full text-[11px] uppercase tracking-[0.12em] font-semibold text-neutral-900 bg-white px-4 py-2 border border-black/[0.08]">
-              Sold Out
-            </span>
+          <div className="absolute inset-0 z-10 grid place-items-center bg-white/70 backdrop-blur-[2px]">
+            <span className="rounded-full border border-black/[0.08] bg-white px-4 py-2 text-[11px] font-semibold uppercase tracking-[0.12em] text-[#12213F]">Sold out</span>
+          </div>
+        )}
+      </div>
+
+      <div className="flex flex-1 flex-col p-4 sm:p-5">
+        {categoryName && (
+          <span className="mb-1.5 line-clamp-1 text-[11px] font-semibold uppercase tracking-[0.16em]" style={{ color: tone.accent }}>{categoryName}</span>
+        )}
+        <Link href={productHref} className="block">
+          <h3 className="text-[17px] font-semibold leading-snug tracking-tight text-[#12213F] transition-colors group-hover:text-[#A8741F] sm:text-[19px]">{product.name}</h3>
+        </Link>
+        {tagline && <p className="mt-1 line-clamp-1 text-[13px] font-medium text-[#4A5470]">{tagline}</p>}
+        {blurb && <p className="mt-2 hidden line-clamp-2 text-[13px] leading-relaxed text-[#5A6275] sm:block">{blurb}</p>}
+        {hasReviews && (
+          <div className="mt-2.5 flex items-center gap-1.5">
+            <Stars />
+            <span className="text-[12px] text-[#4A5470]">{rating.toFixed(1)} ({reviewCount})</span>
           </div>
         )}
 
-      </div>
-
-      {/* Info */}
-      <div className="flex flex-col flex-1 p-4 sm:p-5">
-        {categoryName && (
-          <span className="text-[10px] uppercase tracking-[0.14em] text-neutral-500 font-semibold mb-1.5 line-clamp-1">
-            {categoryName}
-          </span>
-        )}
-
-        <Link href={`/products/${product.slug}`} className="block">
-          <h3 className="text-[14px] sm:text-[15px] font-semibold text-neutral-900 leading-snug line-clamp-2 min-h-[2.5em] group-hover:text-black transition-colors">
-            {product.name}
-          </h3>
-        </Link>
-
-        {/* Rating */}
-        <div className="flex items-center gap-1.5 mt-1.5 mb-2.5">
-          <Stars />
-          <span className="text-[11px] text-gray-500">
-            {rating > 0 ? rating.toFixed(1) : "New"}{reviewCount > 0 ? ` (${reviewCount})` : ""}
-          </span>
+        <div className="mt-auto pt-4">
+          {PriceBlock()}
+          <div className="mt-3 grid gap-2 sm:grid-cols-[1fr_auto]">
+            {CartButton({ className: "w-full" })}
+            <Link
+              href={productHref}
+              className="hidden min-h-[46px] items-center justify-center rounded-full border border-[#12213F]/20 px-4 text-[13px] font-semibold text-[#12213F] transition-colors hover:border-[#A8741F] hover:text-[#A8741F] sm:inline-flex"
+            >
+              Details
+            </Link>
+          </div>
         </div>
-
-        {/* Price */}
-        <div className="mt-auto flex items-end justify-between gap-2">
-          {showPrice ? (
-            <div className="flex items-baseline gap-2 flex-wrap">
-              <span className="text-[16px] font-semibold text-neutral-900">
-                {formatCurrency(displayPrice)}
-              </span>
-              {originalPrice && (
-                <span className="text-[12px] text-gray-400 line-through">
-                  {formatCurrency(originalPrice)}
-                </span>
-              )}
-            </div>
-          ) : (
-            <button onClick={() => openAuthModal && openAuthModal()} className="text-[12px] uppercase tracking-[0.1em] text-gray-900 font-bold hover:underline">
-              Login for Price
-            </button>
-          )}
-
-          {/* Quick view (desktop hover) */}
-          <Link
-            href={`/products/${product.slug}`}
-            className="hidden sm:flex items-center justify-center w-8 h-8 border border-gray-200 text-gray-400 hover:border-gray-400 hover:text-gray-900 transition-colors shrink-0"
-            aria-label="View product"
-          >
-            <Eye className="h-4 w-4" />
-          </Link>
-        </div>
-
-        <button
-          onClick={handleAddToCart}
-          disabled={!showPrice || isAddingToCart || isOutOfStock}
-          className="mt-4 w-full min-h-11 flex items-center justify-center gap-2 rounded-full bg-neutral-900 px-4 py-2.5 text-[12px] font-semibold text-white transition-colors hover:bg-[#12213F] disabled:cursor-not-allowed disabled:opacity-50"
-        >
-          {isAddingToCart
-            ? <Loader2 className="h-4 w-4 animate-spin" />
-            : addedToCart
-              ? <><Check className="h-4 w-4" /> Added</>
-              : isOutOfStock
-                ? "Out of Stock"
-                : <><ShoppingBag className="h-4 w-4" /> Add to Cart</>}
-        </button>
       </div>
-    </div>
+    </article>
   );
 };
 

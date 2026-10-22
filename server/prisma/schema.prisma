@@ -777,6 +777,18 @@ model BlogPost {
   metaTitle       String?
   metaDescription String?
   keywords        String?
+  // Article details shown on the page (all optional, edited in Admin > Blog)
+  writtenBy        String? // e.g. "MWP University Editorial Team"
+  reviewedBy       String? // e.g. "Pending Professional Review"
+  lastUpdatedLabel String? // e.g. "October 2026"
+  readingMinutes   Int?
+  mainQuestion     String? // the one customer question the article answers
+  faq              Json? // [{ question, answer }]
+  references       Json? // [ "Author et al. (2020). Title. Journal." ]
+  disclaimer       String?
+  ctaText          String?
+  ctaNote          String? // one sentence shown above the button
+  ctaUrl           String?
   createdAt       DateTime       @default(now())
   updatedAt       DateTime       @updatedAt
   author          Admin?         @relation(fields: [authorId], references: [id])

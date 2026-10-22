@@ -1,9 +1,11 @@
 "use client";
+import CheckoutSteps from "@/components/shop/CheckoutSteps";
 import { formatUsPhone, formatCityLine, formatCountry } from "@/lib/us";
 
 import { useState, useEffect, useCallback, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/lib/auth-context";
+import GuestCheckout from "@/components/checkout/GuestCheckout";
 import { useCart } from "@/lib/cart-context";
 import { fetchApi, formatCurrency } from "@/lib/utils";
 import { playSuccessSound, fireConfetti } from "@/lib/sound-utils";
@@ -23,6 +25,9 @@ import {
     ArrowLeft,
     X,
     Tag,
+    Lock,
+    ShieldCheck,
+    RotateCcw,
 } from "lucide-react";
 import { toast } from "sonner";
 import Link from "next/link";
@@ -31,7 +36,7 @@ import Image from "next/image";
 import CheckoutRecommendations from "@/components/sections/CheckoutRecommendations";
 
 const getImageUrl = (image) => {
-    if (!image) return "/mwp-logo.png";
+    if (!image) return "/mwp-logo-2.png";
     if (image.startsWith("http") || image.startsWith("/")) return image;
     return `https://desirediv-storage.blr1.digitaloceanspaces.com/${image}`;
 };
@@ -80,10 +85,11 @@ export default function CheckoutPage() {
     const confirmStarted = useRef(false);
 
     useEffect(() => {
-        if (!authLoading && !isAuthenticated) {
-            router.push("/auth?redirect=checkout");
+        // guests stay here and see the quick guest step; only bounce them if the bag is empty
+        if (!authLoading && !isAuthenticated && !cartLoading && cart.items?.length === 0 && !returningFromStripe) {
+            router.push("/cart");
         }
-    }, [isAuthenticated, authLoading, router]);
+    }, [isAuthenticated, authLoading, cartLoading, cart, returningFromStripe, router]);
 
     useEffect(() => {
         if (!cartLoading && !mergeProgress && isAuthenticated && cart.items?.length === 0 && !orderCreated && !returningFromStripe) {
@@ -217,7 +223,7 @@ export default function CheckoutPage() {
         const orderNum = orderData?.orderNumber || orderNumber || "";
         toast.success("Order confirmed!", {
             duration: 4000,
-            icon: <PartyPopper className="h-5 w-5 text-green-500" />,
+            icon: <PartyPopper className="h-5 w-5 text-green-700" />,
             description: orderNum ? `Order #${orderNum} confirmed. Redirecting…` : "Redirecting to your orders…",
         });
         setTimeout(() => setOrderCreated(true), 100);
@@ -306,6 +312,10 @@ export default function CheckoutPage() {
         }
     };
 
+    if (!authLoading && !isAuthenticated && !returningFromStripe && cart.items?.length > 0) {
+        return <GuestCheckout />;
+    }
+
     if (!isAuthenticated || loadingAddresses) {
         return (
             <div className="min-h-screen bg-white flex flex-col items-center justify-center gap-4">
@@ -319,8 +329,8 @@ export default function CheckoutPage() {
         return (
             <div className="min-h-screen bg-white flex items-center justify-center py-20 px-4">
                 <div className="max-w-lg w-full text-center">
-                    <div className="w-20 h-20 mx-auto mb-8 border border-green-100 rounded-full flex items-center justify-center bg-green-50/50">
-                        <PartyPopper className="h-10 w-10 text-green-600" strokeWidth={1} />
+                    <div className="w-20 h-20 mx-auto mb-8 border border-[#EADFC4] rounded-full flex items-center justify-center bg-[#FBF5E6]">
+                        <PartyPopper className="h-10 w-10 text-green-700" strokeWidth={1} />
                     </div>
                     <h1 className="text-3xl font-light text-black mb-2 tracking-tight">Order Confirmed</h1>
                     {orderNumber && (
@@ -328,8 +338,8 @@ export default function CheckoutPage() {
                             Order #{orderNumber}
                         </p>
                     )}
-                    <div className="inline-flex items-center gap-2 bg-green-50/50 border border-green-100 px-4 py-2 rounded-full mb-6">
-                        <CheckCircle className="h-3.5 w-3.5 text-green-600" />
+                    <div className="inline-flex items-center gap-2 bg-[#FBF5E6] border border-[#EADFC4] px-4 py-2 rounded-full mb-6">
+                        <CheckCircle className="h-3.5 w-3.5 text-green-700" />
                         <span className="text-[11px] font-medium text-green-700 uppercase tracking-wider">Payment Received</span>
                     </div>
                     <p className="text-[13px] text-neutral-600 font-light leading-relaxed max-w-sm mx-auto mb-8">
@@ -371,17 +381,22 @@ export default function CheckoutPage() {
                 </div>
             )}
 
-            <div className="max-w-6xl mx-auto px-4 sm:px-6 pt-10 sm:pt-16">
-                {/* Header */}
-                <div className="mb-8 sm:mb-12">
-                    <Link href="/cart" className="inline-flex items-center gap-2 text-[11px] uppercase tracking-[0.2em] text-neutral-600 hover:text-black transition-colors mb-4 sm:mb-6">
+            <section className="mwp-cart-hero">
+                <div className="max-w-6xl mx-auto px-4 sm:px-6 pt-8 sm:pt-12 pb-16 sm:pb-20">
+                    <CheckoutSteps current={orderCreated ? 3 : 2} tone="light" />
+                    <Link href="/cart" className="inline-flex items-center gap-2 text-[11px] uppercase tracking-[0.2em] text-[#CDD4E6] hover:text-white transition-colors mb-3">
                         <ArrowLeft className="h-3 w-3" strokeWidth={1.5} />
-                        Back to Cart
+                        Back to bag
                     </Link>
-                    <h1 className="text-3xl sm:text-4xl font-semibold text-black tracking-tight">Checkout</h1>
-                    <p className="text-[11px] text-neutral-600 mt-1 uppercase tracking-widest">Secure · Encrypted · SSL</p>
+                    <div className="flex flex-wrap items-end justify-between gap-4">
+                        <h1 className="text-4xl sm:text-5xl font-semibold tracking-tight text-white">Checkout</h1>
+                        <p className="inline-flex items-center gap-2 text-[12px] text-[#CDD4E6]"><Lock className="h-3.5 w-3.5 text-[#E6C26A]" /> Secure and encrypted with Stripe</p>
+                    </div>
                 </div>
+            </section>
 
+            <div className="max-w-6xl mx-auto px-4 sm:px-6 -mt-9 sm:-mt-11 relative z-10">
+                {/* Header is now the hero above */}
                 {error && (
                     <div className="mb-6 p-4 bg-neutral-100/50 border border-neutral-200 rounded-lg flex items-start gap-3 text-xs text-neutral-800">
                         <AlertCircle className="flex-shrink-0 mt-0.5 h-4 w-4" />
@@ -396,7 +411,7 @@ export default function CheckoutPage() {
                     {/* Left Column */}
                     <div className="lg:col-span-8 space-y-5">
                         {/* Address */}
-                        <div className="bg-white border border-[#e6ded2] rounded-2xl p-5 sm:p-6">
+                        <div className="bg-white border border-[#E6DFC9] rounded-2xl p-5 sm:p-6">
                             <div className="flex items-center justify-between mb-5 pb-4 border-b border-black/5">
                                 <h2 className="text-sm uppercase tracking-[0.15em] text-black font-medium flex items-center gap-2">
                                     <MapPin className="h-4 w-4 text-neutral-600" strokeWidth={1.5} />
@@ -412,7 +427,7 @@ export default function CheckoutPage() {
                             </div>
 
                             {showAddressForm && (
-                                <div className="mb-5 p-5 border border-[#e6ded2] rounded-2xl bg-white">
+                                <div className="mb-5 p-5 border border-[#E6DFC9] rounded-2xl bg-white">
                                     <AddressForm
                                         onSuccess={handleAddressFormSuccess}
                                         onCancel={() => setShowAddressForm(false)}
@@ -467,7 +482,7 @@ export default function CheckoutPage() {
                         </div>
 
                         {/* Shipping method */}
-                        <div className="bg-white border border-[#e6ded2] rounded-2xl p-5 sm:p-6">
+                        <div className="bg-white border border-[#E6DFC9] rounded-2xl p-5 sm:p-6">
                             <h2 className="text-sm uppercase tracking-[0.15em] text-black font-medium mb-5 pb-4 border-b border-black/5 flex items-center gap-2">
                                 <Truck className="h-4 w-4 text-neutral-600" strokeWidth={1.5} />
                                 Shipping Method
@@ -516,14 +531,14 @@ export default function CheckoutPage() {
                                         );
                                     })}
                                     {shippingQuote?.freeShipping && (
-                                        <p className="text-[11px] text-green-600">Your order qualifies for free shipping on the first option.</p>
+                                        <p className="text-[11px] text-green-700">Your order qualifies for free shipping on the first option.</p>
                                     )}
                                 </div>
                             )}
                         </div>
 
                         {/* Payment */}
-                        <div className="bg-white border border-[#e6ded2] rounded-2xl p-5 sm:p-6">
+                        <div className="bg-white border border-[#E6DFC9] rounded-2xl p-5 sm:p-6">
                             <h2 className="text-sm uppercase tracking-[0.15em] text-black font-medium mb-5 pb-4 border-b border-black/5">
                                 Payment Method
                             </h2>
@@ -551,7 +566,7 @@ export default function CheckoutPage() {
 
                     {/* Right Column - Summary */}
                     <div className="lg:col-span-4">
-                        <div className="bg-white border border-[#e6ded2] rounded-2xl p-5 sm:p-6 sticky top-24">
+                        <div className="bg-white border border-[#E6DFC9] rounded-2xl p-5 sm:p-6 sticky top-24">
                             <h2 className="text-sm uppercase tracking-[0.15em] text-black font-medium mb-5 pb-4 border-b border-black/5">
                                 Order Summary
                             </h2>
@@ -572,7 +587,7 @@ export default function CheckoutPage() {
 
                                     return (
                                         <div key={item.id} className="flex items-center gap-3">
-                                            <div className="relative w-10 h-12 bg-white border border-[#e6ded2] rounded-md overflow-hidden flex-shrink-0">
+                                            <div className="relative w-10 h-12 bg-white border border-[#E6DFC9] rounded-md overflow-hidden flex-shrink-0">
                                                 <Image src={getImageUrl(img)} alt="" fill className="object-contain p-1" />
                                                 {isBundle && (
                                                     <div className="absolute top-0 left-0 bg-neutral-900 text-white text-[5px] font-bold px-1 py-0.5 rounded-br-sm">
@@ -602,12 +617,12 @@ export default function CheckoutPage() {
 
                             {/* Coupon */}
                             {coupon && (
-                                <div className="flex items-center justify-between bg-green-50/50 border border-green-100 p-2.5 rounded-md mb-4">
+                                <div className="flex items-center justify-between bg-[#FBF5E6] border border-[#EADFC4] p-2.5 rounded-md mb-4">
                                     <div className="flex items-center gap-2">
-                                        <Tag className="h-3 w-3 text-green-600" />
+                                        <Tag className="h-3 w-3 text-green-700" />
                                         <span className="text-[11px] text-green-700 font-medium uppercase tracking-wider">{coupon.code}</span>
                                     </div>
-                                    <span className="text-[11px] text-green-600 font-medium">-{formatCurrency(totals.discount)}</span>
+                                    <span className="text-[11px] text-green-700 font-medium">-{formatCurrency(totals.discount)}</span>
                                 </div>
                             )}
 
@@ -618,7 +633,7 @@ export default function CheckoutPage() {
                                     <span className="font-medium text-black">{formatCurrency(totals.subtotal)}</span>
                                 </div>
                                 {totals.discount > 0 && (
-                                    <div className="flex justify-between text-green-600">
+                                    <div className="flex justify-between text-green-700">
                                         <span className="uppercase tracking-wider">Discount</span>
                                         <span className="font-medium">-{formatCurrency(totals.discount)}</span>
                                     </div>
@@ -630,7 +645,7 @@ export default function CheckoutPage() {
                                     ) : selectedRate.price > 0 ? (
                                         <span className="font-medium text-black">{formatCurrency(selectedRate.price)}</span>
                                     ) : (
-                                        <span className="font-medium text-green-600 uppercase tracking-widest text-[11px]">Free</span>
+                                        <span className="font-medium text-green-700 uppercase tracking-widest text-[11px]">Free</span>
                                     )}
                                 </div>
                                 {selectedRate && (
@@ -656,6 +671,12 @@ export default function CheckoutPage() {
                             <p className="text-[11px] text-neutral-500 text-center mt-3">
                                 Secure payment by Stripe · SSL encrypted
                             </p>
+
+                            <ul className="mwp-trust-list">
+                                <li><Lock className="h-4 w-4" /> <span>Your card details never touch our servers</span></li>
+                                <li><ShieldCheck className="h-4 w-4" /> <span>Lab tested, made in the USA</span></li>
+                                <li><RotateCcw className="h-4 w-4" /> <span>Damaged item? We make it right within 7 days</span></li>
+                            </ul>
                         </div>
                     </div>
                 </div>

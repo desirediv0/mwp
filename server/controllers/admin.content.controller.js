@@ -12,6 +12,76 @@ import slugify from "slugify";
 /**
  * Create a new blog post
  */
+
+// Article details that come with a blog post (multipart forms send them as strings)
+const MAX_FAQ = 30;
+const MAX_REFERENCES = 60;
+const parseJsonField = (value, label) => {
+  if (value === undefined || value === null || value === "") return undefined;
+  if (typeof value !== "string") return value;
+  try {
+    return JSON.parse(value);
+  } catch {
+    throw new ApiError(400, `${label} is not valid`);
+  }
+};
+const cleanText = (v, max) => {
+  if (v === undefined) return undefined;
+  const t = String(v ?? "").trim();
+  return t ? t.slice(0, max) : null;
+};
+
+const articleDetails = (body) => {
+  const data = {
+    writtenBy: cleanText(body.writtenBy, 120),
+    reviewedBy: cleanText(body.reviewedBy, 160),
+    lastUpdatedLabel: cleanText(body.lastUpdatedLabel, 60),
+    mainQuestion: cleanText(body.mainQuestion, 300),
+    disclaimer: cleanText(body.disclaimer, 4000),
+    ctaText: cleanText(body.ctaText, 80),
+    ctaNote: cleanText(body.ctaNote, 400),
+    ctaUrl: cleanText(body.ctaUrl, 400),
+  };
+
+  if (data.ctaUrl && !/^(\/(?!\/)|https:\/\/)/i.test(data.ctaUrl)) {
+    throw new ApiError(400, "The button link must start with / (a page on this site) or https://");
+  }
+  if (data.ctaUrl && !data.ctaText) throw new ApiError(400, "Add the button text for the button link");
+
+  if (body.readingMinutes !== undefined) {
+    const n = parseInt(body.readingMinutes, 10);
+    data.readingMinutes = Number.isFinite(n) && n > 0 && n <= 240 ? n : null;
+  }
+
+  const faq = parseJsonField(body.faq, "FAQ");
+  if (faq !== undefined) {
+    if (!Array.isArray(faq)) throw new ApiError(400, "FAQ must be a list");
+    const items = faq
+      .map((f) => ({ question: String(f?.question || "").trim(), answer: String(f?.answer || "").trim() }))
+      .filter((f) => f.question || f.answer);
+    if (items.length > MAX_FAQ) throw new ApiError(400, `Too many FAQ items (max ${MAX_FAQ})`);
+    if (items.some((f) => !f.question || !f.answer)) throw new ApiError(400, "Every FAQ needs both a question and an answer");
+    data.faq = items.length ? items : null;
+  }
+
+  const references = parseJsonField(body.references, "References");
+  if (references !== undefined) {
+    if (!Array.isArray(references)) throw new ApiError(400, "References must be a list");
+    const items = references.map((r) => String(r || "").trim()).filter(Boolean);
+    if (items.length > MAX_REFERENCES) throw new ApiError(400, `Too many references (max ${MAX_REFERENCES})`);
+    data.references = items.length ? items.map((r) => r.slice(0, 600)) : null;
+  }
+
+  // drop fields that were not sent so a partial update never wipes them
+  Object.keys(data).forEach((k) => data[k] === undefined && delete data[k]);
+  return data;
+};
+
+const customSlug = (value) => {
+  const s = slugify(String(value || ""), { lower: true, strict: true });
+  return s || null;
+};
+
 const createBlogPost = asyncHandler(async (req, res) => {
   const {
     title,
@@ -30,8 +100,9 @@ const createBlogPost = asyncHandler(async (req, res) => {
     throw new ApiError(400, "Title and content are required");
   }
 
-  // Generate slug from title
-  const slug = slugify(title, { lower: true, strict: true });
+  // Slug: the one typed in the form, else generated from the title
+  const slug = customSlug(req.body.slug) || slugify(title, { lower: true, strict: true });
+  const details = articleDetails(req.body);
 
   try {
     // Check if slug already exists
@@ -74,6 +145,7 @@ const createBlogPost = asyncHandler(async (req, res) => {
         metaTitle: metaTitle || title,
         metaDescription: metaDescription || summary,
         keywords,
+        ...details,
         ...(parsedCategories &&
           parsedCategories.length > 0 && {
             categories: {
@@ -150,10 +222,17 @@ const updateBlogPost = asyncHandler(async (req, res) => {
       throw new ApiError(404, "Blog post not found");
     }
 
-    // Generate a new slug only if title has changed
+    const details = articleDetails(req.body);
+
+    // Generate a new slug only if the title or the typed slug changed
     let slug = existingPost.slug;
-    if (title !== existingPost.title) {
+    const typedSlug = customSlug(req.body.slug);
+    if (typedSlug && typedSlug !== existingPost.slug) {
+      slug = typedSlug;
+    } else if (!typedSlug && title !== existingPost.title) {
       slug = slugify(title, { lower: true, strict: true });
+    }
+    if (slug !== existingPost.slug) {
 
       // Check if the new slug already exists on a different post
       const slugExists = await prisma.blogPost.findFirst({
@@ -214,6 +293,7 @@ const updateBlogPost = asyncHandler(async (req, res) => {
         metaTitle: metaTitle || title,
         metaDescription: metaDescription || summary,
         keywords,
+        ...details,
         categories: {
           disconnect: existingPost.categories.map((c) => ({ id: c.id })),
           ...(parsedCategories &&

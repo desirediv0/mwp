@@ -103,10 +103,6 @@ export const useCheckoutGuard = () => {
     const router = useRouter();
 
     const proceedToCheckout = (redirectUrl = "/checkout") => {
-        if (!isAuthenticated) {
-            router.push(`/auth?redirect=${encodeURIComponent(redirectUrl)}`);
-            return false;
-        }
         router.push(redirectUrl);
         return true;
     };

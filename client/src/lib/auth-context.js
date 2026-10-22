@@ -393,6 +393,36 @@ export function AuthProvider({ children }) {
         }
     };
 
+    // Guest checkout: a new email is signed in right away; an existing one is sent a code.
+    const applySession = (u) => {
+        setUser(u);
+        if (typeof window !== "undefined") {
+            document.cookie = `user_session=${encodeURIComponent(
+                JSON.stringify({ isAuthenticated: true, userId: u.id, timestamp: new Date().getTime() })
+            )}; path=/; max-age=86400`;
+        }
+    };
+
+    const guestStart = async ({ email, name, phone }) => {
+        const res = await fetchApi("/users/guest/start", {
+            method: "POST",
+            credentials: "include",
+            body: JSON.stringify({ email, name, phone }),
+        });
+        if (res.data?.user) applySession(res.data.user);
+        return res.data;
+    };
+
+    const guestVerify = async (email, code) => {
+        const res = await fetchApi("/users/guest/verify", {
+            method: "POST",
+            credentials: "include",
+            body: JSON.stringify({ email, code }),
+        });
+        if (res.data?.user) applySession(res.data.user);
+        return res.data;
+    };
+
     const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
 
     const openAuthModal = () => setIsAuthModalOpen(true);
@@ -410,6 +440,8 @@ export function AuthProvider({ children }) {
         logout,
         verifyEmail,
         verifyOtp,
+        guestStart,
+        guestVerify,
         resendVerification,
         forgotPassword,
         resetPassword,

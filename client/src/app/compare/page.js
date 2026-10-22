@@ -243,12 +243,12 @@ export default function ComparePage() {
             <h1 className="mwp-compare-title">
               Find the formula for you.
             </h1>
-            <p className="text-[14px] text-gray-500 mt-2">
+            <p className="text-[14px] text-neutral-600 mt-2">
               Compare {items.length} selected formula{items.length > 1 ? "s" : ""}. Benefits, ingredients and routines at a glance.
             </p>
           </div>
           <div className="mwp-compare-controls flex items-center gap-3">
-            <label className="flex items-center gap-2 text-[12px] font-semibold text-gray-600 cursor-pointer select-none">
+            <label className="flex items-center gap-2 text-[12px] font-semibold text-neutral-600 cursor-pointer select-none">
               <input
                 type="checkbox"
                 checked={onlyDiff}
@@ -259,7 +259,7 @@ export default function ComparePage() {
             </label>
             <button
               onClick={clearCompare}
-              className="inline-flex items-center gap-2 px-4 py-2.5 rounded-lg border border-gray-200 text-gray-600 text-[12px] uppercase tracking-wider font-bold hover:border-neutral-300 hover:text-neutral-800 transition-colors"
+              className="inline-flex items-center gap-2 px-4 py-2.5 rounded-lg border border-[#E6DFC9] text-neutral-600 text-[12px] uppercase tracking-wider font-bold hover:border-neutral-300 hover:text-neutral-800 transition-colors"
             >
               <X className="h-4 w-4" /> Clear All
             </button>
@@ -287,7 +287,7 @@ export default function ComparePage() {
           <div>
           {partialLoad && <div className="mb-3 flex items-center justify-between gap-3 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-950"><span>Some selected formulas could not load.</span><button className="font-semibold underline underline-offset-2" onClick={() => setRetry(r => r + 1)}>Try again</button></div>}
           {products.length > 1 && <p className="md:hidden mb-2 text-xs text-neutral-500">Swipe across to see each formula &rarr;</p>}
-          <div className="mwp-compare-table overflow-x-auto rounded-2xl border border-gray-200" role="region" aria-label="Product comparison table" tabIndex={0}>
+          <div className="mwp-compare-table overflow-x-auto rounded-2xl border border-[#E6DFC9]" role="region" aria-label="Product comparison table" tabIndex={0}>
             <table className="w-full border-collapse" style={{ minWidth: 176 + products.length * 230 }}>
               <caption className="sr-only">Selected formulas compared by price, benefits, daily routine and product details</caption>
               <colgroup>
@@ -299,11 +299,11 @@ export default function ComparePage() {
                 <tr>
                   <Th className="align-bottom"><GitCompareArrows size={20} className="mb-3 text-green-700" /><span>Meet your formulas</span><p className="mt-2 text-[11px] normal-case tracking-normal text-neutral-400">Swipe across to explore.</p></Th>
                   {products.map((p) => (
-                    <td key={p.id} className="mwp-compare-product p-4 align-top border-l border-gray-100" style={{ minWidth: 230 }}>
+                    <td key={p.id} className="mwp-compare-product p-4 align-top border-l border-[#E6DFC9]" style={{ minWidth: 230 }}>
                       <div className="relative">
                         <button
                           onClick={() => removeFromCompare(p.id)}
-                          className="absolute -top-2 -right-2 z-10 w-7 h-7 rounded-full bg-white border border-gray-200 shadow-sm flex items-center justify-center text-gray-400 hover:text-neutral-800 hover:border-neutral-300 transition-colors"
+                          className="absolute -top-2 -right-2 z-10 w-7 h-7 rounded-full bg-white border border-[#E6DFC9] shadow-sm flex items-center justify-center text-neutral-500 hover:text-neutral-800 hover:border-neutral-300 transition-colors"
                           aria-label={"Remove " + p.name + " from comparison"}
                         >
                           <X className="h-3.5 w-3.5" />
@@ -323,11 +323,11 @@ export default function ComparePage() {
                         </Link>
                         <p className="mt-1 text-[11px]" style={{ color: productPalette(p.slug).accent }}>{p.primaryCat}</p>
                         <div className="mt-1.5 flex items-baseline gap-2 flex-wrap">
-                          <span className="text-[16px] font-extrabold text-gray-900">
+                          <span className="text-[16px] font-extrabold text-neutral-900">
                             {p.minPrice != null ? formatCurrency(p.minPrice) : "—"}
                           </span>
                           {p.onSale && (
-                            <span className="text-[12px] text-gray-400 line-through">{formatCurrency(p.maxReg)}</span>
+                            <span className="text-[12px] text-neutral-500 line-through">{formatCurrency(p.maxReg)}</span>
                           )}
                         </div>
                         <button
@@ -350,9 +350,9 @@ export default function ComparePage() {
 
                 <SectionHead columns={products.length + 1}>Pricing</SectionHead>
                 <Row label="Best Price" products={products} onlyDiff={onlyDiff} differs={differs} pick={(p) => p.minPrice}
-                  render={(p) => <span className="text-[15px] font-extrabold text-gray-900">{p.minPrice != null ? formatCurrency(p.minPrice) : "—"}</span>} />
+                  render={(p) => <span className="text-[15px] font-extrabold text-neutral-900">{p.minPrice != null ? formatCurrency(p.minPrice) : "—"}</span>} />
                 <Row label="MRP" products={products} onlyDiff={onlyDiff} differs={differs} pick={(p) => p.maxReg}
-                  render={(p) => p.maxReg ? <span className="text-[13px] text-gray-500 line-through">{formatCurrency(p.maxReg)}</span> : <Dash />} />
+                  render={(p) => p.maxReg ? <span className="text-[13px] text-neutral-600 line-through">{formatCurrency(p.maxReg)}</span> : <Dash />} />
                 <Row label="Discount" products={products} onlyDiff={onlyDiff} differs={differs} pick={(p) => p.discount}
                   render={(p) => p.discount > 0
                     ? <span className="inline-block bg-neutral-900 text-white text-[11px] font-extrabold px-2 py-0.5 rounded">−{p.discount}%</span>
@@ -360,17 +360,17 @@ export default function ComparePage() {
 
                 <SectionHead columns={products.length + 1}>Quick Compare</SectionHead>
                 <Row label="Best For" products={products} onlyDiff={onlyDiff} differs={differs} pick={(p) => p.bestFor || p.primaryCat}
-                  render={(p) => <span className="text-[13px] font-semibold text-gray-800">{p.bestFor || p.primaryCat || "—"}</span>} />
+                  render={(p) => <span className="text-[13px] font-semibold text-neutral-900">{p.bestFor || p.primaryCat || "—"}</span>} />
                 <Row label="Main Benefits" products={products} onlyDiff={onlyDiff} differs={differs} pick={(p) => p.mainBenefits || p.description}
-                  render={(p) => <p className="text-[12.5px] text-gray-600 leading-relaxed">{p.mainBenefits || p.description || "—"}</p>} />
+                  render={(p) => <p className="text-[12.5px] text-neutral-600 leading-relaxed">{p.mainBenefits || p.description || "—"}</p>} />
                 <Row label="For" products={products} onlyDiff={onlyDiff} differs={differs} pick={(p) => p.gender}
-                  render={(p) => <span className="text-[13px] font-semibold text-gray-800">{p.gender}</span>} />
+                  render={(p) => <span className="text-[13px] font-semibold text-neutral-900">{p.gender}</span>} />
                 <Row label="Form" products={products} onlyDiff={onlyDiff} differs={differs} pick={(p) => p.dosageForm}
-                  render={(p) => <span className="text-[13px] font-semibold text-gray-800">{p.dosageForm || "—"}</span>} />
+                  render={(p) => <span className="text-[13px] font-semibold text-neutral-900">{p.dosageForm || "—"}</span>} />
                 <Row label="Serving Size" products={products} onlyDiff={onlyDiff} differs={differs} pick={(p) => p.servingSize}
-                  render={(p) => <span className="text-[13px] font-semibold text-gray-800">{p.servingSize || "—"}</span>} />
+                  render={(p) => <span className="text-[13px] font-semibold text-neutral-900">{p.servingSize || "—"}</span>} />
                 <Row label="When To Take" products={products} onlyDiff={onlyDiff} differs={differs} pick={(p) => p.whenToTake}
-                  render={(p) => <p className="text-[12.5px] text-gray-600 leading-relaxed">{p.whenToTake || "—"}</p>} />
+                  render={(p) => <p className="text-[12.5px] text-neutral-600 leading-relaxed">{p.whenToTake || "—"}</p>} />
                 <Row label="Ingredients & amounts" products={products} onlyDiff={onlyDiff} differs={differs} pick={(p) => p.ingredientItems}
                   render={(p) => p.ingredientItems.length ? <ul className="space-y-2">{p.ingredientItems.map(item => <li key={item.name} className="text-[12px] text-neutral-700">{item.name}<span className="mt-0.5 block text-[11px] text-neutral-400">{item.amount}</span></li>)}</ul> : <Dash />} />
                 <Row label="Pack Options" products={products} onlyDiff={onlyDiff} differs={differs}
@@ -379,13 +379,13 @@ export default function ComparePage() {
 
                 <SectionHead columns={products.length + 1}>Classification</SectionHead>
                 <Row label="Primary Category" products={products} onlyDiff={onlyDiff} differs={differs} pick={(p) => p.primaryCat}
-                  render={(p) => <span className="text-[13px] font-semibold text-gray-800">{p.primaryCat}</span>} />
+                  render={(p) => <span className="text-[13px] font-semibold text-neutral-900">{p.primaryCat}</span>} />
                 <Row label="Also In" products={products} onlyDiff={onlyDiff} differs={differs} pick={(p) => p.otherCats}
                   render={(p) => p.otherCats.length ? <ChipList items={p.otherCats} /> : <Dash />} />
                 <Row label="Sub-Categories" products={products} onlyDiff={onlyDiff} differs={differs} pick={(p) => p.subCats}
-                  render={(p) => p.subCats.length ? <ChipList items={p.subCats} /> : <span className="text-[12px] text-gray-400">None</span>} />
+                  render={(p) => p.subCats.length ? <ChipList items={p.subCats} /> : <span className="text-[12px] text-neutral-500">None</span>} />
                 <Row label="Brand" products={products} onlyDiff={onlyDiff} differs={differs} pick={(p) => p.brand}
-                  render={(p) => p.brand ? <span className="text-[13px] font-semibold text-gray-800">{p.brand}</span> : <Dash />} />
+                  render={(p) => p.brand ? <span className="text-[13px] font-semibold text-neutral-900">{p.brand}</span> : <Dash />} />
                 <Row label="MWP Original" products={products} onlyDiff={onlyDiff} differs={differs} pick={(p) => p.ourProduct}
                   render={(p) => p.ourProduct ? <YesTag /> : <NoTag />} />
 
@@ -396,27 +396,27 @@ export default function ComparePage() {
                   render={(p) => p.attributeOptions.length ? (
                     <ul className="space-y-1.5">
                       {p.attributeOptions.map((a) => (
-                        <li key={a.name} className="text-[12px] text-gray-700">
+                        <li key={a.name} className="text-[12px] text-neutral-600">
                           <span className="font-bold">{a.name}:</span>{" "}
-                          <span className="text-gray-600">{a.values.join(", ")}</span>
+                          <span className="text-neutral-600">{a.values.join(", ")}</span>
                         </li>
                       ))}
                     </ul>
-                  ) : <span className="text-[12px] text-gray-400">No options — single SKU</span>} />
+                  ) : <span className="text-[12px] text-neutral-500">No options — single SKU</span>} />
                 <Row label="Variant Pricing" products={products} onlyDiff={onlyDiff} differs={differs}
                   pick={(p) => p.variants.map((v) => [v.label, v.salePrice ?? v.price])}
                   render={(p) => p.variants.length ? (
                     <ul className="space-y-1.5">
                       {p.variants.map((v) => (
-                        <li key={v.id} className="text-[12px] text-gray-700">
+                        <li key={v.id} className="text-[12px] text-neutral-600">
                           <span className="font-semibold">{v.label}</span>
-                          <span className="text-gray-500">
+                          <span className="text-neutral-600">
                             {" "}— {formatCurrency(v.salePrice ?? v.price)}
                             {v.salePrice && v.price && v.salePrice < v.price && (
-                              <span className="line-through text-gray-400 ml-1">{formatCurrency(v.price)}</span>
+                              <span className="line-through text-neutral-500 ml-1">{formatCurrency(v.price)}</span>
                             )}
                           </span>
-                          <span className={cn("ml-1.5 text-[10px] font-bold uppercase", v.stock > 0 ? "text-emerald-600" : "text-neutral-800")}>
+                          <span className={cn("ml-1.5 text-[10px] font-bold uppercase", v.stock > 0 ? "text-green-700" : "text-neutral-800")}>
                             {v.stock > 0 ? "in stock" : "sold out"}
                           </span>
                         </li>
@@ -427,7 +427,7 @@ export default function ComparePage() {
                 <SectionHead columns={products.length + 1}>Availability</SectionHead>
                 <Row label="Stock" products={products} onlyDiff={onlyDiff} differs={differs} pick={(p) => p.inStock}
                   render={(p) => p.inStock
-                    ? <span className="inline-flex items-center gap-1.5 text-[12px] font-bold text-emerald-600"><Check className="h-4 w-4" /> In Stock ({p.stock})</span>
+                    ? <span className="inline-flex items-center gap-1.5 text-[12px] font-bold text-green-700"><Check className="h-4 w-4" /> In Stock ({p.stock})</span>
                     : <span className="text-[12px] font-bold text-neutral-800">Out of Stock</span>} />
                 <Row label="Rating" products={products} onlyDiff={onlyDiff} differs={differs} pick={(p) => p.rating}
                   render={(p) => (
@@ -437,7 +437,7 @@ export default function ComparePage() {
                           <Star key={i} className={cn("h-3.5 w-3.5", i <= Math.round(p.rating) ? "fill-amber-400 text-amber-400" : "fill-gray-200 text-gray-200")} />
                         ))}
                       </span>
-                      <span className="text-[12px] text-gray-500">
+                      <span className="text-[12px] text-neutral-600">
                         {p.rating > 0 ? p.rating.toFixed(1) : "New"}{p.reviews > 0 ? ` (${p.reviews})` : ""}
                       </span>
                     </span>
@@ -445,10 +445,10 @@ export default function ComparePage() {
 
                 <SectionHead columns={products.length + 1}>Product Details</SectionHead>
                 <Row label="Overview" products={products} onlyDiff={onlyDiff} differs={differs} pick={(p) => p.description}
-                  render={(p) => <p className="text-[12.5px] text-gray-600 leading-relaxed">{p.description || "—"}</p>} />
+                  render={(p) => <p className="text-[12.5px] text-neutral-600 leading-relaxed">{p.description || "—"}</p>} />
                 {DETAIL_SECTIONS.filter(({ key }) => products.some((p) => p.sections[key])).map(({ key, label }) => (
                   <Row key={key} label={label} products={products} onlyDiff={onlyDiff} differs={differs} pick={(p) => p.sections[key]}
-                    render={(p) => <p className="text-[12.5px] text-gray-600 leading-relaxed line-clamp-6">{p.sections[key] || "—"}</p>} />
+                    render={(p) => <p className="text-[12.5px] text-neutral-600 leading-relaxed line-clamp-6">{p.sections[key] || "—"}</p>} />
                 ))}
                 {products.some((p) => p.notes.length > 0) && (
                   <Row label="Key Notes" products={products} onlyDiff={onlyDiff} differs={differs} pick={(p) => p.notes}
@@ -458,10 +458,10 @@ export default function ComparePage() {
                   render={(p) => p.tags.length ? <ChipList items={p.tags.slice(0, 10)} /> : <Dash />} />
 
                 {/* footer links */}
-                <tr className="border-t border-gray-100">
-                  <th className="p-4 bg-gray-50 sticky left-0 z-10 min-w-[110px] sm:min-w-[176px]" />
+                <tr className="border-t border-[#E6DFC9]">
+                  <th className="p-4 bg-[#FAF8F2] sticky left-0 z-10 min-w-[110px] sm:min-w-[176px]" />
                   {products.map((p) => (
-                    <td key={p.id} className="p-4 border-l border-gray-100">
+                    <td key={p.id} className="p-4 border-l border-[#E6DFC9]">
                       <Link
                         href={`/products/${p.slug}`}
                         className="inline-flex items-center gap-1.5 text-[12px] uppercase tracking-wider font-bold text-neutral-800 hover:text-neutral-900"
@@ -484,7 +484,7 @@ export default function ComparePage() {
 /* ---------- small pieces ---------- */
 function Th({ children, className }) {
   return (
-    <th className={cn("p-3 sm:p-4 text-left text-[11px] uppercase tracking-[0.15em] font-extrabold text-gray-500 bg-gray-50 sticky left-0 z-10 min-w-[110px] w-28 sm:min-w-[176px] sm:w-44", className)}>
+    <th className={cn("p-3 sm:p-4 text-left text-[11px] uppercase tracking-[0.15em] font-extrabold text-neutral-600 bg-[#FAF8F2] sticky left-0 z-10 min-w-[110px] w-28 sm:min-w-[176px] sm:w-44", className)}>
       {children}
     </th>
   );
@@ -493,7 +493,7 @@ function Th({ children, className }) {
 function SectionHead({ children, columns }) {
   return (
     <tr id={"compare-" + String(children).toLowerCase().replace(/[^a-z0-9]+/g, "-")}>
-      <td colSpan={columns} className="bg-gray-900 text-white px-4 py-2.5 text-[11px] uppercase tracking-[0.2em] font-extrabold sticky left-0">
+      <td colSpan={columns} className="bg-neutral-900 text-white px-4 py-2.5 text-[11px] uppercase tracking-[0.2em] font-extrabold sticky left-0">
         {children}
       </td>
     </tr>
@@ -506,12 +506,12 @@ function Row({ label, products, render, pick, onlyDiff, differs }) {
   if (values.every(v => v == null || v === "" || (Array.isArray(v) && v.length === 0))) return null;
   if (onlyDiff && !isDiff) return null;
   return (
-    <tr className={cn("mwp-compare-row border-t border-gray-100", onlyDiff && isDiff && "mwp-compare-difference")}>
-      <th className="p-3 sm:p-4 text-left text-[11px] uppercase tracking-[0.14em] font-extrabold text-gray-500 bg-gray-50 sticky left-0 z-10 align-top min-w-[110px] w-28 sm:min-w-[176px] sm:w-44">
+    <tr className={cn("mwp-compare-row border-t border-[#E6DFC9]", onlyDiff && isDiff && "mwp-compare-difference")}>
+      <th className="p-3 sm:p-4 text-left text-[11px] uppercase tracking-[0.14em] font-extrabold text-neutral-600 bg-[#FAF8F2] sticky left-0 z-10 align-top min-w-[110px] w-28 sm:min-w-[176px] sm:w-44">
         {label}
       </th>
       {products.map((p) => (
-        <td key={p.id} className="p-4 align-top border-l border-gray-100" style={{ minWidth: 230 }}>
+        <td key={p.id} className="p-4 align-top border-l border-[#E6DFC9]" style={{ minWidth: 230 }}>
           {render(p)}
         </td>
       ))}
@@ -519,13 +519,13 @@ function Row({ label, products, render, pick, onlyDiff, differs }) {
   );
 }
 
-const Dash = () => <span className="text-gray-300">—</span>;
+const Dash = () => <span className="text-neutral-500">—</span>;
 
 function ChipList({ items }) {
   return (
     <div className="flex flex-wrap gap-1.5">
       {items.map((t) => (
-        <span key={t} className="text-[10px] uppercase tracking-wide font-semibold bg-gray-100 text-gray-600 px-2 py-0.5 rounded">
+        <span key={t} className="text-[10px] uppercase tracking-wide font-semibold bg-[#F3EEDF] text-neutral-600 px-2 py-0.5 rounded">
           {t}
         </span>
       ))}
@@ -534,12 +534,12 @@ function ChipList({ items }) {
 }
 
 const YesTag = ({ label = "Yes" }) => (
-  <span className="inline-flex items-center gap-1 text-[11px] font-bold uppercase text-emerald-600">
+  <span className="inline-flex items-center gap-1 text-[11px] font-bold uppercase text-green-700">
     <Check className="h-3.5 w-3.5" /> {label}
   </span>
 );
 const NoTag = ({ label = "No" }) => (
-  <span className="inline-flex items-center gap-1 text-[11px] font-bold uppercase text-gray-400">
+  <span className="inline-flex items-center gap-1 text-[11px] font-bold uppercase text-neutral-500">
     <Minus className="h-3.5 w-3.5" /> {label}
   </span>
 );

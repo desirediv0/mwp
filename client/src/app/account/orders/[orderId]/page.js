@@ -32,17 +32,17 @@ const getImageUrl = (image) => {
 };
 
 const statusStyles = {
-  PENDING: "bg-blue-50 text-blue-700 border-blue-200",
-  PROCESSING: "bg-blue-50 text-blue-800 border-blue-200",
-  SHIPPED: "bg-indigo-50 text-indigo-700 border-indigo-200",
+  PENDING: "bg-[#EEF1F8] text-[#12213F] border-[#D6DCEC]",
+  PROCESSING: "bg-[#FBF3DF] text-[#7A5214] border-[#EADFC4]",
+  SHIPPED: "bg-[#E6EBF6] text-[#1B2D52] border-[#CBD5EA]",
   DELIVERED: "bg-green-50 text-green-700 border-green-200",
-  CANCELLED: "bg-neutral-100 text-neutral-900 border-neutral-200",
-  REFUNDED: "bg-purple-50 text-purple-700 border-purple-200",
+  CANCELLED: "bg-[#FBEAEC] text-[#8C0016] border-[#F0C9CE]",
+  REFUNDED: "bg-[#F1F2F4] text-[#4A5470] border-[#DDE0E6]",
 };
 
 const paymentStatusColors = {
   PENDING: "text-blue-600",
-  SUCCESS: "text-green-600",
+  SUCCESS: "text-green-700",
   FAILED: "text-neutral-800",
   REFUNDED: "text-purple-600",
 };
@@ -162,7 +162,7 @@ export default function OrderDetailPage() {
           <p className="text-[12px] text-stone font-light mt-1">Placed on {formatDate(order.createdAt)}</p>
         </div>
         <div className="flex items-center gap-3">
-          <span className={`px-4 py-2 text-[11px] uppercase tracking-[0.2em] font-medium border ${statusStyles[order.status] || "bg-gray-50 text-gray-700 border-gray-200"}`}>
+          <span className={`px-4 py-2 text-[11px] uppercase tracking-[0.2em] font-medium border ${statusStyles[order.status] || "bg-[#FAF8F2] text-neutral-600 border-[#E6DFC9]"}`}>
             {order.status}
           </span>
           {order.status !== "CANCELLED" && order.status !== "DELIVERED" && order.status !== "SHIPPED" && (
@@ -281,7 +281,7 @@ export default function OrderDetailPage() {
                     {/* Savings */}
                     {bundle.savings > 0 && (
                       <div className="ml-6 mt-2">
-                        <span className="text-[11px] text-green-600 font-medium">
+                        <span className="text-[11px] text-green-700 font-medium">
                           You saved {formatCurrency(bundle.savings)} on this bundle
                         </span>
                       </div>
@@ -348,7 +348,7 @@ export default function OrderDetailPage() {
                 <span className="text-noir">{formatCurrency(order.subTotal)}</span>
               </div>
               {order.discount > 0 && (
-                <div className="flex justify-between text-[13px] text-green-600">
+                <div className="flex justify-between text-[13px] text-green-700">
                   <span>Discount</span>
                   <span>-{formatCurrency(order.discount)}</span>
                 </div>

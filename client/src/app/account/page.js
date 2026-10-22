@@ -106,11 +106,11 @@ export default function AccountPage() {
           )}
 
           {/* Profile Information */}
-          <div className="bg-white border border-gray-200">
-            <div className="px-6 py-5 border-b border-gray-200 flex items-center justify-between">
-              <h2 className="text-lg text-gray-900 tracking-tight">Profile Information</h2>
+          <div className="bg-white border border-[#E6DFC9]">
+            <div className="px-6 py-5 border-b border-[#E6DFC9] flex items-center justify-between">
+              <h2 className="text-lg text-neutral-900 tracking-tight">Profile Information</h2>
               {!isEditing && (
-                <button onClick={() => setIsEditing(true)} className="inline-flex items-center gap-2 text-[11px] uppercase tracking-[0.15em] text-neutral-600 hover:text-gray-900 transition-colors">
+                <button onClick={() => setIsEditing(true)} className="inline-flex items-center gap-2 text-[11px] uppercase tracking-[0.15em] text-neutral-600 hover:text-neutral-900 transition-colors">
                   <IconEdit className="h-3.5 w-3.5" stroke={1.5} /> Edit
                 </button>
               )}
@@ -124,20 +124,20 @@ export default function AccountPage() {
                       <label className="block text-[11px] uppercase tracking-[0.2em] text-neutral-600 font-medium mb-2">Full Name</label>
                       <input
                         name="name" type="text" value={formData.name} onChange={handleChange}
-                      className="w-full h-12 px-4 bg-white border border-[#e6ded2] rounded-xl text-gray-900 text-[13px] focus:outline-none focus:border-neutral-900 transition-colors"
+                      className="w-full h-12 px-4 bg-white border border-[#e6ded2] rounded-xl text-neutral-900 text-[13px] focus:outline-none focus:border-neutral-900 transition-colors"
                       />
                     </div>
                     <div>
                       <label className="block text-[11px] uppercase tracking-[0.2em] text-neutral-600 font-medium mb-2">Phone</label>
                       <input
                         name="phone" type="tel" placeholder="(562) 524-3557" value={formatUsPhone(formData.phone)} onChange={handleChange}
-                        className="w-full h-12 px-4 bg-white border border-[#e6ded2] rounded-xl text-gray-900 text-[13px] focus:outline-none focus:border-neutral-900 transition-colors"
+                        className="w-full h-12 px-4 bg-white border border-[#e6ded2] rounded-xl text-neutral-900 text-[13px] focus:outline-none focus:border-neutral-900 transition-colors"
                       />
                     </div>
                   </div>
                   <div className="flex gap-3 justify-end">
                     <button type="button" onClick={() => { setIsEditing(false); setFormData({ name: user?.name || "", phone: user?.phone || "", profileImage: null }); }}
-                      className="px-6 h-10 border border-gray-200 text-neutral-600 text-[11px] uppercase tracking-[0.15em] font-medium hover:border-gray-900 hover:text-gray-900 transition-all duration-300">
+                      className="px-6 h-10 border border-[#E6DFC9] text-neutral-600 text-[11px] uppercase tracking-[0.15em] font-medium hover:border-neutral-900 hover:text-neutral-900 transition-all duration-300">
                       Cancel
                     </button>
                     <button type="submit" disabled={isSubmitting}
@@ -153,25 +153,25 @@ export default function AccountPage() {
                     <span className="flex items-center gap-2 text-[11px] uppercase tracking-[0.2em] text-neutral-600 font-medium mb-1.5">
                       <IconUser className="h-3 w-3" stroke={1.5} /> Full Name
                     </span>
-                    <p className="text-[14px] text-gray-900 font-light">{user?.name || "Not provided"}</p>
+                    <p className="text-[14px] text-neutral-900 font-light">{user?.name || "Not provided"}</p>
                   </div>
                   <div>
                     <span className="flex items-center gap-2 text-[11px] uppercase tracking-[0.2em] text-neutral-600 font-medium mb-1.5">
                       <IconMail className="h-3 w-3" stroke={1.5} /> Email
                     </span>
-                    <p className="text-[14px] text-gray-900 font-light">{user?.email || "Not provided"}</p>
+                    <p className="text-[14px] text-neutral-900 font-light">{user?.email || "Not provided"}</p>
                   </div>
                   <div>
                     <span className="flex items-center gap-2 text-[11px] uppercase tracking-[0.2em] text-neutral-600 font-medium mb-1.5">
                       <IconPhone className="h-3 w-3" stroke={1.5} /> Phone
                     </span>
-                    <p className="text-[14px] text-gray-900 font-light">{user?.phone ? formatUsPhone(user.phone) : "Not provided"}</p>
+                    <p className="text-[14px] text-neutral-900 font-light">{user?.phone ? formatUsPhone(user.phone) : "Not provided"}</p>
                   </div>
                   <div>
                     <span className="flex items-center gap-2 text-[11px] uppercase tracking-[0.2em] text-neutral-600 font-medium mb-1.5">
                       <IconCalendar className="h-3 w-3" stroke={1.5} /> Member Since
                     </span>
-                    <p className="text-[14px] text-gray-900 font-light">{user?.createdAt ? formatDate(user.createdAt) : "Unknown"}</p>
+                    <p className="text-[14px] text-neutral-900 font-light">{user?.createdAt ? formatDate(user.createdAt) : "Unknown"}</p>
                   </div>
                 </div>
               )}
@@ -179,10 +179,10 @@ export default function AccountPage() {
           </div>
 
           {/* Addresses */}
-          <div className="bg-white border border-gray-200">
-            <div className="px-6 py-5 border-b border-gray-200 flex items-center justify-between">
-              <h2 className="text-lg text-gray-900 tracking-tight">Saved Addresses</h2>
-              <Link href="/account/addresses" className="inline-flex items-center gap-2 text-[11px] uppercase tracking-[0.15em] text-neutral-600 hover:text-gray-900 transition-colors">
+          <div className="bg-white border border-[#E6DFC9]">
+            <div className="px-6 py-5 border-b border-[#E6DFC9] flex items-center justify-between">
+              <h2 className="text-lg text-neutral-900 tracking-tight">Saved Addresses</h2>
+              <Link href="/account/addresses" className="inline-flex items-center gap-2 text-[11px] uppercase tracking-[0.15em] text-neutral-600 hover:text-neutral-900 transition-colors">
                 Manage <IconArrowRight className="h-3 w-3" stroke={1.5} />
               </Link>
             </div>
@@ -195,7 +195,7 @@ export default function AccountPage() {
                         {address.isDefault && (
                           <span className="text-[11px] uppercase tracking-[0.2em] text-neutral-800 font-medium bg-neutral-900/10 px-2 py-0.5 mb-2 inline-block">Default</span>
                         )}
-                        <p className="text-[13px] text-gray-900 font-medium">{address.name || user?.name}</p>
+                        <p className="text-[13px] text-neutral-900 font-medium">{address.name || user?.name}</p>
                         <p className="text-[12px] text-neutral-600 font-light mt-0.5">{address.street}, {formatCityLine(address)}</p>
                       </div>
                     </div>
@@ -205,10 +205,10 @@ export default function AccountPage() {
                   )}
                 </div>
               ) : (
-                <div className="text-center py-8 bg-gray-50 border border-gray-200">
+                <div className="text-center py-8 bg-[#FAF8F2] border border-[#E6DFC9]">
                   <IconMapPin className="h-6 w-6 text-neutral-600 mx-auto mb-3" stroke={1.5} />
                   <p className="text-[13px] text-neutral-600 font-light mb-4">No addresses added yet</p>
-                  <Link href="/account/addresses" className="inline-flex items-center gap-2 text-[11px] uppercase tracking-[0.15em] text-gray-900 hover:text-neutral-800 transition-colors font-medium">
+                  <Link href="/account/addresses" className="inline-flex items-center gap-2 text-[11px] uppercase tracking-[0.15em] text-neutral-900 hover:text-neutral-800 transition-colors font-medium">
                     Add Address <IconArrowRight className="h-3 w-3" stroke={1.5} />
                   </Link>
                 </div>
@@ -217,11 +217,11 @@ export default function AccountPage() {
           </div>
 
           {/* Referral Program */}
-          <div className="bg-white border border-gray-200">
-            <div className="px-6 py-5 border-b border-gray-200">
+          <div className="bg-white border border-[#E6DFC9]">
+            <div className="px-6 py-5 border-b border-[#E6DFC9]">
               <div className="flex items-center gap-2">
                 <IconUsers className="h-4 w-4 text-neutral-800" stroke={1.5} />
-                <h2 className="text-lg text-gray-900 tracking-tight">Referral Program</h2>
+                <h2 className="text-lg text-neutral-900 tracking-tight">Referral Program</h2>
               </div>
               <p className="text-[12px] text-neutral-600 font-light mt-1">Share your code with friends and earn rewards</p>
             </div>
@@ -232,13 +232,13 @@ export default function AccountPage() {
                 </div>
               ) : referralCode ? (
                 <>
-                  <div className="p-4 bg-gray-50 border border-gray-200 mb-6">
+                  <div className="p-4 bg-[#FAF8F2] border border-[#E6DFC9] mb-6">
                     <label className="block text-[11px] uppercase tracking-[0.2em] text-neutral-600 font-medium mb-2">Your Referral Code</label>
                     <div className="flex items-center gap-3">
                       <input value={referralCode} readOnly
-                        className="flex-1 h-12 px-4 bg-white border border-gray-200 text-gray-900 text-[14px] tracking-wider focus:outline-none" />
+                        className="flex-1 h-12 px-4 bg-white border border-[#E6DFC9] text-neutral-900 text-[14px] tracking-wider focus:outline-none" />
                       <button onClick={() => { navigator.clipboard.writeText(referralCode); setCopied(true); setTimeout(() => setCopied(false), 2000); }}
-                        className="h-12 px-5 bg-gray-900 text-white text-[11px] uppercase tracking-[0.15em] font-medium flex items-center gap-2 hover:bg-neutral-900 transition-all duration-500">
+                        className="h-12 px-5 bg-neutral-900 text-white text-[11px] uppercase tracking-[0.15em] font-medium flex items-center gap-2 hover:bg-neutral-900 transition-all duration-500">
                         {copied ? <><IconCheck className="h-3.5 w-3.5" stroke={1.5} /> Copied</> : <><IconCopy className="h-3.5 w-3.5" stroke={1.5} /> Copy</>}
                       </button>
                     </div>
@@ -247,12 +247,12 @@ export default function AccountPage() {
                   {referralStats && (
                     <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
                       {[
-                        { label: "Total Referrals", value: referralStats.totalReferrals || 0, color: "text-gray-900" },
-                        { label: "Completed", value: referralStats.completedReferrals || 0, color: "text-green-600" },
+                        { label: "Total Referrals", value: referralStats.totalReferrals || 0, color: "text-neutral-900" },
+                        { label: "Completed", value: referralStats.completedReferrals || 0, color: "text-green-700" },
                         { label: "Pending", value: referralStats.pendingReferrals || 0, color: "text-neutral-800" },
                         { label: "Earnings", value: `$${parseFloat(referralStats.totalEarnings || 0).toFixed(0)}`, color: "text-neutral-800" },
                       ].map((stat) => (
-                        <div key={stat.label} className="p-4 bg-gray-50 border border-gray-200 text-center">
+                        <div key={stat.label} className="p-4 bg-[#FAF8F2] border border-[#E6DFC9] text-center">
                           <p className={`text-2xl ${stat.color}`}>{stat.value}</p>
                           <p className="text-[11px] uppercase tracking-[0.15em] text-neutral-600 mt-1">{stat.label}</p>
                         </div>
@@ -267,13 +267,13 @@ export default function AccountPage() {
           </div>
 
           {/* Security */}
-          <div className="bg-white border border-gray-200">
-            <div className="px-6 py-5 border-b border-gray-200">
-              <h2 className="text-lg text-gray-900 tracking-tight">Security</h2>
+          <div className="bg-white border border-[#E6DFC9]">
+            <div className="px-6 py-5 border-b border-[#E6DFC9]">
+              <h2 className="text-lg text-neutral-900 tracking-tight">Security</h2>
             </div>
             <div className="p-6">
               <Link href="/account/change-password"
-                className="inline-flex items-center gap-2 px-6 h-12 border border-gray-200 text-gray-900 text-[11px] uppercase tracking-[0.15em] font-medium hover:border-neutral-900 hover:text-neutral-800 transition-all duration-500">
+                className="inline-flex items-center gap-2 px-6 h-12 border border-[#E6DFC9] text-neutral-900 text-[11px] uppercase tracking-[0.15em] font-medium hover:border-neutral-900 hover:text-neutral-800 transition-all duration-500">
                 <IconLock className="h-4 w-4" stroke={1.5} /> Change Password
               </Link>
             </div>

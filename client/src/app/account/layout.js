@@ -61,12 +61,13 @@ export default function AccountLayout({ children }) {
       <div className="mwp-account mwp-page min-h-screen bg-white">
 
         {/* Page Header */}
-        <div className="bg-white border-b border-line">
-          <div className="max-w-7xl mx-auto px-5 py-10 md:py-14">
-            <span className="block mb-2 text-sm text-neutral-500">My account</span>
-            <h1 className="mwp-heading">
+        <div className="mwp-account-hero border-b border-line">
+          <div className="relative z-10 max-w-7xl mx-auto px-5 py-9 md:py-12">
+            <span className="block mb-2 text-[11px] uppercase tracking-[0.3em] text-[#E6C26A]">My account</span>
+            <h1 className="text-3xl md:text-4xl font-semibold tracking-tight text-white">
               {user?.name || "Welcome"}
             </h1>
+            {user?.email && <p className="mt-1 text-sm text-[#CDD4E6]">{user.email}</p>}
           </div>
         </div>
 

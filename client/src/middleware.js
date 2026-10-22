@@ -10,7 +10,7 @@ const BYPASS_COOKIE = "mwp_maintenance_bypass";
 const MAINTENANCE_ALLOWED_PATHS = ["/maintenance"];
 
 // Define private routes that require authentication
-const privateRoutes = ["/profile", "/checkout", "/wishlist", "/orders"];
+const privateRoutes = ["/profile", "/wishlist", "/orders"]; // /checkout is open: guests check out with a quick email step;
 
 // Define auth routes that should redirect to dashboard if already logged in
 const authRoutes = [
