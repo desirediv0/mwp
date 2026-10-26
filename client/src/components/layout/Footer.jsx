@@ -61,7 +61,7 @@ export const Footer = () => {
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-[1.2fr_0.85fr_0.95fr_0.85fr_1.2fr] gap-x-10 gap-y-12 xl:gap-x-12">
           <div className="sm:col-span-2 lg:col-span-4 xl:col-span-1">
             <Image
-              src="/mwp-logo-2.png"
+              src="/mwp-logo-3.png"
               alt="MWP SUPPLEMENTS"
               width={160}
               height={64}

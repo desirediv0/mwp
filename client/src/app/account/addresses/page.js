@@ -1,146 +1,107 @@
 "use client";
-import { formatUsPhone, formatCityLine, formatCountry } from "@/lib/us";
 
 import { useState, useEffect } from "react";
-import { fetchApi } from "@/lib/utils";
 import { toast } from "sonner";
+import { IconMapPin, IconPlus, IconLoader2 } from "@tabler/icons-react";
+import { fetchApi } from "@/lib/utils";
+import { formatUsPhone, formatCityLine } from "@/lib/us";
 import AddressForm from "@/components/AddressForm";
-import {
-  IconMapPin,
-  IconPlus,
-  IconEdit,
-  IconTrash,
-  IconHome,
-  IconCheck,
-  IconLoader2,
-} from "@tabler/icons-react";
 
 export default function AddressesPage() {
   const [addresses, setAddresses] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [showAddForm, setShowAddForm] = useState(false);
-  const [editingAddress, setEditingAddress] = useState(null);
-  const [deletingId, setDeletingId] = useState(null);
+  const [adding, setAdding] = useState(false);
+  const [editing, setEditing] = useState(null);
+  const [confirmId, setConfirmId] = useState(null);
+  const [busyId, setBusyId] = useState(null);
 
-  const fetchAddresses = async () => {
-    setLoading(true);
+  const load = async () => {
     try {
-      const response = await fetchApi("/users/addresses", { credentials: "include" });
-      if (response.success) setAddresses(response.data.addresses || []);
-    } catch (error) {
-      toast.error("Failed to load your addresses");
-    } finally { setLoading(false); }
+      const r = await fetchApi("/users/addresses", { credentials: "include" });
+      if (r.success) setAddresses(r.data.addresses || []);
+    } catch {
+      toast.error("We could not load your addresses");
+    } finally {
+      setLoading(false);
+    }
+  };
+  useEffect(() => { load(); }, []);
+
+  const done = () => { setAdding(false); setEditing(null); load(); };
+
+  const remove = async (id) => {
+    setBusyId(id);
+    try {
+      const r = await fetchApi(`/users/addresses/${id}`, { method: "DELETE", credentials: "include" });
+      if (r.success) { toast.success("Address deleted"); setConfirmId(null); load(); }
+    } catch (e) {
+      toast.error(e.message || "Could not delete the address");
+    } finally {
+      setBusyId(null);
+    }
   };
 
-  useEffect(() => { fetchAddresses(); }, []);
-
-  const handleFormSuccess = () => { setShowAddForm(false); setEditingAddress(null); fetchAddresses(); };
-
-  const handleDeleteAddress = async (id) => {
-    if (!confirm("Are you sure you want to delete this address?")) return;
-    setDeletingId(id);
+  const makeDefault = async (id) => {
+    setBusyId(id);
     try {
-      const response = await fetchApi(`/users/addresses/${id}`, { method: "DELETE", credentials: "include" });
-      if (response.success) { toast.success("Address deleted successfully"); fetchAddresses(); }
-    } catch (error) {
-      toast.error(error.message || "Failed to delete address");
-    } finally { setDeletingId(null); }
+      const r = await fetchApi(`/users/addresses/${id}/default`, { method: "PATCH", credentials: "include" });
+      if (r.success) { toast.success("Default address updated"); load(); }
+    } catch (e) {
+      toast.error(e.message || "Could not update the default address");
+    } finally {
+      setBusyId(null);
+    }
   };
 
-  const handleSetDefaultAddress = async (id) => {
-    try {
-      const response = await fetchApi(`/users/addresses/${id}/default`, { method: "PATCH", credentials: "include" });
-      if (response.success) { toast.success("Default address updated"); fetchAddresses(); }
-    } catch (error) { toast.error(error.message || "Failed to set default address"); }
-  };
+  if (loading) return <div className="mwp-spin"><IconLoader2 className="animate-spin" /></div>;
 
-  if (loading && addresses.length === 0) {
-    return (
-      <div className="flex justify-center py-16">
-        <IconLoader2 className="h-6 w-6 animate-spin text-neutral-800" stroke={1.5} />
-      </div>
-    );
-  }
+  const formOpen = adding || editing;
 
   return (
-    <div className="space-y-6">
-
-      {/* Header */}
-      <div className="flex items-center justify-between">
-        <h2 className="text-xl text-neutral-900 tracking-tight">My Addresses</h2>
-        {!showAddForm && !editingAddress && (
-          <button onClick={() => setShowAddForm(true)}
-            className="inline-flex items-center gap-2 px-5 h-10 bg-neutral-900 text-white text-[12px] font-semibold rounded-full hover:bg-neutral-800 transition-colors">
-            <IconPlus className="h-3.5 w-3.5" stroke={1.5} /> Add New
-          </button>
-        )}
-      </div>
-
-      {/* Add Form */}
-      {showAddForm && (
-        <div className="bg-white border border-[#e6ded2] rounded-2xl p-6">
-          <h3 className="text-lg text-neutral-900 tracking-tight mb-4">Add New Address</h3>
-          <AddressForm onSuccess={handleFormSuccess} onCancel={() => setShowAddForm(false)} />
+    <div className="mwp-set-stack">
+      {formOpen ? (
+        <div className="mwp-set-card pad">
+          <h2 className="mwp-card-title">{editing ? "Edit address" : "Add a new address"}</h2>
+          <AddressForm existingAddress={editing || undefined} onSuccess={done} onCancel={() => { setAdding(false); setEditing(null); }} />
         </div>
-      )}
-
-      {/* Edit Form */}
-      {editingAddress && (
-        <div className="bg-white border border-[#e6ded2] rounded-2xl p-6">
-          <h3 className="text-lg text-neutral-900 tracking-tight mb-4">Edit Address</h3>
-          <AddressForm existingAddress={editingAddress} onSuccess={handleFormSuccess} onCancel={() => setEditingAddress(null)} />
+      ) : addresses.length === 0 ? (
+        <div className="mwp-empty">
+          <IconMapPin size={34} stroke={1.3} />
+          <h3>No saved addresses</h3>
+          <p>Save a US delivery address so checkout is one tap faster.</p>
+          <button className="mwp-btn" onClick={() => setAdding(true)}><IconPlus size={16} /> Add address</button>
         </div>
-      )}
-
-      {/* Empty State */}
-      {addresses.length === 0 && !showAddForm && !editingAddress && (
-        <div className="bg-white border border-[#e6ded2] rounded-2xl p-12 text-center">
-          <IconMapPin className="h-8 w-8 text-neutral-600 mx-auto mb-4" stroke={1.2} />
-          <h3 className="text-xl text-neutral-900 mb-2">No Addresses Yet</h3>
-          <p className="text-[13px] text-neutral-600 font-light mb-6">Add a shipping address for your orders</p>
-          <button onClick={() => setShowAddForm(true)}
-            className="inline-flex items-center gap-2 px-6 h-12 bg-neutral-900 text-white text-[12px] font-semibold rounded-full hover:bg-neutral-800 transition-colors">
-            <IconPlus className="h-4 w-4" stroke={1.5} /> Add Address
-          </button>
-        </div>
-      )}
-
-      {/* Address Cards */}
-      {addresses.length > 0 && (
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {addresses.map((address) => (
-            <div key={address.id} className="bg-white border border-[#e6ded2] rounded-2xl p-5 relative">
-              {address.isDefault && (
-                <span className="absolute top-4 right-4 text-[11px] uppercase tracking-[0.12em] text-[#A8741F] font-semibold bg-white border border-[#e6ded2] rounded-full px-2.5 py-1 flex items-center gap-1">
-                  <IconCheck className="h-2.5 w-2.5" stroke={2} /> Default
-                </span>
-              )}
-              <div className="mb-4">
-                <p className="text-[14px] text-neutral-900 font-medium">{address.name}</p>
-                <p className="text-[12px] text-neutral-600 font-light mt-1">{address.street}</p>
-                <p className="text-[12px] text-neutral-600 font-light">{formatCityLine(address)}</p>
-                <p className="text-[12px] text-neutral-600 font-light">{formatCountry(address.country)}</p>
-                {address.phone && <p className="text-[12px] text-neutral-600 font-light mt-1">Phone: {formatUsPhone(address.phone)}</p>}
+      ) : (
+        <>
+          <div className="mwp-set-card">
+            {addresses.map((a) => (
+              <div key={a.id} className="mwp-addr">
+                <div className="mwp-addr-head">
+                  <strong>{a.name}</strong>
+                  {a.isDefault && <span className="mwp-chip s-DELIVERED">Default</span>}
+                </div>
+                <p>{a.street}</p>
+                <p>{formatCityLine(a)}</p>
+                {a.phone && <p>{formatUsPhone(a.phone)}</p>}
+                <div className="mwp-addr-actions">
+                  {confirmId === a.id ? (
+                    <>
+                      <button className="mwp-btn sm" style={{ background: "#b3001b" }} disabled={busyId === a.id} onClick={() => remove(a.id)}>Yes, delete</button>
+                      <button className="mwp-btn ghost sm" onClick={() => setConfirmId(null)}>Keep it</button>
+                    </>
+                  ) : (
+                    <>
+                      <button className="mwp-btn ghost sm" onClick={() => setEditing(a)}>Edit</button>
+                      {!a.isDefault && <button className="mwp-btn ghost sm" disabled={busyId === a.id} onClick={() => makeDefault(a.id)}>Make default</button>}
+                      <button className="mwp-btn ghost sm" onClick={() => setConfirmId(a.id)}>Delete</button>
+                    </>
+                  )}
+                </div>
               </div>
-              <div className="flex gap-2 flex-wrap pt-4 border-t border-[#E6DFC9]">
-                {!address.isDefault && (
-                  <button onClick={() => handleSetDefaultAddress(address.id)}
-                    className="inline-flex items-center gap-1.5 px-3 h-8 border border-[#E6DFC9] text-[11px] uppercase tracking-[0.15em] text-neutral-600 hover:border-neutral-900 hover:text-neutral-900 transition-all duration-300">
-                    <IconHome className="h-3 w-3" stroke={1.5} /> Default
-                  </button>
-                )}
-                <button onClick={() => setEditingAddress(address)}
-                  className="inline-flex items-center gap-1.5 px-3 h-8 border border-[#E6DFC9] text-[11px] uppercase tracking-[0.15em] text-neutral-600 hover:border-neutral-900 hover:text-neutral-900 transition-all duration-300">
-                  <IconEdit className="h-3 w-3" stroke={1.5} /> Edit
-                </button>
-                <button onClick={() => handleDeleteAddress(address.id)} disabled={deletingId === address.id}
-                  className="inline-flex items-center gap-1.5 px-3 h-8 border border-[#E6DFC9] text-[11px] uppercase tracking-[0.15em] text-neutral-600 hover:border-neutral-900 hover:text-neutral-600 transition-all duration-300 disabled:opacity-50">
-                  {deletingId === address.id ? <IconLoader2 className="h-3 w-3 animate-spin" stroke={1.5} /> : <IconTrash className="h-3 w-3" stroke={1.5} />} Delete
-                </button>
-              </div>
-            </div>
-          ))}
-        </div>
+            ))}
+          </div>
+          <button className="mwp-btn ghost block" onClick={() => setAdding(true)}><IconPlus size={16} /> Add a new address</button>
+        </>
       )}
     </div>
   );

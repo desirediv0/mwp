@@ -255,7 +255,7 @@ export default function DashboardLayout() {
         secretAccess: false,
         fragranceQuiz: false,
       });
-    } else if (path.startsWith("/orders") || path.startsWith("/return-requests") || path.startsWith("/coupons")) {
+    } else if (path.startsWith("/orders") || path.startsWith("/subscriptions") || path.startsWith("/return-requests") || path.startsWith("/coupons")) {
       setOpenSections({
         products: false,
         orders: true,
@@ -372,7 +372,7 @@ export default function DashboardLayout() {
             to="/dashboard"
             className="flex items-center gap-2.5 font-semibold text-white text-base"
           >
-            <img src="/mwp-logo-2.png" alt="MWP SUPPLEMENTS" className="h-8 w-auto object-contain" />
+            <img src="/mwp-logo-3.png" alt="MWP SUPPLEMENTS" className="h-8 w-auto object-contain" />
             <div className="flex flex-col">
               <span className="font-extrabold text-xs tracking-wider text-white">MWP ADMIN</span>
               <span className="text-[9px] text-red-400 font-semibold tracking-widest uppercase">MEN | WOMEN | POWER</span>
@@ -509,6 +509,16 @@ export default function DashboardLayout() {
                   {
                     href: "/return-requests",
                     title: t("nav.return_requests"),
+                    icon: <RotateCcw className="h-3 w-3" />,
+                    hasPermission: hasPermissionFor(
+                      admin,
+                      Resource.ORDERS,
+                      Action.READ
+                    ),
+                  },
+                  {
+                    href: "/subscriptions",
+                    title: "Subscriptions",
                     icon: <RotateCcw className="h-3 w-3" />,
                     hasPermission: hasPermissionFor(
                       admin,
@@ -782,7 +792,7 @@ export default function DashboardLayout() {
             className="flex items-center gap-2.5 font-semibold text-white text-base"
             onClick={toggleMobileMenu}
           >
-            <img src="/mwp-logo-2.png" alt="MWP SUPPLEMENTS" className="h-8 w-auto object-contain" />
+            <img src="/mwp-logo-3.png" alt="MWP SUPPLEMENTS" className="h-8 w-auto object-contain" />
             <div className="flex flex-col">
               <span className="font-extrabold text-xs tracking-wider text-white">MWP ADMIN</span>
               <span className="text-[9px] text-red-400 font-semibold tracking-widest uppercase">MEN | WOMEN | POWER</span>
@@ -933,6 +943,16 @@ export default function DashboardLayout() {
                   {
                     href: "/return-requests",
                     title: t("nav.return_requests"),
+                    icon: <RotateCcw className="h-3 w-3" />,
+                    hasPermission: hasPermissionFor(
+                      admin,
+                      Resource.ORDERS,
+                      Action.READ
+                    ),
+                  },
+                  {
+                    href: "/subscriptions",
+                    title: "Subscriptions",
                     icon: <RotateCcw className="h-3 w-3" />,
                     hasPermission: hasPermissionFor(
                       admin,

@@ -5,6 +5,7 @@ import { prisma } from "../config/db.js";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import { checkEmail } from "../utils/emailCheck.js";
+import { cancelAllForUser } from "../utils/subscriptions.js";
 import { normalizeUsPhone, validateUsAddress } from "../utils/usValidation.js";
 import sendEmail from "../utils/sendEmail.js";
 import {
@@ -319,6 +320,8 @@ export const refreshAccessToken = asyncHandler(async (req, res, next) => {
     if (!user) {
       throw new ApiError(401, "Invalid refresh token");
     }
+    if (user.isActive === false) throw new ApiError(401, "This account is no longer active");
+
 
     // Since we're not storing the refresh token in the database anymore,
     // we can't validate it against a stored token
@@ -615,6 +618,7 @@ export const getCurrentUser = asyncHandler(async (req, res, next) => {
     // Remove sensitive data
     const userWithoutPassword = { ...user, hasPassword: !!user.password };
     delete userWithoutPassword.password;
+    if (userWithoutPassword.profileImage) userWithoutPassword.profileImageUrl = getFileUrl(userWithoutPassword.profileImage);
     delete userWithoutPassword.otp;
     delete userWithoutPassword.otpVerifiedExpiry;
 
@@ -640,8 +644,7 @@ export const getCurrentUser = asyncHandler(async (req, res, next) => {
 
 // Update user profile
 export const updateUserProfile = asyncHandler(async (req, res, next) => {
-  const { name, phone } = req.body;
-  let profileImage = null;
+  const { name, phone, removeImage } = req.body;
 
   let usPhone;
   if (phone) {
@@ -649,60 +652,46 @@ export const updateUserProfile = asyncHandler(async (req, res, next) => {
     if (!usPhone) throw new ApiError(400, "Enter a valid US phone number, like (562) 524-3557");
   }
 
-  // Process profile image if provided
+  const cleanName = typeof name === "string" ? name.trim().slice(0, 80) : "";
+  if (name !== undefined && cleanName.length < 2) throw new ApiError(400, "Enter your full name");
+
+  const current = await prisma.user.findUnique({ where: { id: req.user.id }, select: { profileImage: true } });
+  if (!current) throw new ApiError(404, "User not found");
+
+  let profileImage; // undefined = keep, null = remove, string = new key
   if (req.file) {
-    // Get current user to check if there's an existing image to delete
-    const currentUser = await prisma.user.findUnique({
-      where: { id: req.user.id },
-      select: { profileImage: true },
-    });
-
-    // Delete old image if it exists
-    if (currentUser.profileImage) {
-      await deleteFromS3(currentUser.profileImage);
+    if (!["image/jpeg", "image/png", "image/webp", "image/gif"].includes(req.file.mimetype)) {
+      throw new ApiError(400, "Upload a JPG, PNG, WebP or GIF image");
     }
-
-    // Upload new image
-    profileImage = await processAndUploadImage(req.file);
+    if (req.file.size > 5 * 1024 * 1024) throw new ApiError(400, "The photo must be under 5 MB");
+    profileImage = await processAndUploadImage(req.file, "profiles");
+  } else if (removeImage === "true" || removeImage === true) {
+    profileImage = null;
   }
 
-  // Prepare update data
-  const updateData = {
-    ...(name && { name }),
-    ...(usPhone && { phone: usPhone }),
-    ...(profileImage && { profileImage }),
-  };
-
-  // Update user
   const updatedUser = await prisma.user.update({
     where: { id: req.user.id },
-    data: updateData,
+    data: {
+      ...(cleanName && { name: cleanName }),
+      ...(usPhone && { phone: usPhone }),
+      ...(profileImage !== undefined && { profileImage }),
+    },
   });
 
-  // Remove sensitive data
-  const userWithoutPassword = { ...updatedUser };
-  delete userWithoutPassword.password;
-  delete userWithoutPassword.otp;
-
-  // Add full URL for profile image
-  if (userWithoutPassword.profileImage) {
-    userWithoutPassword.profileImageUrl = getFileUrl(
-      userWithoutPassword.profileImage
-    );
+  // the old photo is only removed from storage once the database points elsewhere
+  if (profileImage !== undefined && current.profileImage) {
+    deleteFromS3(current.profileImage).catch((e) => console.error("Old profile photo cleanup failed:", e.message));
   }
 
-  res
-    .status(200)
-    .json(
-      new ApiResponsive(
-        200,
-        { user: userWithoutPassword },
-        "Profile updated successfully"
-      )
-    );
+  const userWithoutPassword = { ...updatedUser, hasPassword: !!updatedUser.password };
+  delete userWithoutPassword.password;
+  delete userWithoutPassword.otp;
+  delete userWithoutPassword.otpVerifiedExpiry;
+  if (userWithoutPassword.profileImage) userWithoutPassword.profileImageUrl = getFileUrl(userWithoutPassword.profileImage);
+
+  return res.status(200).json(new ApiResponsive(200, { user: userWithoutPassword }, "Profile updated successfully"));
 });
 
-// Add address
 export const addUserAddress = asyncHandler(async (req, res, next) => {
   const { name, street, city, state, postalCode, country, phone, isDefault } =
     req.body;
@@ -1534,21 +1523,45 @@ export const confirmAccountDeletion = asyncHandler(async (req, res, next) => {
     throw new ApiError(404, "User not found");
   }
 
-  // Delete user's data
-  // Start a transaction to handle cascading deletes
-  await prisma.$transaction(async (tx) => {
-    // Delete addresses, orders, reviews, etc. if not handled by cascade
-
-    // Delete the profile image if exists
-    if (user.profileImage) {
-      await deleteFromS3(user.profileImage);
+  // Accounts with orders are deactivated and anonymised, not deleted: the order records
+  // must stay on file (tax, refunds, disputes). Accounts with no orders are removed outright.
+  await cancelAllForUser(user.id, "Account deleted");
+  const orderCount = await prisma.order.count({ where: { userId: user.id } });
+  let retired = orderCount > 0;
+  if (!retired) {
+    try {
+      await prisma.user.delete({ where: { id: user.id } });
+    } catch (e) {
+      console.error("Hard delete failed, deactivating instead:", e.message);
+      retired = true;
     }
+  }
+  if (retired) {
+    await prisma.$transaction([
+      prisma.address.deleteMany({ where: { userId: user.id } }),
+      prisma.cartItem.deleteMany({ where: { userId: user.id } }),
+      prisma.wishlistItem.deleteMany({ where: { userId: user.id } }),
+      prisma.user.update({
+        where: { id: user.id },
+        data: {
+          isActive: false,
+          email: `deleted-${user.id}@deleted.invalid`,
+          name: "Deleted user",
+          phone: null,
+          password: null,
+          otp: null,
+          otpVerified: false,
+          otpVerifiedExpiry: null,
+          profileImage: null,
+        },
+      }),
+    ]);
+  }
 
-    // Delete user
-    await tx.user.delete({
-      where: { id: user.id },
-    });
-  });
+  // remove the profile photo from storage too (best effort, the account is already gone)
+  if (user.profileImage) {
+    await deleteFromS3(user.profileImage).catch((e) => console.error("Profile photo cleanup failed:", e.message));
+  }
 
   // Clear cookies
   res.clearCookie("accessToken");

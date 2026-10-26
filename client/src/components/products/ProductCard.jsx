@@ -304,7 +304,7 @@ export const ProductCard = ({ product, viewMode = "grid" }) => {
         src={getAllProductImages[currentImageIndex] || "/placeholder.jpg"}
         alt={product.name}
         fill
-        className="object-contain p-5 drop-shadow-[0_22px_26px_rgba(18,33,63,0.22)] transition-transform duration-500 ease-out group-hover:-translate-y-1.5 group-hover:scale-[1.04] sm:p-7"
+        className="object-contain p-3 drop-shadow-[0_22px_26px_rgba(18,33,63,0.22)] transition-transform duration-500 ease-out group-hover:-translate-y-1 group-hover:scale-[1.05] sm:p-4"
         sizes={sizes}
       />
     </Link>
@@ -342,12 +342,13 @@ export const ProductCard = ({ product, viewMode = "grid" }) => {
   /* ── GRID MODE ── */
   return (
     <article
-      className="group relative flex h-full flex-col overflow-hidden rounded-[1.6rem] border border-[#E6DFC9] bg-white transition-all duration-300 hover:-translate-y-1 hover:border-[#D4A437] hover:shadow-[0_30px_50px_-34px_#12213F88]"
+      className="group relative flex h-full flex-col overflow-hidden rounded-[1.25rem] border border-[#E6DFC9] bg-white transition-all duration-300 hover:-translate-y-1 hover:border-[#D4A437] hover:shadow-[0_28px_44px_-30px_#12213F99]"
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
+      {/* Image first: the product is the card */}
       <div className="relative">
-        {Visual({ className: "aspect-[4/4.4]", sizes: "(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw" })}
+        {Visual({ className: "aspect-[4/5]", sizes: "(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw" })}
         {Badges()}
         {Actions()}
         {isOutOfStock && (
@@ -357,33 +358,36 @@ export const ProductCard = ({ product, viewMode = "grid" }) => {
         )}
       </div>
 
-      <div className="flex flex-1 flex-col p-4 sm:p-5">
-        {categoryName && (
-          <span className="mb-1.5 line-clamp-1 text-[11px] font-semibold uppercase tracking-[0.16em]" style={{ color: tone.accent }}>{categoryName}</span>
-        )}
+      <div className="flex flex-1 flex-col gap-1 px-3.5 pb-3.5 pt-3 sm:px-4 sm:pb-4">
         <Link href={productHref} className="block">
-          <h3 className="text-[17px] font-semibold leading-snug tracking-tight text-[#12213F] transition-colors group-hover:text-[#A8741F] sm:text-[19px]">{product.name}</h3>
+          <h3 className="line-clamp-2 text-[15px] font-semibold leading-snug tracking-tight text-[#12213F] transition-colors group-hover:text-[#A8741F] sm:text-[16px]">{product.name}</h3>
         </Link>
-        {tagline && <p className="mt-1 line-clamp-1 text-[13px] font-medium text-[#4A5470]">{tagline}</p>}
-        {blurb && <p className="mt-2 hidden line-clamp-2 text-[13px] leading-relaxed text-[#5A6275] sm:block">{blurb}</p>}
+        {tagline && <p className="line-clamp-1 text-[12.5px] text-[#5A6275]">{tagline}</p>}
         {hasReviews && (
-          <div className="mt-2.5 flex items-center gap-1.5">
-            <Stars />
-            <span className="text-[12px] text-[#4A5470]">{rating.toFixed(1)} ({reviewCount})</span>
+          <div className="flex items-center gap-1.5">
+            <Stars size={12} />
+            <span className="text-[11.5px] text-[#4A5470]">{rating.toFixed(1)} ({reviewCount})</span>
           </div>
         )}
 
-        <div className="mt-auto pt-4">
+        <div className="mt-auto flex items-end justify-between gap-2 pt-3">
           {PriceBlock()}
-          <div className="mt-3 grid gap-2 sm:grid-cols-[1fr_auto]">
-            {CartButton({ className: "w-full" })}
-            <Link
-              href={productHref}
-              className="hidden min-h-[46px] items-center justify-center rounded-full border border-[#12213F]/20 px-4 text-[13px] font-semibold text-[#12213F] transition-colors hover:border-[#A8741F] hover:text-[#A8741F] sm:inline-flex"
+          {showPrice && (
+            <button
+              type="button"
+              onClick={handleAddToCart}
+              disabled={isAddingToCart || isOutOfStock}
+              aria-label={addedToCart ? "Added to bag" : isOutOfStock ? "Sold out" : `Add ${product.name} to bag`}
+              title={addedToCart ? "Added to bag" : "Add to bag"}
+              className={cn(
+                "grid h-11 w-11 shrink-0 place-items-center rounded-full text-white transition-all active:scale-95",
+                addedToCart ? "bg-[#1F8A4C]" : "bg-[#12213F] hover:bg-[#B3001B]",
+                "disabled:cursor-not-allowed disabled:bg-[#C9CDD8]"
+              )}
             >
-              Details
-            </Link>
-          </div>
+              {isAddingToCart ? <Loader2 className="h-[18px] w-[18px] animate-spin" /> : addedToCart ? <Check className="h-[18px] w-[18px]" /> : <ShoppingBag className="h-[18px] w-[18px]" />}
+            </button>
+          )}
         </div>
       </div>
     </article>

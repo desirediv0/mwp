@@ -37,7 +37,7 @@ export function AuthShell({ eyebrow, title, subtitle, side, backHref, backLabel,
         <div aria-hidden="true" className="pointer-events-none absolute right-10 top-1/3 h-40 w-72 rotate-[-18deg] rounded-full border border-[#E6C26A]/20" />
 
         <Link href="/" className="relative z-10 inline-block" aria-label="MWP Supplements home">
-          <Image src="/mwp-logo-2.png" alt="MWP Supplements" width={200} height={92} className="h-16 w-auto" priority />
+          <Image src="/mwp-logo-3.png" alt="MWP Supplements" width={200} height={71} className="h-16 w-auto" priority />
         </Link>
 
         <div className="relative z-10 max-w-md">
@@ -70,7 +70,7 @@ export function AuthShell({ eyebrow, title, subtitle, side, backHref, backLabel,
         {/* Mobile brand bar */}
         <div className="bg-gradient-to-r from-[#0B1530] to-[#1B2D52] px-5 py-4 lg:hidden">
           <Link href="/" className="inline-block" aria-label="MWP Supplements home">
-            <Image src="/mwp-logo-2.png" alt="MWP Supplements" width={160} height={74} className="h-11 w-auto" priority />
+            <Image src="/mwp-logo-3.png" alt="MWP Supplements" width={160} height={56} className="h-11 w-auto" priority />
           </Link>
         </div>
 

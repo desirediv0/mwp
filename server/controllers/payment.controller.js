@@ -13,6 +13,7 @@ import { processReferralReward } from "./referral.controller.js";
 import { resolveSelectedRate, autoBookLabel, voidLabelForOrder } from "../utils/shipping.js";
 import { getStripeContext, mapStripeCardMethod, refundStripePayment } from "../utils/stripe.js";
 import { validateUsAddress } from "../utils/usValidation.js";
+import { fulfillSubscriptionSession } from "../utils/subscriptions.js";
 
 // -----------------------------------------------------------------------------
 // Payments run on Stripe (Checkout Sessions, USD only). Keys are saved by the admin
@@ -326,7 +327,8 @@ export const stripeWebhook = async (req, res) => {
 
   try {
     if (event.type === "checkout.session.completed" || event.type === "checkout.session.async_payment_succeeded") {
-      await fulfillStripeSession(event.data.object);
+      if (event.data.object.metadata?.kind === "subscription") await fulfillSubscriptionSession(event.data.object);
+      else await fulfillStripeSession(event.data.object);
     } else if (event.type === "checkout.session.expired") {
       await prisma.stripePayment.updateMany({
         where: { sessionId: event.data.object.id, orderId: null, status: "PENDING" },

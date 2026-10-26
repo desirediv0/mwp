@@ -1,429 +1,227 @@
 "use client";
-import { formatUsPhone, formatCityLine, formatCountry } from "@/lib/us";
 
 import { useState, useEffect } from "react";
 import { useAuth } from "@/lib/auth-context";
 import { useRouter, useParams } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
-import { fetchApi, formatCurrency, formatDate } from "@/lib/utils";
 import { toast } from "sonner";
-import {
-  IconLoader2,
-  IconArrowLeft,
-  IconPackage,
-  IconTruck,
-  IconPhone,
-  IconShoppingBag,
-  IconX,
-} from "@tabler/icons-react";
+import { IconLoader2, IconPackage, IconTruck, IconShoppingBag, IconX, IconExternalLink } from "@tabler/icons-react";
+import { fetchApi, formatCurrency, formatDate } from "@/lib/utils";
+import { formatUsPhone, formatCityLine, formatCountry } from "@/lib/us";
 
 const getImageUrl = (image) => {
   if (!image) return "/placeholder.jpg";
-  if (typeof image === "string") {
-    if (image.startsWith("http")) return image;
-    return `https://desirediv-storage.blr1.digitaloceanspaces.com/${image}`;
-  }
-  if (image.url) {
-    if (image.url.startsWith("http")) return image.url;
-    return `https://desirediv-storage.blr1.digitaloceanspaces.com/${image.url}`;
-  }
-  return "/placeholder.jpg";
+  const u = typeof image === "string" ? image : image.url;
+  if (!u) return "/placeholder.jpg";
+  return u.startsWith("http") ? u : `https://desirediv-storage.blr1.digitaloceanspaces.com/${u}`;
 };
 
-const statusStyles = {
-  PENDING: "bg-[#EEF1F8] text-[#12213F] border-[#D6DCEC]",
-  PROCESSING: "bg-[#FBF3DF] text-[#7A5214] border-[#EADFC4]",
-  SHIPPED: "bg-[#E6EBF6] text-[#1B2D52] border-[#CBD5EA]",
-  DELIVERED: "bg-green-50 text-green-700 border-green-200",
-  CANCELLED: "bg-[#FBEAEC] text-[#8C0016] border-[#F0C9CE]",
-  REFUNDED: "bg-[#F1F2F4] text-[#4A5470] border-[#DDE0E6]",
-};
-
-const paymentStatusColors = {
-  PENDING: "text-blue-600",
-  SUCCESS: "text-green-700",
-  FAILED: "text-neutral-800",
-  REFUNDED: "text-purple-600",
-};
+const label = (s) => String(s || "").charAt(0) + String(s || "").slice(1).toLowerCase();
+const CANCEL_REASONS = ["Changed my mind", "Ordered by mistake", "Found a better price", "Delivery takes too long", "Wrong address", "Other"];
 
 export default function OrderDetailPage() {
-  const { isAuthenticated, isLoading: authLoading } = useAuth();
+  const { isAuthenticated } = useAuth();
   const router = useRouter();
-  const params = useParams();
-  const orderId = params.orderId;
+  const { orderId } = useParams();
 
   const [order, setOrder] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [cancelling, setCancelling] = useState(false);
   const [showCancel, setShowCancel] = useState(false);
-  const [cancelReason, setCancelReason] = useState("Changed my mind");
+  const [cancelReason, setCancelReason] = useState(CANCEL_REASONS[0]);
   const [cancelNote, setCancelNote] = useState("");
 
   useEffect(() => {
-    if (!authLoading && !isAuthenticated) {
-      router.push("/auth?redirect=/account/orders");
-      return;
-    }
+    if (!isAuthenticated || !orderId) return;
+    let live = true;
+    setLoading(true);
+    setError("");
+    fetchApi(`/users/orders/${orderId}`, { credentials: "include" })
+      .then((r) => live && (r.success ? setOrder(r.data.order) : setError(r.message || "We could not load this order.")))
+      .catch(() => live && setError("We could not load this order. Please try again."))
+      .finally(() => live && setLoading(false));
+    return () => { live = false; };
+  }, [isAuthenticated, orderId]);
 
-    const fetchOrder = async () => {
-      if (!isAuthenticated || !orderId) return;
-      setLoading(true);
-      setError("");
-      try {
-        const response = await fetchApi(`/users/orders/${orderId}`, { credentials: "include" });
-        if (response.success) {
-          setOrder(response.data.order);
-        } else {
-          setError(response.message || "Failed to load order details.");
-        }
-      } catch (err) {
-        setError("Failed to load order details. Please try again later.");
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchOrder();
-  }, [isAuthenticated, authLoading, orderId, router]);
-
-  const handleCancelOrder = async () => {
-    if (!order || order.status === "CANCELLED" || order.status === "DELIVERED") return;
-
+  const cancelOrder = async () => {
     setCancelling(true);
     try {
-      const response = await fetchApi(`/users/orders/${orderId}/cancel`, {
+      const r = await fetchApi(`/users/orders/${orderId}/cancel`, {
         method: "POST",
         credentials: "include",
         body: JSON.stringify({ reason: cancelNote.trim() ? `${cancelReason}: ${cancelNote.trim()}` : cancelReason }),
       });
-      if (response.success) {
+      if (r.success) {
         toast.success("Order cancelled. Your payment will be refunded to your card.");
         setShowCancel(false);
-        setOrder({ ...order, status: "CANCELLED" });
-      } else {
-        toast.error(response.message || "Failed to cancel order");
-      }
-    } catch (err) {
-      toast.error("Failed to cancel order. Please try again.");
+        setOrder((o) => ({ ...o, status: "CANCELLED" }));
+      } else toast.error(r.message || "Could not cancel the order");
+    } catch {
+      toast.error("Could not cancel the order. Please try again.");
     } finally {
       setCancelling(false);
     }
   };
 
-  if (loading || authLoading) {
+  if (loading) return <div className="mwp-spin"><IconLoader2 className="animate-spin" /></div>;
+
+  if (error || !order) {
     return (
-      <div className="flex flex-col items-center justify-center py-20">
-        <IconLoader2 className="h-6 w-6 animate-spin text-gold mb-4" stroke={1.5} />
-        <p className="text-[13px] text-stone font-light">Loading order details...</p>
+      <div className="mwp-empty">
+        <IconPackage size={34} stroke={1.3} />
+        <h3>{error ? "Could not load this order" : "Order not found"}</h3>
+        <p>{error || "This order does not exist or was removed."}</p>
+        <Link href="/account/orders" className="mwp-btn">Back to orders</Link>
       </div>
     );
   }
 
-  if (error) {
-    return (
-      <div className="bg-white border border-line p-12 text-center">
-        <IconPackage className="h-8 w-8 text-stone mx-auto mb-4" stroke={1.2} />
-        <h3 className="font-display text-xl text-noir mb-2">Error Loading Order</h3>
-        <p className="text-[13px] text-stone font-light mb-6">{error}</p>
-        <button onClick={() => router.push("/account/orders")}
-          className="inline-flex items-center gap-2 px-6 h-10 border border-line text-noir text-[11px] uppercase tracking-[0.15em] font-medium hover:border-gold hover:text-gold transition-all duration-500">
-          <IconArrowLeft className="h-3.5 w-3.5" stroke={1.5} /> Back to Orders
-        </button>
-      </div>
-    );
-  }
-
-  if (!order) {
-    return (
-      <div className="bg-white border border-line p-12 text-center">
-        <IconPackage className="h-8 w-8 text-stone mx-auto mb-4" stroke={1.2} />
-        <h3 className="font-display text-xl text-noir mb-2">Order Not Found</h3>
-        <p className="text-[13px] text-stone font-light mb-6">This order doesn&apos;t exist or has been removed.</p>
-        <button onClick={() => router.push("/account/orders")}
-          className="inline-flex items-center gap-2 px-6 h-10 border border-line text-noir text-[11px] uppercase tracking-[0.15em] font-medium hover:border-gold hover:text-gold transition-all duration-500">
-          <IconArrowLeft className="h-3.5 w-3.5" stroke={1.5} /> Back to Orders
-        </button>
-      </div>
-    );
-  }
+  const canCancel = !["CANCELLED", "DELIVERED", "SHIPPED", "REFUNDED"].includes(order.status);
+  const itemCount = (order.items?.length || 0) + (order.orderBundles?.length || 0);
+  const addr = order.shippingAddress;
 
   return (
-    <div className="space-y-6">
-
-      {/* Header */}
-      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-        <div>
-          <Link href="/account/orders" className="inline-flex items-center gap-2 text-[11px] uppercase tracking-[0.15em] text-stone hover:text-noir transition-colors mb-3">
-            <IconArrowLeft className="h-3.5 w-3.5" stroke={1.5} /> All Orders
-          </Link>
-          <h2 className="font-display text-2xl md:text-3xl text-noir tracking-tight">Order #{order.orderNumber}</h2>
-          <p className="text-[12px] text-stone font-light mt-1">Placed on {formatDate(order.createdAt)}</p>
+    <div className="mwp-set-stack">
+      <div className="mwp-set-card pad">
+        <div className="mwp-order-top">
+          <div>
+            <strong style={{ fontSize: 20 }}>Order #{order.orderNumber}</strong>
+            <p className="mwp-meta">Placed {formatDate(order.createdAt)}</p>
+          </div>
+          <span className={`mwp-chip s-${order.status}`}>{label(order.status)}</span>
         </div>
-        <div className="flex items-center gap-3">
-          <span className={`px-4 py-2 text-[11px] uppercase tracking-[0.2em] font-medium border ${statusStyles[order.status] || "bg-[#FAF8F2] text-neutral-600 border-[#E6DFC9]"}`}>
-            {order.status}
-          </span>
-          {order.status !== "CANCELLED" && order.status !== "DELIVERED" && order.status !== "SHIPPED" && (
-            <button onClick={() => setShowCancel(true)} disabled={cancelling}
-              className="inline-flex items-center gap-2 px-4 h-10 border border-neutral-300 text-neutral-800 text-[11px] uppercase tracking-[0.15em] font-medium hover:bg-neutral-100 transition-all duration-300 disabled:opacity-50">
-              {cancelling ? <IconLoader2 className="h-3.5 w-3.5 animate-spin" stroke={1.5} /> : <IconX className="h-3.5 w-3.5" stroke={1.5} />}
-              Cancel
-            </button>
-          )}
-        </div>
+        {order.status === "CANCELLED" && (
+          <p className="mwp-alert info" style={{ marginTop: 14 }}>
+            This order was cancelled. If you paid by card, the refund goes back to your original payment method, usually within 5 to 7 business days.
+          </p>
+        )}
+        {canCancel && (
+          <button className="mwp-btn ghost sm" style={{ marginTop: 14 }} onClick={() => setShowCancel(true)}>
+            <IconX size={15} /> Cancel order
+          </button>
+        )}
       </div>
 
-      {order.status === "CANCELLED" && (
-        <div className="border border-neutral-200 bg-neutral-50 px-5 py-4 text-[13px] text-neutral-700">
-          This order was cancelled. If you paid by card, the refund goes back to your original payment method, usually within 5–7 business days.
-        </div>
-      )}
-
-      {showCancel && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-4" onClick={() => !cancelling && setShowCancel(false)}>
-          <div className="w-full max-w-md rounded-2xl bg-white p-6 shadow-xl" onClick={(e) => e.stopPropagation()}>
-            <h3 className="text-lg font-semibold text-neutral-900">Cancel order #{order.orderNumber}?</h3>
-            <p className="mt-1 text-[13px] text-neutral-600">Tell us why. Paid orders are refunded to your card automatically.</p>
-            <select value={cancelReason} onChange={(e) => setCancelReason(e.target.value)}
-              className="mt-4 h-11 w-full rounded-lg border border-neutral-300 bg-white px-3 text-[13px]">
-              {["Changed my mind", "Ordered by mistake", "Found a better price", "Delivery takes too long", "Wrong address", "Other"].map((r) => (
-                <option key={r} value={r}>{r}</option>
-              ))}
-            </select>
-            <textarea value={cancelNote} onChange={(e) => setCancelNote(e.target.value)} maxLength={300} rows={3} placeholder="Add a note (optional)"
-              className="mt-3 w-full rounded-lg border border-neutral-300 p-3 text-[13px]" />
-            <div className="mt-5 flex justify-end gap-3">
-              <button onClick={() => setShowCancel(false)} disabled={cancelling}
-                className="h-10 rounded-full border border-neutral-300 px-5 text-[12px] font-medium">Keep order</button>
-              <button onClick={handleCancelOrder} disabled={cancelling}
-                className="inline-flex h-10 items-center gap-2 rounded-full bg-neutral-900 px-5 text-[12px] font-semibold text-white disabled:opacity-50">
-                {cancelling && <IconLoader2 className="h-3.5 w-3.5 animate-spin" stroke={1.5} />} Cancel order
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-
-        {/* Order Items */}
-        <div className="lg:col-span-2 space-y-6">
-          <div className="bg-white border border-line overflow-hidden">
-            <div className="px-6 py-4 border-b border-line">
-              <h3 className="text-[11px] uppercase tracking-[0.2em] text-stone font-medium">
-                Items ({(order.items?.length || 0) + (order.orderBundles?.length || 0)})
-              </h3>
-            </div>
-            <div className="divide-y divide-line">
-              {/* Regular items */}
+      <div className="mwp-order-grid">
+        <div className="mwp-set-stack">
+          <section>
+            <h2 className="mwp-card-title">Items ({itemCount})</h2>
+            <div className="mwp-set-card">
               {order.items?.map((item) => {
-                const productImage = item.productImage || item.productSnapshot?.image || item.variant?.images?.find(image => image.isPrimary) || item.variant?.images?.[0] || item.product?.images?.find(image => image.isPrimary) || item.product?.images?.[0];
+                const img = item.productImage || item.productSnapshot?.image || item.variant?.images?.find((i) => i.isPrimary) || item.variant?.images?.[0] || item.product?.images?.find((i) => i.isPrimary) || item.product?.images?.[0];
+                const name = item.productName || item.product?.name;
                 return (
-                  <div key={item.id} className="p-5 flex gap-4">
-                    <div className="relative w-20 h-20 flex-shrink-0 bg-ivory overflow-hidden">
-                      <Image src={getImageUrl(productImage)} alt={item.productName || item.product?.name || "Product"} fill className="object-contain p-1" />
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <Link href={`/products/${item.product?.slug || "#"}`}
-                        className="text-[13px] text-noir font-medium hover:text-gold transition-colors line-clamp-2">
-                        {item.productName || item.product?.name}
-                      </Link>
-                      {item.variant?.options && item.variant.options.length > 0 && (
-                        <div className="flex flex-wrap gap-1.5 mt-1">
-                          {item.variant.options.map((opt, idx) => (
-                            <span key={idx} className="text-[11px] text-stone bg-ivory px-2 py-0.5">{opt.name}: {opt.value}</span>
-                          ))}
-                        </div>
-                      )}
-                      <div className="flex items-center justify-between mt-2">
-                        <span className="text-[12px] text-stone font-light">Qty: {item.quantity}</span>
-                        <span className="text-[13px] text-noir font-medium">{formatCurrency(item.subtotal)}</span>
-                      </div>
+                  <div key={item.id} className="mwp-item">
+                    <div className="mwp-thumb"><Image src={getImageUrl(img)} alt={name || "Product"} fill sizes="68px" className="object-contain p-1" /></div>
+                    <div className="mwp-item-body">
+                      <Link href={`/products/${item.product?.slug || ""}`}>{name}</Link>
+                      {item.variant?.options?.length > 0 && <p className="mwp-meta">{item.variant.options.map((o) => `${o.name}: ${o.value}`).join(", ")}</p>}
+                      <div className="mwp-line" style={{ marginTop: 6 }}><span>Qty {item.quantity}</span><b>{formatCurrency(item.subtotal)}</b></div>
                     </div>
                   </div>
                 );
               })}
-
-              {/* Bundle items */}
-              {order.orderBundles?.map((bundle) => {
-                const selectedProducts = bundle.selectedProducts || [];
-                return (
-                  <div key={bundle.id} className="p-5">
-                    <div className="flex items-start gap-3 mb-3">
-                      <span className="inline-flex items-center gap-1 bg-[#A958A4]/10 text-[#A958A4] text-[11px] font-bold uppercase tracking-wider px-2 py-0.5 rounded">
-                        <IconShoppingBag className="h-3 w-3" />
-                        Bundle
-                      </span>
-                      <div className="flex-1">
-                        <h4 className="text-[13px] text-noir font-medium">{bundle.bundleName}</h4>
-                      </div>
-                      <div className="text-right">
-                        <p className="text-[13px] text-noir font-medium">{formatCurrency(bundle.bundlePrice)}</p>
-                        {bundle.actualPrice > bundle.bundlePrice && (
-                          <p className="text-[11px] text-stone line-through">{formatCurrency(bundle.actualPrice)}</p>
-                        )}
-                      </div>
+              {order.orderBundles?.map((b) => (
+                <div key={b.id} className="mwp-item">
+                  <div className="mwp-thumb" style={{ display: "grid", placeItems: "center", color: "#a8741f" }}><IconShoppingBag size={24} stroke={1.4} /></div>
+                  <div className="mwp-item-body">
+                    <strong>{b.bundleName}</strong>
+                    <p className="mwp-meta">{(b.selectedProducts || []).map((p) => p.name).join(", ")}</p>
+                    <div className="mwp-line" style={{ marginTop: 6 }}>
+                      <span>{b.savings > 0 ? `You saved ${formatCurrency(b.savings)}` : "Bundle"}</span>
+                      <b>{formatCurrency(b.bundlePrice)}</b>
                     </div>
-                    
-                    {/* Bundle products list */}
-                    <div className="ml-6 space-y-2">
-                      {selectedProducts.map((product, idx) => (
-                        <div key={idx} className="flex items-center gap-3 text-[11px]">
-                          <div className="w-1 h-1 rounded-full bg-stone" />
-                          <span className="text-noir font-medium">{product.name}</span>
-                          <span className="text-stone">{formatCurrency(product.price)}</span>
-                        </div>
-                      ))}
-                    </div>
-
-                    {/* Savings */}
-                    {bundle.savings > 0 && (
-                      <div className="ml-6 mt-2">
-                        <span className="text-[11px] text-green-700 font-medium">
-                          You saved {formatCurrency(bundle.savings)} on this bundle
-                        </span>
-                      </div>
-                    )}
                   </div>
-                );
-              })}
+                </div>
+              ))}
             </div>
-          </div>
+          </section>
 
-          {/* Tracking */}
           {order.tracking && (
-            <div className="bg-white border border-line overflow-hidden">
-              <div className="px-6 py-4 border-b border-line">
-                <h3 className="text-[11px] uppercase tracking-[0.2em] text-stone font-medium">Tracking</h3>
-              </div>
-              <div className="p-6">
-                <div className="flex items-center gap-4 mb-4">
-                  <IconTruck className="h-6 w-6 text-gold" stroke={1.5} />
-                  <div>
-                    <p className="text-[13px] text-noir font-medium">{order.tracking.carrier || order.shippingCarrier || "Carrier"}</p>
-                    <p className="text-[12px] text-stone font-light">#{order.tracking.trackingNumber}</p>
-                  </div>
+            <section>
+              <h2 className="mwp-card-title">Tracking</h2>
+              <div className="mwp-set-card pad">
+                <div className="mwp-order-top">
+                  <span style={{ display: "flex", alignItems: "center", gap: 12 }}>
+                    <span className="mwp-set-ico"><IconTruck size={20} stroke={1.5} /></span>
+                    <span className="mwp-set-txt"><strong>{order.tracking.carrier || order.shippingCarrier || "Carrier"}</strong><small>#{order.tracking.trackingNumber}</small></span>
+                  </span>
                   {order.trackingUrl && (
-                    <a
-                      href={order.trackingUrl}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="ml-auto inline-flex items-center gap-1.5 px-4 h-9 bg-noir text-ivory text-[11px] uppercase tracking-[0.15em] font-medium hover:bg-gold transition-all duration-500"
-                    >
-                      Track package
-                    </a>
+                    <a href={order.trackingUrl} target="_blank" rel="noopener noreferrer" className="mwp-btn sm">Track <IconExternalLink size={14} /></a>
                   )}
                 </div>
-                {order.tracking.updates && order.tracking.updates.length > 0 && (
-                  <div className="border-t border-line pt-4 mt-4 space-y-3">
-                    {order.tracking.updates.map((update, idx) => (
-                      <div key={idx} className="flex gap-3">
-                        <div className="w-2 h-2 mt-1.5 rounded-full bg-gold flex-shrink-0" />
-                        <div>
-                          <p className="text-[12px] text-noir font-medium">{update.status}</p>
-                          <p className="text-[11px] text-stone font-light">{formatDate(update.createdAt)}</p>
-                        </div>
-                      </div>
+                {order.tracking.updates?.length > 0 && (
+                  <ul style={{ marginTop: 16, display: "grid", gap: 10, listStyle: "none", padding: 0 }}>
+                    {order.tracking.updates.map((u, i) => (
+                      <li key={i} className="mwp-meta" style={{ display: "flex", gap: 10 }}>
+                        <span style={{ width: 8, height: 8, marginTop: 6, borderRadius: "50%", background: "#a8741f", flex: "none" }} />
+                        <span><b style={{ color: "#12213f" }}>{u.status}</b><br />{formatDate(u.createdAt)}</span>
+                      </li>
                     ))}
-                  </div>
+                  </ul>
                 )}
               </div>
-            </div>
+            </section>
           )}
         </div>
 
-        {/* Sidebar */}
-        <div className="space-y-6">
+        <div className="mwp-set-stack">
+          <section>
+            <h2 className="mwp-card-title">Summary</h2>
+            <div className="mwp-set-card pad">
+              <div className="mwp-line"><span>Subtotal</span><b>{formatCurrency(order.subTotal)}</b></div>
+              {order.discount > 0 && <div className="mwp-line"><span>Discount</span><b style={{ color: "#1f6b3a" }}>-{formatCurrency(order.discount)}</b></div>}
+              <div className="mwp-line"><span>Shipping</span><b>{order.shippingCost > 0 ? formatCurrency(order.shippingCost) : "Free"}</b></div>
+              {order.tax > 0 && <div className="mwp-line"><span>Tax</span><b>{formatCurrency(order.tax)}</b></div>}
+              <div className="mwp-line total"><span>Total</span><b>{formatCurrency(order.total)}</b></div>
+            </div>
+          </section>
 
-          {/* Summary */}
-          <div className="bg-white border border-line overflow-hidden">
-            <div className="px-6 py-4 border-b border-line">
-              <h3 className="text-[11px] uppercase tracking-[0.2em] text-stone font-medium">Order Summary</h3>
+          <section>
+            <h2 className="mwp-card-title">Payment</h2>
+            <div className="mwp-set-card pad">
+              <div className="mwp-line"><span>Method</span><b>{order.paymentMethod || "Card"}</b></div>
+              <div className="mwp-line"><span>Status</span><span className={`mwp-chip s-${order.paymentStatus}`}>{label(order.paymentStatus) || "N/A"}</span></div>
             </div>
-            <div className="p-6 space-y-3">
-              <div className="flex justify-between text-[13px]">
-                <span className="text-stone font-light">Subtotal</span>
-                <span className="text-noir">{formatCurrency(order.subTotal)}</span>
-              </div>
-              {order.discount > 0 && (
-                <div className="flex justify-between text-[13px] text-green-700">
-                  <span>Discount</span>
-                  <span>-{formatCurrency(order.discount)}</span>
-                </div>
-              )}
-              <div className="flex justify-between text-[13px]">
-                <span className="text-stone font-light">Shipping</span>
-                <span className="text-noir">{order.shippingCost > 0 ? formatCurrency(order.shippingCost) : "Free"}</span>
-              </div>
-              <div className="flex justify-between text-[13px]">
-                <span className="text-stone font-light">Tax</span>
-                <span className="text-noir">{formatCurrency(order.tax)}</span>
-              </div>
-              <div className="border-t border-line pt-3 mt-3 flex justify-between">
-                <span className="text-[13px] text-noir font-medium">Total</span>
-                <span className="font-display text-lg text-[#A8741F]">{formatCurrency(order.total)}</span>
-              </div>
-            </div>
-          </div>
+          </section>
 
-          {/* Payment */}
-          <div className="bg-white border border-line overflow-hidden">
-            <div className="px-6 py-4 border-b border-line">
-              <h3 className="text-[11px] uppercase tracking-[0.2em] text-stone font-medium">Payment</h3>
-            </div>
-            <div className="p-6 space-y-3">
-              <div className="flex justify-between text-[13px]">
-                <span className="text-stone font-light">Method</span>
-                <span className="text-noir font-medium">{order.paymentMethod || "N/A"}</span>
+          {addr && (
+            <section>
+              <h2 className="mwp-card-title">Ships to</h2>
+              <div className="mwp-set-card pad mwp-addr" style={{ padding: 20 }}>
+                <strong>{addr.name}</strong>
+                <p>{addr.street}</p>
+                <p>{formatCityLine(addr)}</p>
+                <p>{formatCountry(addr.country)}</p>
+                {addr.phone && <p>{formatUsPhone(addr.phone)}</p>}
               </div>
-              <div className="flex justify-between text-[13px]">
-                <span className="text-stone font-light">Status</span>
-                <span className={`font-medium ${paymentStatusColors[order.paymentStatus] || "text-stone"}`}>{order.paymentStatus || "N/A"}</span>
-              </div>
-              {order.stripePayment?.paymentIntentId && (
-                <div className="flex justify-between text-[13px]">
-                  <span className="text-stone font-light">Transaction</span>
-                  <span className="text-[11px] text-noir font-mono">{order.stripePayment.paymentIntentId}</span>
-                </div>
-              )}
-            </div>
-          </div>
-
-          {/* Shipping Address */}
-          {order.shippingAddress && (
-            <div className="bg-white border border-line overflow-hidden">
-              <div className="px-6 py-4 border-b border-line">
-                <h3 className="text-[11px] uppercase tracking-[0.2em] text-stone font-medium">Shipping Address</h3>
-              </div>
-              <div className="p-6">
-                <p className="text-[13px] text-noir font-medium">{order.shippingAddress.name}</p>
-                <p className="text-[12px] text-stone font-light mt-1">{order.shippingAddress.street}</p>
-                <p className="text-[12px] text-stone font-light">{formatCityLine(order.shippingAddress)}</p>
-                <p className="text-[12px] text-stone font-light">{formatCountry(order.shippingAddress.country)}</p>
-                {order.shippingAddress.phone && (
-                  <p className="flex items-center gap-1.5 text-[12px] text-stone font-light mt-2">
-                    <IconPhone className="h-3 w-3" stroke={1.5} /> {formatUsPhone(order.shippingAddress.phone)}
-                  </p>
-                )}
-              </div>
-            </div>
+            </section>
           )}
 
-          {/* Actions */}
-          <div className="flex flex-col gap-3">
-            <Link href="/account/orders"
-              className="flex items-center justify-center gap-2 px-6 h-12 border border-line text-noir text-[11px] uppercase tracking-[0.15em] font-medium hover:border-gold hover:text-gold transition-all duration-500">
-              <IconArrowLeft className="h-4 w-4" stroke={1.5} /> Back to Orders
-            </Link>
-            <Link href="/products"
-              className="flex items-center justify-center gap-2 px-6 h-12 bg-noir text-ivory text-[11px] uppercase tracking-[0.15em] font-medium hover:bg-gold transition-all duration-500">
-              <IconShoppingBag className="h-4 w-4" stroke={1.5} /> Continue Shopping
-            </Link>
-          </div>
+          <Link href="/products" className="mwp-btn block">Continue shopping</Link>
         </div>
       </div>
+
+      {showCancel && (
+        <div className="mwp-set-modal" role="dialog" aria-modal="true" aria-label="Cancel order" onClick={(e) => e.target === e.currentTarget && !cancelling && setShowCancel(false)}>
+          <div className="mwp-set-sheet">
+            <div className="mwp-set-sheet-head"><h3>Cancel order #{order.orderNumber}?</h3></div>
+            <p className="mwp-set-sub">Tell us why. Paid orders are refunded to your card automatically.</p>
+            <label className="mwp-field">Reason
+              <select value={cancelReason} onChange={(e) => setCancelReason(e.target.value)}>{CANCEL_REASONS.map((r) => <option key={r}>{r}</option>)}</select>
+            </label>
+            <label className="mwp-field">Note (optional)
+              <textarea value={cancelNote} onChange={(e) => setCancelNote(e.target.value)} maxLength={300} rows={3} />
+            </label>
+            <button className="mwp-set-save danger" onClick={cancelOrder} disabled={cancelling}>
+              {cancelling && <IconLoader2 size={16} className="animate-spin" />} Cancel order
+            </button>
+            <button className="mwp-set-cancel" onClick={() => setShowCancel(false)} disabled={cancelling}>Keep my order</button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

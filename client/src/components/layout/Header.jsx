@@ -203,10 +203,10 @@ export function Navbar() {
               className="flex items-center shrink-0 focus-visible:outline-offset-4"
             >
               <Image
-                src="/mwp-logo-2.png"
+                src="/mwp-logo-3.png"
                 alt="MWP SUPPLEMENTS"
                 width={200}
-                height={72}
+                height={70}
                 className="h-11 sm:h-14 w-auto object-contain"
                 priority
               />
@@ -655,7 +655,7 @@ function MobileMenu({
             <div className="flex items-center justify-between px-6 py-5 border-b border-neutral-100 bg-white">
               <div className="flex items-center">
                 <Image
-                  src="/mwp-logo-2.png"
+                  src="/mwp-logo-3.png"
                   alt="MWP SUPPLEMENTS"
                   width={130}
                   height={50}

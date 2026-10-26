@@ -1,0 +1,16 @@
+/* One-time / subscribe options on the product page */
+.mwp-buy-mode { display: grid; gap: 10px; margin: 0 0 14px; padding: 0; border: 0; }
+.mwp-buy-opt { position: relative; display: flex; align-items: center; gap: 12px; padding: 14px 16px; border: 1px solid #ddd6c0; border-radius: 16px; background: #fff; cursor: pointer; transition: border-color .15s, box-shadow .15s; }
+.mwp-buy-opt:hover { border-color: #a8741f; }
+.mwp-buy-opt.is-on { border-color: #12213f; box-shadow: 0 0 0 3px #12213f14; }
+.mwp-buy-opt input { position: absolute; opacity: 0; pointer-events: none; }
+.mwp-buy-dot { flex: none; width: 18px; height: 18px; border-radius: 50%; border: 2px solid #b9b19a; display: grid; place-items: center; }
+.mwp-buy-opt.is-on .mwp-buy-dot { border-color: #12213f; }
+.mwp-buy-opt.is-on .mwp-buy-dot::after { content: ""; width: 8px; height: 8px; border-radius: 50%; background: #12213f; }
+.mwp-buy-opt:focus-within { outline: 2px solid #12213f; outline-offset: 2px; }
+.mwp-buy-txt { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 1px; }
+.mwp-buy-txt strong { font-size: 14.5px; font-weight: 600; color: #12213f; }
+.mwp-buy-txt strong em { margin-left: 6px; padding: 2px 8px; border-radius: 999px; background: #b3001b; color: #fff; font-size: 11px; font-style: normal; font-weight: 600; letter-spacing: .02em; }
+.mwp-buy-txt small { font-size: 12.5px; color: #5a6275; }
+.mwp-buy-opt > b { flex: none; font-size: 16px; font-weight: 600; color: #12213f; }
+.mwp-buy-opt > b small { font-size: 12px; font-weight: 400; color: #5a6275; }

@@ -107,7 +107,7 @@ export default function BundleDetailPage({ params }) {
         title: bundle.title || "Curated Bundle",
         price: bPrice || aPrice || 0,
         actualPrice: aPrice,
-        banner: bundle.banner || products.find(p => selectedProducts.includes(p.id))?.images?.[0]?.url || "/mwp-logo-2.png",
+        banner: bundle.banner || products.find(p => selectedProducts.includes(p.id))?.images?.[0]?.url || "/mwp-logo-3.png",
         slug: bundle.slug,
         selectedProductDetails: products.filter(p => selectedProducts.includes(p.id)),
       });

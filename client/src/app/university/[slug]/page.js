@@ -91,7 +91,7 @@ export default async function UniversityPostPage({ params }) {
     datePublished: post.createdAt,
     dateModified: post.updatedAt || post.createdAt,
     author: { "@type": "Organization", name: authorName },
-    publisher: { "@type": "Organization", name: "MWP Supplements LLC", logo: { "@type": "ImageObject", url: absoluteUrl("/mwp-logo-2.png") } },
+    publisher: { "@type": "Organization", name: "MWP Supplements LLC", logo: { "@type": "ImageObject", url: absoluteUrl("/mwp-logo-3.png") } },
     mainEntityOfPage: url,
     ...(post.readingMinutes ? { timeRequired: `PT${post.readingMinutes}M` } : {}),
     ...(references.length ? { citation: references } : {}),

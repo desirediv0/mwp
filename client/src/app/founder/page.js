@@ -63,7 +63,7 @@ export default function FounderPage() {
 
           <div className="mx-auto w-full max-w-sm">
             <div className="rounded-[2rem] border border-white/15 bg-white/10 p-6 backdrop-blur-sm">
-              <Image src="/mwp-logo-2.png" alt="MWP Supplements" width={320} height={150} className="mx-auto h-auto w-56" priority />
+              <Image src="/mwp-logo-3.png" alt="MWP Supplements" width={320} height={113} className="mx-auto h-auto w-56" priority />
               <dl className="mt-6 divide-y divide-white/10 text-left">
                 {FACTS.map(([k, v]) => (
                   <div key={k} className="flex items-baseline justify-between gap-4 py-3">

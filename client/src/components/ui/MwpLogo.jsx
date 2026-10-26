@@ -7,10 +7,10 @@ export function MwpLogo({ className = "h-9 w-auto", showTagline = true }) {
   return (
     <div className={`inline-flex items-center ${className}`}>
       <Image
-        src="/mwp-logo-2.png"
+        src="/mwp-logo-3.png"
         alt="MWP SUPPLEMENTS — MEN | WOMEN | POWER"
         width={180}
-        height={72}
+        height={64}
         className="h-full w-auto object-contain"
         priority
       />

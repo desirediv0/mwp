@@ -5,24 +5,9 @@ import { useAuth } from "@/lib/auth-context";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { fetchApi, formatCurrency, formatDate } from "@/lib/utils";
-import {
-  IconPackage,
-  IconLoader2,
-  IconEye,
-  IconChevronLeft,
-  IconChevronRight,
-  IconShoppingBag,
-  IconArrowRight,
-} from "@tabler/icons-react";
+import { IconLoader2, IconChevronLeft, IconChevronRight, IconShoppingBag, IconArrowRight } from "@tabler/icons-react";
 
-const statusStyles = {
-  PENDING: "bg-[#EEF1F8] text-[#12213F] border-[#D6DCEC]",
-  PROCESSING: "bg-[#FBF3DF] text-[#7A5214] border-[#EADFC4]",
-  SHIPPED: "bg-[#E6EBF6] text-[#1B2D52] border-[#CBD5EA]",
-  DELIVERED: "bg-green-50 text-green-700 border-green-200",
-  CANCELLED: "bg-[#FBEAEC] text-[#8C0016] border-[#F0C9CE]",
-  REFUNDED: "bg-[#F1F2F4] text-[#4A5470] border-[#DDE0E6]",
-};
+const label = (s) => String(s || "").charAt(0) + String(s || "").slice(1).toLowerCase();
 
 export default function OrdersPage() {
   const { isAuthenticated } = useAuth();
@@ -32,138 +17,61 @@ export default function OrdersPage() {
   const [pagination, setPagination] = useState({ total: 0, page: 1, limit: 10, pages: 0 });
   const [loadingOrders, setLoadingOrders] = useState(true);
   const [error, setError] = useState("");
-  const page = searchParams.get("page") ? parseInt(searchParams.get("page")) : 1;
+  const page = parseInt(searchParams.get("page"), 10) || 1;
 
   useEffect(() => {
-    const fetchOrders = async () => {
-      if (!isAuthenticated) return;
-      setLoadingOrders(true);
-      setError("");
-      try {
-        const response = await fetchApi(`/payment/orders?page=${page}&limit=10`, { credentials: "include" });
-        setOrders(response.data.orders || []);
-        setPagination(response.data.pagination || { total: 0, page: 1, limit: 10, pages: 0 });
-      } catch (error) {
-        setError("Failed to load your orders. Please try again later.");
-      } finally { setLoadingOrders(false); }
-    };
-    fetchOrders();
+    if (!isAuthenticated) return;
+    let live = true;
+    setLoadingOrders(true);
+    setError("");
+    fetchApi(`/payment/orders?page=${page}&limit=10`, { credentials: "include" })
+      .then((r) => {
+        if (!live) return;
+        setOrders(r.data.orders || []);
+        setPagination(r.data.pagination || { total: 0, page: 1, limit: 10, pages: 0 });
+      })
+      .catch(() => live && setError("We could not load your orders. Please try again."))
+      .finally(() => live && setLoadingOrders(false));
+    return () => { live = false; };
   }, [isAuthenticated, page]);
 
-  const changePage = (newPage) => {
-    if (newPage < 1 || newPage > pagination.pages) return;
-    router.push(`/account/orders?page=${newPage}`);
-  };
+  const go = (n) => n >= 1 && n <= pagination.pages && router.push(`/account/orders?page=${n}`);
+
+  if (loadingOrders) return <div className="mwp-spin"><IconLoader2 className="animate-spin" /></div>;
 
   return (
-    <div className="space-y-6">
+    <div className="mwp-set-stack">
+      {error && <p className="mwp-alert" role="alert">{error}</p>}
 
-      <h2 className="text-xl text-neutral-900 tracking-tight">My Orders</h2>
-
-      {error && (
-        <div className="px-5 py-4 bg-neutral-100 border border-neutral-200 text-neutral-900 text-[13px] font-light">{error}</div>
-      )}
-
-      {/* Recent Order Highlight */}
-      {orders.length > 0 && (
-        <div className="bg-white border border-[#e6ded2] rounded-2xl p-6 md:p-8">
-          <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
-            <div>
-              <span className="text-[11px] uppercase tracking-[0.2em] text-[#A8741F] font-semibold block mb-2">Latest Order</span>
-              <p className="text-xl text-neutral-900 tracking-tight font-semibold">#{orders[0].orderNumber}</p>
-              <p className="text-[12px] text-neutral-600 mt-1">
-                {formatDate(orders[0].date)} &middot; {orders[0].items.length} {orders[0].items.length === 1 ? "item" : "items"} &middot; {formatCurrency(orders[0].total)}
-              </p>
-              <span className={`inline-block mt-2 px-3 py-1 text-[11px] uppercase tracking-[0.2em] font-medium border ${statusStyles[orders[0].status] || "bg-[#FAF8F2] text-neutral-600 border-[#E6DFC9]"}`}>
-                {orders[0].status}
-              </span>
-            </div>
-            <button onClick={() => router.push(`/account/orders/${orders[0].id}`)}
-              className="px-6 h-10 bg-neutral-900 text-white text-[12px] font-semibold rounded-full flex items-center gap-2 hover:bg-neutral-800 transition-colors">
-              <IconEye className="h-3.5 w-3.5" stroke={1.5} /> View Details
-            </button>
-          </div>
-        </div>
-      )}
-
-      {/* Loading */}
-      {loadingOrders ? (
-        <div className="bg-white border border-[#E6DFC9] p-12 flex justify-center">
-          <IconLoader2 className="h-6 w-6 animate-spin text-neutral-800" stroke={1.5} />
-        </div>
-      ) : orders.length === 0 ? (
-        /* Empty State */
-        <div className="bg-white border border-[#E6DFC9] p-12 text-center">
-          <IconShoppingBag className="h-8 w-8 text-neutral-600 mx-auto mb-4" stroke={1.2} />
-          <h3 className="text-xl text-neutral-900 mb-2">No Orders Yet</h3>
-          <p className="text-[13px] text-neutral-600 font-light mb-6">Start shopping to see your orders here</p>
-          <Link href="/products"
-            className="inline-flex items-center gap-2 px-6 h-12 bg-neutral-900 text-white text-[12px] font-semibold rounded-full hover:bg-neutral-800 transition-colors">
-            Browse Collection <IconArrowRight className="h-4 w-4" stroke={1.5} />
-          </Link>
+      {!error && orders.length === 0 ? (
+        <div className="mwp-empty">
+          <IconShoppingBag size={34} stroke={1.3} />
+          <h3>No orders yet</h3>
+          <p>When you place an order it shows up here, with tracking once it ships.</p>
+          <Link href="/products" className="mwp-btn">Shop formulas <IconArrowRight size={16} /></Link>
         </div>
       ) : (
-        /* Orders Table */
-        <div className="bg-white border border-[#E6DFC9] overflow-hidden">
-          <div className="overflow-x-auto">
-            <table className="min-w-full">
-              <thead>
-                <tr className="border-b border-[#E6DFC9]">
-                  <th className="px-6 py-4 text-left text-[11px] uppercase tracking-[0.2em] text-neutral-600 font-medium">Order</th>
-                  <th className="px-6 py-4 text-left text-[11px] uppercase tracking-[0.2em] text-neutral-600 font-medium">Date</th>
-                  <th className="px-6 py-4 text-left text-[11px] uppercase tracking-[0.2em] text-neutral-600 font-medium">Status</th>
-                  <th className="px-6 py-4 text-left text-[11px] uppercase tracking-[0.2em] text-neutral-600 font-medium">Total</th>
-                  <th className="px-6 py-4 text-right text-[11px] uppercase tracking-[0.2em] text-neutral-600 font-medium">Action</th>
-                </tr>
-              </thead>
-              <tbody>
-                {orders.map((order) => (
-                  <tr key={order.id} className="border-b border-[#E6DFC9] last:border-0 hover:bg-[#FAF8F2]/50 cursor-pointer transition-all"
-                    onClick={() => router.push(`/account/orders/${order.id}`)}>
-                    <td className="px-6 py-4">
-                      <p className="text-[13px] text-neutral-900 font-medium">#{order.orderNumber}</p>
-                      <p className="text-[11px] text-neutral-600 font-light">{order.items.length} {order.items.length === 1 ? "item" : "items"}</p>
-                    </td>
-                    <td className="px-6 py-4 text-[13px] text-neutral-600 font-light">{formatDate(order.date)}</td>
-                    <td className="px-6 py-4">
-                      <span className={`px-2.5 py-1 text-[11px] uppercase tracking-[0.15em] font-medium border ${statusStyles[order.status] || "bg-[#FAF8F2] text-neutral-600 border-[#E6DFC9]"}`}>
-                        {order.status}
-                      </span>
-                    </td>
-                    <td className="px-6 py-4">
-                      <p className="text-[13px] text-neutral-900 font-medium">{formatCurrency(order.total)}</p>
-                      {order.discount > 0 && <p className="text-[11px] text-green-700 font-light">Saved {formatCurrency(order.discount)}</p>}
-                    </td>
-                    <td className="px-6 py-4 text-right">
-                      <Link href={`/account/orders/${order.id}`} onClick={(e) => e.stopPropagation()}
-                        className="text-[11px] uppercase tracking-[0.15em] text-neutral-600 hover:text-neutral-800 transition-colors font-medium">
-                        View
-                      </Link>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-
-          {/* Pagination */}
-          {pagination.pages > 1 && (
-            <div className="px-6 py-4 border-t border-[#E6DFC9] flex items-center justify-between">
-              <p className="text-[12px] text-neutral-600 font-light">
-                Page <span className="text-neutral-900 font-medium">{pagination.page}</span> of <span className="text-neutral-900 font-medium">{pagination.pages}</span>
-              </p>
-              <div className="flex gap-2">
-                <button onClick={() => changePage(pagination.page - 1)} disabled={pagination.page === 1}
-                  className="w-9 h-9 flex items-center justify-center border border-[#E6DFC9] text-neutral-600 hover:border-neutral-900 hover:text-neutral-900 disabled:opacity-40 disabled:cursor-not-allowed transition-all duration-300">
-                  <IconChevronLeft className="h-4 w-4" stroke={1.5} />
-                </button>
-                <button onClick={() => changePage(pagination.page + 1)} disabled={pagination.page === pagination.pages}
-                  className="w-9 h-9 flex items-center justify-center border border-[#E6DFC9] text-neutral-600 hover:border-neutral-900 hover:text-neutral-900 disabled:opacity-40 disabled:cursor-not-allowed transition-all duration-300">
-                  <IconChevronRight className="h-4 w-4" stroke={1.5} />
-                </button>
+        <div className="mwp-set-card">
+          {orders.map((o) => (
+            <Link key={o.id} href={`/account/orders/${o.id}`} className="mwp-order">
+              <div className="mwp-order-top">
+                <strong>Order #{o.orderNumber}</strong>
+                <span className={`mwp-chip s-${o.status}`}>{label(o.status)}</span>
               </div>
-            </div>
-          )}
+              <div className="mwp-order-bot">
+                <span>{formatDate(o.date)} &middot; {o.items.length} {o.items.length === 1 ? "item" : "items"}</span>
+                <b>{formatCurrency(o.total)}</b>
+              </div>
+            </Link>
+          ))}
+        </div>
+      )}
+
+      {pagination.pages > 1 && (
+        <div className="mwp-pager">
+          <button onClick={() => go(pagination.page - 1)} disabled={pagination.page === 1} aria-label="Previous page"><IconChevronLeft size={18} /></button>
+          <span>Page {pagination.page} of {pagination.pages}</span>
+          <button onClick={() => go(pagination.page + 1)} disabled={pagination.page === pagination.pages} aria-label="Next page"><IconChevronRight size={18} /></button>
         </div>
       )}
     </div>

@@ -1,285 +1,248 @@
 "use client";
-import { formatUsPhone, formatCityLine, formatCountry } from "@/lib/us";
 
-import { useState, useEffect } from "react";
-import { useAuth } from "@/lib/auth-context";
+import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
-import { ClientOnly } from "@/components/client-only";
-import { fetchApi, formatDate } from "@/lib/utils";
-import { ProtectedRoute } from "@/components/protected-route";
+import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 import {
-  IconUser,
-  IconMail,
-  IconPhone,
-  IconCalendar,
-  IconEdit,
-  IconCheck,
-  IconX,
-  IconMapPin,
-  IconLock,
-  IconUsers,
-  IconCopy,
-  IconLoader2,
-  IconArrowRight,
-  IconCoin,
-  IconFlask
+  IconUser, IconRepeat, IconMail, IconLock, IconMapPin, IconPackage, IconRefresh, IconHeart, IconTruckDelivery,
+  IconShieldCheck, IconFileText, IconHelp, IconLogout, IconTrash, IconChevronRight, IconCamera, IconAlertTriangle,
+  IconLoader2, IconX, IconCheck, IconCertificate,
 } from "@tabler/icons-react";
+import { useAuth } from "@/lib/auth-context";
+import { fetchApi } from "@/lib/utils";
+import { formatUsPhone } from "@/lib/us";
+import { ProtectedRoute } from "@/components/protected-route";
+import { ClientOnly } from "@/components/client-only";
+import "./settings.css";
+
+function Row({ icon: Icon, title, sub, href, onClick, danger, right }) {
+  const body = (
+    <>
+      <span className="mwp-set-ico"><Icon size={20} stroke={1.5} /></span>
+      <span className="mwp-set-txt">
+        <strong>{title}</strong>
+        {sub ? <small>{sub}</small> : null}
+      </span>
+      {right || <IconChevronRight size={18} stroke={1.5} className="mwp-set-chev" />}
+    </>
+  );
+  const cls = `mwp-set-row${danger ? " danger" : ""}`;
+  return href ? <Link href={href} className={cls}>{body}</Link> : <button type="button" onClick={onClick} className={cls}>{body}</button>;
+}
+
+const Group = ({ title, children }) => (
+  <section className="mwp-set-group">
+    {title && <h2>{title}</h2>}
+    <div className="mwp-set-card">{children}</div>
+  </section>
+);
 
 export default function AccountPage() {
-  const { user, updateProfile } = useAuth();
-  const [isEditing, setIsEditing] = useState(false);
-  const [formData, setFormData] = useState({ name: "", phone: "", profileImage: null });
-  const [addresses, setAddresses] = useState([]);
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [message, setMessage] = useState({ type: "", text: "" });
-  const [referralCode, setReferralCode] = useState("");
-  const [referralStats, setReferralStats] = useState(null);
-  const [isLoadingReferral, setIsLoadingReferral] = useState(false);
-  const [copied, setCopied] = useState(false);
+  const { user, logout, updateProfile } = useAuth();
+  const router = useRouter();
+  const fileRef = useRef(null);
+  const [editing, setEditing] = useState(false);
+  const [form, setForm] = useState({ name: "", phone: "" });
+  const [saving, setSaving] = useState(false);
+  const [formError, setFormError] = useState("");
+  const [uploading, setUploading] = useState(false);
+  const [verifying, setVerifying] = useState(false);
+  const [counts, setCounts] = useState({ addresses: null, orders: null });
+  const [imgFailed, setImgFailed] = useState(false);
+  const [confirmDelete, setConfirmDelete] = useState(false);
 
   useEffect(() => {
-    if (user) setFormData({ name: user.name || "", phone: user.phone || "", profileImage: null });
+    if (!user) return;
+    setForm({ name: user.name || "", phone: user.phone ? formatUsPhone(user.phone) : "" });
   }, [user]);
 
   useEffect(() => {
-    const fetchAddresses = async () => {
-      if (!user) return;
-      try {
-        const response = await fetchApi("/users/addresses", { credentials: "include" });
-        setAddresses(response.data.addresses || []);
-      } catch (error) { console.error("Failed to fetch addresses:", error); }
-    };
-    fetchAddresses();
-  }, [user]);
+    if (!user) return;
+    fetchApi("/users/addresses", { credentials: "include" }).then((r) => setCounts((c) => ({ ...c, addresses: (r.data.addresses || []).length }))).catch(() => {});
+    fetchApi("/users/orders?limit=1", { credentials: "include" }).then((r) => setCounts((c) => ({ ...c, orders: r.data.pagination?.total ?? 0 }))).catch(() => {});
+  }, [user?.id]);
 
-  useEffect(() => {
-    const fetchReferralData = async () => {
-      if (!user) return;
-      try {
-        setIsLoadingReferral(true);
-        const response = await fetchApi("/referrals/my-code", { credentials: "include" });
-        if (response.success) {
-          setReferralCode(response.data.referralCode);
-          setReferralStats(response.data.stats);
-        }
-      } catch (error) { console.error("Failed to fetch referral data:", error); }
-      finally { setIsLoadingReferral(false); }
-    };
-    fetchReferralData();
-  }, [user]);
+  const photo = !imgFailed && (user?.profileImageUrl || user?.profileImage);
+  const initials = (user?.name || user?.email || "U").trim().charAt(0).toUpperCase();
+  const emailVerified = user?.otpVerified !== false;
+  const noPassword = user?.hasPassword === false;
 
-  const handleChange = (e) => {
-    const { name, value, files } = e.target;
-    if (name === "profileImage" && files.length > 0) {
-      setFormData((prev) => ({ ...prev, profileImage: files[0] }));
-    } else {
-      setFormData((prev) => ({ ...prev, [name]: value }));
+  const save = async (e) => {
+    e.preventDefault();
+    setFormError("");
+    const name = form.name.trim();
+    if (name.length < 2) return setFormError("Enter your full name");
+    setSaving(true);
+    try {
+      await updateProfile({ name, phone: form.phone.trim() });
+      setEditing(false);
+      toast.success("Profile updated");
+    } catch (err) {
+      setFormError(err.message || "Could not save. Try again.");
+    } finally {
+      setSaving(false);
     }
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setIsSubmitting(true);
-    setMessage({ type: "", text: "" });
+  const onPhoto = async (e) => {
+    const file = e.target.files?.[0];
+    e.target.value = "";
+    if (!file) return;
+    if (!file.type.startsWith("image/") || file.size > 5 * 1024 * 1024) return toast.error("Choose an image under 5 MB");
+    setUploading(true);
     try {
-      await updateProfile(formData);
-      setIsEditing(false);
-      setMessage({ type: "success", text: "Profile updated successfully" });
-    } catch (error) {
-      setMessage({ type: "error", text: error.message || "Failed to update profile" });
-    } finally { setIsSubmitting(false); }
+      await updateProfile({ name: user.name || "", profileImage: file });
+      setImgFailed(false);
+      toast.success("Photo updated");
+    } catch (err) {
+      toast.error(err.message || "Could not upload the photo");
+    } finally {
+      setUploading(false);
+    }
+  };
+
+  const removePhoto = async () => {
+    setUploading(true);
+    try {
+      await updateProfile({ removeImage: true });
+      toast.success("Photo removed");
+    } catch (err) {
+      toast.error(err.message || "Could not remove the photo");
+    } finally {
+      setUploading(false);
+    }
+  };
+
+  const verifyEmail = async () => {
+    setVerifying(true);
+    try {
+      await fetchApi("/users/resend-verification", { method: "POST", body: JSON.stringify({ email: user.email }) });
+      router.push(`/verify-otp?email=${encodeURIComponent(user.email)}`);
+    } catch (err) {
+      toast.error(err.message || "Could not send the code. Try again in a minute.");
+      setVerifying(false);
+    }
+  };
+
+  const requestDelete = async () => {
+    try {
+      await fetchApi("/users/request-account-deletion", { method: "POST", credentials: "include" });
+      setConfirmDelete(false);
+      toast.success("Check your email for a link to confirm deleting your account.");
+    } catch (err) {
+      toast.error(err.message || "Could not start account deletion");
+    }
+  };
+
+  const signOut = async () => {
+    await logout();
+    router.push("/");
   };
 
   return (
     <ProtectedRoute>
       <ClientOnly>
-        <div className="space-y-8">
+        <div>
+          <h1 className="mwp-set-title">Settings</h1>
 
-          {/* Message */}
-          {message.text && (
-            <div className={`px-5 py-4 flex items-center gap-3 text-[13px] font-light ${
-              message.type === "success" ? "bg-green-50 text-green-700 border border-green-200" : "bg-neutral-100 text-neutral-900 border border-neutral-200"
-            }`}>
-              {message.type === "success" ? <IconCheck className="h-4 w-4 flex-shrink-0" stroke={2} /> : <IconX className="h-4 w-4 flex-shrink-0" stroke={2} />}
-              {message.text}
+          <div className="mwp-set-profile">
+            <button type="button" className="mwp-set-avatar" onClick={() => fileRef.current?.click()} aria-label="Change profile photo" disabled={uploading}>
+              {photo ? <img src={photo} alt="" onError={() => setImgFailed(true)} /> : <span>{initials}</span>}
+              <i>{uploading ? <IconLoader2 size={14} className="animate-spin" /> : <IconCamera size={14} />}</i>
+            </button>
+            <input ref={fileRef} type="file" accept="image/*" hidden onChange={onPhoto} />
+            <div className="mwp-set-id">
+              <strong>{user?.name || "Add your name"}</strong>
+              <span>{user?.phone ? formatUsPhone(user.phone) : "Add a phone number"}</span>
+              <span className="mwp-set-mail">{user?.email}</span>
             </div>
+            <button type="button" className="mwp-set-edit" onClick={() => setEditing(true)}>Edit</button>
+          </div>
+
+          {!emailVerified && (
+            <button type="button" className="mwp-set-verify" onClick={verifyEmail} disabled={verifying}>
+              <IconAlertTriangle size={22} stroke={1.6} />
+              <span><strong>Verify your email</strong><small>For added security and order updates</small></span>
+              {verifying ? <IconLoader2 size={18} className="animate-spin" /> : <IconChevronRight size={18} />}
+            </button>
           )}
 
-          {/* Profile Information */}
-          <div className="bg-white border border-[#E6DFC9]">
-            <div className="px-6 py-5 border-b border-[#E6DFC9] flex items-center justify-between">
-              <h2 className="text-lg text-neutral-900 tracking-tight">Profile Information</h2>
-              {!isEditing && (
-                <button onClick={() => setIsEditing(true)} className="inline-flex items-center gap-2 text-[11px] uppercase tracking-[0.15em] text-neutral-600 hover:text-neutral-900 transition-colors">
-                  <IconEdit className="h-3.5 w-3.5" stroke={1.5} /> Edit
-                </button>
-              )}
-            </div>
+          <Group title="Account">
+            <Row icon={IconUser} title="Personal info" sub="Name and phone number" onClick={() => setEditing(true)} />
+            <Row
+              icon={IconMail}
+              title="Email"
+              sub={user?.email}
+              right={<span className={`mwp-set-pill ${emailVerified ? "ok" : "warn"}`}>{emailVerified ? "Verified" : "Not verified"}</span>}
+              onClick={emailVerified ? () => toast.info("Contact support to change your email address") : verifyEmail}
+            />
+            <Row
+              icon={IconLock}
+              title={noPassword ? "Set a password" : "Password"}
+              sub={noPassword ? "You checked out as a guest and have no password yet" : "Change your password"}
+              href="/account/change-password"
+            />
+          </Group>
 
-            <div className="p-6">
-              {isEditing ? (
-                <form onSubmit={handleSubmit} className="space-y-5">
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
-                    <div>
-                      <label className="block text-[11px] uppercase tracking-[0.2em] text-neutral-600 font-medium mb-2">Full Name</label>
-                      <input
-                        name="name" type="text" value={formData.name} onChange={handleChange}
-                      className="w-full h-12 px-4 bg-white border border-[#e6ded2] rounded-xl text-neutral-900 text-[13px] focus:outline-none focus:border-neutral-900 transition-colors"
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-[11px] uppercase tracking-[0.2em] text-neutral-600 font-medium mb-2">Phone</label>
-                      <input
-                        name="phone" type="tel" placeholder="(562) 524-3557" value={formatUsPhone(formData.phone)} onChange={handleChange}
-                        className="w-full h-12 px-4 bg-white border border-[#e6ded2] rounded-xl text-neutral-900 text-[13px] focus:outline-none focus:border-neutral-900 transition-colors"
-                      />
-                    </div>
-                  </div>
-                  <div className="flex gap-3 justify-end">
-                    <button type="button" onClick={() => { setIsEditing(false); setFormData({ name: user?.name || "", phone: user?.phone || "", profileImage: null }); }}
-                      className="px-6 h-10 border border-[#E6DFC9] text-neutral-600 text-[11px] uppercase tracking-[0.15em] font-medium hover:border-neutral-900 hover:text-neutral-900 transition-all duration-300">
-                      Cancel
-                    </button>
-                    <button type="submit" disabled={isSubmitting}
-                      className="px-6 h-10 bg-neutral-900 text-white text-[12px] font-semibold rounded-full flex items-center gap-2 hover:bg-neutral-800 disabled:opacity-50 transition-colors">
-                      {isSubmitting ? <IconLoader2 className="h-3.5 w-3.5 animate-spin" stroke={1.5} /> : null}
-                      Save Changes
-                    </button>
-                  </div>
-                </form>
-              ) : (
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                  <div>
-                    <span className="flex items-center gap-2 text-[11px] uppercase tracking-[0.2em] text-neutral-600 font-medium mb-1.5">
-                      <IconUser className="h-3 w-3" stroke={1.5} /> Full Name
-                    </span>
-                    <p className="text-[14px] text-neutral-900 font-light">{user?.name || "Not provided"}</p>
-                  </div>
-                  <div>
-                    <span className="flex items-center gap-2 text-[11px] uppercase tracking-[0.2em] text-neutral-600 font-medium mb-1.5">
-                      <IconMail className="h-3 w-3" stroke={1.5} /> Email
-                    </span>
-                    <p className="text-[14px] text-neutral-900 font-light">{user?.email || "Not provided"}</p>
-                  </div>
-                  <div>
-                    <span className="flex items-center gap-2 text-[11px] uppercase tracking-[0.2em] text-neutral-600 font-medium mb-1.5">
-                      <IconPhone className="h-3 w-3" stroke={1.5} /> Phone
-                    </span>
-                    <p className="text-[14px] text-neutral-900 font-light">{user?.phone ? formatUsPhone(user.phone) : "Not provided"}</p>
-                  </div>
-                  <div>
-                    <span className="flex items-center gap-2 text-[11px] uppercase tracking-[0.2em] text-neutral-600 font-medium mb-1.5">
-                      <IconCalendar className="h-3 w-3" stroke={1.5} /> Member Since
-                    </span>
-                    <p className="text-[14px] text-neutral-900 font-light">{user?.createdAt ? formatDate(user.createdAt) : "Unknown"}</p>
-                  </div>
-                </div>
-              )}
-            </div>
-          </div>
+          <Group title="Orders and shopping">
+            <Row icon={IconPackage} title="Orders" sub={counts.orders == null ? "Track and view your orders" : `${counts.orders} ${counts.orders === 1 ? "order" : "orders"}`} href="/account/orders" />
+            <Row icon={IconMapPin} title="Addresses" sub={counts.addresses == null ? "Delivery addresses" : counts.addresses ? `${counts.addresses} saved` : "Add a delivery address"} href="/account/addresses" />
+            <Row icon={IconRepeat} title="Subscriptions" sub="Monthly deliveries. Skip or cancel any time" href="/account/subscriptions" />
+            <Row icon={IconRefresh} title="Returns" sub="Request and track returns" href="/account/returns" />
+            <Row icon={IconHeart} title="Wishlist" sub="Formulas you saved" href="/wishlist" />
+          </Group>
 
-          {/* Addresses */}
-          <div className="bg-white border border-[#E6DFC9]">
-            <div className="px-6 py-5 border-b border-[#E6DFC9] flex items-center justify-between">
-              <h2 className="text-lg text-neutral-900 tracking-tight">Saved Addresses</h2>
-              <Link href="/account/addresses" className="inline-flex items-center gap-2 text-[11px] uppercase tracking-[0.15em] text-neutral-600 hover:text-neutral-900 transition-colors">
-                Manage <IconArrowRight className="h-3 w-3" stroke={1.5} />
-              </Link>
-            </div>
-            <div className="p-6">
-              {addresses.length > 0 ? (
-                <div className="space-y-3">
-                  {addresses.slice(0, 2).map((address) => (
-                    <div key={address.id} className="flex items-start justify-between p-4 bg-white border border-[#e6ded2] rounded-xl">
-                      <div>
-                        {address.isDefault && (
-                          <span className="text-[11px] uppercase tracking-[0.2em] text-neutral-800 font-medium bg-neutral-900/10 px-2 py-0.5 mb-2 inline-block">Default</span>
-                        )}
-                        <p className="text-[13px] text-neutral-900 font-medium">{address.name || user?.name}</p>
-                        <p className="text-[12px] text-neutral-600 font-light mt-0.5">{address.street}, {formatCityLine(address)}</p>
-                      </div>
-                    </div>
-                  ))}
-                  {addresses.length > 2 && (
-                    <p className="text-[12px] text-neutral-600 font-light">+ {addresses.length - 2} more</p>
-                  )}
-                </div>
-              ) : (
-                <div className="text-center py-8 bg-[#FAF8F2] border border-[#E6DFC9]">
-                  <IconMapPin className="h-6 w-6 text-neutral-600 mx-auto mb-3" stroke={1.5} />
-                  <p className="text-[13px] text-neutral-600 font-light mb-4">No addresses added yet</p>
-                  <Link href="/account/addresses" className="inline-flex items-center gap-2 text-[11px] uppercase tracking-[0.15em] text-neutral-900 hover:text-neutral-800 transition-colors font-medium">
-                    Add Address <IconArrowRight className="h-3 w-3" stroke={1.5} />
-                  </Link>
-                </div>
-              )}
-            </div>
-          </div>
+          {/* Rewards (referral) hidden for now: re-enable by restoring the Refer a friend row */}
 
-          {/* Referral Program */}
-          <div className="bg-white border border-[#E6DFC9]">
-            <div className="px-6 py-5 border-b border-[#E6DFC9]">
-              <div className="flex items-center gap-2">
-                <IconUsers className="h-4 w-4 text-neutral-800" stroke={1.5} />
-                <h2 className="text-lg text-neutral-900 tracking-tight">Referral Program</h2>
-              </div>
-              <p className="text-[12px] text-neutral-600 font-light mt-1">Share your code with friends and earn rewards</p>
-            </div>
-            <div className="p-6">
-              {isLoadingReferral ? (
-                <div className="flex justify-center py-8">
-                  <IconLoader2 className="h-6 w-6 animate-spin text-neutral-800" stroke={1.5} />
-                </div>
-              ) : referralCode ? (
-                <>
-                  <div className="p-4 bg-[#FAF8F2] border border-[#E6DFC9] mb-6">
-                    <label className="block text-[11px] uppercase tracking-[0.2em] text-neutral-600 font-medium mb-2">Your Referral Code</label>
-                    <div className="flex items-center gap-3">
-                      <input value={referralCode} readOnly
-                        className="flex-1 h-12 px-4 bg-white border border-[#E6DFC9] text-neutral-900 text-[14px] tracking-wider focus:outline-none" />
-                      <button onClick={() => { navigator.clipboard.writeText(referralCode); setCopied(true); setTimeout(() => setCopied(false), 2000); }}
-                        className="h-12 px-5 bg-neutral-900 text-white text-[11px] uppercase tracking-[0.15em] font-medium flex items-center gap-2 hover:bg-neutral-900 transition-all duration-500">
-                        {copied ? <><IconCheck className="h-3.5 w-3.5" stroke={1.5} /> Copied</> : <><IconCopy className="h-3.5 w-3.5" stroke={1.5} /> Copy</>}
-                      </button>
-                    </div>
-                  </div>
+          <Group title="Help and legal">
+            <Row icon={IconHelp} title="Contact us" sub="We usually reply within one business day" href="/contact" />
+            <Row icon={IconTruckDelivery} title="Shipping policy" href="/shipping-policy" />
+            <Row icon={IconRefresh} title="Return policy" href="/return-policy" />
+            <Row icon={IconShieldCheck} title="Privacy policy" sub="How we use and protect your data" href="/privacy-policy" />
+            <Row icon={IconFileText} title="Terms of service" href="/terms" />
+            <Row icon={IconCertificate} title="Lab reports and certificates" href="/certificates" />
+          </Group>
 
-                  {referralStats && (
-                    <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-                      {[
-                        { label: "Total Referrals", value: referralStats.totalReferrals || 0, color: "text-neutral-900" },
-                        { label: "Completed", value: referralStats.completedReferrals || 0, color: "text-green-700" },
-                        { label: "Pending", value: referralStats.pendingReferrals || 0, color: "text-neutral-800" },
-                        { label: "Earnings", value: `$${parseFloat(referralStats.totalEarnings || 0).toFixed(0)}`, color: "text-neutral-800" },
-                      ].map((stat) => (
-                        <div key={stat.label} className="p-4 bg-[#FAF8F2] border border-[#E6DFC9] text-center">
-                          <p className={`text-2xl ${stat.color}`}>{stat.value}</p>
-                          <p className="text-[11px] uppercase tracking-[0.15em] text-neutral-600 mt-1">{stat.label}</p>
-                        </div>
-                      ))}
-                    </div>
-                  )}
-                </>
-              ) : (
-                <p className="text-sm text-neutral-500">Your referral code is unavailable right now. Refresh this page to try again.</p>
-              )}
-            </div>
-          </div>
+          <Group>
+            <Row icon={IconLogout} title="Sign out" onClick={signOut} />
+            <Row icon={IconTrash} title="Delete account" sub="Permanently remove your account and saved data" danger onClick={() => setConfirmDelete(true)} />
+          </Group>
 
-          {/* Security */}
-          <div className="bg-white border border-[#E6DFC9]">
-            <div className="px-6 py-5 border-b border-[#E6DFC9]">
-              <h2 className="text-lg text-neutral-900 tracking-tight">Security</h2>
-            </div>
-            <div className="p-6">
-              <Link href="/account/change-password"
-                className="inline-flex items-center gap-2 px-6 h-12 border border-[#E6DFC9] text-neutral-900 text-[11px] uppercase tracking-[0.15em] font-medium hover:border-neutral-900 hover:text-neutral-800 transition-all duration-500">
-                <IconLock className="h-4 w-4" stroke={1.5} /> Change Password
-              </Link>
-            </div>
-          </div>
-
+          <p className="mwp-set-foot">MWP Supplements. Made in the USA.</p>
         </div>
+
+        {editing && (
+          <div className="mwp-set-modal" role="dialog" aria-modal="true" aria-label="Edit personal info" onClick={(e) => e.target === e.currentTarget && setEditing(false)}>
+            <form onSubmit={save} className="mwp-set-sheet">
+              <div className="mwp-set-sheet-head">
+                <h3>Personal info</h3>
+                <button type="button" onClick={() => setEditing(false)} aria-label="Close"><IconX size={20} /></button>
+              </div>
+              {formError && <p className="mwp-set-err" role="alert">{formError}</p>}
+              <div className="mwp-set-photo">
+                <span className="mwp-set-avatar sm">{photo ? <img src={photo} alt="" onError={() => setImgFailed(true)} /> : <span>{initials}</span>}</span>
+                <button type="button" className="mwp-btn ghost sm" onClick={() => fileRef.current?.click()} disabled={uploading}>{photo ? "Change photo" : "Add photo"}</button>
+                {photo && <button type="button" className="mwp-btn ghost sm" onClick={removePhoto} disabled={uploading}>Remove</button>}
+              </div>
+              <label>Full name<input value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} autoComplete="name" /></label>
+              <label>US phone<input type="tel" placeholder="(562) 524-3557" value={form.phone} onChange={(e) => setForm({ ...form, phone: formatUsPhone(e.target.value) })} autoComplete="tel" /></label>
+              <label>Email<input value={user?.email || ""} disabled /></label>
+              <button disabled={saving} className="mwp-set-save">{saving ? <IconLoader2 size={16} className="animate-spin" /> : <IconCheck size={16} />} Save</button>
+            </form>
+          </div>
+        )}
+
+        {confirmDelete && (
+          <div className="mwp-set-modal" role="dialog" aria-modal="true" aria-label="Delete account" onClick={(e) => e.target === e.currentTarget && setConfirmDelete(false)}>
+            <div className="mwp-set-sheet">
+              <div className="mwp-set-sheet-head"><h3>Delete your account?</h3></div>
+              <p className="mwp-set-sub">We will email you a confirmation link. Once you confirm, your account and saved addresses are removed. Past order records we must keep for tax and legal reasons stay on file.</p>
+              <button className="mwp-set-save danger" onClick={requestDelete}>Email me the link</button>
+              <button className="mwp-set-cancel" onClick={() => setConfirmDelete(false)}>Keep my account</button>
+            </div>
+          </div>
+        )}
       </ClientOnly>
     </ProtectedRoute>
   );

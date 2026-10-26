@@ -25,6 +25,7 @@ export const verifyJWTToken = asyncHandler(async (req, res, next) => {
         name: true,
         email: true,
         role: true,
+        isActive: true,
         otpVerified: true,
         createdAt: true,
         updatedAt: true,
@@ -33,6 +34,11 @@ export const verifyJWTToken = asyncHandler(async (req, res, next) => {
 
     if (!user) {
       throw new ApiError(401, "Invalid token or user not found");
+    }
+
+    // deactivated or deleted accounts lose access straight away
+    if (user.isActive === false) {
+      throw new ApiError(401, "This account is no longer active");
     }
 
     req.user = user;

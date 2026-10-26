@@ -13,7 +13,7 @@ export const ORGANIZATION_JSON_LD = {
   name: "MWP Supplements LLC",
   alternateName: SITE_NAME,
   url: SITE_URL,
-  logo: `${SITE_URL}/mwp-logo-2.png`,
+  logo: `${SITE_URL}/mwp-logo-3.png`,
   email: "support@mwpsupplements.com",
   telephone: "+1-562-524-3557",
   address: {

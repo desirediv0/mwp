@@ -38,9 +38,9 @@ async function sendLoginCode(user) {
     title: "Your sign-in code",
     accent: "Checkout",
     greeting: `Hi ${user.name || "there"},`,
+    rows: [["Your code", code]],
     paragraphs: [
       "Use this code to continue your checkout. It works for 10 minutes.",
-      `<strong style="font-size:28px;letter-spacing:6px">${code}</strong>`,
       "If you did not try to check out, you can ignore this email.",
     ],
   });

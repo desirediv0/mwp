@@ -363,17 +363,14 @@ export function AuthProvider({ children }) {
 
     // Update profile
     const updateProfile = async (data) => {
-        setLoading(true);
+        // no global loading flag here: it would unmount the account pages while saving
         setError(null);
-
         try {
-            // Create the request data
             const formData = new FormData();
-            formData.append("name", data.name);
-
-            if (data.phone) {
-                formData.append("phone", data.phone);
-            }
+            if (data.name) formData.append("name", data.name);
+            if (data.phone) formData.append("phone", data.phone);
+            if (data.profileImage) formData.append("profileImage", data.profileImage);
+            if (data.removeImage) formData.append("removeImage", "true");
 
             const res = await fetchApi("/users/update-profile", {
                 method: "PATCH",
@@ -391,6 +388,14 @@ export function AuthProvider({ children }) {
         } finally {
             setLoading(false);
         }
+    };
+
+    // Re-read the signed-in user (e.g. after setting a password)
+    const refreshUser = async () => {
+        try {
+            const res = await fetchApi("/users/me", { credentials: "include" });
+            if (res.data?.user) setUser(res.data.user);
+        } catch {}
     };
 
     // Guest checkout: a new email is signed in right away; an existing one is sent a code.
@@ -440,6 +445,7 @@ export function AuthProvider({ children }) {
         logout,
         verifyEmail,
         verifyOtp,
+        refreshUser,
         guestStart,
         guestVerify,
         resendVerification,

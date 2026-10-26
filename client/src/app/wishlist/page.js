@@ -4,14 +4,14 @@ import { useState, useEffect } from "react";
 import { useAuth } from "@/lib/auth-context";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import "../account/settings.css";
 import { ClientOnly } from "@/components/client-only";
 import { fetchApi } from "@/lib/utils";
 import { ProductCard } from "@/components/products/ProductCard";
 import {
   IconHeart,
   IconTrash,
-  IconShoppingBag,
-  IconArrowRight,
+  IconChevronLeft,
   IconLoader2,
 } from "@tabler/icons-react";
 
@@ -47,7 +47,7 @@ export default function WishlistPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-white">
+      <div className="flex min-h-[60vh] items-center justify-center bg-[#FAF8F2]">
         <IconLoader2 className="h-6 w-6 animate-spin text-[#A8741F]" stroke={1.5} />
       </div>
     );
@@ -55,74 +55,36 @@ export default function WishlistPage() {
 
   return (
     <ClientOnly>
-      <div className="min-h-screen bg-white">
+      <div className="mwp-set-page">
+        <div className="mwp-set" style={{ maxWidth: 1100 }}>
+          <header className="mwp-set-top">
+            <Link href="/account" className="mwp-set-back" aria-label="Back to settings"><IconChevronLeft size={20} stroke={1.8} /></Link>
+            <h1 className="mwp-set-title">Wishlist{!loadingItems && wishlistItems.length > 0 ? ` (${wishlistItems.length})` : ""}</h1>
+          </header>
 
-        {/* Hero */}
-        <section className="relative py-14 md:py-20 overflow-hidden bg-white border-b border-[#e6ded2]">
-          <div className="relative z-10 max-w-7xl mx-auto px-5 text-center">
-            <div className="flex items-center justify-center gap-2 text-[11px] text-neutral-500 mb-7">
-              <Link href="/" className="hover:text-neutral-900 transition-colors">Home</Link>
-              <span className="text-[#A8741F]">/</span>
-              <span className="text-neutral-800">Wishlist</span>
-            </div>
-            <h1 className="text-4xl md:text-5xl font-semibold text-neutral-900 tracking-tight mb-4">
-              My Wishlist
-            </h1>
-            <span className="mx-auto block h-px w-16 bg-[#A8741F] mb-4" />
-            {!loadingItems && wishlistItems.length > 0 && (
-              <p className="text-neutral-600 text-[13px]">
-                {wishlistItems.length} {wishlistItems.length === 1 ? "item" : "items"} saved
-              </p>
-            )}
-          </div>
-        </section>
+          {error && <p className="mwp-alert" role="alert" style={{ marginBottom: 16 }}>{error}</p>}
 
-        <div className="max-w-7xl mx-auto px-5 py-12 md:py-16">
-
-          {/* Error */}
-          {error && (
-            <div className="px-5 py-4 bg-red-50 border border-red-200 text-red-700 text-[13px] font-light mb-8">{error}</div>
-          )}
-
-          {/* Loading */}
           {loadingItems ? (
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-              {[...Array(4)].map((_, i) => (
-                <div key={i} className="bg-white border border-gray-200 animate-pulse overflow-hidden">
-                  <div className="aspect-[4/5] bg-gray-50" />
-                  <div className="p-5 space-y-3">
-                    <div className="h-3 bg-gray-50 w-1/3" />
-                    <div className="h-4 bg-gray-50 w-2/3" />
-                    <div className="h-3 bg-gray-50 w-1/2" />
-                  </div>
-                </div>
-              ))}
-            </div>
+            <div className="mwp-spin"><IconLoader2 className="animate-spin" /></div>
           ) : wishlistItems.length === 0 ? (
-            /* Empty State */
-            <div className="bg-white border border-[#e6ded2] rounded-2xl p-12 md:p-16 text-center max-w-lg mx-auto">
-              <IconHeart className="h-8 w-8 text-gray-500 mx-auto mb-4" stroke={1.2} />
-              <h3 className="text-2xl text-gray-900 mb-3">Wishlist is Empty</h3>
-              <p className="text-gray-500 text-[13px] font-light leading-relaxed mb-8 max-w-xs mx-auto">
-                Save your favorite styles for later. Tap the heart icon on any product to save them here.
-              </p>
-              <Link href="/products"
-                className="inline-flex items-center gap-2 px-8 py-4 bg-neutral-900 text-white text-[12px] font-semibold rounded-full hover:bg-neutral-800 transition-colors">
-                <IconShoppingBag className="h-4 w-4" stroke={1.5} /> Browse Collection
-              </Link>
+            <div className="mwp-empty">
+              <IconHeart size={34} stroke={1.3} />
+              <h3>Nothing saved yet</h3>
+              <p>Tap the heart on any formula to save it here for later.</p>
+              <Link href="/products" className="mwp-btn">Browse formulas</Link>
             </div>
           ) : (
-            /* Grid */
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+            <div className="grid grid-cols-2 gap-3 sm:gap-5 md:grid-cols-3 lg:grid-cols-4">
               {wishlistItems.map((item) => (
                 <div key={item.id} className="relative group">
                   <ProductCard product={{ ...item, id: item.productId }} />
                   <button
                     onClick={(e) => { e.preventDefault(); removeFromWishlist(item.id); }}
-                    className="absolute top-3 right-3 z-30 w-9 h-9 rounded-full bg-white/95 backdrop-blur-sm flex items-center justify-center text-gray-500 hover:text-neutral-900 shadow-sm border border-[#e6ded2] transition-colors"
+                    className="absolute left-3 top-3 z-30 grid h-9 w-9 place-items-center rounded-full border border-[#E6DFC9] bg-white/95 text-[#4A5470] shadow-sm transition-colors hover:text-[#B3001B]"
                     title="Remove from wishlist"
+                    aria-label="Remove from wishlist"
                   >
-                    <IconTrash className="h-3.5 w-3.5" stroke={1.5} />
+                    <IconTrash size={16} stroke={1.5} />
                   </button>
                 </div>
               ))}

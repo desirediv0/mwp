@@ -36,7 +36,7 @@ import Image from "next/image";
 import CheckoutRecommendations from "@/components/sections/CheckoutRecommendations";
 
 const getImageUrl = (image) => {
-    if (!image) return "/mwp-logo-2.png";
+    if (!image) return "/mwp-logo-3.png";
     if (image.startsWith("http") || image.startsWith("/")) return image;
     return `https://desirediv-storage.blr1.digitaloceanspaces.com/${image}`;
 };

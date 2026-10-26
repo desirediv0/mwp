@@ -567,7 +567,7 @@ export const getAdminNewOrderTemplate = (data, storeConfig = null) => {
     <div class="container">
         <div class="header" style="background: linear-gradient(135deg, #1e40af, #1e3a8a);">
             <div style="margin-bottom: 18px;">
-                <img src="${store.websiteUrl}/mwp-logo-2.png" alt="${store.storeName}" style="max-height: 55px; width: auto; display: inline-block;" />
+                <img src="${store.websiteUrl}/mwp-logo-3.png" alt="${store.storeName}" style="max-height: 55px; width: auto; display: inline-block;" />
             </div>
             <div class="header-accent" style="background: rgba(255,255,255,0.15); color: #fff; border-color: rgba(255,255,255,0.2);">🔔 New Order Alert</div>
             <h1>New Order Received!</h1>

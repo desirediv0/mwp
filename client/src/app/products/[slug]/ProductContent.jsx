@@ -27,6 +27,7 @@ import {
   IconGitCompare,
 } from "@tabler/icons-react";
 import { useAuth } from "@/lib/auth-context";
+import "./buy-mode.css";
 import { useRouter } from "next/navigation";
 import ReviewSection from "./ReviewSection";
 import ProductFormulaSections from "./ProductFormulaSections";
@@ -88,6 +89,8 @@ export default function ProductContent({ slug, initialProduct = null }) {
   const [selectedAttributes, setSelectedAttributes] = useState(seed.attributes || {});
   const [selectedVariant, setSelectedVariant] = useState(seed.variant || null);
   const [quantity, setQuantity] = useState(seed.quantity || 1);
+  const [purchaseMode, setPurchaseMode] = useState("once"); // once | subscribe
+  const [subSettings, setSubSettings] = useState(null);
   const [effectivePriceInfo, setEffectivePriceInfo] = useState(null);
   const [openSections, setOpenSections] = useState({
     fragranceNotes: true,
@@ -271,6 +274,19 @@ export default function ProductContent({ slug, initialProduct = null }) {
     if (next < moq || next > stock) return;
     setQuantity(next);
     if (selectedVariant) setEffectivePriceInfo(getEffectivePrice(selectedVariant, next));
+  };
+
+  useEffect(() => {
+    fetchApi("/subscriptions/settings")
+      .then((r) => setSubSettings(r.data))
+      .catch(() => setSubSettings(null));
+  }, []);
+
+  const subscribeNow = () => {
+    const v = selectedVariant || product?.variants?.[0];
+    if (!v) return;
+    trackEvent("begin_checkout", { value: Number(v.salePrice || v.price) * quantity, items: [toItem(product, v, quantity)] });
+    router.push(`/subscribe?variant=${v.id}&qty=${quantity}`);
   };
 
   const handleAddToCart = async (buyNow = false) => {
@@ -637,6 +653,33 @@ export default function ProductContent({ slug, initialProduct = null }) {
               </div>
             )}
 
+            {/* One-time or monthly subscription */}
+            {subSettings?.isEnabled && selectedVariant && !outOfStock && (() => {
+              const info = effectivePriceInfo || getEffectivePrice(selectedVariant, quantity);
+              const unit = Number(info.price);
+              const pct = Number(subSettings.discountPercent || 0);
+              const subUnit = Math.round(unit * (1 - pct / 100) * 100) / 100;
+              return (
+                <fieldset className="mwp-buy-mode" aria-label="Purchase options">
+                  <label className={`mwp-buy-opt${purchaseMode === "once" ? " is-on" : ""}`}>
+                    <input type="radio" name="buy-mode" checked={purchaseMode === "once"} onChange={() => setPurchaseMode("once")} />
+                    <span className="mwp-buy-dot" />
+                    <span className="mwp-buy-txt"><strong>One-time purchase</strong><small>Pay once, no commitment</small></span>
+                    <b>{formatCurrency(unit)}</b>
+                  </label>
+                  <label className={`mwp-buy-opt${purchaseMode === "subscribe" ? " is-on" : ""}`}>
+                    <input type="radio" name="buy-mode" checked={purchaseMode === "subscribe"} onChange={() => setPurchaseMode("subscribe")} />
+                    <span className="mwp-buy-dot" />
+                    <span className="mwp-buy-txt">
+                      <strong>Subscribe monthly {pct > 0 && <em>Save {pct}%</em>}</strong>
+                      <small>Delivered every month. Skip or cancel any time.</small>
+                    </span>
+                    <b>{formatCurrency(subUnit)}<small>/mo</small></b>
+                  </label>
+                </fieldset>
+              );
+            })()}
+
             {/* Quantity + Add to Cart */}
             <div className="mwp-product-purchase-actions">
             <div className="flex gap-2.5 mb-3" id="main-add-to-cart-btn">
@@ -649,16 +692,27 @@ export default function ProductContent({ slug, initialProduct = null }) {
                   <IconPlus className="h-3.5 w-3.5" stroke={2} />
                 </button>
               </div>
+              {purchaseMode === "subscribe" && subSettings?.isEnabled ? (
+                <button onClick={subscribeNow} disabled={outOfStock || quantity > stock}
+                  className="flex-1 h-12 rounded-full text-[13px] font-semibold flex items-center justify-center gap-2 transition-all disabled:opacity-40 text-white bg-neutral-900 hover:bg-[#B3001B] active:scale-[0.99]">
+                  Subscribe monthly
+                </button>
+              ) : (
               <button onClick={() => handleAddToCart()} disabled={isAddingToCart || outOfStock}
                 className="flex-1 h-12 rounded-full text-[13px] font-normal flex items-center justify-center gap-2 transition-all disabled:opacity-40 text-white bg-neutral-900 hover:bg-neutral-800 active:scale-[0.99]">
                 {isAddingToCart ? <div className="h-4 w-4 border-2 border-current border-t-transparent rounded-full animate-spin" /> : outOfStock ? "Sold Out" : "Add to Cart"}
               </button>
+              )}
             </div>
 
+            {!(purchaseMode === "subscribe" && subSettings?.isEnabled) ? (
             <button type="button" onClick={() => handleAddToCart(true)} disabled={isAddingToCart || outOfStock || quantity > stock}
               className="w-full h-12 mb-3 rounded-full border border-neutral-900 bg-white text-neutral-900 text-[13px] font-normal hover:bg-white disabled:opacity-40 transition-colors">
               {isAddingToCart ? "Adding…" : "Buy Now"}
             </button>
+            ) : (
+            <p className="mb-3 text-center text-[12px] text-neutral-500" style={{ flexBasis: "100%", width: "100%", gridColumn: "1 / -1" }}>Billed monthly. Cancel any time from your account.</p>
+            )}
             </div>
 
             </div>

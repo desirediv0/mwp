@@ -53,6 +53,7 @@ import PaymentGatewaySettingsPage from "./pages/PaymentGatewaySettingsPage";
 import ShippingSettingsPage from "./pages/ShippingSettingsPage";
 import QuickBooksSettingsPage from "./pages/QuickBooksSettingsPage";
 import TrackingSettingsPage from "./pages/TrackingSettingsPage";
+import SubscriptionsPage from "./pages/SubscriptionsPage";
 import EmailMarketingPage from "./pages/EmailMarketingPage";
 import AdminHelpPage from "./pages/AdminHelpPage";
 import SettingsPage from "./pages/SettingsPage";
@@ -416,6 +417,18 @@ const App = () => {
               }
             />
 
+
+            <Route
+              path="subscriptions"
+              element={
+                <ProtectedRoute
+                  resource={Resource.ORDERS}
+                  action={Action.READ}
+                >
+                  <SubscriptionsPage />
+                </ProtectedRoute>
+              }
+            />
 
             <Route
               path="tracking-settings"

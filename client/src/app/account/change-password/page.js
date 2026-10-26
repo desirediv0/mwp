@@ -1,82 +1,72 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
+import { IconEye, IconEyeOff, IconLoader2 } from "@tabler/icons-react";
 import { useAuth } from "@/lib/auth-context";
-import { useRouter } from "next/navigation";
-import Link from "next/link";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { ClientOnly } from "@/components/client-only";
-import { DynamicIcon } from "@/components/dynamic-icon";
 import { fetchApi } from "@/lib/utils";
 
+function PasswordField({ id, label, value, onChange, hint, autoComplete }) {
+    const [show, setShow] = useState(false);
+    return (
+        <label className="mwp-field" htmlFor={id}>
+            {label}
+            <span className="mwp-pw">
+                <input id={id} name={id} type={show ? "text" : "password"} value={value} onChange={onChange} autoComplete={autoComplete} required />
+                <button type="button" onClick={() => setShow((s) => !s)} aria-label={show ? "Hide password" : "Show password"}>
+                    {show ? <IconEyeOff size={18} /> : <IconEye size={18} />}
+                </button>
+            </span>
+            {hint && <small>{hint}</small>}
+        </label>
+    );
+}
+
 export default function ChangePasswordPage() {
-    const { isAuthenticated, loading, user } = useAuth();
+    const { user, refreshUser } = useAuth();
     const noPassword = user?.hasPassword === false;
-    const router = useRouter();
-    const [formData, setFormData] = useState({ currentPassword: "", newPassword: "", confirmPassword: "" });
-    const [showPassword, setShowPassword] = useState({ current: false, new: false, confirm: false });
-    const [isSubmitting, setIsSubmitting] = useState(false);
+    const [form, setForm] = useState({ currentPassword: "", newPassword: "", confirmPassword: "" });
+    const [busy, setBusy] = useState(false);
     const [message, setMessage] = useState({ type: "", text: "" });
 
-    useEffect(() => { if (!loading && !isAuthenticated) router.push("/auth"); }, [isAuthenticated, loading, router]);
+    const set = (k) => (e) => setForm((f) => ({ ...f, [k]: e.target.value }));
 
-    const handleChange = (e) => { const { name, value } = e.target; setFormData((prev) => ({ ...prev, [name]: value })); };
-    const togglePasswordVisibility = (field) => { setShowPassword((prev) => ({ ...prev, [field]: !prev[field] })); };
-
-    const validateForm = () => {
-        if (!noPassword && !formData.currentPassword) { setMessage({ type: "error", text: "Current password is required" }); return false; }
-        if (formData.newPassword.length < 8) { setMessage({ type: "error", text: "New password must be at least 8 characters long" }); return false; }
-        if (formData.newPassword !== formData.confirmPassword) { setMessage({ type: "error", text: "New passwords do not match" }); return false; }
-        return true;
-    };
-
-    const handleSubmit = async (e) => {
+    const submit = async (e) => {
         e.preventDefault();
         setMessage({ type: "", text: "" });
-        if (!validateForm()) return;
-        setIsSubmitting(true);
+        if (!noPassword && !form.currentPassword) return setMessage({ type: "error", text: "Enter your current password" });
+        if (form.newPassword.length < 8) return setMessage({ type: "error", text: "Your new password must be at least 8 characters" });
+        if (form.newPassword !== form.confirmPassword) return setMessage({ type: "error", text: "The new passwords do not match" });
+        setBusy(true);
         try {
-            await fetchApi("/users/change-password", { method: "POST", credentials: "include", body: JSON.stringify({ currentPassword: formData.currentPassword, newPassword: formData.newPassword }) });
-            setMessage({ type: "success", text: "Password changed successfully" });
-            setFormData({ currentPassword: "", newPassword: "", confirmPassword: "" });
-        } catch (error) {
-            setMessage({ type: "error", text: error.message || "Failed to change password. Please try again." });
-        } finally { setIsSubmitting(false); }
+            await fetchApi("/users/change-password", {
+                method: "POST",
+                credentials: "include",
+                body: JSON.stringify({ currentPassword: form.currentPassword, newPassword: form.newPassword }),
+            });
+            setMessage({ type: "ok", text: noPassword ? "Password set. You can now sign in with it." : "Password changed." });
+            setForm({ currentPassword: "", newPassword: "", confirmPassword: "" });
+            refreshUser?.();
+        } catch (err) {
+            setMessage({ type: "error", text: err.message || "Could not change the password. Try again." });
+        } finally {
+            setBusy(false);
+        }
     };
 
-    if (loading) return <div className="container mx-auto py-10 flex justify-center"><div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div></div>;
-
-    const PasswordInput = ({ name, label, field }) => (
-        <div>
-            <label htmlFor={name} className="block text-sm font-medium text-neutral-600 mb-1">{label}</label>
-            <div className="relative">
-                <Input id={name} name={name} type={showPassword[field] ? "text" : "password"} value={formData[name]} onChange={handleChange} required minLength={name === "newPassword" ? 8 : undefined} className="pr-10" />
-                <button type="button" className="absolute inset-y-0 right-0 pr-3 flex items-center text-neutral-600 hover:text-neutral-600" onClick={() => togglePasswordVisibility(field)}>
-                    <DynamicIcon name={showPassword[field] ? "EyeOff" : "Eye"} className="h-5 w-5" />
-                </button>
-            </div>
-            {name === "newPassword" && <p className="text-xs text-neutral-600 mt-1">Password must be at least 8 characters long</p>}
-        </div>
-    );
-
     return (
-        <ClientOnly>
-            <div className="container mx-auto py-10 px-4">
-                <div className="flex items-center mb-8">
-                    <Link href="/account" className="inline-flex items-center text-sm text-neutral-600 hover:text-primary mr-4"><DynamicIcon name="ArrowLeft" className="mr-1 h-4 w-4" />Back to Account</Link>
-                    <h1 className="text-3xl  ">{noPassword ? "Set a Password" : "Change Password"}</h1>
-                </div>
-                <div className="max-w-md mx-auto bg-white rounded-lg shadow p-6">
-                    {message.text && <div className={`mb-6 p-3 rounded ${message.type === "success" ? "bg-green-50 text-green-800 border border-green-200" : "bg-neutral-100 text-neutral-900 border border-neutral-200"}`}>{message.text}</div>}
-                    <form onSubmit={handleSubmit} className="space-y-6">
-                        {noPassword ? <p className="text-sm text-neutral-600">You checked out as a guest, so you have no password yet. Set one below to sign in faster next time.</p> : <PasswordInput name="currentPassword" label="Current Password" field="current" />}
-                        <PasswordInput name="newPassword" label="New Password" field="new" />
-                        <PasswordInput name="confirmPassword" label="Confirm New Password" field="confirm" />
-                        <Button type="submit" className="w-full" disabled={isSubmitting}>{isSubmitting ? "Changing Password..." : "Change Password"}</Button>
-                    </form>
-                </div>
-            </div>
-        </ClientOnly>
+        <form onSubmit={submit} className="mwp-set-card pad mwp-set-stack">
+            <p className="mwp-set-sub">
+                {noPassword
+                    ? "You checked out as a guest, so you have no password yet. Set one to sign in faster next time."
+                    : "Use at least 8 characters, with a mix of letters, numbers and symbols."}
+            </p>
+            {message.text && <p role="alert" className={`mwp-alert${message.type === "ok" ? " ok" : ""}`}>{message.text}</p>}
+            {!noPassword && <PasswordField id="currentPassword" label="Current password" value={form.currentPassword} onChange={set("currentPassword")} autoComplete="current-password" />}
+            <PasswordField id="newPassword" label="New password" value={form.newPassword} onChange={set("newPassword")} hint="At least 8 characters" autoComplete="new-password" />
+            <PasswordField id="confirmPassword" label="Confirm new password" value={form.confirmPassword} onChange={set("confirmPassword")} autoComplete="new-password" />
+            <button className="mwp-btn block" disabled={busy}>
+                {busy && <IconLoader2 size={16} className="animate-spin" />} {noPassword ? "Set password" : "Update password"}
+            </button>
+        </form>
     );
 }

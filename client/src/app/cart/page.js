@@ -31,7 +31,7 @@ import { formatCurrency } from "@/lib/utils";
 import { toast } from "sonner";
 
 const getImageUrl = (image) => {
-    if (!image) return "/mwp-logo-2.png";
+    if (!image) return "/mwp-logo-3.png";
     if (image.startsWith("http") || image.startsWith("/")) return image;
     return `https://desirediv-storage.blr1.digitaloceanspaces.com/${image}`;
 };
@@ -48,7 +48,7 @@ const CartItem = React.memo(
                 if (item.bundleCampaign?.banner) {
                     return getImageUrl(item.bundleCampaign.banner);
                 }
-                return "/mwp-logo-2.png";
+                return "/mwp-logo-3.png";
             }
             if (item.variant?.images && Array.isArray(item.variant.images) && item.variant.images.length > 0) {
                 const primaryImage = item.variant.images.find((img) => img.isPrimary);
@@ -57,7 +57,7 @@ const CartItem = React.memo(
             }
             if (item.product?.image) return getImageUrl(item.product.image);
             if (item.image) return getImageUrl(item.image);
-            return "/mwp-logo-2.png";
+            return "/mwp-logo-3.png";
         };
 
         const getVariantName = () => {

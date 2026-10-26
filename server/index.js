@@ -1,6 +1,7 @@
 import app from "./app.js";
 import dotenv from "dotenv";
 import { prisma } from "./config/db.js";
+import { startSubscriptionScheduler } from "./utils/subscriptions.js";
 
 dotenv.config({ path: ".env" });
 
@@ -87,6 +88,7 @@ prisma
     await seedDefaultSections();
     app.listen(PORT, () => {
       console.log(`Server is running on port ${PORT} 🚀`);
+      startSubscriptionScheduler();
     });
   })
   .catch((error) => {
