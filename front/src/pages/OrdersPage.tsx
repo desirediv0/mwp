@@ -318,8 +318,13 @@ export default function OrdersPage() {
                           <ShoppingCart className="h-5 w-5 text-[#2E7D32]" />
                         </div>
                         <div>
-                          <h3 className="text-lg font-semibold text-[#1F2937]">
+                          <h3 className="flex items-center gap-2 text-lg font-semibold text-[#1F2937]">
                             #{order.orderNumber}
+                            {order.subscriptionId && (
+                              <span className="rounded-full bg-[#EEF1F8] px-2 py-0.5 text-[11px] font-medium text-[#12213F]">
+                                {order.isSubscriptionRenewal ? "Subscription renewal" : "Subscription"}
+                              </span>
+                            )}
                           </h3>
                           <p className="text-sm text-[#9CA3AF]">
                             {t('orders.list.items_count', { count: order.items?.length || 0 })}

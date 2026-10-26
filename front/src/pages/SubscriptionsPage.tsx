@@ -34,7 +34,17 @@ interface Sub {
 }
 
 interface Detail extends Sub {
-  orders: { id: string; orderNumber: string; total: string; status: string; createdAt: string; isSubscriptionRenewal: boolean }[];
+  orders: { id: string; orderNumber: string; total: string; status: string; createdAt: string; isSubscriptionRenewal: boolean; shippingStatus: string | null; trackingCode: string | null; trackingUrl: string | null; labelUrl: string | null; shippingCarrier: string | null }[];
+}
+
+interface Forecast {
+  scheduler?: { running: boolean; lastRunAt: string | null };
+  days: number;
+  dueNow: number;
+  dueWeek: number;
+  totalSubscriptions: number;
+  expectedRevenue: number;
+  products: { variantId: string; product: string; sku: string; units: number; subscriptions: number; inStock: number; shortBy: number }[];
 }
 
 interface Settings {
@@ -66,6 +76,7 @@ export default function SubscriptionsPage() {
   const [page, setPage] = useState(1);
   const [pages, setPages] = useState(1);
   const [settings, setSettings] = useState<Settings | null>(null);
+  const [forecast, setForecast] = useState<Forecast | null>(null);
   const [savingSettings, setSavingSettings] = useState(false);
   const [running, setRunning] = useState(false);
   const [detail, setDetail] = useState<Detail | null>(null);
@@ -98,6 +109,17 @@ export default function SubscriptionsPage() {
       .catch(() => toast.error("Failed to load subscription settings"));
   }, []);
 
+  const loadForecast = useCallback(() => {
+    api
+      .get("/api/admin/subscriptions/forecast", { params: { days: 30 } })
+      .then((r) => setForecast(r.data.data))
+      .catch(() => setForecast(null));
+  }, []);
+
+  useEffect(() => {
+    loadForecast();
+  }, [loadForecast]);
+
   const saveSettings = async () => {
     if (!settings) return;
     setSavingSettings(true);
@@ -117,8 +139,9 @@ export default function SubscriptionsPage() {
     try {
       const r = await api.post("/api/admin/subscriptions/run");
       const d = r.data.data;
-      toast.success(`Reminders sent: ${d.reminders}. Renewals due: ${d.renewals}, charged: ${d.charged}.`);
+      toast.success(`Reminders sent: ${d.reminders}. Due: ${d.renewals}, charged: ${d.charged}, failed: ${d.failed}, delayed: ${d.postponed}.`);
       load();
+      loadForecast();
     } catch (e: any) {
       toast.error(e?.response?.data?.message || "Could not run the jobs");
     } finally {
@@ -172,6 +195,47 @@ export default function SubscriptionsPage() {
           {running ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Play className="mr-2 h-4 w-4" />} Run billing now
         </Button>
       </div>
+
+      {forecast && (
+        <Card>
+          <CardHeader>
+            <CardTitle>Coming up (next {forecast.days} days)</CardTitle>
+            <CardDescription>Plan stock and shipping: every charge creates an order that appears in Orders with a Subscription tag.{" "}{forecast.scheduler?.running ? `Automatic billing is running${forecast.scheduler.lastRunAt ? ` (last check ${new Date(forecast.scheduler.lastRunAt).toLocaleString()})` : " (first check shortly after start)"}.` : "Automatic billing is NOT running on this server. Use Run billing now or enable the scheduler."}</CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
+              <div className="rounded-lg border p-3"><div className="text-xs text-muted-foreground">Due now</div><div className="text-2xl font-semibold">{forecast.dueNow}</div></div>
+              <div className="rounded-lg border p-3"><div className="text-xs text-muted-foreground">Due in 7 days</div><div className="text-2xl font-semibold">{forecast.dueWeek}</div></div>
+              <div className="rounded-lg border p-3"><div className="text-xs text-muted-foreground">Open subscriptions</div><div className="text-2xl font-semibold">{forecast.totalSubscriptions}</div></div>
+              <div className="rounded-lg border p-3"><div className="text-xs text-muted-foreground">Expected revenue</div><div className="text-2xl font-semibold">{money(forecast.expectedRevenue)}</div></div>
+            </div>
+            {forecast.products.length > 0 && (
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Product</TableHead>
+                    <TableHead>Subscriptions</TableHead>
+                    <TableHead>Units needed</TableHead>
+                    <TableHead>In stock</TableHead>
+                    <TableHead />
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {forecast.products.map((p) => (
+                    <TableRow key={p.variantId}>
+                      <TableCell>{p.product} <span className="text-xs text-muted-foreground">{p.sku}</span></TableCell>
+                      <TableCell>{p.subscriptions}</TableCell>
+                      <TableCell>{p.units}</TableCell>
+                      <TableCell>{p.inStock}</TableCell>
+                      <TableCell>{p.shortBy > 0 ? <Badge className="bg-red-100 text-red-800 hover:bg-red-100">Short by {p.shortBy}</Badge> : <Badge className="bg-green-100 text-green-800 hover:bg-green-100">Enough stock</Badge>}</TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            )}
+          </CardContent>
+        </Card>
+      )}
 
       <Card>
         <CardHeader>
@@ -316,6 +380,15 @@ export default function SubscriptionsPage() {
                           <TableCell>{o.status}</TableCell>
                           <TableCell>{money(o.total)}</TableCell>
                           <TableCell>{date(o.createdAt)}</TableCell>
+                          <TableCell className="text-xs">
+                            {o.trackingCode ? (
+                              <a className="text-blue-700 underline" href={o.trackingUrl || "#"} target="_blank" rel="noreferrer">{o.shippingCarrier || "Track"} {o.trackingCode}</a>
+                            ) : o.labelUrl ? (
+                              <a className="text-blue-700 underline" href={o.labelUrl} target="_blank" rel="noreferrer">Label ready</a>
+                            ) : (
+                              <span className="text-muted-foreground">Needs label</span>
+                            )}
+                          </TableCell>
                         </TableRow>
                       ))}
                     </TableBody>

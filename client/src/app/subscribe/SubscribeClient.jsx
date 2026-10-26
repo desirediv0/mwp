@@ -94,7 +94,7 @@ export default function SubscribeClient() {
   }
 
   if (authLoading) return <div className="mwp-set-page"><div className="mwp-spin"><IconLoader2 className="animate-spin" /></div></div>;
-  if (!isAuthenticated) return <GuestCheckout />;
+  if (!isAuthenticated) return <GuestCheckout signInRedirect={`/subscribe?variant=${variantId}&qty=${qty}`} />;
 
   return (
     <div className="mwp-set-page">

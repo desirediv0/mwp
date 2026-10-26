@@ -24,6 +24,9 @@ function SubscriptionsInner() {
   const [busyId, setBusyId] = useState(null);
   const [cancelFor, setCancelFor] = useState(null);
   const [reason, setReason] = useState(REASONS[0]);
+  const [addrFor, setAddrFor] = useState(null);
+  const [addresses, setAddresses] = useState([]);
+  const [addrId, setAddrId] = useState("");
 
   const load = useCallback(async () => {
     try {
@@ -62,6 +65,31 @@ function SubscriptionsInner() {
       load();
     } catch (e) {
       toast.error(e.message || "Could not skip this shipment");
+    } finally {
+      setBusyId(null);
+    }
+  };
+
+  const openAddress = async (s) => {
+    setAddrFor(s);
+    setAddrId(s.shippingAddressId || "");
+    try {
+      const r = await fetchApi("/users/addresses", { credentials: "include" });
+      setAddresses(r.data.addresses || []);
+    } catch {
+      setAddresses([]);
+    }
+  };
+
+  const saveAddress = async () => {
+    setBusyId(addrFor.id);
+    try {
+      await fetchApi(`/subscriptions/${addrFor.id}/address`, { method: "POST", credentials: "include", body: JSON.stringify({ shippingAddressId: addrId }) });
+      toast.success("Delivery address updated");
+      setAddrFor(null);
+      load();
+    } catch (e) {
+      toast.error(e.message || "Could not update the address");
     } finally {
       setBusyId(null);
     }
@@ -119,6 +147,7 @@ function SubscriptionsInner() {
                 {busyId === s.id ? <IconLoader2 size={14} className="animate-spin" /> : <IconPlayerSkipForward size={14} />} Skip next shipment
               </button>
             )}
+            <button className="mwp-btn ghost sm" disabled={busyId === s.id} onClick={() => openAddress(s)}>Change address</button>
             <button className="mwp-btn ghost sm" disabled={busyId === s.id} onClick={() => { setReason(REASONS[0]); setCancelFor(s); }}>
               <IconX size={14} /> Cancel subscription
             </button>
@@ -150,6 +179,31 @@ function SubscriptionsInner() {
             </section>
           )}
         </>
+      )}
+
+      {addrFor && (
+        <div className="mwp-set-modal" role="dialog" aria-modal="true" aria-label="Change delivery address" onClick={(e) => e.target === e.currentTarget && busyId == null && setAddrFor(null)}>
+          <div className="mwp-set-sheet">
+            <div className="mwp-set-sheet-head"><h3>Delivery address</h3></div>
+            <p className="mwp-set-sub">Your next shipment of {addrFor.product.name} will go to this address.</p>
+            {addresses.length === 0 ? (
+              <p className="mwp-set-sub">You have no saved addresses. <Link href="/account/addresses" className="underline">Add one first</Link>.</p>
+            ) : (
+              <div className="mwp-set-card">
+                {addresses.map((a) => (
+                  <label key={a.id} className="mwp-addr" style={{ display: "flex", gap: 12, cursor: "pointer" }}>
+                    <input type="radio" name="sub-addr" checked={addrId === a.id} onChange={() => setAddrId(a.id)} style={{ marginTop: 4 }} />
+                    <span><strong style={{ fontSize: 15 }}>{a.name}</strong><span style={{ display: "block", fontSize: 14, color: "#4a5470" }}>{a.street}, {a.city}, {a.state} {a.postalCode}</span></span>
+                  </label>
+                ))}
+              </div>
+            )}
+            <button className="mwp-set-save" onClick={saveAddress} disabled={busyId != null || !addrId || addrId === addrFor.shippingAddressId}>
+              {busyId != null && <IconLoader2 size={16} className="animate-spin" />} Save address
+            </button>
+            <button className="mwp-set-cancel" onClick={() => setAddrFor(null)} disabled={busyId != null}>Close</button>
+          </div>
+        </div>
       )}
 
       {cancelFor && (

@@ -677,14 +677,23 @@ export async function runSubscriptionJobs({ now = new Date(), stripeFactory, bud
 }
 
 let timer = null;
+export const schedulerState = { running: false, lastRunAt: null, lastResult: null };
 export function startSubscriptionScheduler() {
-  if (timer || process.env.SUBSCRIPTIONS_SCHEDULER === "off") return;
+  if (timer) return;
+  if (process.env.SUBSCRIPTIONS_SCHEDULER === "off") {
+    console.log("Subscription billing scheduler is OFF on this server (SUBSCRIPTIONS_SCHEDULER=off)");
+    return;
+  }
+  schedulerState.running = true;
+  console.log("Subscription billing scheduler is ON: checks every 10 minutes (set SUBSCRIPTIONS_SCHEDULER=off to disable on dev machines)");
   let running = false;
   const tick = async () => {
     if (running) return;
     running = true;
     try {
       const r = await runSubscriptionJobs();
+      schedulerState.lastRunAt = new Date();
+      schedulerState.lastResult = r;
       if (r.reminders || r.renewals) console.log("Subscription jobs:", r);
     } catch (e) {
       console.error("Subscription jobs failed:", e.message);
@@ -766,6 +775,7 @@ export async function getForecast(days = 30) {
     byVariant.set(s.variantId, row);
   }
   return {
+    scheduler: { running: schedulerState.running, lastRunAt: schedulerState.lastRunAt, lastResult: schedulerState.lastResult },
     days,
     dueNow,
     dueWeek,

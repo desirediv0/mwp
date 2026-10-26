@@ -8,7 +8,7 @@ import { useAuth } from "@/lib/auth-context";
 const inputCls =
   "w-full min-h-[48px] rounded-xl border border-[#DDD6C0] bg-white px-4 text-[15px] text-[#12213F] outline-none transition focus:border-[#12213F] focus:ring-4 focus:ring-[#12213F]/10";
 
-export default function GuestCheckout() {
+export default function GuestCheckout({ signInRedirect = "/checkout" }) {
   const { guestStart, guestVerify } = useAuth();
   const [form, setForm] = useState({ name: "", email: "", phone: "" });
   const [code, setCode] = useState("");
@@ -80,7 +80,7 @@ export default function GuestCheckout() {
               {busy ? <Loader2 className="h-4 w-4 animate-spin" /> : null} Continue to checkout
             </button>
             <p className="text-center text-xs text-[#6B7388]">
-              Already have a password? <Link href="/auth?redirect=checkout" className="font-semibold text-[#12213F] underline underline-offset-4">Sign in</Link>
+              Already have a password? <Link href={`/auth?redirect=${encodeURIComponent(signInRedirect)}`} className="font-semibold text-[#12213F] underline underline-offset-4">Sign in</Link>
             </p>
           </form>
         ) : (
