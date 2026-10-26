@@ -397,34 +397,6 @@
   animation: mcp-flash 0.9s 1.55s ease-out forwards;
 }
 
-.mwp-cplus__pause {
-  position: absolute;
-  top: 0;
-  right: 0;
-  z-index: 2;
-  display: grid;
-  place-items: center;
-  width: 36px;
-  height: 36px;
-  border-radius: 999px;
-  color: var(--mcp-navy);
-  background: rgb(255 255 255 / 0.85);
-  border: 1px solid var(--mcp-line);
-  box-shadow: 0 6px 16px rgb(20 34 74 / 0.08);
-  opacity: 0;
-  transition:
-    opacity 0.4s,
-    background 0.2s,
-    color 0.2s;
-}
-.mwp-cplus[data-play="true"] .mwp-cplus__pause {
-  opacity: 1;
-}
-.mwp-cplus__pause:hover {
-  color: #fff;
-  background: var(--mcp-navy);
-}
-
 /* ── Timing ───────────────────────────────────────────── */
 /* Nothing starts until the capsule scene is ready, so the words and the halves land on the same beat. */
 .mwp-cplus[data-play="false"] *,
@@ -432,15 +404,6 @@
 .mwp-cplus[data-play="false"] *::after {
   animation-play-state: paused !important;
 }
-/* The pause button stops the looping motion (the intro still completes). */
-.mwp-cplus[data-motion="off"] .mwp-cplus__orbit,
-.mwp-cplus[data-motion="off"] .mwp-cplus__halo,
-.mwp-cplus[data-motion="off"] .mwp-cplus__btn--primary::after,
-.mwp-cplus[data-motion="off"] .mwp-cplus__css-float,
-.mwp-cplus[data-motion="off"] .mwp-cplus__half {
-  animation-play-state: paused !important;
-}
-
 @keyframes mcp-rise {
   to {
     transform: translateY(0);
@@ -575,17 +538,9 @@
 }
 
 /* ── Interaction layer ────────────────────────────────── */
-/* Hovering a headline line focuses its half: the other lines dim and the matching chip lifts. */
-.mwp-cplus__line > span {
-  transition: opacity 0.45s var(--mcp-ease);
-}
+/* Hovering a headline line focuses its half and lifts the matching chip. */
 .mwp-cplus__line {
   cursor: default;
-}
-.mwp-cplus[data-focus="men"] .mwp-cplus__line:not(.mwp-cplus__line--men) > span,
-.mwp-cplus[data-focus="women"] .mwp-cplus__line:not(.mwp-cplus__line--women) > span,
-.mwp-cplus[data-focus="both"] .mwp-cplus__line:not(.mwp-cplus__line--power) > span {
-  opacity: 0.28;
 }
 .mwp-cplus[data-focus="men"] .mwp-cplus__label--men,
 .mwp-cplus[data-focus="women"] .mwp-cplus__label--women,
@@ -642,95 +597,6 @@
   cursor: grabbing;
 }
 
-/* "Look inside" row under the capsule */
-.mwp-cplus__peek {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  justify-content: center;
-  gap: 8px 16px;
-  margin-top: 6px;
-  min-height: 40px;
-  font-size: 13px;
-  color: var(--mcp-muted);
-  opacity: 0;
-  animation: mcp-fade 1s 2.4s var(--mcp-ease) forwards;
-}
-.mwp-cplus__peek-btn {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  height: 38px;
-  padding: 0 16px 0 12px;
-  border-radius: 999px;
-  color: var(--mcp-navy);
-  background: rgb(255 255 255 / 0.85);
-  border: 1px solid var(--mcp-line);
-  box-shadow: 0 8px 20px rgb(20 34 74 / 0.08);
-  font-weight: 700 !important;
-  transition:
-    background 0.25s,
-    color 0.25s,
-    border-color 0.25s;
-}
-.mwp-cplus__peek-btn:hover,
-.mwp-cplus__peek-btn[aria-pressed="true"] {
-  color: #fff;
-  background: var(--mcp-navy);
-  border-color: var(--mcp-navy);
-}
-.mwp-cplus__peek-pill {
-  display: inline-block;
-  width: 22px;
-  height: 10px;
-  border-radius: 999px;
-  background: linear-gradient(90deg, var(--mcp-gold) 0 50%, #cfd6df 50% 100%);
-  rotate: -20deg;
-  transition: rotate 0.4s var(--mcp-ease);
-}
-.mwp-cplus__peek-btn[aria-pressed="true"] .mwp-cplus__peek-pill {
-  rotate: 20deg;
-  background: linear-gradient(90deg, var(--mcp-gold-hi) 0 42%, transparent 42% 58%, #e6ebf1 58% 100%);
-}
-.mwp-cplus__peek-link {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  color: var(--mcp-navy);
-  border-bottom: 1.5px solid currentColor;
-  font-weight: 700 !important;
-  opacity: 0;
-  translate: 0 6px;
-  pointer-events: none;
-  transition:
-    opacity 0.4s var(--mcp-ease),
-    translate 0.4s var(--mcp-ease);
-}
-.mwp-cplus__peek-link svg {
-  width: 15px;
-  height: 15px;
-}
-.mwp-cplus__stage-wrap[data-open="true"] .mwp-cplus__peek-link {
-  opacity: 1;
-  translate: 0 0;
-  pointer-events: auto;
-}
-.mwp-cplus__peek-swap {
-  display: grid;
-  justify-items: start;
-}
-.mwp-cplus__peek-swap > * {
-  grid-area: 1 / 1;
-}
-.mwp-cplus__peek-hint {
-  align-self: center;
-  white-space: nowrap;
-  transition: opacity 0.4s;
-}
-.mwp-cplus__peek-hint[data-hidden="true"] {
-  opacity: 0;
-}
-
 @keyframes mcp-sheen-a {
   from {
     background-position:
@@ -783,17 +649,6 @@
   .mwp-cplus__stage-wrap {
     order: -1;
     max-width: 420px;
-  }
-}
-@media (max-width: 1023px) {
-  .mwp-cplus__peek {
-    flex-direction: column;
-  }
-  .mwp-cplus__peek-swap {
-    justify-items: center;
-  }
-  .mwp-cplus__peek-hint {
-    display: none;
   }
 }
 @media (max-width: 480px) {

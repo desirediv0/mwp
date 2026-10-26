@@ -3,13 +3,13 @@
 import { Component, useCallback, useEffect, useRef, useState } from "react";
 import dynamic from "next/dynamic";
 import Link from "next/link";
-import { IconArrowRight, IconArrowUpRight, IconLock, IconPackage, IconPlayerPause, IconPlayerPlay, IconTruck } from "@tabler/icons-react";
+import { IconArrowRight, IconLock, IconPackage, IconTruck } from "@tabler/icons-react";
 import { useLanguage } from "@/lib/language-context";
 import { TRUST_CLAIMS } from "@/lib/trustClaims";
 import "./mwp-capsule-plus.css";
 
 // Interactive take on MwpCapsuleHero: same layout and copy, plus headline lines that light up their
-// capsule half, drag-to-spin, tap / "Look inside" / scroll to open, and one shared lock beat.
+// capsule half, drag-to-spin, tap or scroll to open, and one shared lock beat.
 
 // WebGL stage is client-only and streams in after hydration.
 const MwpCapsulePlusScene = dynamic(() => import("./MwpCapsulePlusScene"), { ssr: false });
@@ -130,19 +130,16 @@ export default function MwpCapsuleHeroPlus() {
   const pressRef = useRef(null);
 
   const [playing, setPlaying] = useState(false);
-  const [paused, setPaused] = useState(false);
   const [reduceMotion, setReduceMotion] = useState(false);
   const [webgl, setWebgl] = useState(null);
   const [inView, setInView] = useState(true);
   const [pageVisible, setPageVisible] = useState(true);
   const [open, setOpen] = useState(false);
   const [focus, setFocus] = useState(null);
-  const [manualOpen, setManualOpen] = useState(false);
   const [beat, setBeat] = useState(0);
   const [dragging, setDragging] = useState(false);
-  const [spun, setSpun] = useState(false);
 
-  const motionOn = !paused && !reduceMotion;
+  const motionOn = !reduceMotion;
   const startPlaying = useCallback(() => {
     if (playStartRef.current === null) playStartRef.current = performance.now();
     setPlaying(true);
@@ -228,11 +225,9 @@ export default function MwpCapsuleHeroPlus() {
     },
   });
 
+  // Tapping the capsule opens it (and tapping again closes it); the scene reads this every frame.
   const toggleOpen = () => {
-    setManualOpen(value => {
-      interactionRef.current.manualOpen = !value;
-      return !value;
-    });
+    interactionRef.current.manualOpen = !interactionRef.current.manualOpen;
     poke();
   };
 
@@ -250,7 +245,6 @@ export default function MwpCapsuleHeroPlus() {
         event.currentTarget.setPointerCapture?.(event.pointerId);
         interactionRef.current.drag.active = true;
         setDragging(true);
-        setSpun(true);
       }
       if (press.moved) {
         interactionRef.current.drag.dx += event.clientX - press.lastX;
@@ -283,7 +277,6 @@ export default function MwpCapsuleHeroPlus() {
       ref={sectionRef}
       aria-labelledby="mwp-cplus-title"
       data-play={playing}
-      data-motion={motionOn ? "on" : "off"}
       data-focus={focus ?? undefined}
       onPointerMove={handlePointerMove}
       onPointerLeave={handlePointerLeave}
@@ -385,38 +378,9 @@ export default function MwpCapsuleHeroPlus() {
             </span>
           </div>
 
-          {webgl !== false && (
-            <div className="mwp-cplus__peek">
-              <button type="button" className="mwp-cplus__peek-btn" aria-pressed={manualOpen} onClick={toggleOpen}>
-                <span className="mwp-cplus__peek-pill" aria-hidden="true" />
-                {manualOpen ? "Close capsule" : "Look inside"}
-              </button>
-              {/* The drag hint and the ingredient link share one slot and cross-fade. */}
-              <span className="mwp-cplus__peek-swap">
-                <Link href="/ingredients" className="mwp-cplus__peek-link" tabIndex={open ? 0 : -1} aria-hidden={!open}>
-                  Ingredient library
-                  <IconArrowUpRight stroke={2} aria-hidden="true" />
-                </Link>
-                <span className="mwp-cplus__peek-hint" data-hidden={spun || open}>
-                  or drag to spin
-                </span>
-              </span>
-            </div>
-          )}
           <p className="sr-only" aria-live="polite">
             {open ? `Inside every MWP formula: ${CAPSULE_WORDS.join(", ")}.` : ""}
           </p>
-
-          <button
-            type="button"
-            className="mwp-cplus__pause"
-            onClick={() => setPaused(value => !value)}
-            aria-label="Pause animation"
-            aria-pressed={paused || reduceMotion}
-            disabled={reduceMotion}
-          >
-            {paused || reduceMotion ? <IconPlayerPlay className="h-4 w-4" /> : <IconPlayerPause className="h-4 w-4" />}
-          </button>
         </div>
       </div>
     </section>
