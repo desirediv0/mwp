@@ -24,6 +24,7 @@ function SubscriptionsInner() {
   const [busyId, setBusyId] = useState(null);
   const [cancelFor, setCancelFor] = useState(null);
   const [reason, setReason] = useState(REASONS[0]);
+  const [note, setNote] = useState("");
   const [addrFor, setAddrFor] = useState(null);
   const [addresses, setAddresses] = useState([]);
   const [addrId, setAddrId] = useState("");
@@ -98,7 +99,7 @@ function SubscriptionsInner() {
   const cancel = async () => {
     setBusyId(cancelFor.id);
     try {
-      await fetchApi(`/subscriptions/${cancelFor.id}/cancel`, { method: "POST", credentials: "include", body: JSON.stringify({ reason }) });
+      await fetchApi(`/subscriptions/${cancelFor.id}/cancel`, { method: "POST", credentials: "include", body: JSON.stringify({ reason, note: note.trim() || undefined }) });
       toast.success("Subscription cancelled. You will not be charged again.");
       setCancelFor(null);
       load();
@@ -148,7 +149,7 @@ function SubscriptionsInner() {
               </button>
             )}
             <button className="mwp-btn ghost sm" disabled={busyId === s.id} onClick={() => openAddress(s)}>Change address</button>
-            <button className="mwp-btn ghost sm" disabled={busyId === s.id} onClick={() => { setReason(REASONS[0]); setCancelFor(s); }}>
+            <button className="mwp-btn ghost sm" disabled={busyId === s.id} onClick={() => { setReason(REASONS[0]); setNote(""); setCancelFor(s); }}>
               <IconX size={14} /> Cancel subscription
             </button>
           </div>
@@ -214,6 +215,11 @@ function SubscriptionsInner() {
             <label className="mwp-field">Why are you leaving? (optional)
               <select value={reason} onChange={(e) => setReason(e.target.value)}>{REASONS.map((r) => <option key={r}>{r}</option>)}</select>
             </label>
+            {reason === "Other" && (
+              <label className="mwp-field">Tell us more
+                <textarea value={note} onChange={(e) => setNote(e.target.value)} maxLength={200} rows={3} />
+              </label>
+            )}
             <button className="mwp-set-save danger" onClick={cancel} disabled={busyId != null}>
               {busyId != null && <IconLoader2 size={16} className="animate-spin" />} Yes, cancel subscription
             </button>

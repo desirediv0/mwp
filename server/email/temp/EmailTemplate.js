@@ -811,7 +811,7 @@ const escapeHtml = (v) =>
 
 export const getNoticeTemplate = (data, storeConfig = null) => {
     const store = storeConfig || getStoreConfig();
-    const { title, accent = "", greeting = "", paragraphs = [], rows = [], buttonText, buttonUrl, danger = false } = data;
+    const { title, accent = "", greeting = "", paragraphs = [], rows = [], buttonText, buttonUrl, danger = false, links = [] } = data;
     const rowHtml = rows
         .filter(([, value]) => value !== null && value !== undefined && value !== "")
         .map(
@@ -836,6 +836,7 @@ export const getNoticeTemplate = (data, storeConfig = null) => {
             ${paragraphs.map((p) => `<p>${escapeHtml(p)}</p>`).join("")}
             ${rowHtml ? `<div class="info-box"><table style="width:100%;border-collapse:collapse;">${rowHtml}</table></div>` : ""}
             ${buttonText && buttonUrl ? `<div class="button-container"><a class="button" href="${escapeHtml(buttonUrl)}">${escapeHtml(buttonText)}</a></div>` : ""}
+            ${links.length ? `<p style="text-align:center;font-size:13px;color:#6b7280;margin-top:18px;">${links.map((l) => `<a href="${escapeHtml(l.url)}" style="color:#12213f;text-decoration:underline;">${escapeHtml(l.text)}</a>`).join(" &nbsp;|&nbsp; ")}</p>` : ""}
         </div>
         ${FOOTER_HTML(store)}
     </div>

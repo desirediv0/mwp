@@ -11,6 +11,9 @@ import {
   skipNextShipment,
   changeSubscriptionAddress,
   getForecast,
+  getCancelReasons,
+  getManageSummary,
+  readManageToken,
   listSubscriberPrices,
   setSubscriberPrice,
   runSubscriptionJobs,
@@ -150,7 +153,17 @@ export const listMySubscriptions = asyncHandler(async (req, res) => {
 });
 
 export const cancelMySubscription = asyncHandler(async (req, res) => {
-  await cancelSubscription(req.params.id, { by: "USER", userId: req.user.id, reason: req.body?.reason });
+  await cancelSubscription(req.params.id, { by: "USER", userId: req.user.id, reason: req.body?.reason, note: req.body?.note });
+  ok(res, {}, "Subscription cancelled");
+});
+
+// Email links: no login, the signed token is the proof. GET only shows details; POST cancels.
+export const getManageLink = asyncHandler(async (req, res) => ok(res, await getManageSummary(req.params.token)));
+
+export const cancelViaLink = asyncHandler(async (req, res) => {
+  const id = readManageToken(req.params.token);
+  if (!id) throw new ApiError(400, "This link is invalid or has expired. Sign in to manage your subscription.");
+  await cancelSubscription(id, { by: "USER", reason: req.body?.reason, note: req.body?.note });
   ok(res, {}, "Subscription cancelled");
 });
 
@@ -209,6 +222,7 @@ export const adminListSubscriptions = asyncHandler(async (req, res) => {
     prisma.subscription.groupBy({ by: ["status"], _count: true }),
   ]);
   ok(res, {
+    cancelReasons: await getCancelReasons(),
     subscriptions: rows.map((s) => ({ ...shape(s), user: s.user, orderCount: s._count.orders, cancelReason: s.cancelReason, cancelledBy: s.cancelledBy })),
     pagination: { total, page, limit, pages: Math.ceil(total / limit) },
     counts: Object.fromEntries(counts.map((c) => [c.status, c._count])),

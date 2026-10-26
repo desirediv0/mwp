@@ -1,3 +1,4 @@
+import jwt from "jsonwebtoken";
 import { prisma } from "../config/db.js";
 import { ApiError } from "./ApiError.js";
 import { getStripeContext, refundStripePayment } from "./stripe.js";
@@ -22,6 +23,25 @@ const DAY = 24 * 60 * 60 * 1000;
 
 const siteUrl = () => (process.env.FRONTEND_URL || "").split(",")[0].trim().replace(/\/$/, "");
 export const manageUrl = () => `${siteUrl()}/account/subscriptions`;
+
+const linkSecret = () => process.env.SUBSCRIPTION_LINK_SECRET || process.env.ACCESS_JWT_SECRET;
+
+// Signed link for the email "Cancel subscription" button. Opening it only shows a confirm page;
+// nothing is cancelled until the customer presses the button there.
+export const manageToken = (subId) => jwt.sign({ sid: subId, purpose: "sub-manage" }, linkSecret(), { expiresIn: "90d" });
+export const cancelLink = (sub) => `${siteUrl()}/subscription/manage?token=${encodeURIComponent(manageToken(sub.id))}`;
+export function readManageToken(token) {
+  try {
+    const d = jwt.verify(token, linkSecret());
+    return d.purpose === "sub-manage" ? d.sid : null;
+  } catch {
+    return null;
+  }
+}
+const mailLinks = (sub) => [
+  { text: "Cancel subscription", url: cancelLink(sub) },
+  { text: "Manage in my account", url: manageUrl() },
+];
 
 export const fmtDate = (d) =>
   new Date(d).toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric", timeZone: "UTC" });
@@ -117,6 +137,7 @@ export const sendSubscriptionStarted = (sub, user, { price, shipping, total }) =
     ],
     buttonText: "Manage subscription",
     buttonUrl: manageUrl(),
+    links: mailLinks(sub),
   });
 
 export const sendReminder = (sub, user, amount) =>
@@ -135,21 +156,30 @@ export const sendReminder = (sub, user, amount) =>
     ],
     buttonText: "Skip or cancel",
     buttonUrl: manageUrl(),
+    links: mailLinks(sub),
   });
 
-const sendRenewed = (sub, user, order) =>
-  emailUser(user.email, `Subscription order #${order.orderNumber} confirmed`, {
-    title: "Your monthly order is confirmed",
+const sendRenewed = (sub, user, order, ctx = {}) =>
+  emailUser(user.email, `Payment received: subscription order #${order.orderNumber}`, {
+    title: "Payment received",
     accent: "Subscribe & save",
     greeting: `Hi ${user.name || "there"},`,
-    paragraphs: [`We charged your saved card and your ${describe(sub)} is being prepared.`, `Your next shipment is scheduled for ${fmtDate(sub.nextBillingDate)}.`],
+    paragraphs: [
+      `We charged your saved card for this month's ${describe(sub)} and your order is being prepared.`,
+      "You do not need to do anything. We will email you when it ships.",
+    ],
     rows: [
       ["Order", `#${order.orderNumber}`],
-      ["Charged", money(order.total)],
+      ["Product", describe(sub)],
+      ["Items", ctx.subTotal != null ? money(ctx.subTotal) : null],
+      ["Shipping", ctx.shipping != null ? (ctx.shipping > 0 ? money(ctx.shipping) : "Free") : null],
+      ["Total charged", money(order.total)],
+      ["Shipping to", ctx.address ? `${ctx.address.street}, ${ctx.address.city}, ${ctx.address.state} ${ctx.address.postalCode}` : null],
       ["Next charge", fmtDate(sub.nextBillingDate)],
     ],
     buttonText: "View subscription",
     buttonUrl: manageUrl(),
+    links: mailLinks(sub),
   });
 
 const sendFailed = (sub, user, reason, { willRetry, retryOn }) =>
@@ -164,6 +194,7 @@ const sendFailed = (sub, user, reason, { willRetry, retryOn }) =>
     rows: [["Product", describe(sub)]],
     buttonText: "Open my subscriptions",
     buttonUrl: manageUrl(),
+    links: willRetry ? mailLinks(sub) : [],
   });
 
 const sendUnavailable = (sub, user, reason) =>
@@ -185,6 +216,7 @@ const sendPostponed = (sub, user, until) =>
     paragraphs: [`${describe(sub)} is temporarily out of stock, so we have not charged you yet. We will try again on ${fmtDate(until)}.`, "You can skip or cancel from your account if you prefer."],
     buttonText: "Manage subscription",
     buttonUrl: manageUrl(),
+    links: mailLinks(sub),
   });
 
 const sendCancelled = (sub, user, by) =>
@@ -524,7 +556,7 @@ export async function renewSubscription(subscriptionId, { now = new Date(), stri
           description: `MWP Supplements subscription: ${describe(sub)}`,
           metadata: { kind: "subscription_renewal", subscriptionId: sub.id, userId: user.id },
         },
-        { idempotencyKey: `sub-${sub.id}-${dueDate.toISOString()}` }
+        { idempotencyKey: `sub-${sub.id}-cycle-${sub.billingCount}-try-${sub.failedAttempts}` }
       );
     } catch (err) {
       const reason = err?.raw?.message || err.message || "The card was declined";
@@ -532,8 +564,11 @@ export async function renewSubscription(subscriptionId, { now = new Date(), stri
     }
     if (intent.status !== "succeeded") throw new Error("The bank needs you to confirm this payment");
 
-    let order;
+    let order = null;
+    const already = await prisma.stripePayment.findUnique({ where: { sessionId: `renewal_${intent.id}` } });
+    if (already?.orderId) order = await prisma.order.findUnique({ where: { id: already.orderId } });
     try {
+      if (order) throw Object.assign(new Error("exists"), { exists: true });
       order = await createOrderForShipment({
         sub,
         user,
@@ -547,6 +582,9 @@ export async function renewSubscription(subscriptionId, { now = new Date(), stri
         isRenewal: true,
       });
     } catch (orderErr) {
+      if (orderErr.exists) {
+        // the earlier run already made this order: just carry on
+      } else {
       // charged but no order: refund so the customer is never billed for nothing
       try {
         await stripe.refunds.create({ payment_intent: intent.id });
@@ -554,6 +592,7 @@ export async function renewSubscription(subscriptionId, { now = new Date(), stri
         console.error("Renewal refund failed - refund manually in Stripe:", intent.id, refundErr.message);
       }
       throw new Error(`${orderErr.message}. You were not charged.`);
+      }
     }
 
     const next = addMonth(dueDate);
@@ -562,7 +601,7 @@ export async function renewSubscription(subscriptionId, { now = new Date(), stri
       data: { status: "ACTIVE", nextBillingDate: next < now ? addMonth(now) : next, lastBilledAt: now, billingCount: { increment: 1 }, failedAttempts: 0, lastError: null, reminderSentFor: null },
     });
     afterOrder(order.id);
-    sendRenewed(updated, user, order);
+    sendRenewed(updated, user, order, { subTotal, shipping: shipping.customerPrice, address });
     return { ok: true, orderId: order.id };
   } catch (err) {
     if (err.postpone) {
@@ -715,19 +754,34 @@ export function startSubscriptionScheduler() {
 
 /* ------------------------------ cancel / skip ------------------------------ */
 
-export async function cancelSubscription(subscriptionId, { by = "USER", reason = null, userId = null } = {}) {
+export async function cancelSubscription(subscriptionId, { by = "USER", reason = null, note = null, userId = null } = {}) {
   const sub = await prisma.subscription.findFirst({ where: { id: subscriptionId, ...(userId ? { userId } : {}) }, include: { user: true } });
   if (!sub) throw new ApiError(404, "Subscription not found");
   if (sub.status === "CANCELLED") return sub;
   const updated = await prisma.subscription.update({
     where: { id: sub.id },
-    data: { status: "CANCELLED", cancelledAt: new Date(), cancelledBy: by, cancelReason: reason ? String(reason).slice(0, 300) : null },
+    data: {
+      status: "CANCELLED",
+      cancelledAt: new Date(),
+      cancelledBy: by,
+      cancelReason: [reason, note].filter(Boolean).join(": ").slice(0, 300) || null,
+    },
   });
   if (sub.user?.email) sendCancelled(sub, sub.user, by);
   if (by === "USER") {
     adminNotice(`Subscription cancelled: ${sub.productSnapshot?.name || sub.id}`, {
       title: "Subscription cancelled by customer",
-      rows: [["Customer", sub.user?.email], ["Product", describe(sub)], ["Reason", reason || "No reason given"]],
+      accent: "Admin",
+      rows: [
+        ["Customer", `${sub.user?.name || ""} <${sub.user?.email}>`],
+        ["Product", describe(sub)],
+        ["Shipments received", String(sub.billingCount)],
+        ["Subscribed since", fmtDate(sub.createdAt)],
+        ["Reason", reason || "No reason given"],
+        ["Note", note || null],
+      ],
+      buttonText: "Open subscriptions",
+      buttonUrl: `${(process.env.ADMIN_FRONTEND_URL || "").split(",")[0].trim().replace(/\/$/, "")}/subscriptions`,
     });
   }
   return updated;
@@ -829,4 +883,30 @@ export async function setSubscriberPrice(variantId, value) {
   if (!(price >= 1)) throw new ApiError(400, "Enter a price of at least $1");
   if (price > selling) throw new ApiError(400, `The subscriber price cannot be higher than the selling price ($${selling.toFixed(2)})`);
   return prisma.productVariant.update({ where: { id: variantId }, data: { subscriptionPrice: price.toFixed(2) } });
+}
+
+export async function getCancelReasons() {
+  const rows = await prisma.subscription.findMany({ where: { status: "CANCELLED", cancelledBy: "USER" }, select: { cancelReason: true } });
+  const counts = new Map();
+  for (const r of rows) {
+    const key = (r.cancelReason || "No reason given").split(":")[0].trim() || "No reason given";
+    counts.set(key, (counts.get(key) || 0) + 1);
+  }
+  return [...counts.entries()].map(([reason, count]) => ({ reason, count })).sort((a, b) => b.count - a.count);
+}
+
+export async function getManageSummary(token) {
+  const id = readManageToken(token);
+  if (!id) throw new ApiError(400, "This link is invalid or has expired. Sign in to manage your subscription.");
+  const sub = await prisma.subscription.findUnique({ where: { id }, include: { user: { select: { name: true, email: true } } } });
+  if (!sub) throw new ApiError(404, "Subscription not found");
+  return {
+    id: sub.id,
+    status: sub.status,
+    product: sub.productSnapshot?.name || "Your product",
+    quantity: sub.quantity,
+    nextBillingDate: sub.nextBillingDate,
+    cancelledAt: sub.cancelledAt,
+    customer: sub.user?.name || sub.user?.email,
+  };
 }

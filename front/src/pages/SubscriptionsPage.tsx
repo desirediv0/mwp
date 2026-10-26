@@ -84,6 +84,7 @@ export default function SubscriptionsPage() {
   const [loading, setLoading] = useState(true);
   const [rows, setRows] = useState<Sub[]>([]);
   const [counts, setCounts] = useState<Record<string, number>>({});
+  const [cancelReasons, setCancelReasons] = useState<{ reason: string; count: number }[]>([]);
   const [status, setStatus] = useState<"" | Status>("");
   const [search, setSearch] = useState("");
   const [page, setPage] = useState(1);
@@ -106,6 +107,7 @@ export default function SubscriptionsPage() {
       const res = await api.get("/api/admin/subscriptions", { params: { status: status || undefined, search: search || undefined, page, limit: 15 } });
       setRows(res.data.data.subscriptions);
       setCounts(res.data.data.counts || {});
+      setCancelReasons(res.data.data.cancelReasons || []);
       setPages(res.data.data.pagination.pages || 1);
     } catch {
       toast.error("Failed to load subscriptions");
@@ -272,7 +274,7 @@ export default function SubscriptionsPage() {
               <b>If a payment fails.</b> We try again 2 days later, up to the number of attempts you set. The customer gets an email each time. After the last failed attempt the subscription is cancelled and you get an email. If the product is out of stock the customer is not charged; we wait 3 days and try again. If the product is removed from the store the subscription is cancelled and the customer is told.
             </li>
             <li>
-              <b>Cancel or skip.</b> Customers can skip the next shipment, change the delivery address or cancel any time in My Account → Subscriptions. You can cancel any subscription yourself from the list below. Deleting a customer account cancels their subscriptions.
+              <b>Cancel or skip.</b> Customers can skip the next shipment, change the delivery address or cancel any time in My Account → Subscriptions. Every subscription email also has a one-click &quot;Cancel subscription&quot; link that works without signing in (it asks the customer to confirm and pick a reason first). You get an email with the customer, product and reason for every cancellation. You can cancel any subscription yourself from the list below. Deleting a customer account cancels their subscriptions.
             </li>
             <li>
               <b>Parcels.</b> Open a subscription to see every order it created with the carrier, tracking number or &quot;Needs label&quot;. Use the normal Orders page to buy labels and ship, exactly like other orders. The &quot;Coming up&quot; box shows how many units you need for the next 30 days compared with your stock.
@@ -416,6 +418,22 @@ export default function SubscriptionsPage() {
           </div>
         </CardContent>
       </Card>
+
+      {cancelReasons.length > 0 && (
+        <Card>
+          <CardHeader>
+            <CardTitle>Why customers cancel</CardTitle>
+            <CardDescription>From the reason customers choose when they cancel. You also get an email for each cancellation.</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="flex flex-wrap gap-2">
+              {cancelReasons.map((r) => (
+                <Badge key={r.reason} variant="outline" className="px-3 py-1 text-sm">{r.reason}: <b className="ml-1">{r.count}</b></Badge>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
+      )}
 
       <Card>
         <CardContent className="space-y-4 pt-6">

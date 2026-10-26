@@ -9,11 +9,15 @@ import {
   cancelMySubscription,
   skipMyNextShipment,
   changeMyAddress,
+  getManageLink,
+  cancelViaLink,
 } from "../controllers/subscription.controller.js";
 
 const router = express.Router();
 
 router.get("/settings", getPublicSettings);
+router.get("/manage/:token", getManageLink);
+router.post("/manage/:token/cancel", cancelViaLink);
 
 router.use(verifyJWTToken);
 router.get("/mine", listMySubscriptions);
