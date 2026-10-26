@@ -658,7 +658,9 @@ export default function ProductContent({ slug, initialProduct = null }) {
               const info = effectivePriceInfo || getEffectivePrice(selectedVariant, quantity);
               const unit = Number(info.price);
               const pct = Number(subSettings.discountPercent || 0);
-              const subUnit = Math.round(unit * (1 - pct / 100) * 100) / 100;
+              const fixed = subSettings.prices?.[selectedVariant.id];
+              const subUnit = fixed != null ? Number(fixed) : Math.round(unit * (1 - pct / 100) * 100) / 100;
+              const savePct = unit > 0 && subUnit < unit ? Math.round((1 - subUnit / unit) * 100) : 0;
               return (
                 <fieldset className="mwp-buy-mode" aria-label="Purchase options">
                   <label className={`mwp-buy-opt${purchaseMode === "once" ? " is-on" : ""}`}>
@@ -671,7 +673,7 @@ export default function ProductContent({ slug, initialProduct = null }) {
                     <input type="radio" name="buy-mode" checked={purchaseMode === "subscribe"} onChange={() => setPurchaseMode("subscribe")} />
                     <span className="mwp-buy-dot" />
                     <span className="mwp-buy-txt">
-                      <strong>Subscribe monthly {pct > 0 && <em>Save {pct}%</em>}</strong>
+                      <strong>Subscribe monthly {savePct > 0 && <em>Save {savePct}%</em>}</strong>
                       <small>Delivered every month. Skip or cancel any time.</small>
                     </span>
                     <b>{formatCurrency(subUnit)}<small>/mo</small></b>

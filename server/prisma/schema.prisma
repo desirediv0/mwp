@@ -339,6 +339,7 @@ model ProductImage {
 }
 
 model ProductVariant {
+  subscriptionPrice Decimal? @db.Decimal(10, 2) // fixed monthly price for subscribers; empty = use the global discount %
   subscriptions Subscription[]
   id              String                  @id @default(uuid())
   productId       String
@@ -2078,6 +2079,7 @@ model Subscription {
   quantity              Int                @default(1)
   status                SubscriptionStatus @default(ACTIVE)
   discountPercent       Decimal            @default(0) @db.Decimal(5, 2)
+  lockedUnitPrice       Decimal?           @db.Decimal(10, 2) // fixed price the customer signed up at
   shippingAddressId     String?
   stripeCustomerId      String?
   stripePaymentMethodId String?

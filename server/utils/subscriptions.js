@@ -42,7 +42,13 @@ export async function getSubscriptionSettings() {
   return s;
 }
 
-export const unitPriceFor = (variant, discountPercent) => {
+// What a subscriber pays per unit:
+//  1. a price locked when they subscribed (fixed-price variants), else
+//  2. the variant's fixed subscriber price, else
+//  3. the regular price minus the global subscriber discount %
+export const unitPriceFor = (variant, discountPercent, lockedUnitPrice = null) => {
+  if (lockedUnitPrice != null) return round2(Number(lockedUnitPrice));
+  if (variant.subscriptionPrice != null) return round2(Number(variant.subscriptionPrice));
   const base = parseFloat(variant.salePrice || variant.price);
   return round2(base * (1 - Number(discountPercent || 0) / 100));
 };
@@ -391,6 +397,7 @@ export async function fulfillSubscriptionSession(session, expectedUserId = null,
         variantId: variant.id,
         quantity: payload.quantity,
         discountPercent: payload.discountPercent,
+        lockedUnitPrice: variant.subscriptionPrice != null ? payload.unitPrice : null,
         shippingAddressId: address.id,
         stripeCustomerId: customerId,
         stripePaymentMethodId: paymentMethodId,
@@ -494,7 +501,7 @@ export async function renewSubscription(subscriptionId, { now = new Date(), stri
     });
     if (variant.quantity < sub.quantity) throw Object.assign(new Error("The product is temporarily out of stock"), { postpone: true });
 
-    const price = unitPriceFor(variant, sub.discountPercent);
+    const price = unitPriceFor(variant, sub.discountPercent, sub.lockedUnitPrice);
     const subTotal = round2(price * sub.quantity);
     const shipping = await quoteShipping({ address, variant, qty: sub.quantity, subTotal });
     const total = round2(subTotal + shipping.customerPrice);
@@ -618,7 +625,7 @@ export async function sendDueReminders({ now = new Date(), budgetMs = 4 * 60 * 1
         data: { reminderSentFor: sub.nextBillingDate },
       });
       if (claim.count === 0) return { ok: false };
-      const amount = round2(unitPriceFor(sub.variant, sub.discountPercent) * sub.quantity);
+      const amount = round2(unitPriceFor(sub.variant, sub.discountPercent, sub.lockedUnitPrice) * sub.quantity);
       const delivered = await sendReminder(sub, sub.user, amount);
       // mail server down: release the claim so the next run tries again (billing is never blocked by this)
       if (!delivered) await prisma.subscription.update({ where: { id: sub.id }, data: { reminderSentFor: null } }).catch(() => {});
@@ -765,7 +772,7 @@ export async function getForecast(days = 30) {
   const week = Date.now() + 7 * DAY;
   let dueWeek = 0;
   for (const s of subs) {
-    const amount = round2(unitPriceFor(s.variant, s.discountPercent) * s.quantity);
+    const amount = round2(unitPriceFor(s.variant, s.discountPercent, s.lockedUnitPrice) * s.quantity);
     revenue += amount;
     if (s.nextBillingDate.getTime() <= Date.now()) dueNow++;
     if (s.nextBillingDate.getTime() <= week) dueWeek++;
@@ -783,4 +790,43 @@ export async function getForecast(days = 30) {
     expectedRevenue: round2(revenue),
     products: [...byVariant.values()].map((r) => ({ ...r, shortBy: Math.max(r.units - r.inStock, 0) })).sort((a, b) => b.units - a.units),
   };
+}
+
+// Admin: fixed subscriber price per variant
+export async function listSubscriberPrices() {
+  const settings = await getSubscriptionSettings();
+  const variants = await prisma.productVariant.findMany({
+    where: { product: { isDeleted: false } },
+    select: {
+      id: true, sku: true, price: true, salePrice: true, subscriptionPrice: true, isActive: true,
+      product: { select: { name: true } },
+      attributes: { select: { attributeValue: { select: { value: true, attribute: { select: { name: true } } } } } },
+    },
+    orderBy: [{ product: { name: "asc" } }, { sku: "asc" }],
+  });
+  return variants.map((v) => ({
+    variantId: v.id,
+    product: v.product.name,
+    sku: v.sku,
+    variantLabel: v.attributes.map((a) => `${a.attributeValue.attribute.name}: ${a.attributeValue.value}`).join(", ") || "Single option",
+    price: parseFloat(v.price),
+    salePrice: v.salePrice != null ? parseFloat(v.salePrice) : null,
+    sellingPrice: parseFloat(v.salePrice || v.price),
+    subscriptionPrice: v.subscriptionPrice != null ? parseFloat(v.subscriptionPrice) : null,
+    effectivePrice: unitPriceFor(v, settings.discountPercent),
+    isActive: v.isActive,
+  }));
+}
+
+export async function setSubscriberPrice(variantId, value) {
+  const variant = await prisma.productVariant.findUnique({ where: { id: variantId } });
+  if (!variant) throw new ApiError(404, "Variant not found");
+  if (value === null || value === "" || value === undefined) {
+    return prisma.productVariant.update({ where: { id: variantId }, data: { subscriptionPrice: null } });
+  }
+  const price = round2(Number(value));
+  const selling = parseFloat(variant.salePrice || variant.price);
+  if (!(price >= 1)) throw new ApiError(400, "Enter a price of at least $1");
+  if (price > selling) throw new ApiError(400, `The subscriber price cannot be higher than the selling price ($${selling.toFixed(2)})`);
+  return prisma.productVariant.update({ where: { id: variantId }, data: { subscriptionPrice: price.toFixed(2) } });
 }

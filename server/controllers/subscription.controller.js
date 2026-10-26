@@ -11,6 +11,8 @@ import {
   skipNextShipment,
   changeSubscriptionAddress,
   getForecast,
+  listSubscriberPrices,
+  setSubscriberPrice,
   runSubscriptionJobs,
   unitPriceFor,
   manageUrl,
@@ -20,7 +22,10 @@ const ok = (res, data, message = "OK", code = 200) => res.status(code).json(new 
 
 const publicSettings = (s) => ({ isEnabled: s.isEnabled, discountPercent: Number(s.discountPercent) });
 
-export const getPublicSettings = asyncHandler(async (req, res) => ok(res, publicSettings(await getSubscriptionSettings())));
+export const getPublicSettings = asyncHandler(async (req, res) => {
+  const fixed = await prisma.productVariant.findMany({ where: { subscriptionPrice: { not: null } }, select: { id: true, subscriptionPrice: true } });
+  ok(res, { ...publicSettings(await getSubscriptionSettings()), prices: Object.fromEntries(fixed.map((v) => [v.id, Number(v.subscriptionPrice)])) });
+});
 
 // Amounts for the subscribe page before the customer pays
 export const previewSubscription = asyncHandler(async (req, res) => {
@@ -29,6 +34,7 @@ export const previewSubscription = asyncHandler(async (req, res) => {
     product: c.variant.product.name,
     quantity: c.qty,
     unitPrice: c.price,
+    fixedPrice: c.variant.subscriptionPrice != null,
     listPrice: parseFloat(c.variant.salePrice || c.variant.price),
     discountPercent: Number(c.settings.discountPercent),
     subTotal: c.subTotal,
@@ -121,7 +127,7 @@ const shape = (s) => ({
   status: s.status,
   quantity: s.quantity,
   product: { id: s.productId, name: s.productSnapshot?.name || s.product?.name, slug: s.productSnapshot?.slug || s.product?.slug, image: s.productSnapshot?.image || null },
-  unitPrice: s.variant ? unitPriceFor(s.variant, s.discountPercent) : null,
+  unitPrice: s.variant ? unitPriceFor(s.variant, s.discountPercent, s.lockedUnitPrice) : null,
   discountPercent: Number(s.discountPercent),
   nextBillingDate: s.nextBillingDate,
   lastBilledAt: s.lastBilledAt,
@@ -159,6 +165,13 @@ export const changeMyAddress = asyncHandler(async (req, res) => {
 });
 
 /* ------------------------------ admin ------------------------------ */
+
+export const adminListPrices = asyncHandler(async (req, res) => ok(res, { variants: await listSubscriberPrices() }));
+
+export const adminSetPrice = asyncHandler(async (req, res) => {
+  await setSubscriberPrice(req.params.variantId, req.body?.subscriptionPrice);
+  ok(res, {}, req.body?.subscriptionPrice == null || req.body?.subscriptionPrice === "" ? "Subscriber price removed" : "Subscriber price saved");
+});
 
 export const adminForecast = asyncHandler(async (req, res) => ok(res, await getForecast(Math.min(parseInt(req.query.days, 10) || 30, 90))));
 

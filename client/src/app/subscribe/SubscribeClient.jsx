@@ -154,8 +154,8 @@ export default function SubscribeClient() {
                   </div>
                   <div style={{ marginTop: 16, opacity: loadingPreview ? 0.5 : 1 }}>
                     <div className="mwp-line">
-                      <span>Price each{preview.discountPercent > 0 ? ` (${preview.discountPercent}% subscriber saving)` : ""}</span>
-                      <b>{preview.discountPercent > 0 && <s style={{ color: "#8a90a3", fontWeight: 400, marginRight: 6 }}>{formatCurrency(preview.listPrice)}</s>}{formatCurrency(preview.unitPrice)}</b>
+                      <span>Price each{preview.listPrice > preview.unitPrice ? " (subscriber price)" : ""}</span>
+                      <b>{preview.listPrice > preview.unitPrice && <s style={{ color: "#8a90a3", fontWeight: 400, marginRight: 6 }}>{formatCurrency(preview.listPrice)}</s>}{formatCurrency(preview.unitPrice)}</b>
                     </div>
                     <div className="mwp-line"><span>Subtotal ({qty})</span><b>{formatCurrency(preview.subTotal)}</b></div>
                     <div className="mwp-line"><span>Shipping ({preview.shippingLabel})</span><b>{preview.shipping > 0 ? formatCurrency(preview.shipping) : "Free"}</b></div>
