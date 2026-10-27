@@ -1,0 +1,23 @@
+/* White trust strip: 8 round metallic badges, bold titles, short plain-English lines. Pauses on hover. */
+#mwp-trust { --navy: #14213d; background: #fff; border-top: 1px solid #e7dcc9; border-bottom: 1px solid #e7dcc9; padding: 34px 0; overflow: hidden; position: relative; }
+#mwp-trust * { box-sizing: border-box; }
+#mwp-trust .tr-mask { overflow: hidden; -webkit-mask-image: linear-gradient(90deg, transparent 0, #000 5%, #000 95%, transparent 100%); mask-image: linear-gradient(90deg, transparent 0, #000 5%, #000 95%, transparent 100%); }
+#mwp-trust .tr-track { display: flex; width: max-content; animation: trMove 56s linear infinite; }
+#mwp-trust:hover .tr-track, #mwp-trust:focus-within .tr-track { animation-play-state: paused; }
+@keyframes trMove { to { transform: translateX(-50%); } }
+#mwp-trust .tr-item { flex: none; display: flex; align-items: center; gap: 22px; width: 470px; padding: 0 34px; border-right: 1.5px solid #efe6d6; }
+#mwp-trust .tr-badge { flex: none; width: 150px; height: 150px; display: block; border-radius: 50%; box-shadow: 0 10px 20px rgba(20, 33, 61, .16); transition: transform .35s cubic-bezier(.16, 1, .3, 1); object-fit: contain; }
+#mwp-trust .tr-item:hover .tr-badge { transform: scale(1.06) rotate(-4deg); }
+#mwp-trust .tr-txt b { display: block; font-size: 25px; font-weight: 900; line-height: 1.1; letter-spacing: .005em; color: var(--navy); }
+#mwp-trust .tr-txt p { margin: 9px 0 0; font-size: 17px; font-weight: 600; line-height: 1.42; color: #1e293b; }
+#mwp-trust .tr-txt small { display: block; margin-top: 5px; font-size: 13.5px; font-weight: 600; color: #55637a; }
+@media (max-width: 760px) {
+  #mwp-trust { padding: 22px 0; }
+  #mwp-trust .tr-track { animation-duration: 44s; }
+  #mwp-trust .tr-item { width: 330px; gap: 14px; padding: 0 20px; }
+  #mwp-trust .tr-badge { width: 100px; height: 100px; }
+  #mwp-trust .tr-txt b { font-size: 19px; }
+  #mwp-trust .tr-txt p { font-size: 14.5px; margin-top: 6px; }
+  #mwp-trust .tr-txt small { font-size: 12px; }
+}
+@media (prefers-reduced-motion: reduce) { #mwp-trust .tr-track { animation: none; } #mwp-trust .tr-mask { overflow-x: auto; -webkit-mask-image: none; mask-image: none; } }

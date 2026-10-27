@@ -8,7 +8,7 @@
 // import MwpCapsuleHero from "@/components/sections/home/MwpCapsuleHero";
 import MwpCapsuleHeroPlus from "@/components/sections/home/MwpCapsuleHeroPlus";
 import MwpProductShowcase from "@/components/sections/home/MwpProductShowcase";
-import CertificateMarquee from "@/components/sections/home/CertificateMarquee";
+import TrustStrip from "@/components/sections/home/TrustStrip";
 
 export const metadata = {
   title: "MWP SUPPLEMENTS — Men | Women | Power",
@@ -26,7 +26,7 @@ export default function Home() {
       {/* <MwpParticleHero /> */}
       {/* <MwpCapsuleHero /> */}
       <MwpCapsuleHeroPlus />
-      <CertificateMarquee />
+      <TrustStrip />
       <MwpProductShowcase />
     </>
   );
