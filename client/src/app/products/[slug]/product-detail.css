@@ -138,3 +138,55 @@
   font-family: var(--mwp-serif, Georgia), Georgia, 'Times New Roman', serif;
   letter-spacing: 0;
 }
+
+/* ---- Phones: image on the left, name + price on the right, buying options right below ----
+   The info column becomes part of the hero grid (display: contents) so the first screen shows the
+   bottle, the title and the price together, even on small phones. */
+@media (max-width: 639px) {
+  .mwp-product-detail .mwp-product-hero-grid { grid-template-columns: minmax(0, 40%) minmax(0, 1fr); column-gap: 14px; row-gap: 0; align-items: start; }
+  .mwp-product-detail .mwp-product-gallery { grid-column: 1; grid-row: 1 / span 5; position: relative; top: auto; }
+  .mwp-product-detail .mwp-product-info { display: contents; }
+  .mwp-product-detail .mwp-product-info > * { grid-column: 1 / -1; }
+  .mwp-product-detail .mwp-product-info > .mwp-product-kicker,
+  .mwp-product-detail .mwp-product-info > .mwp-product-title-row,
+  .mwp-product-detail .mwp-product-info > .mwp-product-intro,
+  .mwp-product-detail .mwp-product-info > .mwp-product-price,
+  .mwp-product-detail .mwp-product-info > .mwp-product-rating { grid-column: 2; }
+  .mwp-product-detail .mwp-product-info > .mwp-product-rating { margin-bottom: 8px; flex-wrap: wrap; }
+
+  .mwp-product-detail .mwp-product-image { aspect-ratio: 4 / 5; border-radius: 16px; min-height: 0; }
+  .mwp-product-detail .mwp-product-image > img { padding: 10px; }
+  .mwp-product-detail .mwp-product-image button[aria-label="Wishlist"] { width: 32px; height: 32px; top: 8px; right: 8px; }
+  .mwp-product-detail .mwp-product-gallery .no-scrollbar { gap: 6px; padding-bottom: 0; }
+  .mwp-product-detail .mwp-product-gallery .no-scrollbar button { width: 40px; height: 50px; border-radius: 10px; }
+
+  .mwp-product-detail .mwp-product-kicker { margin: 2px 0 6px; font-size: 9.5px; letter-spacing: .16em; align-self: end; }
+  .mwp-product-detail .mwp-product-title-row { margin-bottom: 8px; }
+  .mwp-product-detail .mwp-product-title { font-size: clamp(22px, 7.4vw, 30px); max-width: none; line-height: 1.02; overflow-wrap: anywhere; }
+  .mwp-product-detail .mwp-product-intro { font-size: 13px; line-height: 1.5; margin-bottom: 10px; display: -webkit-box; -webkit-line-clamp: 4; -webkit-box-orient: vertical; overflow: hidden; }
+  .mwp-product-detail .mwp-product-price { margin-bottom: 14px; }
+  .mwp-product-detail .mwp-product-price > div { gap: 6px; }
+  .mwp-product-detail .mwp-product-price span:first-child { font-size: 26px; line-height: 1.1; }
+  .mwp-product-detail .mwp-product-price s,
+  .mwp-product-detail .mwp-product-price .line-through { font-size: 13px; }
+
+  /* the buying card spans the full width under the row */
+  .mwp-product-detail .mwp-product-purchase { margin-top: 4px; }
+}
+
+/* Phones: tighter buying card so the buttons are in the first screen on small phones */
+@media (max-width: 639px) {
+  .mwp-product-detail .mwp-product-intro { -webkit-line-clamp: 3; }
+  .mwp-product-detail .mwp-product-price { margin-bottom: 10px; }
+  .mwp-product-detail .mwp-product-purchase { padding: 12px; }
+  .mwp-product-detail .mwp-product-purchase-label { display: none; }
+  .mwp-product-detail .mwp-product-purchase .mb-6 { margin-bottom: 10px; }
+  .mwp-product-detail .mwp-product-purchase .mb-6 p { margin-bottom: 8px; }
+  .mwp-product-detail .mwp-buy-mode { gap: 8px; margin-bottom: 10px; }
+  .mwp-product-detail .mwp-buy-opt { padding: 10px 12px; gap: 10px; border-radius: 14px; }
+  .mwp-product-detail .mwp-buy-txt strong { font-size: 14px; }
+  .mwp-product-detail .mwp-buy-txt small { font-size: 12px; line-height: 1.3; }
+  .mwp-product-detail .mwp-product-purchase-actions > button { height: 46px; }
+  .mwp-product-detail .mwp-product-purchase-actions #main-add-to-cart-btn > div,
+  .mwp-product-detail .mwp-product-purchase-actions #main-add-to-cart-btn > button { height: 46px; }
+}

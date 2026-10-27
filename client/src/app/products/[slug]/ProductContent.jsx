@@ -580,7 +580,7 @@ export default function ProductContent({ slug, initialProduct = null }) {
 
             {/* Rating — hidden for now, see SHOW_REVIEWS */}
             {SHOW_REVIEWS && (
-              <div className="flex items-center gap-2.5 mb-6">
+              <div className="mwp-product-rating flex items-center gap-2.5 mb-6">
                 <div className="flex gap-0.5">{[1, 2, 3, 4, 5].map(i => <IconStar key={i} className="h-3.5 w-3.5 text-neutral-900" fill={i <= Math.round(product.avgRating || 0) ? "currentColor" : "none"} stroke={1.5} />)}</div>
                 <span className="text-[12px] text-neutral-500">({product.reviewCount || 0} reviews)</span>
               </div>
