@@ -8,6 +8,7 @@ import {
   adminUpdateVerificationStatus,
   adminDeleteVerification,
   adminReactivateVerification,
+  adminSyncProducts,
 } from "../controllers/verification.controller.js";
 import { verifyAdminJWT } from "../middlewares/admin.middleware.js";
 import { uploadFiles } from "../middlewares/multer.middlerware.js";
@@ -24,6 +25,7 @@ const fileFields = uploadFiles.fields([
 
 router.get("/", adminListVerifications);
 router.post("/", fileFields, adminCreateVerification);
+router.post("/sync-products", adminSyncProducts);
 router.get("/code/:verificationCode", adminGetVerificationByCode);
 router.get("/:id", adminGetVerification);
 router.patch("/:id", fileFields, adminUpdateVerification);

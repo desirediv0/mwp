@@ -9,6 +9,7 @@ import {
   getFileUrl,
 } from "../middlewares/multer.middlerware.js";
 import { deleteFromS3 } from "../utils/deleteFromS3.js";
+import { createMissingVerifications } from "../utils/verificationSync.js";
 
 // Permanent, unpredictable, human-shareable code — e.g. MWP-8F72K9X4.
 // Generated once at creation and NEVER regenerated or edited afterwards.
@@ -31,9 +32,13 @@ const generateUniqueCode = async () => {
 
 const resolveFile = (url) => (url ? getFileUrl(url) : null);
 
+const withProductImage = { product: { select: { images: { where: { isPrimary: true }, take: 1, select: { url: true } } } } };
+const imageOf = (v) => v.productImage || v.product?.images?.[0]?.url || null;
+
 const formatAdmin = (v) => ({
   ...v,
-  productImage: resolveFile(v.productImage),
+  product: undefined,
+  productImage: resolveFile(imageOf(v)),
   coaUrl: resolveFile(v.coaUrl),
   certificateUrl: resolveFile(v.certificateUrl),
   badgeImage: resolveFile(v.badgeImage),
@@ -44,7 +49,7 @@ const formatPublic = (v) => ({
   verificationCode: v.verificationCode,
   productName: v.productName,
   productSlug: v.productSlug,
-  productImage: resolveFile(v.productImage),
+  productImage: resolveFile(imageOf(v)),
   batchNumber: v.batchNumber,
   lotNumber: v.lotNumber,
   manufacturingDate: v.manufacturingDate,
@@ -75,6 +80,7 @@ export const publicVerify = asyncHandler(async (req, res) => {
 
   const record = await prisma.verification.findUnique({
     where: { verificationCode: String(verificationCode).toUpperCase() },
+    include: withProductImage,
   });
 
   if (!record || !record.isActive) {
@@ -111,7 +117,7 @@ export const adminListVerifications = asyncHandler(async (req, res) => {
   const skip = (Math.max(parseInt(page) || 1, 1) - 1) * take;
 
   const [items, total, counts] = await Promise.all([
-    prisma.verification.findMany({ where, orderBy: { createdAt: "desc" }, skip, take }),
+    prisma.verification.findMany({ where, orderBy: { createdAt: "desc" }, skip, take, include: withProductImage }),
     prisma.verification.count({ where }),
     prisma.verification.groupBy({ by: ["status"], _count: true }),
   ]);
@@ -137,7 +143,7 @@ export const adminGetVerification = asyncHandler(async (req, res) => {
   const { id } = req.params;
   const record = await prisma.verification.findUnique({
     where: { id },
-    include: { auditLogs: { orderBy: { createdAt: "desc" }, take: 50 } },
+    include: { auditLogs: { orderBy: { createdAt: "desc" }, take: 50 }, ...withProductImage },
   });
   if (!record) throw new ApiError(404, "Verification not found");
   res.status(200).json(new ApiResponsive(200, { verification: formatAdmin(record) }, "Verification fetched"));
@@ -383,6 +389,18 @@ export const adminUpdateVerificationStatus = asyncHandler(async (req, res) => {
 
 // Soft delete by default (isActive=false) — the permanent URL keeps resolving
 // and shows a clear "revoked/unavailable" state rather than a dead link.
+// One click: every real product that has no verification yet gets one (permanent code + page).
+export const adminSyncProducts = asyncHandler(async (req, res) => {
+  const created = await createMissingVerifications({ createdBy: req.admin?.id || null });
+  res.status(200).json(
+    new ApiResponsive(
+      200,
+      { created: created.map(formatAdmin), count: created.length },
+      created.length ? `Created ${created.length} verification${created.length === 1 ? "" : "s"}` : "Every product already has a verification"
+    )
+  );
+});
+
 export const adminDeleteVerification = asyncHandler(async (req, res) => {
   const { id } = req.params;
   const { hard } = req.query;
@@ -390,6 +408,9 @@ export const adminDeleteVerification = asyncHandler(async (req, res) => {
   if (!existing) throw new ApiError(404, "Verification not found");
 
   if (hard === "true") {
+    if (existing.isActive && existing.status === "ACTIVE") {
+      throw new ApiError(400, "This QR is live. Revoke it first, then delete. A deleted code can never be brought back and printed labels would show Not Found.");
+    }
     if (existing.productImage) await deleteFromS3(existing.productImage).catch(() => {});
     if (existing.coaUrl) await deleteFromS3(existing.coaUrl).catch(() => {});
     if (existing.certificateUrl) await deleteFromS3(existing.certificateUrl).catch(() => {});

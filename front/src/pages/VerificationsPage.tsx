@@ -132,6 +132,7 @@ export default function VerificationsPage() {
   const [saving, setSaving] = useState(false);
 
   const [qrTarget, setQrTarget] = useState<Verification | null>(null);
+  const [syncing, setSyncing] = useState(false);
 
   // product search inside the create/edit dialog
   const [productQuery, setProductQuery] = useState("");
@@ -143,6 +144,21 @@ export default function VerificationsPage() {
   const badgeImgRef = useRef<HTMLInputElement>(null);
   const coaRef = useRef<HTMLInputElement>(null);
   const certRef = useRef<HTMLInputElement>(null);
+
+  // Every real product that has no verification yet gets one, using only data the product already has.
+  const syncProducts = async () => {
+    setSyncing(true);
+    try {
+      const res = await api.post("/api/admin/verifications/sync-products");
+      const n = res.data?.data?.count ?? 0;
+      toast.success(n ? `Created ${n} verification${n === 1 ? "" : "s"} from your products. Add batch, ingredients and COA next.` : "Every product already has a verification");
+      await load();
+    } catch (e: any) {
+      toast.error(e?.response?.data?.message || "Could not add the missing products");
+    } finally {
+      setSyncing(false);
+    }
+  };
 
   const load = async () => {
     setLoading(true);
@@ -353,9 +369,14 @@ export default function VerificationsPage() {
             without ever generating a new code.
           </p>
         </div>
-        <Button onClick={openCreate}>
-          <Plus className="h-4 w-4 mr-2" /> Create Verification
-        </Button>
+        <div className="flex flex-wrap gap-2">
+          <Button variant="outline" onClick={syncProducts} disabled={syncing}>
+            {syncing ? <Loader2 className="h-4 w-4 mr-2 animate-spin" /> : <RotateCcw className="h-4 w-4 mr-2" />} Add missing products
+          </Button>
+          <Button onClick={openCreate}>
+            <Plus className="h-4 w-4 mr-2" /> Create Verification
+          </Button>
+        </div>
       </div>
 
       {/* Stat cards */}

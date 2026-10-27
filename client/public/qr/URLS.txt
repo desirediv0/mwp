@@ -1,16 +1,18 @@
 MWP SUPPLEMENTS — permanent QR target URLs
 Base: https://mwpsupplements.com
 
-home                     https://mwpsupplements.com/
-products                 https://mwpsupplements.com/products
-compare                  https://mwpsupplements.com/compare
-ingredients              https://mwpsupplements.com/ingredients
-why-us                   https://mwpsupplements.com/why-us
-contact                  https://mwpsupplements.com/contact
-faqs                     https://mwpsupplements.com/faqs
-product-ultra-pro        https://mwpsupplements.com/products/ultra-pro-testosterone-matrix
-product-power-max        https://mwpsupplements.com/products/power-max-pre-workout
-product-rapid-boost      https://mwpsupplements.com/products/rapid-boost-circulation-support
-product-her-power        https://mwpsupplements.com/products/her-power-hormone-balance
-product-her-energy       https://mwpsupplements.com/products/her-energy-clean-focus
-product-daily-boost      https://mwpsupplements.com/products/daily-boost-32-in-1-multivitamin
+home                         https://mwpsupplements.com/
+products                     https://mwpsupplements.com/products
+compare                      https://mwpsupplements.com/compare
+ingredients                  https://mwpsupplements.com/ingredients
+why-us                       https://mwpsupplements.com/why-us
+contact                      https://mwpsupplements.com/contact
+faqs                         https://mwpsupplements.com/faqs
+verify-ultra-pro             https://mwpsupplements.com/verify/MWP-M6LXK496
+verify-rapid-boost           https://mwpsupplements.com/verify/MWP-NH7HBJJ7
+verify-power-max             https://mwpsupplements.com/verify/MWP-2WFNS9XZ
+verify-her-power             https://mwpsupplements.com/verify/MWP-N4BZZQ5V
+verify-her-energy            https://mwpsupplements.com/verify/MWP-EVP234RH
+verify-daily-vitality        https://mwpsupplements.com/verify/MWP-EG7QNL9G
+verify-alpha-prime           https://mwpsupplements.com/verify/MWP-9EHBU5AZ
+verify-titan-force           https://mwpsupplements.com/verify/MWP-MEQ4DJ9D

@@ -1,5 +1,5 @@
 // Shared SEO helpers: one place for the public site address and absolute URLs.
-export const SITE_URL = (process.env.NEXT_PUBLIC_SITE_URL || "https://www.mwpsupplements.com").replace(/\/$/, "");
+export const SITE_URL = (process.env.NEXT_PUBLIC_SITE_URL || "https://mwpsupplements.com").replace(/\/$/, "");
 export const SITE_NAME = "MWP SUPPLEMENTS";
 
 export const absoluteUrl = (path = "/") => `${SITE_URL}${path.startsWith("/") ? path : `/${path}`}`;

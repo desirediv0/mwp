@@ -20,6 +20,8 @@ import SVGtoPDF from "svg-to-pdfkit";
 
 const BASE = process.env.QR_BASE_URL || "https://mwpsupplements.com";
 
+// Site pages (these paths are stable). Product QR codes are NOT built from product slugs: they point to the
+// permanent verification page /verify/<code>, which never changes even if a product is renamed.
 const TARGETS = [
   { name: "home", url: `${BASE}/` },
   { name: "products", url: `${BASE}/products` },
@@ -28,12 +30,6 @@ const TARGETS = [
   { name: "why-us", url: `${BASE}/why-us` },
   { name: "contact", url: `${BASE}/contact` },
   { name: "faqs", url: `${BASE}/faqs` },
-  { name: "product-ultra-pro", url: `${BASE}/products/ultra-pro-testosterone-matrix` },
-  { name: "product-power-max", url: `${BASE}/products/power-max-pre-workout` },
-  { name: "product-rapid-boost", url: `${BASE}/products/rapid-boost-circulation-support` },
-  { name: "product-her-power", url: `${BASE}/products/her-power-hormone-balance` },
-  { name: "product-her-energy", url: `${BASE}/products/her-energy-clean-focus` },
-  { name: "product-daily-boost", url: `${BASE}/products/daily-boost-32-in-1-multivitamin` },
 ];
 
 const OUT = path.resolve("qr-codes");
@@ -77,7 +73,19 @@ ${body}%%EOF
 `;
 }
 
+async function loadVerificationTargets() {
+  const { prisma } = await import("../config/db.js");
+  const rows = await prisma.verification.findMany({ orderBy: { createdAt: "asc" }, select: { verificationCode: true, productSlug: true, productName: true } });
+  await prisma.$disconnect();
+  return rows.map((v) => ({
+    name: `verify-${v.productSlug || v.verificationCode.toLowerCase()}`,
+    url: `${BASE}/verify/${v.verificationCode}`,
+    label: v.productName,
+  }));
+}
+
 async function run() {
+  TARGETS.push(...(await loadVerificationTargets()));
   const lines = [`MWP SUPPLEMENTS — permanent QR target URLs`, `Base: ${BASE}`, ""];
 
   for (const t of TARGETS) {
@@ -118,7 +126,7 @@ async function run() {
       .toBuffer();
     write("padded.png", padded);
 
-    lines.push(`${t.name.padEnd(24)} ${t.url}`);
+    lines.push(`${t.name.padEnd(28)} ${t.url}`);
     console.log(`+ ${t.name}  ->  ${t.url}`);
   }
 
