@@ -78,7 +78,8 @@ async function loadVerificationTargets() {
   const rows = await prisma.verification.findMany({ orderBy: { createdAt: "asc" }, select: { verificationCode: true, productSlug: true, productName: true } });
   await prisma.$disconnect();
   return rows.map((v) => ({
-    name: `verify-${v.productSlug || v.verificationCode.toLowerCase()}`,
+    name: `MWP-${String(v.productName).toUpperCase().replace(/[^A-Z0-9]+/g, "-").replace(/^-+|-+$/g, "")}-QR`,
+    dir: "products",
     url: `${BASE}/verify/${v.verificationCode}`,
     label: v.productName,
   }));
@@ -90,7 +91,11 @@ async function run() {
 
   for (const t of TARGETS) {
     const write = (ext, buf) => {
-      DESTS.forEach((d) => fs.writeFileSync(path.join(d, `${t.name}.${ext}`), buf));
+      DESTS.forEach((d) => {
+        const dir = t.dir ? path.join(d, t.dir) : d;
+        fs.mkdirSync(dir, { recursive: true });
+        fs.writeFileSync(path.join(dir, `${t.name}.${ext}`), buf);
+      });
     };
 
     // SVG (vector)

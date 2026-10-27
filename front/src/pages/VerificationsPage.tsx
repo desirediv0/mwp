@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import QRCode from "qrcode";
+import JSZip from "jszip";
 import JoditEditor from "jodit-react";
 import { verifications as api, products as productsApi } from "@/api/adminService";
 import { joditEditorConfig } from "@/config/joditEditorConfig";
@@ -41,6 +42,21 @@ import {
 
 const SITE_BASE = "https://mwpsupplements.com";
 const verifyUrl = (code: string) => `${SITE_BASE}/verify/${code}`;
+
+// File name for the graphic designer: MWP-ULTRA-PRO-QR
+const qrBaseName = (productName: string) =>
+  `MWP-${String(productName).toUpperCase().replace(/[^A-Z0-9]+/g, "-").replace(/^-+|-+$/g, "")}-QR`;
+
+const QR_STYLE = { errorCorrectionLevel: "H" as const, margin: 3, color: { dark: "#0A0A0A", light: "#FFFFFF" } };
+
+const saveBlob = (blob: Blob, filename: string) => {
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = filename;
+  a.click();
+  setTimeout(() => URL.revokeObjectURL(url), 2000);
+};
 
 type Status = "ACTIVE" | "INACTIVE" | "EXPIRED" | "SUSPENDED" | "REVOKED";
 type Authenticity = "VERIFIED" | "UNVERIFIED" | "UNAVAILABLE";
@@ -133,6 +149,7 @@ export default function VerificationsPage() {
 
   const [qrTarget, setQrTarget] = useState<Verification | null>(null);
   const [syncing, setSyncing] = useState(false);
+  const [zipping, setZipping] = useState(false);
 
   // product search inside the create/edit dialog
   const [productQuery, setProductQuery] = useState("");
@@ -144,6 +161,38 @@ export default function VerificationsPage() {
   const badgeImgRef = useRef<HTMLInputElement>(null);
   const coaRef = useRef<HTMLInputElement>(null);
   const certRef = useRef<HTMLInputElement>(null);
+
+  // One ZIP for the graphic designer: a vector SVG and a 2000px PNG for every product, named by product.
+  const downloadAllQr = async () => {
+    setZipping(true);
+    try {
+      const res = await api.list({ limit: 100 });
+      const rows: Verification[] = res.data?.data?.verifications || [];
+      if (!rows.length) {
+        toast.error("There are no QR codes yet");
+        return;
+      }
+      const zip = new JSZip();
+      const folder = zip.folder("MWP-Product-QR-Codes")!;
+      const lines = ["MWP SUPPLEMENTS - permanent QR links (they never change)", ""];
+      for (const v of rows) {
+        const url = verifyUrl(v.verificationCode);
+        const base = qrBaseName(v.productName);
+        folder.file(`${base}.svg`, await QRCode.toString(url, { ...QR_STYLE, type: "svg", width: 1024 }));
+        const png = await QRCode.toDataURL(url, { ...QR_STYLE, width: 2000 });
+        folder.file(`${base}.png`, png.split(",")[1], { base64: true });
+        lines.push(`${v.productName.padEnd(18)} ${url}`);
+      }
+      lines.push("", "Use the SVG for print (sharp at any size). Keep a white border around the QR when placing it on the label.");
+      folder.file("README.txt", lines.join("\n"));
+      saveBlob(await zip.generateAsync({ type: "blob" }), "MWP-Product-QR-Codes.zip");
+      toast.success(`Downloaded ${rows.length} QR codes`);
+    } catch {
+      toast.error("Could not build the ZIP. Try again.");
+    } finally {
+      setZipping(false);
+    }
+  };
 
   // Every real product that has no verification yet gets one, using only data the product already has.
   const syncProducts = async () => {
@@ -382,6 +431,9 @@ export default function VerificationsPage() {
           </p>
         </div>
         <div className="flex flex-wrap gap-2">
+          <Button variant="outline" onClick={downloadAllQr} disabled={zipping}>
+            {zipping ? <Loader2 className="h-4 w-4 mr-2 animate-spin" /> : <Download className="h-4 w-4 mr-2" />} Download all QR (ZIP)
+          </Button>
           <Button variant="outline" onClick={syncProducts} disabled={syncing}>
             {syncing ? <Loader2 className="h-4 w-4 mr-2 animate-spin" /> : <RotateCcw className="h-4 w-4 mr-2" />} Add missing products
           </Button>
@@ -968,16 +1020,16 @@ function QrPreview({ v }: { v: Verification }) {
   }, [publicUrl]);
 
   const downloadPng = async () => {
-    const d = await QRCode.toDataURL(publicUrl, {
-      errorCorrectionLevel: "H",
-      margin: 3,
-      width: 2000,
-      color: { dark: "#0A0A0A", light: "#FFFFFF" },
-    });
+    const d = await QRCode.toDataURL(publicUrl, { ...QR_STYLE, width: 2000 });
     const a = document.createElement("a");
     a.href = d;
-    a.download = `mwp-verify-${v.verificationCode}.png`;
+    a.download = `${qrBaseName(v.productName)}.png`;
     a.click();
+  };
+
+  const downloadSvg = async () => {
+    const svg = await QRCode.toString(publicUrl, { ...QR_STYLE, type: "svg", width: 1024 });
+    saveBlob(new Blob([svg], { type: "image/svg+xml" }), `${qrBaseName(v.productName)}.svg`);
   };
 
   const copyUrl = () => {
@@ -1017,6 +1069,7 @@ function QrPreview({ v }: { v: Verification }) {
         )}
       </div>
       <p className="mt-3 font-mono text-sm font-bold text-[#1F2937]">{v.verificationCode}</p>
+      <p className="text-[11px] text-[#6B7280]">File name: {qrBaseName(v.productName)}</p>
       <a
         href={publicUrl}
         target="_blank"
@@ -1030,6 +1083,9 @@ function QrPreview({ v }: { v: Verification }) {
       <div className="flex flex-wrap justify-center gap-2 mt-5">
         <Button size="sm" variant="outline" onClick={downloadPng}>
           <Download className="h-3.5 w-3.5 mr-1.5" /> PNG
+        </Button>
+        <Button size="sm" variant="outline" onClick={downloadSvg}>
+          <Download className="h-3.5 w-3.5 mr-1.5" /> SVG (print)
         </Button>
         <Button size="sm" variant="outline" onClick={printQr}>
           <Printer className="h-3.5 w-3.5 mr-1.5" /> Print
