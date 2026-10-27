@@ -1613,4 +1613,5 @@ export const verifications = {
     api.patch(`/api/admin/verifications/${id}/status`, { status }),
   reactivate: (id: string) => api.patch(`/api/admin/verifications/${id}/reactivate`),
   remove: (id: string) => api.delete(`/api/admin/verifications/${id}`),
+  syncProducts: () => api.post("/api/admin/verifications/sync-products"),
 };

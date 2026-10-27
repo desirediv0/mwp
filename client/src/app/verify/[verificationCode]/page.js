@@ -9,12 +9,15 @@ import {
   IconShieldCheck,
   IconAlertTriangle,
   IconCircleX,
-  IconMapPin,
-  IconCalendar,
   IconRefresh,
-  IconShoppingBag,
   IconExternalLink,
   IconArrowRight,
+  IconCopy,
+  IconCheck,
+  IconFileCertificate,
+  IconFlask,
+  IconLeaf,
+  IconMapPin,
 } from "@tabler/icons-react";
 
 const img = (raw) => {
@@ -26,96 +29,100 @@ const img = (raw) => {
 const formatDate = (d) => {
   if (!d) return null;
   try {
-    return new Date(d).toLocaleDateString("en-US", { day: "2-digit", month: "2-digit", year: "numeric" });
+    return new Date(d).toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" });
   } catch {
     return null;
   }
 };
 
-const STATUS_META = {
+// Descriptions come from the admin editor as HTML: show them as plain, readable paragraphs.
+const toParagraphs = (html) =>
+  String(html || "")
+    .replace(/<\/(p|div|li|h[1-6])>/gi, "\n")
+    .replace(/<br\s*\/?>/gi, "\n")
+    .replace(/<[^>]+>/g, " ")
+    .replace(/&amp;/g, "&")
+    .replace(/&nbsp;/g, " ")
+    .replace(/&#39;|&rsquo;/g, "'")
+    .split("\n")
+    .map((t) => t.replace(/\s+/g, " ").trim())
+    .filter(Boolean);
+
+const STATUS = {
   ACTIVE: {
+    tone: "ok",
     icon: IconShieldCheck,
-    color: "text-emerald-700",
-    bg: "bg-emerald-50",
-    border: "border-emerald-200",
-    label: "PRODUCT VERIFIED",
-    sub: "This product record is currently active and authentic.",
+    title: "Verified MWP product",
+    text: "This code is registered with MWP Supplements. You are holding the real thing.",
   },
-  INACTIVE: {
-    icon: IconAlertTriangle,
-    color: "text-amber-700",
-    bg: "bg-amber-50",
-    border: "border-amber-200",
-    label: "VERIFICATION UNAVAILABLE",
-    sub: "This verification record is currently inactive.",
-  },
-  EXPIRED: {
-    icon: IconAlertTriangle,
-    color: "text-amber-700",
-    bg: "bg-amber-50",
-    border: "border-amber-200",
-    label: "PRODUCT RECORD EXPIRED",
-    sub: "The verification record has expired.",
-  },
-  SUSPENDED: {
-    icon: IconAlertTriangle,
-    color: "text-amber-700",
-    bg: "bg-amber-50",
-    border: "border-amber-200",
-    label: "VERIFICATION SUSPENDED",
-    sub: "This product verification is currently suspended.",
-  },
-  REVOKED: {
-    icon: IconCircleX,
-    color: "text-red-700",
-    bg: "bg-red-50",
-    border: "border-red-200",
-    label: "VERIFICATION REVOKED",
-    sub: "This verification record is no longer valid.",
-  },
+  INACTIVE: { tone: "warn", icon: IconAlertTriangle, title: "Verification unavailable", text: "This verification record is not active right now. Please contact us if you have questions." },
+  EXPIRED: { tone: "warn", icon: IconAlertTriangle, title: "This record has expired", text: "The verification record for this code is no longer current. Check the date on your bottle or contact us." },
+  SUSPENDED: { tone: "warn", icon: IconAlertTriangle, title: "Verification suspended", text: "This code is temporarily on hold. Please contact us before using this product." },
+  REVOKED: { tone: "bad", icon: IconCircleX, title: "Verification revoked", text: "This code is no longer valid. If you bought this product, please contact us." },
 };
 
-function IngredientRow({ ing }) {
+const TONES = {
+  ok: { bg: "#EAF6EE", border: "#BFE3CC", fg: "#1F6B3A", chip: "#1F6B3A" },
+  warn: { bg: "#FBF3DF", border: "#EADFC4", fg: "#7A4C05", chip: "#A8741F" },
+  bad: { bg: "#FBE8EA", border: "#F0C9CE", fg: "#B3001B", chip: "#B3001B" },
+};
+
+function Shell({ children }) {
   return (
-    <div className="rounded-2xl border border-[#e7ddc8] bg-white p-4 sm:p-5">
-      <div className="flex items-start justify-between gap-3">
-        <p className="font-serif text-[15px] sm:text-base text-[#1a1a1a] leading-snug">{ing.name}</p>
-        {ing.amount && (
-          <span className="shrink-0 text-[13px] font-bold text-[#8a6d1f] whitespace-nowrap">{ing.amount}</span>
-        )}
-      </div>
-      {ing.description && (
-        <p className="text-[12.5px] text-[#6b6045] mt-1.5 leading-relaxed">{ing.description}</p>
-      )}
-      {ing.origin && (
-        <p className="text-[10px] uppercase tracking-[0.14em] font-bold text-[#8a6d1f] mt-2.5">
-          Origin &middot; {ing.origin}
-        </p>
-      )}
+    <div className="min-h-screen bg-[#FAF8F2] text-[#12213F]">
+      <main className="mx-auto max-w-3xl px-4 pb-16 pt-5 sm:px-6 sm:pt-8">{children}</main>
     </div>
   );
 }
 
-function TapCard({ label, value, onClick, href }) {
-  const content = (
-    <>
-      <p className="text-[11px] uppercase tracking-[0.16em] font-bold text-[#8a6d1f]">{label}</p>
-      <p className="text-[12px] text-[#6b6045] mt-1">{value}</p>
-    </>
-  );
-  const className =
-    "rounded-2xl border border-[#e7ddc8] bg-white hover:border-[#c9a44c] hover:bg-white transition-colors p-5 text-center cursor-pointer";
-  if (href) {
-    return (
-      <a href={href} target="_blank" rel="noopener noreferrer" className={className}>
-        {content}
-      </a>
-    );
-  }
+function Card({ children, className = "" }) {
+  return <section className={`rounded-3xl border border-[#E6DFC9] bg-white p-5 sm:p-7 ${className}`}>{children}</section>;
+}
+
+function Row({ label, value, mono }) {
+  if (!value) return null;
   return (
-    <button onClick={onClick} className={className}>
-      {content}
-    </button>
+    <div className="flex items-start justify-between gap-4 border-b border-[#F0EAD8] py-3.5 last:border-0">
+      <dt className="text-[14px] text-[#5A6275]">{label}</dt>
+      <dd className={`text-right text-[14.5px] font-semibold text-[#12213F] ${mono ? "font-mono tracking-wide" : ""}`}>{value}</dd>
+    </div>
+  );
+}
+
+function DocButton({ href, title, sub, icon: Icon }) {
+  return (
+    <a
+      href={href}
+      target="_blank"
+      rel="noopener noreferrer"
+      className="flex items-center gap-4 rounded-2xl border border-[#E6DFC9] bg-[#FAF8F2] p-4 transition-colors hover:border-[#A8741F] hover:bg-white"
+    >
+      <span className="grid h-11 w-11 shrink-0 place-items-center rounded-xl bg-white text-[#A8741F] ring-1 ring-[#E6DFC9]">
+        <Icon size={22} stroke={1.5} />
+      </span>
+      <span className="min-w-0 flex-1">
+        <span className="block text-[15px] font-semibold">{title}</span>
+        <span className="block text-[13px] text-[#5A6275]">{sub}</span>
+      </span>
+      <IconExternalLink size={18} className="shrink-0 text-[#8A90A3]" />
+    </a>
+  );
+}
+
+function Ingredient({ ing }) {
+  return (
+    <li className="rounded-2xl border border-[#E6DFC9] bg-white p-4">
+      <div className="flex items-start justify-between gap-3">
+        <p className="text-[15.5px] font-semibold leading-snug">{ing.name}</p>
+        {ing.amount && <span className="shrink-0 rounded-full bg-[#FBF3DF] px-2.5 py-1 text-[12.5px] font-bold text-[#7A4C05]">{ing.amount}</span>}
+      </div>
+      {ing.description && <p className="mt-1.5 text-[14px] leading-relaxed text-[#4A5470]">{ing.description}</p>}
+      {ing.origin && (
+        <p className="mt-2.5 inline-flex items-center gap-1.5 text-[12.5px] font-semibold text-[#5A6275]">
+          <IconMapPin size={14} className="text-[#A8741F]" /> Sourced from {ing.origin}
+        </p>
+      )}
+    </li>
   );
 }
 
@@ -124,17 +131,14 @@ export default function VerifyPage() {
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
-  const [showBatch, setShowBatch] = useState(false);
-  const [showAuth, setShowAuth] = useState(false);
+  const [copied, setCopied] = useState(false);
 
   const load = useCallback(() => {
     if (!verificationCode) return;
     setLoading(true);
     setError(false);
     fetchApi(`/public/verify/${verificationCode}`)
-      .then((r) => {
-        setData(r?.data?.verification || null);
-      })
+      .then((r) => setData(r?.data?.verification || null))
       .catch(() => setError(true))
       .finally(() => setLoading(false));
   }, [verificationCode]);
@@ -143,305 +147,201 @@ export default function VerifyPage() {
     load();
   }, [load]);
 
-  /* -------------------- loading -------------------- */
+  const copy = () => {
+    navigator.clipboard?.writeText(data.verificationCode).then(() => {
+      setCopied(true);
+      setTimeout(() => setCopied(false), 1800);
+    });
+  };
+
   if (loading) {
     return (
-      <div className="min-h-screen bg-white flex items-center justify-center px-5">
-        <div className="w-full max-w-md space-y-4 animate-pulse">
-          <div className="h-8 w-40 bg-[#e7ddc8] rounded mx-auto" />
-          <div className="h-48 w-full bg-[#e7ddc8] rounded-2xl mx-auto" />
-          <div className="h-6 w-3/4 bg-[#e7ddc8] rounded mx-auto" />
-          <div className="h-4 w-1/2 bg-[#e7ddc8] rounded mx-auto" />
+      <Shell>
+        <div className="animate-pulse space-y-4">
+          <div className="h-24 rounded-3xl bg-[#E6DFC9]/60" />
+          <div className="h-80 rounded-3xl bg-[#E6DFC9]/60" />
+          <div className="h-40 rounded-3xl bg-[#E6DFC9]/60" />
         </div>
-      </div>
+      </Shell>
     );
   }
 
-  /* -------------------- api failure -------------------- */
   if (error) {
     return (
-      <div className="min-h-screen bg-white flex items-center justify-center px-5">
-        <div className="text-center max-w-sm">
-          <IconAlertTriangle className="h-10 w-10 text-amber-600 mx-auto mb-4" />
-          <h1 className="font-serif text-2xl text-[#1a1a1a] mb-2">Verification Service Temporarily Unavailable</h1>
-          <p className="text-[#6b6045] text-sm mb-6">Please check your connection and try again.</p>
-          <button
-            onClick={load}
-            className="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-[#0d1b2a] text-white text-[12px] uppercase tracking-wider font-bold hover:bg-[#16283d] transition-colors"
-          >
-            <IconRefresh className="h-4 w-4" /> Retry
+      <Shell>
+        <Card className="text-center">
+          <IconAlertTriangle className="mx-auto mb-3 h-10 w-10 text-[#A8741F]" />
+          <h1 className="text-2xl font-semibold">We could not check this code</h1>
+          <p className="mx-auto mt-2 max-w-sm text-[15px] text-[#4A5470]">The verification service is not reachable right now. Check your connection and try again.</p>
+          <button onClick={load} className="mt-5 inline-flex min-h-12 items-center gap-2 rounded-full bg-[#12213F] px-6 text-[14px] font-semibold text-white hover:bg-[#B3001B]">
+            <IconRefresh size={17} /> Try again
           </button>
-        </div>
-      </div>
+        </Card>
+      </Shell>
     );
   }
 
-  /* -------------------- not found -------------------- */
   if (!data) {
     return (
-      <div className="min-h-screen bg-white flex items-center justify-center px-5">
-        <div className="text-center max-w-sm">
-          <div className="w-16 h-16 rounded-full bg-[#fbe9e9] flex items-center justify-center mx-auto mb-5">
-            <IconCircleX className="h-8 w-8 text-red-600" />
-          </div>
-          <h1 className="font-serif text-2xl text-[#1a1a1a] mb-2">Verification Not Found</h1>
-          <p className="text-[#6b6045] text-sm mb-6">
-            We couldn&apos;t find a valid product verification record for this QR code.
+      <Shell>
+        <Card className="text-center">
+          <span className="mx-auto mb-4 grid h-16 w-16 place-items-center rounded-full bg-[#FBE8EA]">
+            <IconCircleX className="h-8 w-8 text-[#B3001B]" />
+          </span>
+          <h1 className="text-2xl font-semibold">We could not find this code</h1>
+          <p className="mx-auto mt-2 max-w-sm text-[15px] text-[#4A5470]">
+            This code is not in our records. If you bought this product, it may not be a genuine MWP product. Please contact us and send us a photo of the bottle.
           </p>
-          <Link
-            href="/"
-            className="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-[#0d1b2a] text-white text-[12px] uppercase tracking-wider font-bold hover:bg-[#16283d] transition-colors"
-          >
-            Go to Homepage
+          <Link href="/contact" className="mt-5 inline-flex min-h-12 items-center gap-2 rounded-full bg-[#12213F] px-6 text-[14px] font-semibold text-white hover:bg-[#B3001B]">
+            Contact us <IconArrowRight size={16} />
           </Link>
-        </div>
-      </div>
+        </Card>
+      </Shell>
     );
   }
 
-  const meta = STATUS_META[data.status] || STATUS_META.INACTIVE;
-  const StatusIcon = meta.icon;
+  const meta = STATUS[data.status] || STATUS.INACTIVE;
+  const authOk = data.authenticityStatus === "VERIFIED";
+  // an active record whose authenticity could not be confirmed is shown as a caution, not as a green tick
+  const tone = TONES[meta.tone === "ok" && !authOk ? "warn" : meta.tone];
+  const Icon = meta.icon;
+  const title = meta.tone === "ok" && !authOk ? "Record found, authenticity not confirmed" : meta.title;
+  const text = meta.tone === "ok" && !authOk ? "This code exists in our records, but we have not confirmed its authenticity yet. Please contact us if you are unsure." : meta.text;
+
   const productImg = img(data.productImage);
   const badgeImg = img(data.badgeImage);
   const ingredients = Array.isArray(data.ingredients) ? data.ingredients : [];
+  const about = toParagraphs(data.description);
+  const batch = [data.batchNumber, data.lotNumber].filter(Boolean);
 
   return (
-    <div className="min-h-screen bg-white py-6 md:py-10 px-4 sm:px-6">
-      <div className="max-w-5xl mx-auto rounded-3xl bg-white border border-[#e7ddc8] shadow-[0_20px_60px_-25px_rgba(13,27,42,0.15)] overflow-hidden">
-        {/* Header */}
-        <header className="flex items-center justify-between px-6 md:px-10 py-6 border-b border-[#f0ead8]">
-          <div>
-            <p className="font-serif tracking-[0.25em] text-xl md:text-2xl text-[#1a1a1a]">MWP</p>
-            <p className="text-[9px] md:text-[10px] uppercase tracking-[0.3em] text-[#8a6d1f] font-bold mt-0.5">
-              Men &bull; Women &bull; Power
-            </p>
-          </div>
-          {data.productSlug && (
-            <Link
-              href={`/products/${data.productSlug}`}
-              className="inline-flex items-center px-5 py-2.5 rounded-full bg-[#c9a44c] text-[#0d1b2a] text-[11px] uppercase tracking-wider font-bold hover:bg-[#ddb960] transition-colors whitespace-nowrap"
-            >
-              Order Now
-            </Link>
-          )}
-        </header>
-
-        {/* HERO */}
-        <div className="overflow-hidden">
-          <div className="grid md:grid-cols-[minmax(0,1fr)_1.3fr] gap-8 md:gap-10 p-6 md:p-10">
-            {/* Product image */}
-            <div className="relative w-full aspect-[5/4] rounded-2xl overflow-hidden bg-gradient-to-br from-[#141416] via-[#0f0f12] to-[#0A0A0A] border border-[#e7ddc8]">
-              {productImg ? (
-                <Image
-                  src={productImg}
-                  alt={data.productName}
-                  fill
-                  sizes="(max-width:768px) 100vw, 420px"
-                  className="object-cover"
-                  priority
-                />
-              ) : (
-                <div className="w-full h-full flex items-center justify-center">
-                  <span className="font-serif text-[#c9a44c] text-2xl tracking-wide px-6 text-center border border-[#c9a44c]/40 rounded-xl py-8">
-                    {data.productName}
-                  </span>
-                </div>
-              )}
-            </div>
-
-            {/* Hero copy */}
-            <div className="flex flex-col justify-center">
-              <p className="text-[10px] uppercase tracking-[0.3em] text-[#c9a44c] font-bold mb-3">
-                Men &bull; Women &bull; Power
-              </p>
-              <h1 className="font-serif text-3xl sm:text-4xl md:text-5xl text-[#1a1a1a] leading-[1.05]">
-                {data.productName}
-              </h1>
-              {data.tagline && (
-                <p className="mt-4 text-[15px] sm:text-base font-semibold text-[#1a1a1a]">{data.tagline}</p>
-              )}
-              {data.shortDescription && (
-                <p className="mt-2 text-[13.5px] sm:text-[14px] text-[#6b6045] leading-relaxed">
-                  {data.shortDescription}
-                </p>
-              )}
-
-              {data.features?.length > 0 && (
-                <div className="mt-5 flex flex-wrap gap-2">
-                  {data.features.map((f, i) => (
-                    <span
-                      key={i}
-                      className="text-[11px] uppercase tracking-wide font-bold text-[#8a6d1f] border border-[#c9a44c]/50 rounded-full px-3.5 py-1.5"
-                    >
-                      {f}
-                    </span>
-                  ))}
-                </div>
-              )}
-
-              <div
-                className={`mt-6 inline-flex items-center gap-2.5 px-5 py-2.5 rounded-full border ${meta.bg} ${meta.border} w-fit`}
-              >
-                <StatusIcon className={`h-5 w-5 ${meta.color}`} />
-                <span className={`text-[12px] font-bold tracking-wide ${meta.color}`}>{meta.label}</span>
-              </div>
-
-              {data.productSlug && (
-                <Link
-                  href={`/products/${data.productSlug}`}
-                  className="mt-6 inline-flex items-center gap-2 w-fit px-7 py-3 rounded-full bg-[#c9a44c] text-[#0d1b2a] text-[12px] uppercase tracking-wider font-bold hover:bg-[#ddb960] transition-colors"
-                >
-                  Discover {data.productName} <IconArrowRight className="h-4 w-4" />
-                </Link>
-              )}
-            </div>
+    <Shell>
+      {/* 1. The answer: is it genuine? */}
+      <section className="rounded-3xl border p-5 sm:p-7" style={{ background: tone.bg, borderColor: tone.border }}>
+        <div className="flex items-start gap-4">
+          <span className="grid h-14 w-14 shrink-0 place-items-center rounded-2xl bg-white shadow-sm" style={{ color: tone.fg }}>
+            <Icon size={30} stroke={1.6} />
+          </span>
+          <div className="min-w-0">
+            <h1 className="text-[22px] font-bold leading-tight sm:text-[26px]" style={{ color: tone.fg }}>{title}</h1>
+            <p className="mt-1.5 text-[15px] leading-relaxed text-[#26314D]">{text}</p>
           </div>
         </div>
+        <div className="mt-4 flex flex-wrap items-center justify-between gap-3 rounded-2xl bg-white/70 px-4 py-3">
+          <div>
+            <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-[#5A6275]">Verification code</p>
+            <p className="font-mono text-[17px] font-bold tracking-wider">{data.verificationCode}</p>
+          </div>
+          <button onClick={copy} className="inline-flex min-h-10 items-center gap-1.5 rounded-full border border-[#12213F]/20 bg-white px-4 text-[13px] font-semibold hover:border-[#A8741F]">
+            {copied ? <IconCheck size={15} className="text-[#1F6B3A]" /> : <IconCopy size={15} />} {copied ? "Copied" : "Copy"}
+          </button>
+        </div>
+      </section>
 
-        {/* WHAT'S INSIDE */}
-        {ingredients.length > 0 && (
-          <div className="px-6 md:px-10 py-9 border-t border-[#f0ead8]">
-            <h2 className="font-serif text-2xl sm:text-3xl text-[#1a1a1a] mb-1.5">What&apos;s Inside</h2>
-            <p className="text-[10px] uppercase tracking-[0.2em] font-bold text-[#c9a44c] mb-1.5">
-              World-Class Ingredients. Globally Sourced.
-            </p>
-            <p className="text-[13px] text-[#6b6045] max-w-2xl mb-6">
-              {data.productName} brings together carefully selected ingredients from trusted sources
-              around the world, chosen for quality, purpose and their role in the formula.
-            </p>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
-              {ingredients.map((ing, i) => (
-                <IngredientRow key={i} ing={ing} />
-              ))}
+      {/* 2. Which product */}
+      <Card className="mt-4 overflow-hidden !p-0">
+        <div className="relative aspect-[4/3] w-full bg-gradient-to-br from-[#FBF5E6] via-white to-[#EEF1F8] sm:aspect-[16/10]">
+          {productImg ? (
+            <Image src={productImg} alt={data.productName} fill sizes="(max-width: 768px) 100vw, 768px" className="object-contain p-6 drop-shadow-[0_24px_28px_rgba(18,33,63,0.22)] sm:p-8" priority />
+          ) : (
+            <div className="grid h-full w-full place-items-center">
+              <span className="px-6 text-center text-3xl font-bold tracking-wide text-[#12213F]">{data.productName}</span>
             </div>
+          )}
+        </div>
+        <div className="p-5 sm:p-7">
+          <h2 className="text-[28px] font-bold leading-tight tracking-tight sm:text-[34px]">{data.productName}</h2>
+          {data.tagline && <p className="mt-1.5 text-[16px] font-semibold text-[#A8741F]">{data.tagline}</p>}
+          {data.shortDescription && <p className="mt-3 text-[15.5px] leading-relaxed text-[#26314D]">{data.shortDescription}</p>}
+
+          {data.features?.length > 0 && (
+            <ul className="mt-4 flex flex-wrap gap-2">
+              {data.features.map((f, i) => (
+                <li key={i} className="rounded-full border border-[#D4A437]/60 bg-[#FBF5E6] px-3.5 py-1.5 text-[13px] font-semibold text-[#7A4C05]">{f}</li>
+              ))}
+            </ul>
+          )}
+
+          {data.productSlug && (
+            <div className="mt-5 flex flex-col gap-2.5 sm:flex-row">
+              <Link href={`/products/${data.productSlug}`} className="inline-flex min-h-12 items-center justify-center gap-2 rounded-full bg-[#12213F] px-6 text-[14.5px] font-semibold text-white transition-colors hover:bg-[#B3001B]">
+                Shop {data.productName} <IconArrowRight size={17} />
+              </Link>
+              <Link href="/products" className="inline-flex min-h-12 items-center justify-center rounded-full border border-[#12213F]/20 px-6 text-[14.5px] font-semibold hover:border-[#A8741F] hover:text-[#A8741F]">
+                See all formulas
+              </Link>
+            </div>
+          )}
+        </div>
+      </Card>
+
+      {/* 3. The facts on this bottle */}
+      <Card className="mt-4">
+        <h2 className="text-[20px] font-bold">Details for this bottle</h2>
+        <p className="mt-1 text-[14px] text-[#5A6275]">Compare these with the label on your bottle.</p>
+        <dl className="mt-3">
+          <Row label="Authenticity" value={authOk ? "Verified" : data.authenticityStatus === "UNVERIFIED" ? "Not verified" : "Not available"} />
+          <Row label="Batch number" value={data.batchNumber} mono />
+          <Row label="Lot number" value={data.lotNumber} mono />
+          <Row label="Manufactured" value={formatDate(data.manufacturingDate)} />
+          <Row label="Best before" value={formatDate(data.expiryDate)} />
+          <Row label="Made in" value={data.origin} />
+          {badgeImg || data.badgeType ? <Row label="Quality mark" value={data.badgeType} /> : null}
+        </dl>
+        {batch.length === 0 && !data.manufacturingDate && !data.expiryDate && (
+          <p className="mt-2 rounded-2xl bg-[#FAF8F2] px-4 py-3 text-[13.5px] leading-relaxed text-[#5A6275]">
+            Batch and date details for this product are not listed yet. Your bottle label has the lot number and best-before date.
+          </p>
+        )}
+        {badgeImg && (
+          <div className="mt-4 flex items-center gap-3">
+            <span className="relative h-14 w-14 overflow-hidden rounded-full ring-2 ring-[#D4A437]">
+              <Image src={badgeImg} alt={data.badgeType || "Quality badge"} fill sizes="56px" className="object-cover" />
+            </span>
+            {data.badgeType && <span className="text-[14px] font-semibold">{data.badgeType}</span>}
           </div>
         )}
+      </Card>
 
-        {/* VERIFY YOUR PRODUCT */}
-        <div className="px-6 md:px-10 py-9 border-t border-[#f0ead8]">
-          <h2 className="font-serif text-2xl sm:text-3xl text-[#1a1a1a] mb-6 text-center">
-            Verify Your Product
-          </h2>
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3.5">
-            <TapCard
-              label="Batch / Lot"
-              value={showBatch ? [data.batchNumber, data.lotNumber].filter(Boolean).join(" / ") || "—" : "Display current lot details"}
-              onClick={() => setShowBatch((s) => !s)}
-            />
-            <TapCard
-              label="Authenticity"
-              value={
-                showAuth
-                  ? data.authenticityStatus === "VERIFIED"
-                    ? "Verified"
-                    : data.authenticityStatus
-                  : "Product verification status"
-              }
-              onClick={() => setShowAuth((s) => !s)}
-            />
-            <TapCard
-              label="Approved COA"
-              value={data.coaUrl ? "Tap to view available report" : "No report available"}
-              href={data.coaUrl || undefined}
-            />
+      {/* 4. Lab reports */}
+      {(data.coaUrl || data.certificateUrl) && (
+        <Card className="mt-4">
+          <h2 className="text-[20px] font-bold">Lab reports and certificates</h2>
+          <p className="mt-1 text-[14px] text-[#5A6275]">Independent test results for this product.</p>
+          <div className="mt-4 grid gap-3">
+            {data.coaUrl && <DocButton href={data.coaUrl} title="Certificate of Analysis (COA)" sub="Open the lab report" icon={IconFlask} />}
+            {data.certificateUrl && <DocButton href={data.certificateUrl} title="Certificate" sub="Open the document" icon={IconFileCertificate} />}
           </div>
-
-          {(data.manufacturingDate || data.expiryDate || data.origin) && (
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3.5 mt-3.5">
-              {data.manufacturingDate && (
-                <div className="rounded-2xl border border-[#e7ddc8] bg-white p-5 text-center">
-                  <div className="flex items-center justify-center gap-1.5 text-[#8a6d1f] mb-1.5">
-                    <IconCalendar className="h-3.5 w-3.5" />
-                    <span className="text-[11px] uppercase tracking-[0.16em] font-bold">Manufactured</span>
-                  </div>
-                  <p className="text-[13px] text-[#1a1a1a] font-serif">{formatDate(data.manufacturingDate)}</p>
-                </div>
-              )}
-              {data.expiryDate && (
-                <div className="rounded-2xl border border-[#e7ddc8] bg-white p-5 text-center">
-                  <div className="flex items-center justify-center gap-1.5 text-[#8a6d1f] mb-1.5">
-                    <IconCalendar className="h-3.5 w-3.5" />
-                    <span className="text-[11px] uppercase tracking-[0.16em] font-bold">Expiry</span>
-                  </div>
-                  <p className="text-[13px] text-[#1a1a1a] font-serif">{formatDate(data.expiryDate)}</p>
-                </div>
-              )}
-              {data.origin && (
-                <div className="rounded-2xl border border-[#e7ddc8] bg-white p-5 text-center">
-                  <div className="flex items-center justify-center gap-1.5 text-[#8a6d1f] mb-1.5">
-                    <IconMapPin className="h-3.5 w-3.5" />
-                    <span className="text-[11px] uppercase tracking-[0.16em] font-bold">Origin</span>
-                  </div>
-                  <p className="text-[13px] text-[#1a1a1a] font-serif">{data.origin}</p>
-                </div>
-              )}
-            </div>
-          )}
-
-          {data.certificateUrl && (
-            <a
-              href={data.certificateUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="mt-3.5 flex items-center justify-between rounded-2xl border border-[#c9a44c]/40 bg-gradient-to-br from-[#fdf8ec] to-[#f7ead0] px-5 py-4 hover:border-[#c9a44c] transition-colors"
-            >
-              <span>
-                <span className="block text-[10px] uppercase tracking-[0.2em] font-bold text-[#8a6d1f]">
-                  Certificate
-                </span>
-                <span className="block text-[#0d1b2a] font-serif text-[15px] mt-0.5">View Document</span>
-              </span>
-              <IconExternalLink className="h-4 w-4 text-[#8a6d1f] shrink-0" />
-            </a>
-          )}
-
-          {/* Description */}
-          {data.description && (
-            <div className="mt-6 pt-6 border-t border-[#f0ead8]">
-              <p className="text-[10px] uppercase tracking-[0.2em] font-bold text-[#8a6d1f] mb-2">
-                Product Information
-              </p>
-              <p className="text-[#3a3325] text-[14px] leading-relaxed">{data.description}</p>
-            </div>
-          )}
-
-          {/* Badge */}
-          {badgeImg && (
-            <div className="mt-6 pt-6 border-t border-[#f0ead8] flex flex-col items-center">
-              <div className="relative w-16 h-16 rounded-full overflow-hidden border-2 border-[#c9a44c]">
-                <Image src={badgeImg} alt={data.badgeType || "Certification badge"} fill sizes="64px" className="object-cover" />
-              </div>
-              {data.badgeType && (
-                <p className="text-[10px] uppercase tracking-[0.2em] text-[#8a6d1f] font-bold mt-2">
-                  {data.badgeType}
-                </p>
-              )}
-            </div>
-          )}
-
-          <p className="mt-7 text-center text-[10px] uppercase tracking-[0.16em] text-[#a89968]">
-            MWP &middot; Men &bull; Women &bull; Power &middot; Product Information
-          </p>
-        </div>
-      </div>
-
-      {/* CTA */}
-      {data.productSlug && (
-        <div className="max-w-5xl mx-auto mt-6">
-          <div className="rounded-2xl bg-[#0d1b2a] text-[#F7F2E7] p-7 sm:p-9 text-center">
-            <h3 className="font-serif text-xl sm:text-2xl">{data.productName}</h3>
-            <p className="text-[#c9c2ab] text-[13px] mt-2 max-w-md mx-auto">
-              Experience the same product, verified and trusted.
-            </p>
-            <Link
-              href={`/products/${data.productSlug}`}
-              className="mt-6 inline-flex items-center gap-2 px-8 py-3.5 rounded-full bg-[#c9a44c] text-[#0d1b2a] text-[12px] uppercase tracking-wider font-bold hover:bg-[#ddb960] transition-colors"
-            >
-              <IconShoppingBag className="h-4 w-4" /> Buy Now
-            </Link>
-          </div>
-        </div>
+        </Card>
       )}
-    </div>
+
+      {/* 5. What is inside */}
+      {ingredients.length > 0 && (
+        <Card className="mt-4">
+          <h2 className="flex items-center gap-2 text-[20px] font-bold"><IconLeaf size={22} className="text-[#A8741F]" /> What&apos;s inside</h2>
+          <p className="mt-1 text-[14px] leading-relaxed text-[#5A6275]">Each ingredient, the amount in a serving, and where it comes from.</p>
+          <ul className="mt-4 grid gap-3">
+            {ingredients.map((ing, i) => <Ingredient key={i} ing={ing} />)}
+          </ul>
+        </Card>
+      )}
+
+      {/* 6. About */}
+      {about.length > 0 && (
+        <Card className="mt-4">
+          <h2 className="text-[20px] font-bold">About this product</h2>
+          <div className="mt-3 space-y-3 text-[15px] leading-relaxed text-[#26314D]">
+            {about.map((t, i) => <p key={i}>{t}</p>)}
+          </div>
+        </Card>
+      )}
+
+      {/* 7. Help */}
+      <p className="mt-6 text-center text-[13.5px] leading-relaxed text-[#5A6275]">
+        Something does not look right? <Link href="/contact" className="font-semibold text-[#12213F] underline underline-offset-4">Contact us</Link>.
+        <br />
+        This page confirms that the code above was issued by MWP Supplements.
+      </p>
+    </Shell>
   );
 }

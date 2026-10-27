@@ -149,7 +149,7 @@ export default function VerificationsPage() {
   const syncProducts = async () => {
     setSyncing(true);
     try {
-      const res = await api.post("/api/admin/verifications/sync-products");
+      const res = await api.syncProducts();
       const n = res.data?.data?.count ?? 0;
       toast.success(n ? `Created ${n} verification${n === 1 ? "" : "s"} from your products. Add batch, ingredients and COA next.` : "Every product already has a verification");
       await load();
@@ -251,8 +251,35 @@ export default function VerificationsPage() {
     setOpen(true);
   };
 
+  // "<p>Power For Your Everyday.</p><p>Titan Force is ...</p>" -> a short tagline plus the rest as the summary
+  const splitDescription = (html: string) => {
+    const decode = (t: string) => t.replace(/&amp;/g, "&").replace(/&nbsp;/g, " ").replace(/&#39;|&rsquo;/g, "'").replace(/\s+/g, " ").trim();
+    const blocks = (String(html || "").match(/<(p|h[1-6]|li)[^>]*>[\s\S]*?<\/\1>/gi) || []).map((b) => decode(b.replace(/<[^>]+>/g, " "))).filter(Boolean);
+    const plain = blocks.length ? blocks : [decode(String(html || "").replace(/<[^>]+>/g, " "))].filter(Boolean);
+    if (plain.length > 1 && plain[0].length <= 90) return { tagline: plain[0], shortDescription: plain.slice(1).join(" ") };
+    return { tagline: "", shortDescription: plain.join(" ") };
+  };
+
   const pickProduct = (p: any) => {
-    setForm((f) => ({ ...f, productId: p.id, productName: p.name, productSlug: p.slug || "" }));
+    const { tagline, shortDescription } = splitDescription(p.description || "");
+    const packs: string[] = Array.from(
+      new Set(
+        (p.variants || [])
+          .flatMap((v: any) => (v.attributes || []).map((a: any) => a?.attributeValue?.value || a?.value))
+          .filter(Boolean)
+          .map((x: string) => x.replace(/\b([a-z])/g, (m) => m.toUpperCase()))
+      )
+    );
+    setForm((f) => ({
+      ...f,
+      productId: p.id,
+      productName: String(p.name || "").replace(/[™®]/g, "").trim(),
+      productSlug: p.slug || "",
+      // only fill what is still empty, never overwrite what you typed
+      tagline: f.tagline || tagline,
+      shortDescription: f.shortDescription || shortDescription,
+      featuresText: f.featuresText || packs.join(", "),
+    }));
     setProductQuery("");
     setProductResults([]);
   };
@@ -338,22 +365,6 @@ export default function VerificationsPage() {
     }
   };
 
-  const hardDelete = async (v: Verification) => {
-    if (
-      !confirm(
-        `Permanently delete verification for "${v.productName}"?\n\nThis removes the record entirely and its printed QR will show "Verification Not Found" forever. This cannot be undone. Prefer "Revoke" instead unless you're sure.`
-      )
-    )
-      return;
-    try {
-      await api.remove(v.id); // soft revoke first is the safe default; hard delete via query param if truly needed
-      toast.success("Verification revoked (soft delete). Use database tools for permanent deletion.");
-      load();
-    } catch {
-      toast.error("Failed to delete");
-    }
-  };
-
   const filtered = list;
 
   return (
@@ -366,7 +377,8 @@ export default function VerificationsPage() {
           <p className="text-sm text-[#9CA3AF] mt-1 max-w-2xl">
             Each verification gets a permanent QR code and URL that never changes. Editing
             product, batch, COA, badge, or status here updates what the same printed QR shows —
-            without ever generating a new code.
+            without ever generating a new code. A QR cannot be deleted from here: use Revoke to switch it off,
+            and you can reactivate it any time.
           </p>
         </div>
         <div className="flex flex-wrap gap-2">
@@ -502,13 +514,6 @@ export default function VerificationsPage() {
                           <X className="h-3.5 w-3.5 text-[#EF4444]" />
                         </button>
                       )}
-                      <button
-                        onClick={() => hardDelete(v)}
-                        className="w-8 h-8 rounded-lg border flex items-center justify-center hover:border-[#EF4444]"
-                        title="Delete"
-                      >
-                        <Trash2 className="h-3.5 w-3.5 text-[#EF4444]" />
-                      </button>
                     </div>
                   </td>
                 </tr>
@@ -544,6 +549,7 @@ export default function VerificationsPage() {
             {/* product link + search */}
             <div>
               <Label>Link to Product (optional)</Label>
+              <p className="text-[11px] leading-snug text-[#6B7280] mt-0.5 mb-1.5">Pick the real product from your store. Its name, web address, photo and description fill in for you, so nothing is retyped. The link is saved, so renaming the product later will not break this QR.</p>
               <div className="relative mt-1">
                 <Input
                   value={productQuery}
@@ -572,6 +578,7 @@ export default function VerificationsPage() {
             <div className="grid grid-cols-2 gap-3">
               <div>
                 <Label>Product Name *</Label>
+              <p className="text-[11px] leading-snug text-[#6B7280] mt-0.5 mb-1.5">The big title customers see when they scan the QR.</p>
                 <Input
                   value={form.productName}
                   onChange={(e) => setForm((f) => ({ ...f, productName: e.target.value }))}
@@ -580,6 +587,7 @@ export default function VerificationsPage() {
               </div>
               <div>
                 <Label>Product Slug</Label>
+              <p className="text-[11px] leading-snug text-[#6B7280] mt-0.5 mb-1.5">The last part of the product's web address, for example ultra-pro. The &quot;Order Now&quot; button on the page uses it. It fills in when you pick a product.</p>
                 <Input
                   value={form.productSlug}
                   onChange={(e) => setForm((f) => ({ ...f, productSlug: e.target.value }))}
@@ -591,6 +599,7 @@ export default function VerificationsPage() {
             <div className="grid grid-cols-2 gap-3">
               <div>
                 <Label>Batch Number</Label>
+              <p className="text-[11px] leading-snug text-[#6B7280] mt-0.5 mb-1.5">The batch code printed on the bottle, for example UP24001. Customers can compare it with their label.</p>
                 <Input
                   value={form.batchNumber}
                   onChange={(e) => setForm((f) => ({ ...f, batchNumber: e.target.value }))}
@@ -599,6 +608,7 @@ export default function VerificationsPage() {
               </div>
               <div>
                 <Label>Lot Number</Label>
+              <p className="text-[11px] leading-snug text-[#6B7280] mt-0.5 mb-1.5">The lot code printed on the bottle. When a new lot is made, change it here: the same printed QR then shows the new lot.</p>
                 <Input
                   value={form.lotNumber}
                   onChange={(e) => setForm((f) => ({ ...f, lotNumber: e.target.value }))}
@@ -610,6 +620,7 @@ export default function VerificationsPage() {
             <div className="grid grid-cols-2 gap-3">
               <div>
                 <Label>Manufacturing Date</Label>
+              <p className="text-[11px] leading-snug text-[#6B7280] mt-0.5 mb-1.5">The day this lot was made. Shown on the page.</p>
                 <Input
                   type="date"
                   value={form.manufacturingDate}
@@ -618,6 +629,7 @@ export default function VerificationsPage() {
               </div>
               <div>
                 <Label>Expiry Date</Label>
+              <p className="text-[11px] leading-snug text-[#6B7280] mt-0.5 mb-1.5">The best-before date of this lot. Shown on the page.</p>
                 <Input
                   type="date"
                   value={form.expiryDate}
@@ -629,6 +641,7 @@ export default function VerificationsPage() {
             <div className="grid grid-cols-2 gap-3">
               <div>
                 <Label>Authenticity Status</Label>
+              <p className="text-[11px] leading-snug text-[#6B7280] mt-0.5 mb-1.5">Verified means this is a genuine MWP product. Choose Unverified or Unavailable only if you cannot confirm it.</p>
                 <Select
                   value={form.authenticityStatus}
                   onValueChange={(v) => setForm((f) => ({ ...f, authenticityStatus: v as Authenticity }))}
@@ -645,6 +658,7 @@ export default function VerificationsPage() {
               </div>
               <div>
                 <Label>Verification Status</Label>
+              <p className="text-[11px] leading-snug text-[#6B7280] mt-0.5 mb-1.5">Active shows a green &quot;Verified&quot; banner. Suspended or Revoked shows a warning. Expired and Inactive tell customers the record is not current. The QR address itself never changes.</p>
                 <Select
                   value={form.status}
                   onValueChange={(v) => setForm((f) => ({ ...f, status: v as Status }))}
@@ -665,6 +679,7 @@ export default function VerificationsPage() {
 
             <div>
               <Label>Tagline</Label>
+              <p className="text-[11px] leading-snug text-[#6B7280] mt-0.5 mb-1.5">One short line under the product name, for example: Built for the man who expects more from every day.</p>
               <Input
                 value={form.tagline}
                 onChange={(e) => setForm((f) => ({ ...f, tagline: e.target.value }))}
@@ -674,6 +689,7 @@ export default function VerificationsPage() {
 
             <div>
               <Label>Short Description</Label>
+              <p className="text-[11px] leading-snug text-[#6B7280] mt-0.5 mb-1.5">One or two sentences about the product, shown under the tagline.</p>
               <Input
                 value={form.shortDescription}
                 onChange={(e) => setForm((f) => ({ ...f, shortDescription: e.target.value }))}
@@ -683,6 +699,7 @@ export default function VerificationsPage() {
 
             <div>
               <Label>Feature Badges (comma-separated)</Label>
+              <p className="text-[11px] leading-snug text-[#6B7280] mt-0.5 mb-1.5">Small tags shown as chips. Separate them with commas, for example: 60 Capsules, 2 Capsules Daily.</p>
               <Input
                 value={form.featuresText}
                 onChange={(e) => setForm((f) => ({ ...f, featuresText: e.target.value }))}
@@ -692,6 +709,7 @@ export default function VerificationsPage() {
 
             <div>
               <Label>Description</Label>
+              <p className="text-[11px] leading-snug text-[#6B7280] mt-0.5 mb-1.5">Longer product information shown near the bottom of the page. Plain text is fine.</p>
               <div className="mt-1 border rounded-md overflow-hidden">
                 <JoditEditor
                   value={form.description}
@@ -704,6 +722,7 @@ export default function VerificationsPage() {
             <div className="grid grid-cols-2 gap-3">
               <div>
                 <Label>Origin / Source</Label>
+              <p className="text-[11px] leading-snug text-[#6B7280] mt-0.5 mb-1.5">Where the product is made or the ingredients come from. Only write what is true.</p>
                 <Input
                   value={form.origin}
                   onChange={(e) => setForm((f) => ({ ...f, origin: e.target.value }))}
@@ -712,6 +731,7 @@ export default function VerificationsPage() {
               </div>
               <div>
                 <Label>Badge Type</Label>
+              <p className="text-[11px] leading-snug text-[#6B7280] mt-0.5 mb-1.5">Short text shown under the badge image, for example: Lab Tested.</p>
                 <Input
                   value={form.badgeType}
                   onChange={(e) => setForm((f) => ({ ...f, badgeType: e.target.value }))}
@@ -723,7 +743,10 @@ export default function VerificationsPage() {
             {/* Structured ingredient list */}
             <div>
               <div className="flex items-center justify-between mb-2">
-                <Label>Ingredients (What&apos;s Inside)</Label>
+                <div>
+                  <Label>Ingredients (What&apos;s Inside)</Label>
+                  <p className="text-[11px] leading-snug text-[#6B7280] mt-0.5 max-w-md">List each ingredient with its amount per serving and where it comes from. Add only what your manufacturer has confirmed.</p>
+                </div>
                 <Button
                   type="button"
                   size="sm"
@@ -830,6 +853,7 @@ export default function VerificationsPage() {
                 onPick={setProductImage}
                 accept="image/*"
                 currentUrl={editing?.productImage}
+                hint="Optional. Leave empty and the product's own photo from your store is used automatically."
               />
               <UploadBox
                 label={`Badge Image${editing ? " — optional to replace" : ""}`}
@@ -838,6 +862,7 @@ export default function VerificationsPage() {
                 onPick={setBadgeImage}
                 accept="image/*"
                 currentUrl={editing?.badgeImage}
+                hint="Optional small round badge, for example a lab-tested seal."
               />
               <UploadBox
                 label={`COA${editing ? " — optional to replace" : ""}`}
@@ -846,6 +871,7 @@ export default function VerificationsPage() {
                 onPick={setCoaFile}
                 accept="image/*,application/pdf"
                 currentUrl={editing?.coaUrl}
+                hint="Certificate of Analysis from an independent lab (PDF). Customers can open it from the page."
               />
               <UploadBox
                 label={`Certificate${editing ? " — optional to replace" : ""}`}
@@ -887,6 +913,7 @@ function UploadBox({
   onPick,
   accept,
   currentUrl,
+  hint,
 }: {
   label: string;
   file: File | null;
@@ -894,10 +921,12 @@ function UploadBox({
   onPick: (f: File | null) => void;
   accept: string;
   currentUrl?: string | null;
+  hint?: string;
 }) {
   return (
     <div>
       <Label>{label}</Label>
+      {hint && <p className="text-[11px] leading-snug text-[#6B7280] mt-0.5">{hint}</p>}
       <div
         onClick={() => inputRef.current?.click()}
         className="mt-1 border-2 border-dashed border-[#E5E7EB] rounded-lg p-3 text-center cursor-pointer hover:border-[#4CAF50]"
