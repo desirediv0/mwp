@@ -289,13 +289,13 @@ export default function MwpCapsuleHeroPlus() {
           <p className="mwp-cplus__kicker">Daily supplements</p>
           <h1 id="mwp-cplus-title" className="mwp-cplus__title">
             <span className="mwp-cplus__line mwp-cplus__line--men" {...focusLine("men")}>
-              <span>Strength for him.</span>
+              <span>Strength for him</span>
             </span>{" "}
             <span className="mwp-cplus__line mwp-cplus__line--women" {...focusLine("women")}>
-              <span>Energy for her.</span>
+              <span>Energy for her</span>
             </span>{" "}
             <span className="mwp-cplus__line mwp-cplus__line--power" {...focusLine("both")}>
-              <span data-beat={beatKey}>Power for both.</span>
+              <span data-beat={beatKey}>Power for both</span>
             </span>
           </h1>
           <p className="mwp-cplus__lede">
