@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { IconArrowUpRight } from "@tabler/icons-react";
+import { IconArrowUpRight, IconShoppingBag } from "@tabler/icons-react";
 import { useLanguage } from "@/lib/language-context";
 import { fetchApi } from "@/lib/utils";
 
@@ -99,9 +99,14 @@ const SLIDES = [
   },
 ];
 
-function ProductTile({ slide }) {
+const usd = (n) => "$" + Number(n).toFixed(2);
+
+function ProductTile({ slide, product }) {
   const { t } = useLanguage();
   const href = `/products/${slide.key}`;
+  const price = Number(product?.basePrice ?? product?.regularPrice ?? 0) || null;
+  const compare = Number(product?.regularPrice ?? 0) || null;
+  const save = price && compare && compare > price ? Math.round((1 - price / compare) * 100) : 0;
   return (
     <div
       data-tile
@@ -135,20 +140,31 @@ function ProductTile({ slide }) {
           {slide.copy}
         </p>
 
-        <div className="mt-5 flex items-center justify-center gap-3 text-[12px] sm:gap-4 sm:text-[13px]">
-          <Link
-            href={href}
-            className="pointer-events-auto inline-flex min-h-11 items-center justify-center rounded-full bg-neutral-900 px-5 text-white transition-colors hover:bg-neutral-800 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-neutral-900"
-          >
-            {t("discoverFormula")}
-          </Link>
-          <Link
-            href={href}
-            className="pointer-events-auto inline-flex min-h-11 items-center justify-center gap-1.5 rounded-full px-3 text-neutral-900 transition-colors hover:bg-white/50 focus-visible:outline focus-visible:outline-2 focus-visible:outline-neutral-900"
-          >
-            {t("shopNow")}
-            <IconArrowUpRight size={15} stroke={1.5} aria-hidden="true" />
-          </Link>
+        <div className="mt-5 flex flex-col items-center gap-2.5">
+          <div className="flex flex-wrap items-center justify-center gap-2.5 sm:gap-3">
+            <Link
+              href={href}
+              className="pointer-events-auto group/cta inline-flex min-h-12 items-center justify-center gap-2.5 rounded-full bg-neutral-900 px-5 text-[13.5px] font-semibold text-white shadow-[0_14px_24px_-14px_rgba(18,33,63,0.9)] transition-all hover:-translate-y-0.5 hover:bg-[#B3001B] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-neutral-900 sm:px-6 sm:text-[14.5px]"
+            >
+              <IconShoppingBag size={17} stroke={1.8} aria-hidden="true" />
+              {t("shopNow")}
+              {price && (
+                <>
+                  <span aria-hidden="true" className="h-4 w-px bg-white/35" />
+                  <span>{usd(price)}</span>
+                  {save > 0 && <s className="text-[12px] font-normal text-white/60">{usd(compare)}</s>}
+                </>
+              )}
+            </Link>
+            <Link
+              href={href}
+              className="pointer-events-auto inline-flex min-h-12 items-center justify-center gap-1.5 rounded-full border border-neutral-900/15 bg-white/70 px-5 text-[13.5px] font-semibold text-neutral-900 backdrop-blur transition-all hover:-translate-y-0.5 hover:border-neutral-900/40 hover:bg-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-neutral-900 sm:text-[14.5px]"
+            >
+              {t("seeInside")}
+              <IconArrowUpRight size={16} stroke={1.8} aria-hidden="true" />
+            </Link>
+          </div>
+          <p className="text-[12px] font-medium text-neutral-800/75">{t("tileTrust")}</p>
         </div>
       </div>
 
@@ -257,7 +273,7 @@ export default function MwpProductShowcase() {
     <section className="overflow-hidden bg-white">
         <div ref={gridRef} className="grid grid-cols-1 sm:grid-cols-2">
           {SLIDES.map((slide) => (
-            <ProductTile key={slide.key} slide={{ ...slide, image: catalog.find(product => product.slug === slide.key)?.image || slide.image }} />
+            <ProductTile key={slide.key} product={catalog.find(product => product.slug === slide.key)} slide={{ ...slide, image: catalog.find(product => product.slug === slide.key)?.image || slide.image }} />
           ))}
         </div>
     </section>

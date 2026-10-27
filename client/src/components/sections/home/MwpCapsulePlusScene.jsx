@@ -107,13 +107,16 @@ function drawImprint(canvas, text, ink) {
   context.textAlign = "center";
   context.textBaseline = "middle";
   // Longer words shrink so they always fit along the half (the canvas height spans its length).
-  context.font = `800 60px ${FONT}`;
-  const fit = (canvas.height * 0.9) / context.measureText(text).width;
-  if (fit < 1) context.font = `800 ${Math.floor(60 * fit)}px ${FONT}`;
+  context.font = `900 120px ${FONT}`;
+  const fit = (canvas.height * 0.78) / context.measureText(text).width;
+  if (fit < 1) context.font = `900 ${Math.floor(120 * fit)}px ${FONT}`;
+  // a long word cannot get longer, so make its letters taller instead: it reads clearly on the silver half
+  const tall = fit < 1 ? 1.5 : 1;
   for (const u of [0.25, 0.75]) {
     context.save();
     context.translate(u * canvas.width, canvas.height / 2);
     context.rotate(Math.PI / 2);
+    context.scale(1, tall);
     context.fillText(text, 0, 0);
     context.restore();
   }
@@ -145,14 +148,14 @@ function buildWorld(words) {
   const imprintMaterial = (text, ink) => {
     const canvas = document.createElement("canvas");
     canvas.width = 1024;
-    canvas.height = 256;
+    canvas.height = 512;
     drawImprint(canvas, text, ink);
     const texture = track(new THREE.CanvasTexture(canvas));
     texture.colorSpace = THREE.SRGBColorSpace;
     texture.anisotropy = 8;
     imprints.push({ canvas, texture, text, ink });
     return track(
-      new THREE.MeshStandardMaterial({ map: texture, transparent: true, depthWrite: false, metalness: 0.2, roughness: 0.55, polygonOffset: true, polygonOffsetFactor: -2 })
+      new THREE.MeshStandardMaterial({ map: texture, emissiveMap: texture, emissive: 0xffffff, emissiveIntensity: 0.6, transparent: true, depthWrite: false, metalness: 0, roughness: 0.5, polygonOffset: true, polygonOffsetFactor: -2 })
     );
   };
   const innerMat = track(new THREE.MeshStandardMaterial({ color: linear(0x14224a), metalness: 0.3, roughness: 0.6, side: THREE.BackSide }));
@@ -177,7 +180,7 @@ function buildWorld(words) {
     return group;
   };
   const left = half(goldMat, -1, R, L, 0, imprintMaterial("MWP", "#14224A"));
-  const right = half(silverMat, 1, R * 1.035, L + 0.08, 0.08, imprintMaterial("SUPPLEMENTS", "#8F6516"));
+  const right = half(silverMat, 1, R * 1.035, L + 0.08, 0.08, imprintMaterial("SUPPLEMENTS", "#14224A"));
   const pill = new THREE.Group();
   pill.add(left, right);
   const holder = new THREE.Group();
