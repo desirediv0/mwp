@@ -8,6 +8,7 @@ import { useState, useEffect, useRef } from "react";
 import { useRouter, usePathname } from "next/navigation";
 import { fetchApi, cn, sortCategories } from "@/lib/utils";
 import { ClientOnly } from "@/components/client-only";
+import MwpLogo from "@/components/ui/MwpLogo";
 import { motion, AnimatePresence } from "framer-motion";
 import * as DialogPrimitive from "@radix-ui/react-dialog";
 import { toast } from "sonner";
@@ -202,12 +203,9 @@ export function Navbar() {
               aria-label="MWP home"
               className="flex items-center shrink-0 focus-visible:outline-offset-4"
             >
-              <Image
-                src="/mwp-logo-3.png"
-                alt="MWP SUPPLEMENTS"
-                width={200}
-                height={70}
-                className="h-11 sm:h-14 w-auto object-contain"
+              <MwpLogo
+                className="h-12 sm:h-16 w-auto"
+                sizes="(min-width: 640px) 186px, 139px"
                 priority
               />
             </Link>

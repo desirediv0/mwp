@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import Image from "next/image";
+import MwpLogo from "@/components/ui/MwpLogo";
 import {
   IconBrandInstagram,
   IconBrandFacebook,
@@ -60,12 +61,9 @@ export const Footer = () => {
       <div className="relative z-10 max-w-[1440px] mx-auto px-6 md:px-10 py-14 sm:py-20">
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-[1.2fr_0.85fr_0.95fr_0.85fr_1.2fr] gap-x-10 gap-y-12 xl:gap-x-12">
           <div className="sm:col-span-2 lg:col-span-4 xl:col-span-1">
-            <Image
-              src="/mwp-logo-3.png"
-              alt="MWP SUPPLEMENTS"
-              width={160}
-              height={64}
-              className="h-14 w-auto object-contain mb-6"
+            <MwpLogo
+              className="h-16 sm:h-[4.5rem] w-auto mb-6"
+              sizes="(min-width: 640px) 209px, 186px"
             />
             <p className="text-[13px] text-neutral-500 max-w-sm xl:max-w-xs leading-7">
               MWP connects performance, wellness and trust — clinically dosed
