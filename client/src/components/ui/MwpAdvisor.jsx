@@ -132,7 +132,7 @@ export default function MwpAdvisor() {
   const greeting = cfg?.greeting || "Hi, I'm the MWP Advisor, an AI assistant. How can I help?";
 
   return (
-    <div className={`fixed z-[60] pointer-events-none ${open ? "inset-0 sm:inset-auto sm:bottom-6 sm:right-6" : "bottom-[max(16px,env(safe-area-inset-bottom))] right-4 sm:bottom-6 sm:right-6"}`}>
+    <div className={`fixed z-[60] pointer-events-none ${open ? "inset-0 sm:inset-auto sm:bottom-6 sm:right-6" : "bottom-[max(16px,env(safe-area-inset-bottom))] right-4 sm:bottom-4 sm:right-4"}`}>
       {open ? (
         <section
           role="dialog"
@@ -235,7 +235,7 @@ export default function MwpAdvisor() {
       ) : (
         <button
           onClick={() => setOpen(true)}
-          className="pointer-events-auto inline-flex items-center gap-2.5 rounded-full border-2 border-[#C9972B] bg-gradient-to-br from-[#12213F] to-[#24407A] px-5 py-3.5 text-[12px] font-bold uppercase tracking-[0.12em] text-white shadow-[0_16px_34px_-14px_rgba(18,33,63,0.9)] transition-transform hover:-translate-y-0.5 hover:bg-[#a81f24]"
+          className="pointer-events-auto inline-flex items-center gap-2.5 rounded-full border-2 border-[#C9972B] bg-gradient-to-br from-[#12213F] to-[#24407A] px-4 py-3 text-[11px] font-bold uppercase tracking-[0.1em] text-white shadow-[0_16px_34px_-14px_rgba(18,33,63,0.9)] transition-transform hover:-translate-y-0.5 hover:bg-[#a81f24]"
           aria-label="Open the MWP Advisor chat"
         >
           <span className="relative">

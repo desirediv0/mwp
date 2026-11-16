@@ -110,6 +110,7 @@ export default function ProductContent({ slug, initialProduct = null }) {
   const [zoomPos, setZoomPos] = useState({ x: 50, y: 50 });
   const [isZoomModalOpen, setIsZoomModalOpen] = useState(false);
   const [lightboxScale, setLightboxScale] = useState(1);
+  const [lbOrigin, setLbOrigin] = useState({ x: 50, y: 50 });
   const [copied, setCopied] = useState(false);
 
   const handleSocialShare = (platform) => {
@@ -1119,31 +1120,31 @@ export default function ProductContent({ slug, initialProduct = null }) {
 
       {/* ── Fullscreen Interactive Lightbox Modal (Click / Mobile Touch Zoom) ── */}
       {isZoomModalOpen && (
-        <div className="fixed inset-0 z-50 bg-black/95 backdrop-blur-xl flex flex-col justify-between p-4 sm:p-6 animate-fadeIn select-none">
+        <div className="fixed inset-0 z-50 bg-[#F6F1E4] flex flex-col justify-between p-4 sm:p-6 animate-fadeIn select-none">
           {/* Header Controls */}
-          <div className="flex items-center justify-between z-10 text-white border-b border-white/10 pb-4">
+          <div className="flex items-center justify-between z-10 text-[#12213F] border-b border-[#12213F]/10 pb-4">
             <div className="flex items-center gap-3">
-              <span className="text-xs font-normal text-white/80">{product.name}</span>
+              <span className="text-sm font-semibold text-[#12213F]">{product.name}</span>
               {images.length > 1 && (
-                <span className="text-xs text-white/40">
+                <span className="text-xs text-[#12213F]/50">
                   ({activeThumb + 1} of {images.length})
                 </span>
               )}
             </div>
 
             <div className="flex items-center gap-2 sm:gap-4">
-              <div className="flex items-center gap-1 bg-white/10 p-1 rounded-full">
+              <div className="flex items-center gap-1 bg-[#12213F]/10 p-1 rounded-full">
                 <button
                   onClick={() => setLightboxScale((prev) => Math.max(1, prev - 0.5))}
                   disabled={lightboxScale <= 1}
-                  className="p-2 rounded-full hover:bg-white/10 text-white disabled:opacity-30 transition-colors"
+                  className="p-2 rounded-full hover:bg-[#12213F]/10 text-[#12213F] disabled:opacity-30 transition-colors"
                   title="Zoom Out"
                 >
                   <IconZoomOut className="w-5 h-5" />
                 </button>
                 <button
                   onClick={() => setLightboxScale(1)}
-                  className="px-2 py-1 text-xs font-normal text-white/70 hover:bg-white/10 rounded-full transition-colors"
+                  className="px-2 py-1 text-xs font-semibold text-[#12213F]/70 hover:bg-[#12213F]/10 rounded-full transition-colors"
                   title="Reset Zoom"
                 >
                   {Math.round(lightboxScale * 100)}%
@@ -1151,7 +1152,7 @@ export default function ProductContent({ slug, initialProduct = null }) {
                 <button
                   onClick={() => setLightboxScale((prev) => Math.min(4, prev + 0.5))}
                   disabled={lightboxScale >= 4}
-                  className="p-2 rounded-full hover:bg-white/10 text-white disabled:opacity-30 transition-colors"
+                  className="p-2 rounded-full hover:bg-[#12213F]/10 text-[#12213F] disabled:opacity-30 transition-colors"
                   title="Zoom In"
                 >
                   <IconZoomIn className="w-5 h-5" />
@@ -1160,7 +1161,7 @@ export default function ProductContent({ slug, initialProduct = null }) {
 
               <button
                 onClick={() => setIsZoomModalOpen(false)}
-                className="p-2 rounded-full bg-white/10 hover:bg-white/20 text-white transition-colors ml-2"
+                className="p-2 rounded-full bg-[#12213F] hover:bg-[#A81F24] text-white transition-colors ml-2"
                 title="Close (Esc)"
               >
                 <IconX className="w-6 h-6" />
@@ -1173,7 +1174,7 @@ export default function ProductContent({ slug, initialProduct = null }) {
             {images.length > 1 && (
               <button
                 onClick={() => setActiveThumb((prev) => (prev > 0 ? prev - 1 : images.length - 1))}
-                className="absolute left-3 top-1/2 -translate-y-1/2 z-20 p-3 rounded-full bg-black/60 hover:bg-white hover:text-neutral-900 text-white backdrop-blur-md transition-all"
+                className="absolute left-3 top-1/2 -translate-y-1/2 z-20 p-3 rounded-full bg-[#12213F] hover:bg-[#A81F24] text-white shadow-lg transition-all"
                 aria-label="Previous Image"
               >
                 <IconChevronLeft className="w-6 h-6" />
@@ -1181,7 +1182,9 @@ export default function ProductContent({ slug, initialProduct = null }) {
             )}
 
             <div
-              className="relative w-full h-full max-w-4xl max-h-[80vh] flex items-center justify-center cursor-pointer overflow-auto p-4"
+              className="relative w-full h-full max-w-4xl max-h-[80vh] flex items-center justify-center overflow-hidden p-4 rounded-2xl"
+              style={{ cursor: lightboxScale > 1 ? "zoom-out" : "zoom-in" }}
+              onMouseMove={(e) => { if (lightboxScale > 1) { const b = e.currentTarget.getBoundingClientRect(); setLbOrigin({ x: ((e.clientX - b.left) / b.width) * 100, y: ((e.clientY - b.top) / b.height) * 100 }); } }}
               onClick={() => setLightboxScale((prev) => (prev > 1 ? 1 : 2.5))}
             >
               <Image
@@ -1192,6 +1195,7 @@ export default function ProductContent({ slug, initialProduct = null }) {
                 className="object-contain max-h-full max-w-full transition-transform duration-300 ease-out select-none"
                 style={{
                   transform: `scale(${lightboxScale})`,
+                  transformOrigin: `${lbOrigin.x}% ${lbOrigin.y}%`,
                 }}
                 priority
               />
@@ -1200,7 +1204,7 @@ export default function ProductContent({ slug, initialProduct = null }) {
             {images.length > 1 && (
               <button
                 onClick={() => setActiveThumb((prev) => (prev < images.length - 1 ? prev + 1 : 0))}
-                className="absolute right-3 top-1/2 -translate-y-1/2 z-20 p-3 rounded-full bg-black/60 hover:bg-white hover:text-neutral-900 text-white backdrop-blur-md transition-all"
+                className="absolute right-3 top-1/2 -translate-y-1/2 z-20 p-3 rounded-full bg-[#12213F] hover:bg-[#A81F24] text-white shadow-lg transition-all"
                 aria-label="Next Image"
               >
                 <IconChevronRight className="w-6 h-6" />
@@ -1210,7 +1214,7 @@ export default function ProductContent({ slug, initialProduct = null }) {
 
           {/* Footer Thumbnails list in Lightbox */}
           {images.length > 1 && (
-            <div className="flex items-center justify-center gap-3 overflow-x-auto py-2 border-t border-white/10 no-scrollbar z-10">
+            <div className="flex items-center justify-center gap-3 overflow-x-auto py-2 border-t border-[#12213F]/10 no-scrollbar z-10">
               {images.map((img, idx) => (
                 <button
                   key={idx}
@@ -1218,10 +1222,10 @@ export default function ProductContent({ slug, initialProduct = null }) {
                     setActiveThumb(idx);
                     setLightboxScale(1);
                   }}
-                  className={`relative flex-shrink-0 w-14 h-14 rounded-xl overflow-hidden transition-all border-2 ${activeThumb === idx ? "border-white opacity-100 scale-105" : "border-transparent opacity-50 hover:opacity-80"
+                  className={`relative flex-shrink-0 w-14 h-14 rounded-xl overflow-hidden transition-all border-2 bg-white ${activeThumb === idx ? "border-[#12213F] opacity-100 scale-105" : "border-transparent opacity-60 hover:opacity-90"
                     }`}
                 >
-                  <Image src={getImageUrl(img.url)} alt={img.alt || product.name} fill className="object-cover" sizes="56px" />
+                  <Image src={getImageUrl(img.url)} alt={img.alt || product.name} fill className="object-contain p-1" sizes="56px" />
                 </button>
               ))}
             </div>
