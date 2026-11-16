@@ -1,5 +1,6 @@
 "use client";
 import CheckoutSteps from "@/components/shop/CheckoutSteps";
+import { SHOW_COMPARE_PRICES } from "@/lib/pricing-display";
 
 import React, { useState, useCallback, useMemo } from "react";
 import Link from "next/link";
@@ -182,7 +183,7 @@ const CartItem = React.memo(
                                 ) : (
                                     <div className="flex items-baseline gap-2">
                                         <span className="text-sm font-semibold text-black">{formatCurrency(item.price)}</span>
-                                        {item.originalPrice && item.originalPrice !== item.price && (
+                                        {SHOW_COMPARE_PRICES && item.originalPrice && item.originalPrice !== item.price && (
                                             <span className="text-[11px] text-neutral-600 line-through">{formatCurrency(item.originalPrice)}</span>
                                         )}
                                     </div>
@@ -221,7 +222,7 @@ const CartItem = React.memo(
                                 <>
                                     <div className="flex items-baseline gap-2">
                                         <span className="text-sm font-semibold text-black">{formatCurrency(item.price)}</span>
-                                        {item.originalPrice && item.originalPrice !== item.price && (
+                                        {SHOW_COMPARE_PRICES && item.originalPrice && item.originalPrice !== item.price && (
                                             <span className="text-[11px] text-neutral-600 line-through">{formatCurrency(item.originalPrice)}</span>
                                         )}
                                     </div>

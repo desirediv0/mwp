@@ -32,7 +32,7 @@ function IngredientPhoto({ ingredient, eager = false }) {
     <div className="mwp-ingredient-photo" role="img" aria-label={`${ingredient.name} ingredient photograph`}>
       <Image
         src={`/ingredients/${ingredient.id}.jpg`}
-        alt=""
+        alt={ingredient.name}
         width={560}
         height={560}
         unoptimized

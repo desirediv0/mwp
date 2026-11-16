@@ -401,7 +401,7 @@ const getContactInfo = asyncHandler(async (req, res) => {
     // Default fallback contact info
     const contactInfo = {
       address: "531 Main Street, PMB 1127, El Segundo, CA 90245-3006, USA",
-      phone: "+1 (562) 524-3557",
+      phone: "+1 (800) 814-4477",
       email: "support@mwpsupplements.com",
       hours: "Monday - Friday: 9:00 AM - 6:00 PM",
       mapCoordinates: {

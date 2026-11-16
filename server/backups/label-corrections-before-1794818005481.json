@@ -1,0 +1,1265 @@
+{
+  "products": [
+    {
+      "id": "44359dc1-76c4-46c5-b8dd-317c057dbed0",
+      "name": "POWER MAX",
+      "description": "<h2>Maximum output for maximum performance.</h2> <p>Power Max is engineered with high-dose actives to fuel pump, endurance, and peak muscular output.</p>",
+      "slug": "power-max",
+      "featured": true,
+      "productType": null,
+      "isActive": true,
+      "isDeleted": false,
+      "deletedAt": null,
+      "deletedBy": null,
+      "createdAt": "2026-09-21T11:38:56.877Z",
+      "updatedAt": "2026-10-12T08:10:05.623Z",
+      "hasVariants": true,
+      "primaryCategoryId": "6dc37d0c-25ed-47c9-828d-7ed6215ebd53",
+      "metaTitle": "POWER MAX | MWP Supplements",
+      "metaDescription": "Power Max is engineered with high-dose actives to fuel pump, endurance, and peak muscular output.",
+      "keywords": "MWP Power Max, men's supplement, pump, endurance, muscle, performance, dietary supplement",
+      "tags": [
+        "Workout & Gym Performance"
+      ],
+      "topBrandIds": [],
+      "newBrandIds": [],
+      "hotBrandIds": [],
+      "ourProduct": true,
+      "visibility": "PUBLIC",
+      "gender": "UNISEX",
+      "fragranceNotes": null,
+      "feelings": null,
+      "occasions": null,
+      "behindThePerfume": null,
+      "shippingReturn": "Shipping availability and any charges are confirmed at checkout. Delivery estimates depend on your address. See our shipping and returns policies for details.",
+      "legalInfo": "<p>Manufactured in a cGMP-compliant facility registered with the U.S. FDA. Third-party lab tested. Vegan. Non-GMO. Made in the USA with globally sourced ingredients.</p><p>These statements have not been evaluated by the Food and Drug Administration. This product is not intended to diagnose, treat, cure or prevent any disease.</p>",
+      "lifestyleImage": null,
+      "lifestyleDescription": null,
+      "bestFor": "Men focused on pump, endurance and muscular output",
+      "mainBenefits": "Power Max is engineered with high-dose actives to fuel pump, endurance, and peak muscular output.",
+      "dosageForm": "Tablet",
+      "servingSize": "2 Tablets Daily",
+      "whenToTake": "With a meal",
+      "highlights": [
+        {
+          "text": "Supports nitric oxide production and muscle pump",
+          "title": "Muscle Pump"
+        },
+        {
+          "text": "Supports vascular health and blood flow",
+          "title": "Blood Flow"
+        },
+        {
+          "text": "Supports circulation and antioxidant defense",
+          "title": "Circulation"
+        },
+        {
+          "text": "Supports endurance and muscular output",
+          "title": "Endurance"
+        }
+      ],
+      "pageContent": null,
+      "brandId": null,
+      "ingredientItems": [
+        {
+          "id": "1cd481a9-f33b-4a9a-8ae3-ef3796bbe3eb",
+          "productId": "44359dc1-76c4-46c5-b8dd-317c057dbed0",
+          "name": "L-Citrulline Free-Form",
+          "scientificName": null,
+          "type": null,
+          "keyBenefit": null,
+          "source": "USA",
+          "amount": "2,000 mg",
+          "image": null,
+          "description": "Supports nitric oxide production & muscle pump.",
+          "displayOrder": 0,
+          "createdAt": "2026-09-30T06:42:19.984Z",
+          "updatedAt": "2026-09-30T06:42:19.984Z"
+        },
+        {
+          "id": "19ce4362-6ba8-4e8d-9c81-413e4880a0fe",
+          "productId": "44359dc1-76c4-46c5-b8dd-317c057dbed0",
+          "name": "L-Arginine Base",
+          "scientificName": null,
+          "type": null,
+          "keyBenefit": null,
+          "source": "Japan",
+          "amount": "700 mg",
+          "image": null,
+          "description": "Supports vascular health & blood flow.",
+          "displayOrder": 1,
+          "createdAt": "2026-09-30T06:42:19.984Z",
+          "updatedAt": "2026-09-30T06:42:19.984Z"
+        },
+        {
+          "id": "f739f1c3-3e34-44a7-b891-dce59141c812",
+          "productId": "44359dc1-76c4-46c5-b8dd-317c057dbed0",
+          "name": "French Maritime Pine Bark Extract",
+          "scientificName": null,
+          "type": null,
+          "keyBenefit": null,
+          "source": "France",
+          "amount": "60 mg",
+          "image": null,
+          "description": "Supports circulation & antioxidant defense.",
+          "displayOrder": 2,
+          "createdAt": "2026-09-30T06:42:19.984Z",
+          "updatedAt": "2026-09-30T06:42:19.984Z"
+        }
+      ],
+      "variants": [
+        {
+          "subscriptionPrice": null,
+          "id": "e7db463a-f7d7-469f-971f-83fece2156a0",
+          "productId": "44359dc1-76c4-46c5-b8dd-317c057dbed0",
+          "sku": "POW-WO-900-6001840",
+          "price": "49.99",
+          "salePrice": "39.99",
+          "quantity": 250,
+          "isActive": true,
+          "createdAt": "2026-09-21T11:38:56.877Z",
+          "updatedAt": "2026-10-05T07:12:11.476Z",
+          "shippingLength": null,
+          "shippingBreadth": null,
+          "shippingHeight": null,
+          "shippingWeight": null,
+          "attributes": [
+            {
+              "id": "7c273607-2746-48f0-b6d5-c0b1cf1d032c",
+              "variantId": "e7db463a-f7d7-469f-971f-83fece2156a0",
+              "attributeValueId": "7f5b16ac-bf8e-4390-a810-f36a257ac998"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "9acba3a5-0355-4d7b-80d4-efd1ffac3cd3",
+      "name": "RAPID BOOST",
+      "description": "<h2>Fast-acting support for peak performance moments.</h2> <p>Rapid Boost delivers clinically dosed actives for blood flow, stamina, and pre-activity readiness.</p>",
+      "slug": "rapid-boost",
+      "featured": true,
+      "productType": null,
+      "isActive": true,
+      "isDeleted": false,
+      "deletedAt": null,
+      "deletedBy": null,
+      "createdAt": "2026-09-21T11:38:56.529Z",
+      "updatedAt": "2026-10-12T08:10:05.702Z",
+      "hasVariants": true,
+      "primaryCategoryId": "8f0e7d34-6100-4c28-8579-dcbf1979168a",
+      "metaTitle": "RAPID BOOST | MWP Supplements",
+      "metaDescription": "Rapid Boost delivers clinically dosed actives for blood flow, stamina, and pre-activity readiness.",
+      "keywords": "MWP Rapid Boost, men's supplement, blood flow, stamina, pre-workout, dietary supplement",
+      "tags": [
+        "Men's Performance"
+      ],
+      "topBrandIds": [],
+      "newBrandIds": [],
+      "hotBrandIds": [],
+      "ourProduct": true,
+      "visibility": "PUBLIC",
+      "gender": "UNISEX",
+      "fragranceNotes": null,
+      "feelings": null,
+      "occasions": null,
+      "behindThePerfume": null,
+      "shippingReturn": "Shipping availability and any charges are confirmed at checkout. Delivery estimates depend on your address. See our shipping and returns policies for details.",
+      "legalInfo": "<p>Manufactured in a cGMP-compliant facility registered with the U.S. FDA. Third-party lab tested. Vegan. Non-GMO. Made in the USA with globally sourced ingredients.</p><p>These statements have not been evaluated by the Food and Drug Administration. This product is not intended to diagnose, treat, cure or prevent any disease.</p>",
+      "lifestyleImage": null,
+      "lifestyleDescription": null,
+      "bestFor": "Men who want blood flow, stamina and pre-activity readiness",
+      "mainBenefits": "Rapid Boost delivers clinically dosed actives for blood flow, stamina, and pre-activity readiness.",
+      "dosageForm": "Tablet",
+      "servingSize": "2 Tablets Daily",
+      "whenToTake": "With a meal",
+      "highlights": [
+        {
+          "text": "Supports nitric oxide production and blood flow",
+          "title": "Blood Flow"
+        },
+        {
+          "text": "Supports energy, stamina and vitality",
+          "title": "Energy & Stamina"
+        },
+        {
+          "text": "Supports drive, stamina and performance",
+          "title": "Drive & Performance"
+        },
+        {
+          "text": "Supports circulation and cognitive function",
+          "title": "Circulation & Focus"
+        }
+      ],
+      "pageContent": null,
+      "brandId": null,
+      "ingredientItems": [
+        {
+          "id": "7657d891-638f-45b5-8bcc-f84073703d27",
+          "productId": "9acba3a5-0355-4d7b-80d4-efd1ffac3cd3",
+          "name": "L-Citrulline Malate 2:1",
+          "scientificName": null,
+          "type": null,
+          "keyBenefit": null,
+          "source": "USA",
+          "amount": "2,000 mg",
+          "image": null,
+          "description": "Supports nitric oxide production & blood flow.",
+          "displayOrder": 0,
+          "createdAt": "2026-09-30T06:42:19.501Z",
+          "updatedAt": "2026-09-30T06:42:19.501Z"
+        },
+        {
+          "id": "fbbe5c1a-e8fa-452f-a08e-b054943a1f7a",
+          "productId": "9acba3a5-0355-4d7b-80d4-efd1ffac3cd3",
+          "name": "Panax Ginseng Root Extract",
+          "scientificName": null,
+          "type": null,
+          "keyBenefit": null,
+          "source": "South Korea",
+          "amount": "200 mg",
+          "image": null,
+          "description": "Supports energy, stamina & vitality.",
+          "displayOrder": 1,
+          "createdAt": "2026-09-30T06:42:19.501Z",
+          "updatedAt": "2026-09-30T06:42:19.501Z"
+        },
+        {
+          "id": "ef2469db-b1c9-477b-91c7-8b6743548727",
+          "productId": "9acba3a5-0355-4d7b-80d4-efd1ffac3cd3",
+          "name": "Black Maca Root Extract 4:1",
+          "scientificName": null,
+          "type": null,
+          "keyBenefit": null,
+          "source": "Peru",
+          "amount": "300 mg",
+          "image": null,
+          "description": "Supports drive, stamina & performance.",
+          "displayOrder": 2,
+          "createdAt": "2026-09-30T06:42:19.501Z",
+          "updatedAt": "2026-09-30T06:42:19.501Z"
+        },
+        {
+          "id": "8882fbb4-d44e-40d1-a14d-5712d892dc3e",
+          "productId": "9acba3a5-0355-4d7b-80d4-efd1ffac3cd3",
+          "name": "Fenugreek Extract 60%",
+          "scientificName": null,
+          "type": null,
+          "keyBenefit": null,
+          "source": "India",
+          "amount": "300 mg",
+          "image": null,
+          "description": "Supports vitality & healthy performance.",
+          "displayOrder": 3,
+          "createdAt": "2026-09-30T06:42:19.501Z",
+          "updatedAt": "2026-09-30T06:42:19.501Z"
+        },
+        {
+          "id": "53300ab5-6b84-4b14-90b7-58bbc7d34297",
+          "productId": "9acba3a5-0355-4d7b-80d4-efd1ffac3cd3",
+          "name": "Pomegranate Extract",
+          "scientificName": null,
+          "type": null,
+          "keyBenefit": null,
+          "source": "India",
+          "amount": "150 mg",
+          "image": null,
+          "description": "Supports antioxidant & circulatory health.",
+          "displayOrder": 4,
+          "createdAt": "2026-09-30T06:42:19.501Z",
+          "updatedAt": "2026-09-30T06:42:19.501Z"
+        },
+        {
+          "id": "9277fbf6-4fc4-4474-8ba3-48cbd139fc99",
+          "productId": "9acba3a5-0355-4d7b-80d4-efd1ffac3cd3",
+          "name": "Ginkgo Biloba Extract",
+          "scientificName": null,
+          "type": null,
+          "keyBenefit": null,
+          "source": "Germany",
+          "amount": "60 mg",
+          "image": null,
+          "description": "Supports circulation & cognitive function.",
+          "displayOrder": 5,
+          "createdAt": "2026-09-30T06:42:19.501Z",
+          "updatedAt": "2026-09-30T06:42:19.501Z"
+        },
+        {
+          "id": "d290c7a2-1fae-4e7c-9251-d94b3227b47e",
+          "productId": "9acba3a5-0355-4d7b-80d4-efd1ffac3cd3",
+          "name": "Zinc Citrate",
+          "scientificName": null,
+          "type": null,
+          "keyBenefit": null,
+          "source": "USA",
+          "amount": "10 mg elemental zinc",
+          "image": null,
+          "description": "Supports normal testosterone levels & immune health.",
+          "displayOrder": 6,
+          "createdAt": "2026-09-30T06:42:19.501Z",
+          "updatedAt": "2026-09-30T06:42:19.501Z"
+        }
+      ],
+      "variants": [
+        {
+          "subscriptionPrice": null,
+          "id": "bdeed54c-e977-41b7-a925-988156c79683",
+          "productId": "9acba3a5-0355-4d7b-80d4-efd1ffac3cd3",
+          "sku": "RAP-ME-900-6001593",
+          "price": "54.99",
+          "salePrice": "44.99",
+          "quantity": 250,
+          "isActive": true,
+          "createdAt": "2026-09-21T11:38:56.529Z",
+          "updatedAt": "2026-10-05T07:12:11.348Z",
+          "shippingLength": null,
+          "shippingBreadth": null,
+          "shippingHeight": null,
+          "shippingWeight": null,
+          "attributes": [
+            {
+              "id": "e32f7964-adea-411b-989f-df2684c2d88b",
+              "variantId": "bdeed54c-e977-41b7-a925-988156c79683",
+              "attributeValueId": "89018891-20bd-4112-8278-32b701620931"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "5dc8ec98-f5bd-439b-a33f-bf9f3fe5fe18",
+      "name": "TITAN FORCE",
+      "description": "<h2>Power For Your Everyday.</h2><p>Titan Force is MWP’s Maximum Performance Formula for men, made to boost strength and support endurance, lean muscle and power. 60 capsules per bottle.</p>",
+      "slug": "titan-force",
+      "featured": true,
+      "productType": null,
+      "isActive": true,
+      "isDeleted": false,
+      "deletedAt": null,
+      "deletedBy": null,
+      "createdAt": "2026-10-05T06:56:24.624Z",
+      "updatedAt": "2026-10-12T08:10:36.295Z",
+      "hasVariants": true,
+      "primaryCategoryId": "6dc37d0c-25ed-47c9-828d-7ed6215ebd53",
+      "metaTitle": "TITAN FORCE | MWP Supplements",
+      "metaDescription": "Maximum Performance Formula. 60 capsules.",
+      "keywords": "MWP Titan Force, men's supplement, strength, endurance, lean muscle, power, dietary supplement",
+      "tags": [
+        "Workout & Gym Performance"
+      ],
+      "topBrandIds": [],
+      "newBrandIds": [],
+      "hotBrandIds": [],
+      "ourProduct": true,
+      "visibility": "PUBLIC",
+      "gender": "UNISEX",
+      "fragranceNotes": null,
+      "feelings": null,
+      "occasions": null,
+      "behindThePerfume": null,
+      "shippingReturn": "Shipping availability and any charges are confirmed at checkout. Delivery estimates depend on your address. See our shipping and returns policies for details.",
+      "legalInfo": "<p>Manufactured in a cGMP-compliant facility registered with the U.S. FDA. Third-party lab tested. Vegan. Non-GMO. Made in the USA with globally sourced ingredients.</p><p>These statements have not been evaluated by the Food and Drug Administration. This product is not intended to diagnose, treat, cure or prevent any disease.</p>",
+      "lifestyleImage": null,
+      "lifestyleDescription": null,
+      "bestFor": "Men focused on strength, endurance and power",
+      "mainBenefits": "Titan Force boosts strength and supports endurance, lean muscle and power.",
+      "dosageForm": "Capsule",
+      "servingSize": "Follow the directions on the product label",
+      "whenToTake": null,
+      "highlights": [
+        {
+          "text": "Boosts strength",
+          "title": "Strength"
+        },
+        {
+          "text": "Enhances endurance",
+          "title": "Endurance"
+        },
+        {
+          "text": "Supports lean muscle",
+          "title": "Lean Muscle"
+        },
+        {
+          "text": "Increases power",
+          "title": "Power"
+        }
+      ],
+      "pageContent": null,
+      "brandId": null,
+      "ingredientItems": [],
+      "variants": [
+        {
+          "subscriptionPrice": null,
+          "id": "3310385a-a6ac-4136-89c5-16bb2d166d95",
+          "productId": "5dc8ec98-f5bd-439b-a33f-bf9f3fe5fe18",
+          "sku": "MWP-TITAN-FORCE-60",
+          "price": "54.99",
+          "salePrice": "44.99",
+          "quantity": 250,
+          "isActive": true,
+          "createdAt": "2026-10-05T06:57:43.424Z",
+          "updatedAt": "2026-10-05T07:12:11.799Z",
+          "shippingLength": null,
+          "shippingBreadth": null,
+          "shippingHeight": null,
+          "shippingWeight": null,
+          "attributes": [
+            {
+              "id": "d697fd3f-3099-4bdf-88a8-e1278914797f",
+              "variantId": "3310385a-a6ac-4136-89c5-16bb2d166d95",
+              "attributeValueId": "89018891-20bd-4112-8278-32b701620931"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "bfdfa7fa-0b86-46d1-9518-1076b4147079",
+      "name": "DAILY VITALITY",
+      "description": "<h2>Foundational wellness for everyday resilience.</h2> <p>Daily Vitality supports cellular energy, cardiovascular health, and daily antioxidant defense.</p>",
+      "slug": "daily-vitality",
+      "featured": true,
+      "productType": null,
+      "isActive": true,
+      "isDeleted": false,
+      "deletedAt": null,
+      "deletedBy": null,
+      "createdAt": "2026-09-21T11:38:57.995Z",
+      "updatedAt": "2026-10-12T08:10:05.932Z",
+      "hasVariants": true,
+      "primaryCategoryId": "42c404fe-3a59-4333-9d4d-54d3545cc617",
+      "metaTitle": "DAILY VITALITY | MWP Supplements",
+      "metaDescription": "Daily Vitality supports cellular energy, cardiovascular health, and daily antioxidant defense.",
+      "keywords": "MWP Daily Vitality, daily wellness, cellular energy, metabolism, immune support, dietary supplement",
+      "tags": [
+        "Daily Wellness"
+      ],
+      "topBrandIds": [],
+      "newBrandIds": [],
+      "hotBrandIds": [],
+      "ourProduct": true,
+      "visibility": "PUBLIC",
+      "gender": "UNISEX",
+      "fragranceNotes": null,
+      "feelings": null,
+      "occasions": null,
+      "behindThePerfume": null,
+      "shippingReturn": "Shipping availability and any charges are confirmed at checkout. Delivery estimates depend on your address. See our shipping and returns policies for details.",
+      "legalInfo": "<p>Manufactured in a cGMP-compliant facility registered with the U.S. FDA. Third-party lab tested. Vegan. Non-GMO. Made in the USA with globally sourced ingredients.</p><p>These statements have not been evaluated by the Food and Drug Administration. This product is not intended to diagnose, treat, cure or prevent any disease.</p>",
+      "lifestyleImage": null,
+      "lifestyleDescription": null,
+      "bestFor": "Anyone building a daily routine for cellular energy, metabolism and immune support",
+      "mainBenefits": "Daily Vitality supports cellular energy, cardiovascular health, and daily antioxidant defense.",
+      "dosageForm": "Capsule",
+      "servingSize": "2 Capsules Daily",
+      "whenToTake": "With a meal",
+      "highlights": [
+        {
+          "text": "Supports cellular energy production",
+          "title": "Cellular Energy"
+        },
+        {
+          "text": "Supports stress resilience and everyday vitality",
+          "title": "Stress & Vitality"
+        },
+        {
+          "text": "Supports healthy metabolism and cardiovascular health",
+          "title": "Metabolism & Heart"
+        },
+        {
+          "text": "Supports immune and bone health",
+          "title": "Immune & Bone"
+        }
+      ],
+      "pageContent": null,
+      "brandId": null,
+      "ingredientItems": [
+        {
+          "id": "7d905dad-156c-4d7b-a7d6-8fce46a85832",
+          "productId": "bfdfa7fa-0b86-46d1-9518-1076b4147079",
+          "name": "CoQ10 Ubiquinol",
+          "scientificName": null,
+          "type": null,
+          "keyBenefit": null,
+          "source": "Japan",
+          "amount": "100 mg",
+          "image": null,
+          "description": "Supports cellular energy production.",
+          "displayOrder": 0,
+          "createdAt": "2026-09-30T06:42:20.272Z",
+          "updatedAt": "2026-09-30T06:42:20.272Z"
+        },
+        {
+          "id": "3ed32e25-2b33-4b78-a511-3e418e3a22af",
+          "productId": "bfdfa7fa-0b86-46d1-9518-1076b4147079",
+          "name": "KSM-66 Ashwagandha",
+          "scientificName": null,
+          "type": null,
+          "keyBenefit": null,
+          "source": "India",
+          "amount": "400 mg",
+          "image": null,
+          "description": "Supports stress resilience & everyday vitality.",
+          "displayOrder": 1,
+          "createdAt": "2026-09-30T06:42:20.272Z",
+          "updatedAt": "2026-09-30T06:42:20.272Z"
+        },
+        {
+          "id": "4a8561b1-9a94-4155-994a-a8cfe002f9b4",
+          "productId": "bfdfa7fa-0b86-46d1-9518-1076b4147079",
+          "name": "Berberine Phytosome",
+          "scientificName": null,
+          "type": null,
+          "keyBenefit": null,
+          "source": "Italy",
+          "amount": "300 mg",
+          "image": null,
+          "description": "Supports healthy metabolism & cardiovascular health.",
+          "displayOrder": 2,
+          "createdAt": "2026-09-30T06:42:20.272Z",
+          "updatedAt": "2026-09-30T06:42:20.272Z"
+        },
+        {
+          "id": "cb951bfb-0a07-4cdf-93f6-6103f191565b",
+          "productId": "bfdfa7fa-0b86-46d1-9518-1076b4147079",
+          "name": "Quercetin Phytosome",
+          "scientificName": null,
+          "type": null,
+          "keyBenefit": null,
+          "source": "Italy",
+          "amount": "100 mg",
+          "image": null,
+          "description": "Supports antioxidant defense & immune health.",
+          "displayOrder": 3,
+          "createdAt": "2026-09-30T06:42:20.272Z",
+          "updatedAt": "2026-09-30T06:42:20.272Z"
+        },
+        {
+          "id": "1cbbf4d3-fdb4-4e9e-9318-ff256b565cbf",
+          "productId": "bfdfa7fa-0b86-46d1-9518-1076b4147079",
+          "name": "Vegan Vitamin D3",
+          "scientificName": null,
+          "type": null,
+          "keyBenefit": null,
+          "source": "USA",
+          "amount": "2,000 IU",
+          "image": null,
+          "description": "Supports immune & bone health.",
+          "displayOrder": 4,
+          "createdAt": "2026-09-30T06:42:20.272Z",
+          "updatedAt": "2026-09-30T06:42:20.272Z"
+        },
+        {
+          "id": "a854ee5e-2aeb-4d40-9528-fbea750f7e65",
+          "productId": "bfdfa7fa-0b86-46d1-9518-1076b4147079",
+          "name": "Vitamin K2 MK-7",
+          "scientificName": null,
+          "type": null,
+          "keyBenefit": null,
+          "source": "Japan",
+          "amount": "100 mcg",
+          "image": null,
+          "description": "Supports healthy calcium utilization & bone health.",
+          "displayOrder": 5,
+          "createdAt": "2026-09-30T06:42:20.272Z",
+          "updatedAt": "2026-09-30T06:42:20.272Z"
+        }
+      ],
+      "variants": [
+        {
+          "subscriptionPrice": null,
+          "id": "d6f5226e-73c1-4038-9eb1-c01d08befd4e",
+          "productId": "bfdfa7fa-0b86-46d1-9518-1076b4147079",
+          "sku": "DAI-DA-900-6001527",
+          "price": "39.99",
+          "salePrice": "29.99",
+          "quantity": 250,
+          "isActive": true,
+          "createdAt": "2026-09-21T11:38:57.995Z",
+          "updatedAt": "2026-10-05T07:12:11.668Z",
+          "shippingLength": null,
+          "shippingBreadth": null,
+          "shippingHeight": null,
+          "shippingWeight": null,
+          "attributes": [
+            {
+              "id": "a4e2dfe1-4bcf-489c-945f-629d858efd2f",
+              "variantId": "d6f5226e-73c1-4038-9eb1-c01d08befd4e",
+              "attributeValueId": "89018891-20bd-4112-8278-32b701620931"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "525cf338-6358-40c5-8151-f38c3f881a09",
+      "name": "HER POWER",
+      "description": "<h2>Hormone and vitality support, formulated for her.</h2> <p>Her Power combines clinically studied actives to support hormone balance, energy, and everyday vitality.</p>",
+      "slug": "her-power",
+      "featured": true,
+      "productType": null,
+      "isActive": true,
+      "isDeleted": false,
+      "deletedAt": null,
+      "deletedBy": null,
+      "createdAt": "2026-09-21T11:38:57.255Z",
+      "updatedAt": "2026-10-26T11:04:59.918Z",
+      "hasVariants": true,
+      "primaryCategoryId": "e2d78793-fb8f-4d9c-a133-8f891841a708",
+      "metaTitle": "HER POWER | MWP Supplements",
+      "metaDescription": "Her Power combines clinically studied actives to support hormone balance, energy, and everyday vitality.",
+      "keywords": "MWP Her Power, women's supplement, hormone balance, energy, vitality, dietary supplement",
+      "tags": [
+        "Women's Wellness"
+      ],
+      "topBrandIds": [],
+      "newBrandIds": [],
+      "hotBrandIds": [],
+      "ourProduct": true,
+      "visibility": "PUBLIC",
+      "gender": "UNISEX",
+      "fragranceNotes": null,
+      "feelings": null,
+      "occasions": null,
+      "behindThePerfume": null,
+      "shippingReturn": "Shipping availability and any charges are confirmed at checkout. Delivery estimates depend on your address. See our shipping and returns policies for details.",
+      "legalInfo": "<p>Manufactured in a cGMP-compliant facility registered with the U.S. FDA. Third-party lab tested. Vegan. Non-GMO. Made in the USA with globally sourced ingredients.</p><p>These statements have not been evaluated by the Food and Drug Administration. This product is not intended to diagnose, treat, cure or prevent any disease.</p>",
+      "lifestyleImage": null,
+      "lifestyleDescription": null,
+      "bestFor": "Women looking for hormone balance, energy and everyday vitality support",
+      "mainBenefits": "Her Power combines clinically studied actives to support hormone balance, energy, and everyday vitality.",
+      "dosageForm": "Tablet",
+      "servingSize": "2 Tablets Daily",
+      "whenToTake": "With a meal",
+      "highlights": [
+        {
+          "text": "Supports women's daily wellness",
+          "title": "Daily Wellness"
+        },
+        {
+          "text": "Supports normal energy metabolism",
+          "title": "Energy Metabolism"
+        },
+        {
+          "text": "Supports a healthy stress response",
+          "title": "Stress Response"
+        },
+        {
+          "text": "Supports bone and muscle health",
+          "title": "Bone & Muscle"
+        }
+      ],
+      "pageContent": null,
+      "brandId": null,
+      "ingredientItems": [
+        {
+          "id": "73544604-489d-4e73-89fe-f2f3ba46d8a9",
+          "productId": "525cf338-6358-40c5-8151-f38c3f881a09",
+          "name": "Myo-Inositol",
+          "scientificName": null,
+          "type": null,
+          "keyBenefit": null,
+          "source": "USA",
+          "amount": "2,000 mg",
+          "image": null,
+          "description": "Supports hormonal balance & metabolic health.",
+          "displayOrder": 0,
+          "createdAt": "2026-09-30T06:42:20.054Z",
+          "updatedAt": "2026-09-30T06:42:20.054Z"
+        },
+        {
+          "id": "85662f5d-694f-4779-9b1a-48678ef009ab",
+          "productId": "525cf338-6358-40c5-8151-f38c3f881a09",
+          "name": "D-Chiro Inositol",
+          "scientificName": null,
+          "type": null,
+          "keyBenefit": null,
+          "source": "USA",
+          "amount": "50 mg",
+          "image": null,
+          "description": "Supports hormonal balance in combination with Myo-Inositol.",
+          "displayOrder": 1,
+          "createdAt": "2026-09-30T06:42:20.054Z",
+          "updatedAt": "2026-09-30T06:42:20.054Z"
+        },
+        {
+          "id": "04628f4c-55ba-4988-bf2a-00e272a5e59d",
+          "productId": "525cf338-6358-40c5-8151-f38c3f881a09",
+          "name": "Shatavari Root Extract",
+          "scientificName": null,
+          "type": null,
+          "keyBenefit": null,
+          "source": "India",
+          "amount": "400 mg",
+          "image": null,
+          "description": "Traditionally used to support women's wellness.",
+          "displayOrder": 2,
+          "createdAt": "2026-09-30T06:42:20.054Z",
+          "updatedAt": "2026-09-30T06:42:20.054Z"
+        },
+        {
+          "id": "883b839b-76c2-436d-8c71-051c8beb8758",
+          "productId": "525cf338-6358-40c5-8151-f38c3f881a09",
+          "name": "Magnesium Glycinate",
+          "scientificName": null,
+          "type": null,
+          "keyBenefit": null,
+          "source": "USA",
+          "amount": "300 mg",
+          "image": null,
+          "description": "Supports muscle, nerve & metabolic function.",
+          "displayOrder": 3,
+          "createdAt": "2026-09-30T06:42:20.054Z",
+          "updatedAt": "2026-09-30T06:42:20.054Z"
+        },
+        {
+          "id": "58a1dc98-cd44-4ebe-9b4a-764145dbd3b8",
+          "productId": "525cf338-6358-40c5-8151-f38c3f881a09",
+          "name": "Vitamin B6 (P-5-P)",
+          "scientificName": null,
+          "type": null,
+          "keyBenefit": null,
+          "source": "USA",
+          "amount": "10 mg",
+          "image": null,
+          "description": "Supports hormonal balance & energy metabolism.",
+          "displayOrder": 4,
+          "createdAt": "2026-09-30T06:42:20.054Z",
+          "updatedAt": "2026-09-30T06:42:20.054Z"
+        },
+        {
+          "id": "9b4a97a0-072d-4956-a738-ed59164d80f8",
+          "productId": "525cf338-6358-40c5-8151-f38c3f881a09",
+          "name": "Zinc Bisglycinate",
+          "scientificName": null,
+          "type": null,
+          "keyBenefit": null,
+          "source": "USA",
+          "amount": "3 mg elemental zinc",
+          "image": null,
+          "description": "Supports immune health & hormonal balance.",
+          "displayOrder": 5,
+          "createdAt": "2026-09-30T06:42:20.054Z",
+          "updatedAt": "2026-09-30T06:42:20.054Z"
+        },
+        {
+          "id": "26de412d-49da-4b99-b9cc-daf22bbd7d19",
+          "productId": "525cf338-6358-40c5-8151-f38c3f881a09",
+          "name": "Chromium Picolinate",
+          "scientificName": null,
+          "type": null,
+          "keyBenefit": null,
+          "source": "USA",
+          "amount": "24 mcg elemental chromium",
+          "image": null,
+          "description": "Supports healthy metabolism.",
+          "displayOrder": 6,
+          "createdAt": "2026-09-30T06:42:20.054Z",
+          "updatedAt": "2026-09-30T06:42:20.054Z"
+        },
+        {
+          "id": "edd71fe8-7f17-47e7-b304-6dfba9aa2ca8",
+          "productId": "525cf338-6358-40c5-8151-f38c3f881a09",
+          "name": "Vegan/Lichen Vitamin D3",
+          "scientificName": null,
+          "type": null,
+          "keyBenefit": null,
+          "source": "USA",
+          "amount": "2,000 IU",
+          "image": null,
+          "description": "Supports immune & bone health.",
+          "displayOrder": 7,
+          "createdAt": "2026-09-30T06:42:20.054Z",
+          "updatedAt": "2026-09-30T06:42:20.054Z"
+        }
+      ],
+      "variants": [
+        {
+          "subscriptionPrice": null,
+          "id": "36adac82-854b-438d-bd3a-f98f12917d42",
+          "productId": "525cf338-6358-40c5-8151-f38c3f881a09",
+          "sku": "HER-WO-900-6001297",
+          "price": "49.99",
+          "salePrice": "39.99",
+          "quantity": 250,
+          "isActive": true,
+          "createdAt": "2026-09-21T11:38:57.255Z",
+          "updatedAt": "2026-10-26T11:05:14.438Z",
+          "shippingLength": null,
+          "shippingBreadth": null,
+          "shippingHeight": null,
+          "shippingWeight": null,
+          "attributes": [
+            {
+              "id": "41d1629f-38de-4157-a920-13ac0532b4fc",
+              "variantId": "36adac82-854b-438d-bd3a-f98f12917d42",
+              "attributeValueId": "89018891-20bd-4112-8278-32b701620931"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "verifications": [
+    {
+      "id": "f488cdc7-13ec-4d56-9441-403f6a806ec5",
+      "verificationCode": "MWP-2WFNS9XZ",
+      "productId": "44359dc1-76c4-46c5-b8dd-317c057dbed0",
+      "productName": "POWER MAX",
+      "productSlug": "power-max",
+      "productImage": null,
+      "batchNumber": null,
+      "lotNumber": null,
+      "manufacturingDate": null,
+      "expiryDate": null,
+      "authenticityStatus": "VERIFIED",
+      "status": "ACTIVE",
+      "tagline": "Maximum output for maximum performance.",
+      "shortDescription": "Power Max is engineered with high-dose actives to fuel pump, endurance, and peak muscular output.",
+      "description": "Ingredient amounts reflect the provided product formulas. Countries listed are MWP procurement targets. \"Sourced From\" is published on customer-facing pages only after supplier/COA country-of-origin documentation confirms the source.",
+      "features": [
+        "2 Tablets Daily",
+        "With a meal",
+        "60 Count"
+      ],
+      "coaUrl": null,
+      "certificateUrl": null,
+      "ingredients": [
+        {
+          "name": "L-Citrulline Free-Form",
+          "amount": "2,000 mg",
+          "origin": "USA",
+          "description": "Supports nitric oxide production & muscle pump."
+        },
+        {
+          "name": "L-Arginine Base",
+          "amount": "700 mg",
+          "origin": "Japan",
+          "description": "Supports vascular health & blood flow."
+        },
+        {
+          "name": "French Maritime Pine Bark Extract",
+          "amount": "60 mg",
+          "origin": "France",
+          "description": "Supports circulation & antioxidant defense."
+        }
+      ],
+      "origin": "Formulated in the USA — Globally Sourced Ingredients",
+      "badgeType": "Third-Party Lab Tested",
+      "badgeImage": null,
+      "isActive": true,
+      "createdBy": null,
+      "updatedBy": null,
+      "createdAt": "2026-09-21T11:38:57.133Z",
+      "updatedAt": "2026-10-27T06:59:35.220Z"
+    },
+    {
+      "id": "228e3705-cd28-4217-aeb1-9431f0ad0ac3",
+      "verificationCode": "MWP-N4BZZQ5V",
+      "productId": "525cf338-6358-40c5-8151-f38c3f881a09",
+      "productName": "HER POWER",
+      "productSlug": "her-power",
+      "productImage": null,
+      "batchNumber": null,
+      "lotNumber": null,
+      "manufacturingDate": null,
+      "expiryDate": null,
+      "authenticityStatus": "VERIFIED",
+      "status": "ACTIVE",
+      "tagline": "Hormone and vitality support, formulated for her.",
+      "shortDescription": "Her Power combines clinically studied actives to support hormone balance, energy, and everyday vitality.",
+      "description": "Ingredient amounts reflect the provided product formulas. Countries listed are MWP procurement targets. \"Sourced From\" is published on customer-facing pages only after supplier/COA country-of-origin documentation confirms the source.",
+      "features": [
+        "2 Tablets Daily",
+        "With a meal",
+        "60 Count"
+      ],
+      "coaUrl": null,
+      "certificateUrl": null,
+      "ingredients": [
+        {
+          "name": "Myo-Inositol",
+          "amount": "2,000 mg",
+          "origin": "USA",
+          "description": "Supports hormonal balance & metabolic health."
+        },
+        {
+          "name": "D-Chiro Inositol",
+          "amount": "50 mg",
+          "origin": "USA",
+          "description": "Supports hormonal balance in combination with Myo-Inositol."
+        },
+        {
+          "name": "Shatavari Root Extract",
+          "amount": "400 mg",
+          "origin": "India",
+          "description": "Traditionally used to support women's wellness."
+        },
+        {
+          "name": "Magnesium Glycinate",
+          "amount": "300 mg",
+          "origin": "USA",
+          "description": "Supports muscle, nerve & metabolic function."
+        },
+        {
+          "name": "Vitamin B6 (P-5-P)",
+          "amount": "10 mg",
+          "origin": "USA",
+          "description": "Supports hormonal balance & energy metabolism."
+        },
+        {
+          "name": "Zinc Bisglycinate",
+          "amount": "3 mg elemental zinc",
+          "origin": "USA",
+          "description": "Supports immune health & hormonal balance."
+        },
+        {
+          "name": "Chromium Picolinate",
+          "amount": "24 mcg elemental chromium",
+          "origin": "USA",
+          "description": "Supports healthy metabolism."
+        },
+        {
+          "name": "Vegan/Lichen Vitamin D3",
+          "amount": "2,000 IU",
+          "origin": "USA",
+          "description": "Supports immune & bone health."
+        }
+      ],
+      "origin": "Formulated in the USA — Globally Sourced Ingredients",
+      "badgeType": "Third-Party Lab Tested",
+      "badgeImage": null,
+      "isActive": true,
+      "createdBy": null,
+      "updatedBy": null,
+      "createdAt": "2026-09-21T11:38:57.512Z",
+      "updatedAt": "2026-10-27T06:59:35.302Z"
+    },
+    {
+      "id": "7dc530ef-4f19-4e24-a4d9-e34cfa72919c",
+      "verificationCode": "MWP-NH7HBJJ7",
+      "productId": "9acba3a5-0355-4d7b-80d4-efd1ffac3cd3",
+      "productName": "RAPID BOOST",
+      "productSlug": "rapid-boost",
+      "productImage": null,
+      "batchNumber": null,
+      "lotNumber": null,
+      "manufacturingDate": null,
+      "expiryDate": null,
+      "authenticityStatus": "VERIFIED",
+      "status": "ACTIVE",
+      "tagline": "Fast-acting support for peak performance moments.",
+      "shortDescription": "Rapid Boost delivers clinically dosed actives for blood flow, stamina, and pre-activity readiness.",
+      "description": "Ingredient amounts reflect the provided product formulas. Countries listed are MWP procurement targets. \"Sourced From\" is published on customer-facing pages only after supplier/COA country-of-origin documentation confirms the source.",
+      "features": [
+        "2 Tablets Daily",
+        "With a meal",
+        "60 Count"
+      ],
+      "coaUrl": null,
+      "certificateUrl": null,
+      "ingredients": [
+        {
+          "name": "L-Citrulline Malate 2:1",
+          "amount": "2,000 mg",
+          "origin": "USA",
+          "description": "Supports nitric oxide production & blood flow."
+        },
+        {
+          "name": "Panax Ginseng Root Extract",
+          "amount": "200 mg",
+          "origin": "South Korea",
+          "description": "Supports energy, stamina & vitality."
+        },
+        {
+          "name": "Black Maca Root Extract 4:1",
+          "amount": "300 mg",
+          "origin": "Peru",
+          "description": "Supports drive, stamina & performance."
+        },
+        {
+          "name": "Fenugreek Extract 60%",
+          "amount": "300 mg",
+          "origin": "India",
+          "description": "Supports vitality & healthy performance."
+        },
+        {
+          "name": "Pomegranate Extract",
+          "amount": "150 mg",
+          "origin": "India",
+          "description": "Supports antioxidant & circulatory health."
+        },
+        {
+          "name": "Ginkgo Biloba Extract",
+          "amount": "60 mg",
+          "origin": "Germany",
+          "description": "Supports circulation & cognitive function."
+        },
+        {
+          "name": "Zinc Citrate",
+          "amount": "10 mg elemental zinc",
+          "origin": "USA",
+          "description": "Supports normal testosterone levels & immune health."
+        }
+      ],
+      "origin": "Formulated in the USA — Globally Sourced Ingredients",
+      "badgeType": "Third-Party Lab Tested",
+      "badgeImage": null,
+      "isActive": true,
+      "createdBy": null,
+      "updatedBy": null,
+      "createdAt": "2026-09-21T11:38:56.771Z",
+      "updatedAt": "2026-10-27T06:59:35.141Z"
+    },
+    {
+      "id": "75ae1c01-d22f-49d8-90fd-05efa1080ac4",
+      "verificationCode": "MWP-EG7QNL9G",
+      "productId": "bfdfa7fa-0b86-46d1-9518-1076b4147079",
+      "productName": "DAILY VITALITY",
+      "productSlug": "daily-vitality",
+      "productImage": null,
+      "batchNumber": null,
+      "lotNumber": null,
+      "manufacturingDate": null,
+      "expiryDate": null,
+      "authenticityStatus": "VERIFIED",
+      "status": "ACTIVE",
+      "tagline": "Foundational wellness for everyday resilience.",
+      "shortDescription": "Daily Vitality supports cellular energy, cardiovascular health, and daily antioxidant defense.",
+      "description": "Ingredient amounts reflect the provided product formulas. Countries listed are MWP procurement targets. \"Sourced From\" is published on customer-facing pages only after supplier/COA country-of-origin documentation confirms the source.",
+      "features": [
+        "2 Capsules Daily",
+        "With a meal",
+        "60 Count"
+      ],
+      "coaUrl": null,
+      "certificateUrl": null,
+      "ingredients": [
+        {
+          "name": "CoQ10 Ubiquinol",
+          "amount": "100 mg",
+          "origin": "Japan",
+          "description": "Supports cellular energy production."
+        },
+        {
+          "name": "KSM-66 Ashwagandha",
+          "amount": "400 mg",
+          "origin": "India",
+          "description": "Supports stress resilience & everyday vitality."
+        },
+        {
+          "name": "Berberine Phytosome",
+          "amount": "300 mg",
+          "origin": "Italy",
+          "description": "Supports healthy metabolism & cardiovascular health."
+        },
+        {
+          "name": "Quercetin Phytosome",
+          "amount": "100 mg",
+          "origin": "Italy",
+          "description": "Supports antioxidant defense & immune health."
+        },
+        {
+          "name": "Vegan Vitamin D3",
+          "amount": "2,000 IU",
+          "origin": "USA",
+          "description": "Supports immune & bone health."
+        },
+        {
+          "name": "Vitamin K2 MK-7",
+          "amount": "100 mcg",
+          "origin": "Japan",
+          "description": "Supports healthy calcium utilization & bone health."
+        }
+      ],
+      "origin": "Formulated in the USA — Globally Sourced Ingredients",
+      "badgeType": "Third-Party Lab Tested",
+      "badgeImage": null,
+      "isActive": true,
+      "createdBy": null,
+      "updatedBy": null,
+      "createdAt": "2026-09-21T11:38:58.264Z",
+      "updatedAt": "2026-10-27T06:59:35.385Z"
+    },
+    {
+      "id": "8432c90f-f345-4e85-bba7-a12c85145e80",
+      "verificationCode": "MWP-MEQ4DJ9D",
+      "productId": "5dc8ec98-f5bd-439b-a33f-bf9f3fe5fe18",
+      "productName": "TITAN FORCE",
+      "productSlug": "titan-force",
+      "productImage": "mwp/products/1791183384390-titan-force.webp",
+      "batchNumber": null,
+      "lotNumber": null,
+      "manufacturingDate": null,
+      "expiryDate": null,
+      "authenticityStatus": "VERIFIED",
+      "status": "ACTIVE",
+      "tagline": "Power For Your Everyday.",
+      "shortDescription": "Titan Force is MWP’s Maximum Performance Formula for men, made to boost strength and support endurance, lean muscle and power. 60 capsules per bottle.",
+      "description": "Power For Your Everyday.\n\nTitan Force is MWP’s Maximum Performance Formula for men, made to boost strength and support endurance, lean muscle and power. 60 capsules per bottle.",
+      "features": [
+        "60 Capsules"
+      ],
+      "coaUrl": null,
+      "certificateUrl": null,
+      "ingredients": [],
+      "origin": "Formulated in the USA — Globally Sourced Ingredients",
+      "badgeType": "Third-Party Lab Tested",
+      "badgeImage": null,
+      "isActive": true,
+      "createdBy": null,
+      "updatedBy": null,
+      "createdAt": "2026-10-27T06:47:06.692Z",
+      "updatedAt": "2026-10-27T06:59:35.623Z"
+    }
+  ],
+  "blogPosts": [
+    {
+      "id": "db1f691d-a6ca-4fce-a05e-110d7db75a38",
+      "slug": "saffron-mood-emotional-wellness-research",
+      "reviewedBy": "Pending Professional Review"
+    },
+    {
+      "id": "beae723a-fac8-4ea7-8a76-63b57c0620b0",
+      "slug": "iron-vitamin-b12-energy-metabolism",
+      "reviewedBy": "Pending Professional Review"
+    },
+    {
+      "id": "0d1ed681-ba29-4aa6-97fb-b60b265762e0",
+      "slug": "how-women-can-compare-wellness-supplement-formulas",
+      "reviewedBy": "Pending Professional Review"
+    }
+  ],
+  "faqs": [
+    {
+      "id": "beea0d78-d7c7-4503-89b1-4ce49bdaf495",
+      "question": "How do I place an order?",
+      "answer": "Choose your formula and pack size, add it to your cart and continue to checkout. Prices are in US dollars, and your shipping options and final total are shown before you pay.",
+      "category": "Orders & Shipping",
+      "order": 0,
+      "isPublished": true,
+      "createdAt": "2026-10-12T08:06:27.129Z",
+      "updatedAt": "2026-10-12T08:06:27.129Z"
+    },
+    {
+      "id": "1bed3cce-55d6-48b2-a615-77bf9b9c1ddd",
+      "question": "How long until my order ships?",
+      "answer": "Orders are processed within 24–48 hours, excluding weekends and holidays. During busy launches or promotions, dispatch can take up to 72 hours.",
+      "category": "Orders & Shipping",
+      "order": 1,
+      "isPublished": true,
+      "createdAt": "2026-10-12T08:06:27.201Z",
+      "updatedAt": "2026-10-12T08:06:27.201Z"
+    },
+    {
+      "id": "8c9dba68-9d47-41b3-b3b1-5894c0081185",
+      "question": "How can I track my order?",
+      "answer": "When your order ships we email you the carrier, your tracking number and a tracking link. You can also see your order status any time from Orders in your account.",
+      "category": "Orders & Shipping",
+      "order": 2,
+      "isPublished": true,
+      "createdAt": "2026-10-12T08:06:27.267Z",
+      "updatedAt": "2026-10-12T08:06:27.267Z"
+    },
+    {
+      "id": "49bdd96f-5723-42bc-b405-a87de4c7145b",
+      "question": "How much does shipping cost and how long does delivery take?",
+      "answer": "Delivery options, estimated delivery times and any shipping charge are calculated for your address and shown at checkout before you pay.",
+      "category": "Orders & Shipping",
+      "order": 3,
+      "isPublished": true,
+      "createdAt": "2026-10-12T08:06:27.332Z",
+      "updatedAt": "2026-10-12T08:06:27.332Z"
+    },
+    {
+      "id": "c8e93f92-fcba-4f2e-8316-bf265987e5bc",
+      "question": "How do I pay?",
+      "answer": "Payments are processed securely by Stripe at checkout. Your card details go straight to Stripe, and MWP never stores your full card number.",
+      "category": "Orders & Shipping",
+      "order": 4,
+      "isPublished": true,
+      "createdAt": "2026-10-12T08:06:27.397Z",
+      "updatedAt": "2026-10-12T08:06:27.397Z"
+    },
+    {
+      "id": "433621ab-f266-410d-a13e-910d4d99d738",
+      "question": "Where can I find ingredient information?",
+      "answer": "Every product page lists each ingredient with its dose and origin under “Inside the formula”. You can also open the ingredient details from the product page for a closer look.",
+      "category": "Products & Ingredients",
+      "order": 5,
+      "isPublished": true,
+      "createdAt": "2026-10-12T08:06:27.464Z",
+      "updatedAt": "2026-10-12T08:06:27.464Z"
+    },
+    {
+      "id": "97315927-d84f-43c6-90fd-064d4383cbe3",
+      "question": "How do I know my product is genuine?",
+      "answer": "Scan the QR code on your MWP pack to open its verification page and confirm the product.",
+      "category": "Products & Ingredients",
+      "order": 6,
+      "isPublished": true,
+      "createdAt": "2026-10-12T08:06:27.531Z",
+      "updatedAt": "2026-10-12T08:06:27.531Z"
+    },
+    {
+      "id": "8909a13d-5436-4deb-9cfe-a0c0753bc9ba",
+      "question": "Are MWP supplements third-party lab tested?",
+      "answer": "Yes. MWP formulas are third-party lab tested. Available testing and certification documents are published on our Certificate Wall.",
+      "category": "Products & Ingredients",
+      "order": 7,
+      "isPublished": true,
+      "createdAt": "2026-10-12T08:06:27.596Z",
+      "updatedAt": "2026-10-12T08:06:27.596Z"
+    },
+    {
+      "id": "85250dca-8219-48a0-839e-3ae1fb842734",
+      "question": "Should I talk to a doctor before taking MWP supplements?",
+      "answer": "Always follow the directions on the label. Talk to a healthcare professional first if you are pregnant or nursing, take medication or have a medical condition. These products are dietary supplements and are not intended to diagnose, treat, cure or prevent any disease.",
+      "category": "Products & Ingredients",
+      "order": 8,
+      "isPublished": true,
+      "createdAt": "2026-10-12T08:06:27.662Z",
+      "updatedAt": "2026-10-12T08:06:27.662Z"
+    },
+    {
+      "id": "6e0a9c7f-aaf1-432b-a2a2-9a623c53ef82",
+      "question": "What if my order arrives damaged or incorrect?",
+      "answer": "Record an unboxing video before opening the parcel and email it with your order number to support@mwpsupplements.com within 48 hours of delivery. If approved, we send a replacement as a priority.",
+      "category": "Returns & Support",
+      "order": 9,
+      "isPublished": true,
+      "createdAt": "2026-10-12T08:06:27.729Z",
+      "updatedAt": "2026-10-12T08:06:27.729Z"
+    },
+    {
+      "id": "cd723fb9-c85a-4d10-8ffe-a120f20e17f5",
+      "question": "Can I return an opened product?",
+      "answer": "For health and safety reasons, opened, unsealed or partially used supplement containers cannot be returned. See our Returns & Replacement Policy for the full details.",
+      "category": "Returns & Support",
+      "order": 10,
+      "isPublished": true,
+      "createdAt": "2026-10-12T08:06:27.794Z",
+      "updatedAt": "2026-10-12T08:06:27.794Z"
+    },
+    {
+      "id": "e940313b-97fa-417f-8c5b-dc777fc95ab6",
+      "question": "Can I cancel my order?",
+      "answer": "Yes, free of charge, as long as it has not been packed and shipped. Email support@mwpsupplements.com with your order number as soon as possible.",
+      "category": "Returns & Support",
+      "order": 11,
+      "isPublished": true,
+      "createdAt": "2026-10-12T08:06:27.860Z",
+      "updatedAt": "2026-10-12T08:06:27.860Z"
+    },
+    {
+      "id": "973c303a-c407-4884-bd15-b0cc5c191de1",
+      "question": "How do I contact support?",
+      "answer": "Email support@mwpsupplements.com or call 562-524-3557, Monday–Friday, 9:00 AM–6:00 PM. You can also use the contact form on our Contact page.",
+      "category": "Returns & Support",
+      "order": 12,
+      "isPublished": true,
+      "createdAt": "2026-10-12T08:06:27.925Z",
+      "updatedAt": "2026-10-12T08:06:27.925Z"
+    }
+  ]
+}

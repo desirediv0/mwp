@@ -715,7 +715,7 @@ export const settings = {
           settings: {
             storeName: "MWP SUPPLEMENTS",
             storeEmail: "support@mwpsupplements.com",
-            storePhone: "+1 (562) 524-3557",
+            storePhone: "+1 (800) 814-4477",
             storeAddress: "531 Main Street, PMB 1127, El Segundo, CA 90245-3006, USA",
             currency: "USD",
             taxRate: 18,

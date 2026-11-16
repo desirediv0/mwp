@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { SHOW_COMPARE_PRICES } from "@/lib/pricing-display";
 import Image from "next/image";
 import { Heart, Loader2, ShoppingBag, Check, Star, Eye, GitCompareArrows } from "lucide-react";
 import { useState, useEffect, useMemo } from "react";
@@ -128,6 +129,7 @@ export const ProductCard = ({ product, viewMode = "grid" }) => {
       ? calculateDiscountPercentage(originalPrice, currentPrice)
       : 0;
 
+  const showCompare = SHOW_COMPARE_PRICES || showFlashSaleBadge;
   const showPrice = !priceSettings?.hidePricesForGuests || isAuthenticated;
 
   const variantStockList = Array.isArray(product.variants)
@@ -219,7 +221,7 @@ export const ProductCard = ({ product, viewMode = "grid" }) => {
     showPrice ? (
       <div className="flex flex-wrap items-baseline gap-x-2 gap-y-0.5">
         <span className={cn("font-semibold tracking-tight text-[#12213F]", large ? "text-[24px]" : "text-[20px]")}>{formatCurrency(displayPrice)}</span>
-        {originalPrice && <span className="text-[13px] text-[#6B7388] line-through">{formatCurrency(originalPrice)}</span>}
+        {showCompare && originalPrice && <span className="text-[13px] text-[#6B7388] line-through">{formatCurrency(originalPrice)}</span>}
       </div>
     ) : (
       <button onClick={() => openAuthModal && openAuthModal()} className="text-[13px] font-semibold text-[#12213F] underline underline-offset-4">
@@ -269,7 +271,7 @@ export const ProductCard = ({ product, viewMode = "grid" }) => {
 
   const Badges = () => (
     <div className="pointer-events-none absolute left-3 top-3 z-20 flex flex-col items-start gap-1.5">
-      {discountPercent > 0 && (
+      {showCompare && discountPercent > 0 && (
         <span className="rounded-full bg-[#B3001B] px-3 py-1 text-[11px] font-semibold tracking-wide text-white shadow-sm">Save {discountPercent}%</span>
       )}
       {showFlashSaleBadge && (

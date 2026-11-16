@@ -3,7 +3,8 @@ import PolicyLayout, { P, UL, Note } from "@/components/layout/PolicyLayout";
 import { SITE_CONTACT } from "@/lib/siteContact";
 
 export const metadata = {
-  title: "Terms & Conditions | MWP SUPPLEMENTS",
+  title: { absolute: "Terms & Conditions | MWP" },
+  alternates: { canonical: "/terms" },
   description:
     "The terms that apply when you use mwpsupplements.com and buy MWP Supplements products: orders, payments, supplement use and more.",
 };

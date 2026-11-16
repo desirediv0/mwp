@@ -251,7 +251,7 @@ export default function ProductIngredientsPage() {
             </div>
             <h3 className="text-xl sm:text-2xl font-extrabold tracking-tight">{product.name}</h3>
             <p className="text-white/50 text-[13px] mt-2 max-w-md mx-auto">
-              Ready to experience these clinically dosed actives yourself?
+              Every dose shown. See this formula for yourself.
             </p>
             <Link
               href={`/products/${product.slug}`}

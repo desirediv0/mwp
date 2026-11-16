@@ -39,14 +39,13 @@ import { useCompare } from "@/lib/compare-context";
 import { useLanguage } from "@/lib/language-context";
 
 const PRODUCT_MENU = [
-  { slug: "ultra-pro", href: "/products/ultra-pro", label: "MWP Ultra Pro", tag: "The Quiet Miracle" },
-  { slug: "power-max", href: "/products/power-max", label: "MWP Power Max", tag: "Unlock Your Miracle" },
-  { slug: "rapid-boost", href: "/products/rapid-boost", label: "MWP Rapid Boost", tag: "Fast Action. Real Results." },
-  { slug: "her-power", href: "/products/her-power", label: "MWP Her Power", tag: "Her Inner Miracle" },
+  { slug: "ultra-pro", href: "/products/ultra-pro", label: "MWP Ultra Pro", tag: "" },
+  { slug: "power-max", href: "/products/power-max", label: "MWP Power Max", tag: "Train with purpose." },
+  { slug: "rapid-boost", href: "/products/rapid-boost", label: "MWP Rapid Boost", tag: "Supports energy, focus and physical performance.*" },
+  { slug: "her-power", href: "/products/her-power", label: "MWP Her Power", tag: "Her wellness. Her way." },
   { slug: "her-energy", href: "/products/her-energy", label: "MWP Her Energy", tag: "Keeps Up With Her" },
   { slug: "daily-vitality", href: "/products/daily-vitality", label: "MWP Daily Vitality", tag: "Age Is A Number" },
   { slug: "alpha-prime", href: "/products/alpha-prime", label: "MWP Alpha Prime", tag: "Strength. Focus. Performance." },
-  { slug: "titan-force", href: "/products/titan-force", label: "MWP Titan Force", tag: "Power For Your Everyday." },
 ];
 
 const NAV_LINKS = [
@@ -59,7 +58,7 @@ const NAV_LINKS = [
 ];
 
 const ANNOUNCEMENTS = [
-  "DISCOVER ALL EIGHT MWP FORMULAS | SHIPPING CONFIRMED AT CHECKOUT",
+  "DISCOVER ALL MWP FORMULAS | SHIPPING CONFIRMED AT CHECKOUT",
 ];
 
 const getImg = (p) => {
@@ -187,7 +186,7 @@ export function Navbar() {
           <div className="max-w-[1440px] mx-auto px-5 sm:px-8 flex items-center justify-center lg:justify-between h-8 gap-6 text-[9px] sm:text-[10px] text-neutral-500">
             <span className="flex min-w-0 items-center gap-2 tracking-[0.08em]">
               <span className="h-1 w-1 shrink-0 rounded-full bg-[#A8741F]" />
-              <span className="sm:hidden">Eight formulas. One everyday routine.</span>
+              <span className="sm:hidden">Every dose shown. One everyday routine.</span>
               <span className="hidden sm:block truncate">{ANNOUNCEMENTS[0]}</span>
             </span>
             <span className="hidden lg:inline-flex shrink-0 items-center gap-2 text-green-700"><IconShieldCheck className="h-3.5 w-3.5" stroke={1.5} /> Third-Party Lab Tested · Non-GMO · Vegan</span>

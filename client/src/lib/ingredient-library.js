@@ -43,14 +43,27 @@ const rows = [
   ],
 ];
 
-export const INGREDIENT_LIBRARY = rows.flatMap((pageRows, pageIndex) =>
-  pageRows.map(([name, origin, description], index) => ({
-    id: `${pageIndex + 1}-${index + 1}`,
-    name,
-    origin,
-    description,
-    page: pageIndex + 1,
-    photoX: index % 2 === 0 ? 114 : 678,
-    photoY: (pageIndex === 0 ? 256 : 142) + Math.floor(index / 2) * 302,
-  }))
-);
+// Only the ingredients that are in the final formulas (Power Max, Rapid Boost, Daily Vitality, Her Power) are shown.
+// Ids stay the same, because each id points at its photograph in /public/ingredients.
+const IN_FINAL_FORMULAS = /ksm-66|tongkat|zinc bisglycinate|vegan\/lichen vitamin d3|vitamin k2|selenomethionine|saffron|citrulline free|panax|pine bark|l-arginine|myo-inositol|d-chiro|shatavari|magnesium glycinate|vitamin b6|chromium|coq10|berberine|quercetin/i;
+
+// "Phytosome" is another company's brand name, and one name was cut short
+const RENAME = {
+  "Berberine Phytosome": "Berberine (phospholipid complex)",
+  "Quercetin Phytosome": "Quercetin (phospholipid complex)",
+  "French Maritime Pine Bark Ex": "French Maritime Pine Bark Extract",
+};
+
+export const INGREDIENT_LIBRARY = rows
+  .flatMap((pageRows, pageIndex) =>
+    pageRows.map(([name, origin, description], index) => ({
+      id: `${pageIndex + 1}-${index + 1}`,
+      name: RENAME[name] || name,
+      origin,
+      description,
+      page: pageIndex + 1,
+      photoX: index % 2 === 0 ? 114 : 678,
+      photoY: (pageIndex === 0 ? 256 : 142) + Math.floor(index / 2) * 302,
+    }))
+  )
+  .filter((item) => IN_FINAL_FORMULAS.test(item.name));

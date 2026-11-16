@@ -24,12 +24,10 @@ export const Footer = () => {
   ];
 
   const productLinks = [
-    { label: "MWP Ultra Pro", href: "/products?search=ultra%20pro" },
-    { label: "MWP Power Max", href: "/products?search=power%20max" },
-    { label: "MWP Rapid Boost", href: "/products?search=rapid%20boost" },
-    { label: "MWP Her Power", href: "/products?search=her%20power" },
-    { label: "MWP Her Energy", href: "/products?search=her%20energy" },
-    { label: "MWP Daily Vitality", href: "/products?search=daily" },
+    { label: "MWP Power Max", href: "/products/power-max" },
+    { label: "MWP Rapid Boost", href: "/products/rapid-boost" },
+    { label: "MWP Daily Vitality", href: "/products/daily-vitality" },
+    { label: "MWP Her Power", href: "/products/her-power" },
   ];
 
   const companyLinks = [
@@ -66,8 +64,7 @@ export const Footer = () => {
               sizes="(min-width: 640px) 209px, 186px"
             />
             <p className="text-[13px] text-neutral-500 max-w-sm xl:max-w-xs leading-7">
-              MWP connects performance, wellness and trust — clinically dosed
-              formulas for men and women, engineered for everyday results.
+              Transparently dosed formulas for men and women – every dose shown.
             </p>
             <div className="mt-7 flex items-center gap-4">
               {socials.map(({ href, Icon, label }) => (
@@ -113,8 +110,8 @@ export const Footer = () => {
               </a>
             </li>
             <li>
-              <a href="tel:+15625243557" className="inline-block py-1 text-[13px] leading-6 text-neutral-500 hover:text-neutral-900 transition-colors whitespace-nowrap">
-                (562) 524-3557
+              <a href="tel:+18008144477" className="inline-block py-1 text-[13px] leading-6 text-neutral-500 hover:text-neutral-900 transition-colors whitespace-nowrap">
+                (800) 814-4477
               </a>
             </li>
             <li>
@@ -136,6 +133,13 @@ export const Footer = () => {
             </div>
           ))}
         </div>
+      </div>
+
+      {/* FDA statement, shown on every page */}
+      <div className="relative z-10 border-t border-neutral-200">
+        <p className="mx-auto max-w-[1440px] px-6 py-5 text-center text-[11.5px] leading-relaxed text-neutral-500 md:px-10">
+          *These statements have not been evaluated by the Food and Drug Administration. This product is not intended to diagnose, treat, cure, or prevent any disease.
+        </p>
       </div>
 
       {/* Bottom bar */}

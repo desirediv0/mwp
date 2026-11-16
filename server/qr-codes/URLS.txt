@@ -1,18 +1,18 @@
 MWP SUPPLEMENTS — permanent QR target URLs
-Base: https://mwpsupplements.com
+Base: https://www.mwpsupplements.com
 
-home                         https://mwpsupplements.com/
-products                     https://mwpsupplements.com/products
-compare                      https://mwpsupplements.com/compare
-ingredients                  https://mwpsupplements.com/ingredients
-why-us                       https://mwpsupplements.com/why-us
-contact                      https://mwpsupplements.com/contact
-faqs                         https://mwpsupplements.com/faqs
-MWP-ULTRA-PRO-QR             https://mwpsupplements.com/verify/MWP-M6LXK496
-MWP-RAPID-BOOST-QR           https://mwpsupplements.com/verify/MWP-NH7HBJJ7
-MWP-POWER-MAX-QR             https://mwpsupplements.com/verify/MWP-2WFNS9XZ
-MWP-HER-POWER-QR             https://mwpsupplements.com/verify/MWP-N4BZZQ5V
-MWP-HER-ENERGY-QR            https://mwpsupplements.com/verify/MWP-EVP234RH
-MWP-DAILY-VITALITY-QR        https://mwpsupplements.com/verify/MWP-EG7QNL9G
-MWP-ALPHA-PRIME-QR           https://mwpsupplements.com/verify/MWP-9EHBU5AZ
-MWP-TITAN-FORCE-QR           https://mwpsupplements.com/verify/MWP-MEQ4DJ9D
+home                         https://www.mwpsupplements.com/
+products                     https://www.mwpsupplements.com/products
+compare                      https://www.mwpsupplements.com/compare
+ingredients                  https://www.mwpsupplements.com/ingredients
+why-us                       https://www.mwpsupplements.com/why-us
+contact                      https://www.mwpsupplements.com/contact
+faqs                         https://www.mwpsupplements.com/faqs
+MWP-ULTRA-PRO-QR             https://www.mwpsupplements.com/verify/MWP-M6LXK496
+MWP-RAPID-BOOST-QR           https://www.mwpsupplements.com/verify/MWP-NH7HBJJ7
+MWP-POWER-MAX-QR             https://www.mwpsupplements.com/verify/MWP-2WFNS9XZ
+MWP-HER-POWER-QR             https://www.mwpsupplements.com/verify/MWP-N4BZZQ5V
+MWP-HER-ENERGY-QR            https://www.mwpsupplements.com/verify/MWP-EVP234RH
+MWP-DAILY-VITALITY-QR        https://www.mwpsupplements.com/verify/MWP-EG7QNL9G
+MWP-ALPHA-PRIME-QR           https://www.mwpsupplements.com/verify/MWP-9EHBU5AZ
+MWP-TITAN-FORCE-QR           https://www.mwpsupplements.com/verify/MWP-MEQ4DJ9D

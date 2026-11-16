@@ -37,7 +37,7 @@ const HEADER_HTML = (title, accent, store, isDanger = false) => `
 const FOOTER_HTML = (store) => `
   <div class="footer">
     <strong style="color: #18181b; font-size: 12px; letter-spacing: 0.1em; text-transform: uppercase;">MWP SUPPLEMENTS &bull; MEN | WOMEN | POWER</strong><br>
-    <a href="mailto:${store.storeEmail || 'support@mwpsupplements.com'}">${store.storeEmail || 'support@mwpsupplements.com'}</a> &nbsp;·&nbsp; ${store.storePhone || '+1 (562) 524-3557'}<br>
+    <a href="mailto:${store.storeEmail || 'support@mwpsupplements.com'}">${store.storeEmail || 'support@mwpsupplements.com'}</a> &nbsp;·&nbsp; ${store.storePhone || '+1 (800) 814-4477'}<br>
     <br>
     <span style="font-size: 11px; color: #a1a1aa;">© ${new Date().getFullYear()} MWP SUPPLEMENTS. All rights reserved. Clean formulations &bull; Lab tested.</span>
   </div>

@@ -18,7 +18,7 @@ import SVGtoPDF from "svg-to-pdfkit";
  * Run:  npm run qr
  */
 
-const BASE = process.env.QR_BASE_URL || "https://mwpsupplements.com";
+const BASE = process.env.QR_BASE_URL || "https://www.mwpsupplements.com";
 
 // Site pages (these paths are stable). Product QR codes are NOT built from product slugs: they point to the
 // permanent verification page /verify/<code>, which never changes even if a product is renamed.

@@ -3,7 +3,8 @@ import PolicyLayout, { P, UL, Note } from "@/components/layout/PolicyLayout";
 import { SITE_CONTACT } from "@/lib/siteContact";
 
 export const metadata = {
-  title: "Privacy Policy | MWP SUPPLEMENTS",
+  title: { absolute: "Privacy Policy | MWP" },
+  alternates: { canonical: "/privacy-policy" },
   description:
     "How MWP Supplements collects, uses and protects your personal information, including order details, payments and cookies.",
 };

@@ -40,7 +40,7 @@ import {
   X,
 } from "lucide-react";
 
-const SITE_BASE = "https://mwpsupplements.com";
+const SITE_BASE = "https://www.mwpsupplements.com";
 const verifyUrl = (code: string) => `${SITE_BASE}/verify/${code}`;
 
 // File name for the graphic designer: MWP-ULTRA-PRO-QR

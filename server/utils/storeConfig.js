@@ -9,7 +9,7 @@ export const getStoreConfig = () => {
     // Store Information
     storeName: process.env.STORE_NAME || "MWP SUPPLEMENTS",
     storeEmail: process.env.STORE_EMAIL || "support@mwpsupplements.com",
-    storePhone: process.env.STORE_PHONE || "+1 (562) 524-3557",
+    storePhone: process.env.STORE_PHONE || "+1 (800) 814-4477",
     storeAddress: process.env.STORE_ADDRESS || "531 Main Street, PMB 1127, El Segundo, CA 90245-3006, USA",
 
     // Store Description/Tagline

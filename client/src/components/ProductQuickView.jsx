@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useMemo } from "react";
+import { SHOW_COMPARE_PRICES } from "@/lib/pricing-display";
 import Image from "next/image";
 import Link from "next/link";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
@@ -246,10 +247,10 @@ export default function ProductQuickView({ product, open, onOpenChange }) {
                 <span className={`text-2xl   ${hasFlashSale ? "text-orange-600" : "text-primary"}`}>
                   {formatCurrency(displayPrice)}
                 </span>
-                {showOriginal && showOriginal > displayPrice && (
+                {SHOW_COMPARE_PRICES && showOriginal && showOriginal > displayPrice && (
                   <span className="text-sm text-gray-400 line-through">{formatCurrency(showOriginal)}</span>
                 )}
-                {discountPct > 0 && (
+                {SHOW_COMPARE_PRICES && discountPct > 0 && (
                   <span className="text-[10px]   bg-neutral-50 text-neutral-900 px-1.5 py-0.5 ">-{discountPct}%</span>
                 )}
               </div>

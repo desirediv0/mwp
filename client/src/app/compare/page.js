@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { SHOW_COMPARE_PRICES } from "@/lib/pricing-display";
 import Link from "next/link";
 import Image from "next/image";
 import { toast } from "sonner";
@@ -326,7 +327,7 @@ export default function ComparePage() {
                           <span className="text-[16px] font-extrabold text-neutral-900">
                             {p.minPrice != null ? formatCurrency(p.minPrice) : "—"}
                           </span>
-                          {p.onSale && (
+                          {SHOW_COMPARE_PRICES && p.onSale && (
                             <span className="text-[12px] text-neutral-500 line-through">{formatCurrency(p.maxReg)}</span>
                           )}
                         </div>
@@ -351,12 +352,14 @@ export default function ComparePage() {
                 <SectionHead columns={products.length + 1}>Pricing</SectionHead>
                 <Row label="Best Price" products={products} onlyDiff={onlyDiff} differs={differs} pick={(p) => p.minPrice}
                   render={(p) => <span className="text-[15px] font-extrabold text-neutral-900">{p.minPrice != null ? formatCurrency(p.minPrice) : "—"}</span>} />
+                {SHOW_COMPARE_PRICES && (<>
                 <Row label="MRP" products={products} onlyDiff={onlyDiff} differs={differs} pick={(p) => p.maxReg}
                   render={(p) => p.maxReg ? <span className="text-[13px] text-neutral-600 line-through">{formatCurrency(p.maxReg)}</span> : <Dash />} />
                 <Row label="Discount" products={products} onlyDiff={onlyDiff} differs={differs} pick={(p) => p.discount}
                   render={(p) => p.discount > 0
                     ? <span className="inline-block bg-neutral-900 text-white text-[11px] font-extrabold px-2 py-0.5 rounded">−{p.discount}%</span>
                     : <Dash />} />
+                </>)}
 
                 <SectionHead columns={products.length + 1}>Quick Compare</SectionHead>
                 <Row label="Best For" products={products} onlyDiff={onlyDiff} differs={differs} pick={(p) => p.bestFor || p.primaryCat}
@@ -412,7 +415,7 @@ export default function ComparePage() {
                           <span className="font-semibold">{v.label}</span>
                           <span className="text-neutral-600">
                             {" "}— {formatCurrency(v.salePrice ?? v.price)}
-                            {v.salePrice && v.price && v.salePrice < v.price && (
+                            {SHOW_COMPARE_PRICES && v.salePrice && v.price && v.salePrice < v.price && (
                               <span className="line-through text-neutral-500 ml-1">{formatCurrency(v.price)}</span>
                             )}
                           </span>

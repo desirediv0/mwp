@@ -6,6 +6,7 @@ import Link from "next/link";
 import { IconArrowUpRight, IconShoppingBag } from "@tabler/icons-react";
 import { useLanguage } from "@/lib/language-context";
 import { fetchApi } from "@/lib/utils";
+import { SHOW_COMPARE_PRICES } from "@/lib/pricing-display";
 
 // Eight tinted product tiles with catalog images and local cutout fallbacks.
 const SLIDES = [
@@ -13,7 +14,7 @@ const SLIDES = [
     n: "01",
     key: "ultra-pro",
     name: "MWP Ultra Pro",
-    headline: "The Quiet Miracle.",
+    headline: "",
     copy: "Advanced men's vitality formula for natural performance and stamina.",
     href: null,
     tint: "from-[#F1E4BF] to-[#E3CC8C]",
@@ -24,8 +25,8 @@ const SLIDES = [
     n: "02",
     key: "power-max",
     name: "MWP Power Max",
-    headline: "Unlock Your Miracle.",
-    copy: "Herbal performance formula for strength, stamina and vitality.",
+    headline: "Train with purpose.",
+    copy: "Supports endurance, daily energy and healthy circulation.*",
     href: null,
     tint: "from-[#D7E1F6] to-[#B9CAEC]",
     glow: "#3B4E8A",
@@ -36,7 +37,7 @@ const SLIDES = [
     key: "rapid-boost",
     name: "MWP Rapid Boost",
     headline: "Fast Action. Real Results.",
-    copy: "Fast-acting support formula for energy and confidence.",
+    copy: "Supports energy, focus and physical performance.*",
     href: null,
     tint: "from-[#F4DEC6] to-[#EBC49C]",
     glow: "#A15C2C",
@@ -46,7 +47,7 @@ const SLIDES = [
     n: "04",
     key: "her-power",
     name: "MWP Her Power",
-    headline: "Her Inner Miracle.",
+    headline: "Her wellness. Her way.",
     copy: "Women's wellness formula for balance and daily confidence.",
     href: null,
     tint: "from-[#F6D8D0] to-[#EBB6AB]",
@@ -86,27 +87,16 @@ const SLIDES = [
     glow: "#AA652B",
     image: "/products/cutouts/alpha-prime.webp",
   },
-  {
-    n: "08",
-    key: "titan-force",
-    name: "MWP Titan Force",
-    headline: "Power For Your Everyday.",
-    copy: "Discover the Titan Force performance formula.",
-    href: null,
-    tint: "from-[#EFD8BF] to-[#DEB78C]",
-    glow: "#AF6028",
-    image: "/products/cutouts/titan-force.webp",
-  },
 ];
 
 const usd = (n) => "$" + Number(n).toFixed(2);
 
-function ProductTile({ slide, product }) {
+function ProductTile({ slide, product, total }) {
   const { t } = useLanguage();
   const href = `/products/${slide.key}`;
   const price = Number(product?.basePrice ?? product?.regularPrice ?? 0) || null;
   const compare = Number(product?.regularPrice ?? 0) || null;
-  const save = price && compare && compare > price ? Math.round((1 - price / compare) * 100) : 0;
+  const save = SHOW_COMPARE_PRICES && price && compare && compare > price ? Math.round((1 - price / compare) * 100) : 0;
   return (
     <div
       data-tile
@@ -126,16 +116,18 @@ function ProductTile({ slide, product }) {
       />
 
       <span aria-hidden="true" className="absolute right-5 top-6 text-[11px] tracking-[0.2em] text-neutral-600/60 sm:right-8 sm:top-8">
-        {slide.n} / 08
+        {slide.n} / {String(total).padStart(2, "0")}
       </span>
 
       <div data-tile-copy className="pointer-events-none relative z-10 px-5 pt-[84px] pb-2 text-center sm:px-8 sm:pt-24 lg:px-12">
         <h2 className="text-[30px] font-semibold leading-[1.1] tracking-[-0.02em] text-neutral-950 sm:text-[34px] lg:text-[42px]">
           {slide.name}
         </h2>
-        <p className="mt-3 text-[18px] font-medium leading-snug tracking-tight text-neutral-800 sm:text-xl lg:text-[22px]">
-          {slide.headline}
-        </p>
+        {slide.headline && (
+          <p className="mt-3 text-[18px] font-medium leading-snug tracking-tight text-neutral-800 sm:text-xl lg:text-[22px]">
+            {slide.headline}
+          </p>
+        )}
         <p className="mx-auto mt-3 max-w-[330px] min-h-[44px] text-[14px] leading-[1.6] text-neutral-700 sm:min-h-[48px] sm:text-[15px]">
           {slide.copy}
         </p>
@@ -273,7 +265,7 @@ export default function MwpProductShowcase() {
     <section className="overflow-hidden bg-white">
         <div ref={gridRef} className="grid grid-cols-1 sm:grid-cols-2">
           {SLIDES.map((slide) => (
-            <ProductTile key={slide.key} product={catalog.find(product => product.slug === slide.key)} slide={{ ...slide, image: catalog.find(product => product.slug === slide.key)?.image || slide.image }} />
+            <ProductTile key={slide.key} total={SLIDES.length} product={catalog.find(product => product.slug === slide.key)} slide={{ ...slide, image: catalog.find(product => product.slug === slide.key)?.image || slide.image }} />
           ))}
         </div>
     </section>

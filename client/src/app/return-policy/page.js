@@ -2,7 +2,8 @@ import PolicyLayout, { P, UL, Note, Steps } from "@/components/layout/PolicyLayo
 import { SITE_CONTACT } from "@/lib/siteContact";
 
 export const metadata = {
-  title: "Returns & Replacement Policy | MWP SUPPLEMENTS",
+  title: { absolute: "Returns & Replacement Policy | MWP" },
+  alternates: { canonical: "/return-policy" },
   description:
     "How MWP Supplements handles damaged or incorrect orders, replacements, refunds and cancellations, and why opened supplement containers cannot be returned.",
 };

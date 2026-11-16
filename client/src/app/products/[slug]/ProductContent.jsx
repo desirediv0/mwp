@@ -28,6 +28,7 @@ import {
 } from "@tabler/icons-react";
 import { useAuth } from "@/lib/auth-context";
 import "./buy-mode.css";
+import { SHOW_COMPARE_PRICES } from "@/lib/pricing-display";
 import { useRouter } from "next/navigation";
 import ReviewSection from "./ReviewSection";
 import ProductFormulaSections from "./ProductFormulaSections";
@@ -368,7 +369,7 @@ export default function ProductContent({ slug, initialProduct = null }) {
       if (!info) return <p className="text-xl text-neutral-500">Price unavailable</p>;
       const mrp = info.originalPrice ? parseFloat(info.originalPrice) : null;
       const sp = parseFloat(info.price);
-      const hasDiff = mrp && mrp > sp;
+      const hasDiff = SHOW_COMPARE_PRICES && mrp && mrp > sp;
       const disc = hasDiff ? Math.round(((mrp - sp) / mrp) * 100) : 0;
       return (
         <div className="flex items-baseline gap-3 flex-wrap">
@@ -380,7 +381,7 @@ export default function ProductContent({ slug, initialProduct = null }) {
     const bp = parseFloat(product?.basePrice) || 0;
     const rp = parseFloat(product?.regularPrice) || 0;
     const cp = (product?.hasSale && rp > bp) ? bp : (bp || rp);
-    const op = (product?.hasSale && rp > bp) ? rp : null;
+    const op = SHOW_COMPARE_PRICES && (product?.hasSale && rp > bp) ? rp : null;
     const disc = op ? Math.round(((op - cp) / op) * 100) : 0;
     return (
       <div className="flex items-baseline gap-3 flex-wrap">

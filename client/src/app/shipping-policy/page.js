@@ -3,7 +3,8 @@ import PolicyLayout, { P, UL, Note } from "@/components/layout/PolicyLayout";
 import { SITE_CONTACT } from "@/lib/siteContact";
 
 export const metadata = {
-  title: "Shipping & Delivery Policy | MWP SUPPLEMENTS",
+  title: { absolute: "Shipping & Delivery Policy | MWP" },
+  alternates: { canonical: "/shipping-policy" },
   description:
     "MWP Supplements order processing times, shipping charges at checkout, tracking, tamper-evident packaging and what to do if your parcel arrives damaged.",
 };

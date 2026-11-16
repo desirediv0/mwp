@@ -1,5 +1,5 @@
 // Shared SEO helpers: one place for the public site address and absolute URLs.
-export const SITE_URL = (process.env.NEXT_PUBLIC_SITE_URL || "https://mwpsupplements.com").replace(/\/$/, "");
+export const SITE_URL = (process.env.NEXT_PUBLIC_SITE_URL || "https://www.mwpsupplements.com").replace(/\/$/, "");
 export const SITE_NAME = "MWP SUPPLEMENTS";
 
 export const absoluteUrl = (path = "/") => `${SITE_URL}${path.startsWith("/") ? path : `/${path}`}`;
@@ -15,7 +15,7 @@ export const ORGANIZATION_JSON_LD = {
   url: SITE_URL,
   logo: `${SITE_URL}/mwp-logo-3.png`,
   email: "support@mwpsupplements.com",
-  telephone: "+1-562-524-3557",
+  telephone: "+1-800-814-4477",
   address: {
     "@type": "PostalAddress",
     streetAddress: "531 Main Street, PMB 1127",
@@ -24,7 +24,7 @@ export const ORGANIZATION_JSON_LD = {
     postalCode: "90245",
     addressCountry: "US",
   },
-  contactPoint: { "@type": "ContactPoint", telephone: "+1-562-524-3557", contactType: "customer service", areaServed: "US", availableLanguage: "English" },
+  contactPoint: { "@type": "ContactPoint", telephone: "+1-800-814-4477", contactType: "customer service", areaServed: "US", availableLanguage: "English" },
 };
 
 const ENTITIES = { "&amp;": "&", "&lt;": "<", "&gt;": ">", "&quot;": '"', "&#39;": "'", "&apos;": "'", "&nbsp;": " ", "&rsquo;": "’", "&lsquo;": "‘" };

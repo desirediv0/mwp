@@ -13,7 +13,6 @@ import { getTrackingConfig } from "@/lib/tracking-config";
 
 const baseMetadata = {
   metadataBase: new URL(SITE_URL),
-  alternates: { canonical: "/" },
   applicationName: "MWP SUPPLEMENTS",
   robots: { index: true, follow: true, googleBot: { index: true, follow: true, "max-image-preview": "large", "max-snippet": -1 } },
   title: {
@@ -21,14 +20,14 @@ const baseMetadata = {
     template: "%s | MWP SUPPLEMENTS",
   },
   description:
-    "MWP SUPPLEMENTS (Men | Women | Power) offers eight formulas for everyday wellness, energy and performance. Explore ingredients and find the routine that fits you.",
+    "MWP SUPPLEMENTS (Men | Women | Power) offers formulas for everyday wellness, energy and performance. Explore ingredients and find the routine that fits you.",
   keywords:
-    "MWP SUPPLEMENTS, Men Women Power, Ultra Pro, Power Max, Rapid Boost, Her Power, Her Energy, Daily Vitality, Alpha Prime, Titan Force, supplements, daily wellness",
+    "MWP SUPPLEMENTS, Men Women Power, Ultra Pro, Power Max, Rapid Boost, Her Power, Her Energy, Daily Vitality, Alpha Prime, supplements, daily wellness",
   authors: [{ name: "MWP SUPPLEMENTS" }],
   openGraph: {
     title: "MWP SUPPLEMENTS — Men | Women | Power",
     description:
-      "Eight formulas for everyday wellness, energy and performance.",
+      "Formulas for everyday wellness, energy and performance.",
     type: "website",
     locale: "en_US",
     siteName: "MWP SUPPLEMENTS",

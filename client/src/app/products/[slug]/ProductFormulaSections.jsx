@@ -34,7 +34,8 @@ export default function ProductFormulaSections({ product }) {
     },
   ].filter((c) => c.body);
 
-  if (items.length === 0 && infoCards.length === 0) return null;
+  const hasSafety = Boolean(copy.suggestedUse || copy.warning || copy.supplementFactsImage);
+  if (items.length === 0 && infoCards.length === 0 && !hasSafety) return null;
 
   const outline =
     "rounded-[10px] border border-[color:var(--product-accent)] bg-white px-[18px] py-2 text-[12px] font-semibold text-[color:var(--product-accent)] transition-colors hover:bg-[color:var(--product-surface)]";
@@ -81,6 +82,35 @@ export default function ProductFormulaSections({ product }) {
               </div>
             </div>
           </div>
+        </div>
+      )}
+
+      {hasSafety && (
+        <div className="mt-4 grid gap-4 lg:grid-cols-2">
+          <div className="rounded-[14px] border border-[color:var(--product-line)] bg-white p-5">
+            {copy.suggestedUse && (
+              <>
+                <h3 className="mwp-serif text-[20px] font-bold text-[#211c1b]">Suggested use</h3>
+                <p className="mt-2 text-[14px] leading-relaxed text-[#4f4743]">{copy.suggestedUse}</p>
+              </>
+            )}
+            {copy.warning && (
+              <>
+                <h3 className="mwp-serif mt-5 text-[20px] font-bold text-[#211c1b]">Warning</h3>
+                <p className="mt-2 text-[14px] leading-relaxed text-[#4f4743]">{copy.warning.replace(/^WARNING:\s*/i, "")}</p>
+              </>
+            )}
+            <p className="mt-5 border-t border-[color:var(--product-line)] pt-4 text-[12.5px] leading-relaxed text-[#6b625e]">
+              {copy.fdaNote || "*These statements have not been evaluated by the Food and Drug Administration. This product is not intended to diagnose, treat, cure, or prevent any disease."}
+            </p>
+          </div>
+          {copy.supplementFactsImage && (
+            <div className="rounded-[14px] border border-[color:var(--product-line)] bg-white p-5">
+              <h3 className="mwp-serif text-[20px] font-bold text-[#211c1b]">Supplement Facts</h3>
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src={copy.supplementFactsImage} alt={`Supplement Facts panel for ${product.name}`} loading="lazy" className="mt-3 h-auto w-full rounded-lg" />
+            </div>
+          )}
         </div>
       )}
 
