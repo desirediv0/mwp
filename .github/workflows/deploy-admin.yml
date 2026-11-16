@@ -1,0 +1,33 @@
+name: Deploy Admin
+
+# Auto-deploys when front changes on main (or manually: Actions tab -> Run workflow).
+# Server: 179.66.148.169 | user: mwp | repo: /var/www/mwp | PM2 app: mwp-admin
+# The real work is done by /home/mwp/deploy.sh on the server (build, health check, auto-rollback).
+# Required secret: SSH_PRIVATE_KEY.  Optional overrides: SSH_HOST, SSH_USER.
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "front/**"
+      - ".github/workflows/deploy-admin.yml"
+  workflow_dispatch:
+
+concurrency:
+  group: mwp-deploy-admin
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    name: Deploy mwp-admin
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Deploy to VPS
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.SSH_HOST || '179.66.148.169' }}
+          username: ${{ secrets.SSH_USER || 'mwp' }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          command_timeout: 25m
+          script: /home/mwp/deploy.sh admin
