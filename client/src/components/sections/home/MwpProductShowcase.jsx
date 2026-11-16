@@ -18,7 +18,7 @@ const SLIDES = [
     copy: "Advanced men's vitality formula for natural performance and stamina.",
     href: null,
     tint: "from-[#F1E4BF] to-[#E3CC8C]",
-    glow: "#C9A227",
+    glow: "#d9822b",
     image: "/products/cutouts/ultra-pro.webp",
   },
   {
@@ -136,7 +136,7 @@ function ProductTile({ slide, product, total }) {
           <div className="flex flex-wrap items-center justify-center gap-2.5 sm:gap-3">
             <Link
               href={href}
-              className="pointer-events-auto group/cta inline-flex min-h-12 items-center justify-center gap-2.5 rounded-full bg-neutral-900 px-5 text-[13.5px] font-semibold text-white shadow-[0_14px_24px_-14px_rgba(18,33,63,0.9)] transition-all hover:-translate-y-0.5 hover:bg-[#B3001B] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-neutral-900 sm:px-6 sm:text-[14.5px]"
+              className="pointer-events-auto group/cta inline-flex min-h-12 items-center justify-center gap-2.5 rounded-full bg-neutral-900 px-5 text-[13.5px] font-semibold text-white shadow-[0_14px_24px_-14px_rgba(18,33,63,0.9)] transition-all hover:-translate-y-0.5 hover:bg-[#a81f24] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-neutral-900 sm:px-6 sm:text-[14.5px]"
             >
               <IconShoppingBag size={17} stroke={1.8} aria-hidden="true" />
               {t("shopNow")}

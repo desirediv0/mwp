@@ -59,7 +59,7 @@ function ForgotPasswordForm() {
         backLabel="Back to sign in"
       >
         <div className="space-y-5">
-          <div className="grid place-items-center rounded-2xl bg-[#FBF5E6] py-7 text-[#A8741F]">
+          <div className="grid place-items-center rounded-2xl bg-[#FBF5E6] py-7 text-[#b45f10]">
             <IconMailCheck size={44} stroke={1.3} />
           </div>
           {formError && <Alert type="error">{formError}</Alert>}
@@ -68,7 +68,7 @@ function ForgotPasswordForm() {
             type="button"
             disabled={cooldown > 0 || submitting}
             onClick={() => send(sentTo)}
-            className="flex h-[52px] w-full items-center justify-center gap-2 rounded-xl border border-[#12213F]/25 text-[14px] font-semibold text-[#12213F] transition-colors hover:border-[#A8741F] hover:text-[#A8741F] disabled:cursor-not-allowed disabled:border-[#E3E6EE] disabled:text-[#9AA0B2]"
+            className="flex h-[52px] w-full items-center justify-center gap-2 rounded-xl border border-[#12213F]/25 text-[14px] font-semibold text-[#12213F] transition-colors hover:border-[#b45f10] hover:text-[#b45f10] disabled:cursor-not-allowed disabled:border-[#E3E6EE] disabled:text-[#9AA0B2]"
           >
             <IconRefresh size={17} stroke={1.8} className={submitting ? "animate-spin" : ""} />
             {cooldown > 0 ? `Send again in ${cooldown}s` : submitting ? "Sending..." : "Send the email again"}
@@ -89,7 +89,7 @@ function ForgotPasswordForm() {
       side={{ headline: "It happens to everyone.", text: "We will email you a secure link. You will be back in your account in a minute." }}
       backHref="/auth?tab=login"
       backLabel="Back to sign in"
-      footer={<>Remembered it? <Link href="/auth?tab=login" className="font-semibold text-[#12213F] underline underline-offset-4 hover:text-[#B3001B]">Sign in</Link></>}
+      footer={<>Remembered it? <Link href="/auth?tab=login" className="font-semibold text-[#12213F] underline underline-offset-4 hover:text-[#a81f24]">Sign in</Link></>}
     >
       <form onSubmit={submit} noValidate className="space-y-5">
         {formError && <Alert type="error">{formError}</Alert>}

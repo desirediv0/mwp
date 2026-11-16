@@ -24,7 +24,7 @@ export default {
 			colors: {
 				neutral: { 700: '#2a3a5e', 800: '#1b2d52', 900: '#12213F', 950: '#0B1530' },
 				brandnavy: '#12213F',
-				brandred: '#B3001B',
+				brandred: '#A81F24',
 				branddgold: '#D4A437',
 				background: 'hsl(var(--background))',
 				foreground: 'hsl(var(--foreground))',
@@ -97,7 +97,7 @@ export default {
 					warm: '#FFFFFF',
 				},
 				gold: {
-					DEFAULT: '#A8741F',
+					DEFAULT: '#B45F10',
 					light: '#D4A437',
 					dark: '#7A5214',
 					50: '#FBF7EA',

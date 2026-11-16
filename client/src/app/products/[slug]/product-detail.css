@@ -127,7 +127,7 @@
 .mwp-product-detail .mwp-serif,
 .mwp-product-detail .mwp-product-title,
 .mwp-product-detail .mwp-product-price span:first-child {
-  font-family: var(--mwp-serif, Georgia), Georgia, 'Times New Roman', serif;
+  font-family: 'Neulis', sans-serif;
 }
 .mwp-product-detail .mwp-product-title { letter-spacing: -.02em; font-weight: 700; text-transform: uppercase; max-width: 10ch; line-height: 1; }
 .mwp-product-detail .mwp-product-price span:first-child { font-weight: 700; letter-spacing: 0; }
@@ -135,7 +135,7 @@
 .mwp-product-links a { border: 1px solid var(--product-accent); color: var(--product-accent); background: white; border-radius: 10px; padding: 9px 16px; font-size: 12px; font-weight: 600; transition: background .2s; }
 .mwp-product-links a:hover { background: var(--product-surface); }
 .mwp-product-detail :is(.mwp-product-formula, .mwp-product-section) :is(h2, h3).mwp-serif {
-  font-family: var(--mwp-serif, Georgia), Georgia, 'Times New Roman', serif;
+  font-family: 'Neulis', sans-serif;
   letter-spacing: 0;
 }
 
@@ -190,3 +190,9 @@
   .mwp-product-detail .mwp-product-purchase-actions #main-add-to-cart-btn > div,
   .mwp-product-detail .mwp-product-purchase-actions #main-add-to-cart-btn > button { height: 46px; }
 }
+
+/* photo strip: thin scrollbar so it can be dragged with a mouse on desktop */
+.mwp-thumbs { scrollbar-width: thin; scrollbar-color: var(--product-deep, #999) transparent; scroll-snap-type: x proximity; }
+.mwp-thumbs::-webkit-scrollbar { height: 6px; }
+.mwp-thumbs::-webkit-scrollbar-thumb { background: var(--product-deep, #999); border-radius: 999px; }
+.mwp-thumbs > button { scroll-snap-align: center; }

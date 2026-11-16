@@ -113,7 +113,7 @@ function VerifyOtpContent() {
       side={{ headline: "One quick step.", text: "Confirm your email to protect your account and receive order updates." }}
       backHref="/auth?tab=register"
       backLabel="Back to register"
-      footer={<>Already verified? <Link href="/auth?tab=login" className="font-semibold text-[#12213F] underline underline-offset-4 hover:text-[#B3001B]">Sign in</Link></>}
+      footer={<>Already verified? <Link href="/auth?tab=login" className="font-semibold text-[#12213F] underline underline-offset-4 hover:text-[#a81f24]">Sign in</Link></>}
     >
       <form onSubmit={submit} noValidate className="space-y-5">
         {error && <Alert type="error">{error}</Alert>}
@@ -152,7 +152,7 @@ function VerifyOtpContent() {
                 onFocus={(e) => e.target.select()}
                 className={`h-14 w-full min-w-0 rounded-xl border bg-white text-center text-2xl font-semibold text-[#12213F] outline-none transition-all disabled:bg-[#F3F4F7] sm:h-16 ${
                   error ? "border-[#D8434F] bg-[#FFF8F8]" : d ? "border-[#12213F]" : "border-[#D9D3BF]"
-                } focus:border-[#A8741F] focus:ring-4 focus:ring-[#D4A437]/25`}
+                } focus:border-[#b45f10] focus:ring-4 focus:ring-[#e08a1f]/25`}
               />
             ))}
           </div>
@@ -168,7 +168,7 @@ function VerifyOtpContent() {
             type="button"
             onClick={resend}
             disabled={cooldown > 0 || resending || verified}
-            className="inline-flex items-center gap-1.5 font-semibold text-[#12213F] transition-colors hover:text-[#B3001B] disabled:cursor-not-allowed disabled:text-[#9AA0B2] disabled:hover:text-[#9AA0B2]"
+            className="inline-flex items-center gap-1.5 font-semibold text-[#12213F] transition-colors hover:text-[#a81f24] disabled:cursor-not-allowed disabled:text-[#9AA0B2] disabled:hover:text-[#9AA0B2]"
           >
             {resending ? <IconLoader2 size={15} className="animate-spin" /> : <IconRefresh size={15} stroke={1.8} />}
             {cooldown > 0 ? `Resend in ${cooldown}s` : resending ? "Sending..." : "Resend code"}

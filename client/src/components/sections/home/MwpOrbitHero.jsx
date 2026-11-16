@@ -39,7 +39,7 @@ const EASE = [0.22, 1, 0.36, 1];
 // Tag lines match the header product menu; glow is sampled from each bottle's cap/label.
 // Formulas without a signature in mwp-content show their focus areas instead of ingredients.
 const FORMULAS = [
-  { key: "ultra-pro", name: "Ultra Pro", category: "Men's vitality", tag: "The Quiet Miracle", purpose: "Everyday support for vitality, stamina and confidence.", glow: "#c9962e" },
+  { key: "ultra-pro", name: "Ultra Pro", category: "Men's vitality", tag: "The Quiet Miracle", purpose: "Everyday support for vitality, stamina and confidence.", glow: "#d9822b" },
   { key: "power-max", name: "Power Max", category: "Strength & stamina", tag: "Unlock Your Miracle", purpose: "Herbal support for strength, stamina and performance.", glow: "#3d63c4" },
   { key: "rapid-boost", name: "Rapid Boost", category: "Energy & focus", tag: "Fast Action. Real Results.", purpose: "Support for energy, focus and everyday performance.", glow: "#d23b36" },
   { key: "her-power", name: "Her Power", category: "Women's wellness", tag: "Her Inner Miracle", purpose: "Daily wellness support for balance and vitality.", glow: "#dc4f7f" },

@@ -34,7 +34,7 @@ const GLYPHS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789/#*+";
 // Tag lines match the header product menu. Glow is sampled from each bottle's cap/label; ink (from the
 // product palette) is the darker shade used for small text on the light stage.
 const FORMULAS = [
-  { key: "ultra-pro", name: "Ultra Pro", category: "Men's vitality", tag: "The Quiet Miracle", purpose: "Everyday support for vitality, stamina and confidence.", glow: "#c9962e" },
+  { key: "ultra-pro", name: "Ultra Pro", category: "Men's vitality", tag: "The Quiet Miracle", purpose: "Everyday support for vitality, stamina and confidence.", glow: "#d9822b" },
   { key: "power-max", name: "Power Max", category: "Strength & stamina", tag: "Unlock Your Miracle", purpose: "Herbal support for strength, stamina and performance.", glow: "#3d63c4" },
   { key: "rapid-boost", name: "Rapid Boost", category: "Energy & focus", tag: "Fast Action. Real Results.", purpose: "Support for energy, focus and everyday performance.", glow: "#d23b36" },
   { key: "her-power", name: "Her Power", category: "Women's wellness", tag: "Her Inner Miracle", purpose: "Daily wellness support for balance and vitality.", glow: "#dc4f7f" },

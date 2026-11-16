@@ -137,7 +137,7 @@ export default function MwpJourneyTimeline({
   periodLabel = "Source To Shelf",
   textColor = "#12213F",
   mutedTextColor = "#6b6b6b",
-  activeColor = "#C9A227",
+  activeColor = "#d9822b",
   backgroundColor = "#ffffff",
   imageUrl = "/products/cutouts/ultra-pro.webp",
   imageAlt = "MWP Supplements formulation",

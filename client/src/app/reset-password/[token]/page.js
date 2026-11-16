@@ -56,7 +56,7 @@ export default function ResetPasswordPage() {
           <div className="grid place-items-center rounded-2xl bg-[#EAF7EF] py-7 text-[#1F8A4C]">
             <IconCircleCheck size={48} stroke={1.3} />
           </div>
-          <Link href="/auth?tab=login" className="flex h-[54px] w-full items-center justify-center gap-2.5 rounded-xl bg-[#12213F] text-[14px] font-semibold text-white transition-colors hover:bg-[#B3001B]">
+          <Link href="/auth?tab=login" className="flex h-[54px] w-full items-center justify-center gap-2.5 rounded-xl bg-[#12213F] text-[14px] font-semibold text-white transition-colors hover:bg-[#a81f24]">
             Go to sign in <IconArrowRight size={18} stroke={1.8} />
           </Link>
         </div>

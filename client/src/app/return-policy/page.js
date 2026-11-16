@@ -8,7 +8,7 @@ export const metadata = {
     "How MWP Supplements handles damaged or incorrect orders, replacements, refunds and cancellations, and why opened supplement containers cannot be returned.",
 };
 
-const link = "font-semibold text-[#8f6f3a] underline underline-offset-4";
+const link = "font-semibold text-[#8a4a14] underline underline-offset-4";
 
 const sections = [
   {

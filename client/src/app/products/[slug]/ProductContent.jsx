@@ -36,11 +36,8 @@ import ProductExtras from "./ProductExtras";
 import { trackEvent, toItem } from "@/lib/track";
 import { useAddVariantToCart } from "@/lib/cart-utils";
 import { useCompare } from "@/lib/compare-context";
-import { Playfair_Display } from "next/font/google";
 import { TRUST_CLAIMS } from "@/lib/trustClaims";
 import "./product-detail.css";
-
-const serif = Playfair_Display({ subsets: ["latin"], weight: ["400", "600", "700"], display: "swap", variable: "--mwp-serif" });
 
 const getImageUrl = (img) => {
   if (!img) return "/placeholder.jpg";
@@ -153,6 +150,8 @@ export default function ProductContent({ slug, initialProduct = null }) {
   }, [isZoomModalOpen, galleryLength]);
 
   const viewedRef = useRef(null);
+  const thumbsRef = useRef(null);
+  const goTo = (i) => { if (!images.length) return; const n = (i + images.length) % images.length; setActiveThumb(n); setMainImage(images[n]); };
   useEffect(() => {
     if (!product || viewedRef.current === product.id) return;
     viewedRef.current = product.id;
@@ -445,7 +444,7 @@ export default function ProductContent({ slug, initialProduct = null }) {
   const outOfStock = !selectedVariant || stock <= 0;
 
   return (
-    <div className={`mwp-product-detail min-h-screen ${serif.variable}`} style={{
+    <div className={`mwp-product-detail min-h-screen `} style={{
       "--product-bg": productTheme.background,
       "--product-surface": productTheme.surface,
       "--product-deep": productTheme.deep,
@@ -473,11 +472,15 @@ export default function ProductContent({ slug, initialProduct = null }) {
           <div className="mwp-product-gallery flex flex-col-reverse gap-4">
             {/* Thumbnails */}
             {images.length > 1 && (
-              <div className="flex gap-3 overflow-x-auto no-scrollbar pb-2">
+              <div
+                ref={thumbsRef}
+                className="mwp-thumbs flex gap-3 overflow-x-auto pb-2"
+                onWheel={(e) => { if (Math.abs(e.deltaY) > Math.abs(e.deltaX) && thumbsRef.current) thumbsRef.current.scrollLeft += e.deltaY; }}
+              >
                 {images.map((img, idx) => (
                   <button
                     key={idx}
-                    onClick={() => { setMainImage(img); setActiveThumb(idx); }}
+                    onClick={(e) => { setMainImage(img); setActiveThumb(idx); e.currentTarget.scrollIntoView({ behavior: "smooth", inline: "center", block: "nearest" }); }}
                     className="relative flex-shrink-0 w-[64px] h-[80px] overflow-hidden rounded-xl transition-all duration-300"
                     style={{
                       border: activeThumb === idx ? `1.5px solid ${productTheme.accent}` : "1px solid #ECECEC",
@@ -518,6 +521,18 @@ export default function ProductContent({ slug, initialProduct = null }) {
                 />
               ) : (
                 <Image src="/placeholder.jpg" alt={product.name} fill className="object-contain p-8" />
+              )}
+
+              {/* Previous / next photo */}
+              {images.length > 1 && (
+                <>
+                  <button type="button" aria-label="Previous photo" onClick={(e) => { e.stopPropagation(); goTo(activeThumb - 1); }} className="absolute left-3 top-1/2 z-20 grid h-10 w-10 -translate-y-1/2 place-items-center rounded-full bg-white/95 text-neutral-700 shadow-sm transition hover:scale-105">
+                    <IconChevronLeft className="h-5 w-5" stroke={2} />
+                  </button>
+                  <button type="button" aria-label="Next photo" onClick={(e) => { e.stopPropagation(); goTo(activeThumb + 1); }} className="absolute right-3 top-1/2 z-20 grid h-10 w-10 -translate-y-1/2 place-items-center rounded-full bg-white/95 text-neutral-700 shadow-sm transition hover:scale-105">
+                    <IconChevronRight className="h-5 w-5" stroke={2} />
+                  </button>
+                </>
               )}
 
               {/* Hover Zoom Hint */}
@@ -697,7 +712,7 @@ export default function ProductContent({ slug, initialProduct = null }) {
               </div>
               {purchaseMode === "subscribe" && subSettings?.isEnabled ? (
                 <button onClick={subscribeNow} disabled={outOfStock || quantity > stock}
-                  className="flex-1 h-12 rounded-full text-[13px] font-semibold flex items-center justify-center gap-2 transition-all disabled:opacity-40 text-white bg-neutral-900 hover:bg-[#B3001B] active:scale-[0.99]">
+                  className="flex-1 h-12 rounded-full text-[13px] font-semibold flex items-center justify-center gap-2 transition-all disabled:opacity-40 text-white bg-neutral-900 hover:bg-[#a81f24] active:scale-[0.99]">
                   Subscribe monthly
                 </button>
               ) : (
@@ -846,7 +861,7 @@ export default function ProductContent({ slug, initialProduct = null }) {
                   title="Copy Link"
                   aria-label="Copy Link"
                 >
-                  {copied ? <IconCheck className="w-3.5 h-3.5 text-[#A8741F]" stroke={2} /> : <IconLink className="w-3.5 h-3.5" stroke={1.8} />}
+                  {copied ? <IconCheck className="w-3.5 h-3.5 text-[#b45f10]" stroke={2} /> : <IconLink className="w-3.5 h-3.5" stroke={1.8} />}
                   {copied && (
                     <span className="absolute -top-8 left-1/2 -translate-x-1/2 bg-neutral-900 text-white text-[10px] px-2 py-1 rounded-full shadow whitespace-nowrap">
                       Copied!

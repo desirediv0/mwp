@@ -47,6 +47,7 @@ const PRODUCTS = {
       i("Vitamin D (as cholecalciferol from lichen)", "20 mcg (800 IU)", "100%"),
       i("L-Citrulline", "1,500 mg", "†", /citrulline/i),
       i("Tongkat Ali (Eurycoma longifolia) Root Extract (100:1, 1% eurycomanone)", "400 mg", "†", /tongkat/i),
+      i("Ashwagandha (Withania somnifera) Extract (35% withanolide glycosides)", "250 mg", "†", /ashwagandha/i),
       i("Panax Ginseng (Panax ginseng) Root Extract (4:1, 10% ginsenosides)", "250 mg", "†", /ginseng/i),
       i("French Maritime Pine (Pinus pinaster) Bark Extract (95% proanthocyanidins)", "100 mg", "†", /pine/i),
       i("Saffron Stigma Extract (5% crocin)", "30 mg", "†", /saffron/i),
@@ -70,6 +71,7 @@ const PRODUCTS = {
     ingredients: [
       i("L-Arginine", "1,500 mg", "†", /arginine/i),
       i("Epimedium Aerial Parts Extract (20% icariin)", "300 mg", "†"),
+      i("Beet (Beta vulgaris) Root Extract", "250 mg", "†"),
       i("Panax Ginseng (Panax ginseng) Root Extract (4:1, 10% ginsenosides)", "200 mg", "†", /ginseng/i),
       i("French Maritime Pine (Pinus pinaster) Bark Extract (95% proanthocyanidins)", "150 mg", "†"),
       i("Saffron (Crocus sativus) Stigma Extract (5% crocin)", "30 mg", "†", /saffron/i),

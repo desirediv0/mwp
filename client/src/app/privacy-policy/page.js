@@ -117,7 +117,7 @@ const sections = [
           You can ask us at any time to access, correct or delete the personal information we hold about you, or to stop
           sending you emails. Depending on where you live, including California, you may have additional rights under
           local privacy laws, such as knowing what we collect and requesting deletion. To make a request, email{" "}
-          <a className="font-semibold text-[#8f6f3a] underline underline-offset-4" href={`mailto:${SITE_CONTACT.email}`}>
+          <a className="font-semibold text-[#8a4a14] underline underline-offset-4" href={`mailto:${SITE_CONTACT.email}`}>
             {SITE_CONTACT.email}
           </a>
           . We may need to verify your identity before acting on it.
@@ -157,8 +157,8 @@ const sections = [
         <P>
           We may update this policy from time to time. The “Last updated” date at the top shows when it last changed.
           Material changes will be posted on this page. Questions? See our{" "}
-          <Link className="font-semibold text-[#8f6f3a] underline underline-offset-4" href="/terms">Terms &amp; Conditions</Link>{" "}
-          or <Link className="font-semibold text-[#8f6f3a] underline underline-offset-4" href="/contact">contact us</Link>.
+          <Link className="font-semibold text-[#8a4a14] underline underline-offset-4" href="/terms">Terms &amp; Conditions</Link>{" "}
+          or <Link className="font-semibold text-[#8a4a14] underline underline-offset-4" href="/contact">contact us</Link>.
         </P>
         <Note>This page is a general privacy notice. It is not legal advice.</Note>
       </>

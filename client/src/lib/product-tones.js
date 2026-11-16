@@ -10,7 +10,7 @@ export const PRODUCT_TONES = {
   "titan-force": { background: "#faf1e9", surface: "#edcfb4", deep: "#ba855d", accent: "#975e32", line: "#ebd5c2" },
 };
 
-const FALLBACK = { background: "#faf8f2", surface: "#f1e2b7", deep: "#c7ae6c", accent: "#a8741f", line: "#e6dfc9" };
+const FALLBACK = { background: "#faf8f2", surface: "#f1e2b7", deep: "#c7ae6c", accent: "#b45f10", line: "#e6dfc9" };
 
 export const getProductTone = (slug) => PRODUCT_TONES[slug] || FALLBACK;
 

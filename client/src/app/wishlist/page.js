@@ -48,7 +48,7 @@ export default function WishlistPage() {
   if (loading) {
     return (
       <div className="flex min-h-[60vh] items-center justify-center bg-[#FAF8F2]">
-        <IconLoader2 className="h-6 w-6 animate-spin text-[#A8741F]" stroke={1.5} />
+        <IconLoader2 className="h-6 w-6 animate-spin text-[#b45f10]" stroke={1.5} />
       </div>
     );
   }
@@ -80,7 +80,7 @@ export default function WishlistPage() {
                   <ProductCard product={{ ...item, id: item.productId }} />
                   <button
                     onClick={(e) => { e.preventDefault(); removeFromWishlist(item.id); }}
-                    className="absolute left-3 top-3 z-30 grid h-9 w-9 place-items-center rounded-full border border-[#E6DFC9] bg-white/95 text-[#4A5470] shadow-sm transition-colors hover:text-[#B3001B]"
+                    className="absolute left-3 top-3 z-30 grid h-9 w-9 place-items-center rounded-full border border-[#E6DFC9] bg-white/95 text-[#4A5470] shadow-sm transition-colors hover:text-[#a81f24]"
                     title="Remove from wishlist"
                     aria-label="Remove from wishlist"
                   >

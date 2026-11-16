@@ -79,7 +79,7 @@ function useGoldDust(canvasRef, active, reduceMotion) {
     };
     const draw = () => {
       context.clearRect(0, 0, width, height);
-      context.fillStyle = "#C9962E";
+      context.fillStyle = "#d9822b";
       for (const point of points.current) {
         if (active) point.p += 0.02;
         context.globalAlpha = point.o * (0.5 + 0.5 * Math.sin(point.p));

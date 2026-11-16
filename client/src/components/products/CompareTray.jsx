@@ -54,7 +54,7 @@ export function CompareTray() {
             ))}
             {count < max && <Link href="/products" aria-label="Add another formula to compare" className="flex min-h-14 w-14 shrink-0 items-center justify-center rounded-xl border border-dashed border-neutral-300 text-green-700 hover:bg-green-50"><Plus size={18} /></Link>}
           </div>
-          <Link href={count < 2 ? "/products" : "/compare"} className="inline-flex min-h-12 shrink-0 items-center justify-center gap-3 rounded-xl bg-neutral-900 px-5 text-xs text-white transition-colors hover:bg-[#B3001B] focus-visible:outline-green-700">
+          <Link href={count < 2 ? "/products" : "/compare"} className="inline-flex min-h-12 shrink-0 items-center justify-center gap-3 rounded-xl bg-neutral-900 px-5 text-xs text-white transition-colors hover:bg-[#a81f24] focus-visible:outline-green-700">
             {count < 2 ? "Choose another formula" : `Compare ${count} formulas`} <ArrowRight size={16} />
           </Link>
         </div>

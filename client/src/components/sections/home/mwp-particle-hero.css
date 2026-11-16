@@ -4,7 +4,7 @@
 @property --particle-glow {
   syntax: "<color>";
   inherits: true;
-  initial-value: #c9962e;
+  initial-value: #d9822b;
 }
 @property --particle-ink {
   syntax: "<color>";

@@ -4,7 +4,7 @@
 .mwp-capsule {
   --mc-navy: #14224a;
   --mc-muted: #5c6680;
-  --mc-gold: #c9962e;
+  --mc-gold: #d9822b;
   --mc-gold-hi: #f2d27a;
   --mc-mist: #f4f6fa;
   --mc-line: #e6e9f0;
@@ -91,7 +91,7 @@
 .mwp-capsule__line--power > span {
   animation-delay: 1.55s;
   color: transparent;
-  background: linear-gradient(180deg, #e9c46a 0%, #c9962e 55%, #8f6516 100%);
+  background: linear-gradient(180deg, #e9c46a 0%, #d9822b 55%, #8f6516 100%);
   -webkit-background-clip: text;
   background-clip: text;
 }
@@ -323,7 +323,7 @@
 .mwp-capsule__half--l {
   left: 0;
   border-radius: 999px 0 0 999px;
-  background-image: linear-gradient(180deg, #fff7dc 0%, #f2d27a 16%, #d9ae4e 34%, #c9962e 50%, #a57620 68%, #7c5714 84%, #c79a3e 100%);
+  background-image: linear-gradient(180deg, #fff7dc 0%, #f2d27a 16%, #d9ae4e 34%, #d9822b 50%, #a57620 68%, #7c5714 84%, #c79a3e 100%);
   animation:
     mc-in-left 1.3s 0.2s var(--mc-ease) both,
     mc-roll 6s 2.4s ease-in-out infinite;

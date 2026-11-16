@@ -11,6 +11,7 @@ import MwpProductShowcase from "@/components/sections/home/MwpProductShowcase";
 import TrustStrip from "@/components/sections/home/TrustStrip";
 
 export const metadata = {
+  alternates: { canonical: "/" },
   title: "MWP SUPPLEMENTS — Men | Women | Power",
   description:
     "Premium global wellness formulas for Men, Women & Power. Discover Ultra Pro, Power Max, Rapid Boost, Her Power, Her Energy and Daily Vitality.",

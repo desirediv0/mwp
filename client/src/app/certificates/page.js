@@ -16,13 +16,13 @@ function CertificateCard({ c }) {
   const body = (
     <>
       <div className="relative flex h-[170px] items-center justify-center overflow-hidden rounded-2xl bg-gradient-to-br from-[#FBF5E6] via-white to-[#EEF1F8]">
-        <span aria-hidden="true" className="absolute left-3 top-3 h-8 w-10 rounded-tl-xl border-l-2 border-t-2 border-[#D4A437]/70" />
-        <span aria-hidden="true" className="absolute bottom-3 right-3 h-8 w-10 rounded-br-xl border-b-2 border-r-2 border-[#D4A437]/70" />
+        <span aria-hidden="true" className="absolute left-3 top-3 h-8 w-10 rounded-tl-xl border-l-2 border-t-2 border-[#e08a1f]/70" />
+        <span aria-hidden="true" className="absolute bottom-3 right-3 h-8 w-10 rounded-br-xl border-b-2 border-r-2 border-[#e08a1f]/70" />
         {showLogo(c) ? (
           // eslint-disable-next-line @next/next/no-img-element
           <img src={c.logoUrl} alt={`${heading} logo`} loading="lazy" className="h-24 w-24 object-contain sm:h-28 sm:w-28" />
         ) : (
-          <span className="grid h-20 w-20 place-items-center rounded-full border-2 border-[#D4A437]/70 bg-white text-[#12213F] shadow-[0_14px_28px_-18px_#12213F88]">
+          <span className="grid h-20 w-20 place-items-center rounded-full border-2 border-[#e08a1f]/70 bg-white text-[#12213F] shadow-[0_14px_28px_-18px_#12213F88]">
             {c.badge && c.badge !== "✓" ? <span className="text-[15px] font-semibold tracking-wide">{c.badge}</span> : <IconShieldCheck size={34} stroke={1.5} />}
           </span>
         )}
@@ -36,12 +36,12 @@ function CertificateCard({ c }) {
       </div>
 
       <div className="flex flex-1 flex-col px-2 pb-1 pt-5">
-        <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-[#A8741F]">{heading}</p>
+        <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-[#b45f10]">{heading}</p>
         <h3 className="mt-1.5 text-[17px] font-semibold leading-snug text-[#12213F]">{c.title}</h3>
         {(c.description || c.summary) && <p className="mt-2 text-[13.5px] leading-relaxed text-[#5A6275]">{c.description || c.summary}</p>}
         <span
           className={`mt-5 inline-flex w-full items-center justify-center gap-2 rounded-full px-4 py-3 text-[12px] font-semibold uppercase tracking-[0.12em] transition-colors ${
-            hasFile ? "bg-[#12213F] text-white group-hover:bg-[#B3001B]" : "bg-[#F1F2F6] text-[#6B7388]"
+            hasFile ? "bg-[#12213F] text-white group-hover:bg-[#a81f24]" : "bg-[#F1F2F6] text-[#6B7388]"
           }`}
         >
           {hasFile ? <>{c.buttonLabel || "View document"} <IconArrowRight size={14} /></> : "Document coming soon"}
@@ -57,7 +57,7 @@ function CertificateCard({ c }) {
       target="_blank"
       rel="noopener noreferrer"
       aria-label={`${c.buttonLabel || "View"}: ${c.title}`}
-      className={`${base} hover:-translate-y-1 hover:border-[#D4A437] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#12213F]`}
+      className={`${base} hover:-translate-y-1 hover:border-[#e08a1f] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#12213F]`}
     >
       {body}
     </a>
@@ -80,12 +80,12 @@ export default async function CertificatesPage() {
     <main className="bg-white text-[#12213F]">
       {/* Hero */}
       <section className="relative overflow-hidden bg-gradient-to-br from-[#0B1530] via-[#12213F] to-[#1B2D52] text-white">
-        <div aria-hidden="true" className="pointer-events-none absolute -left-20 -top-20 h-72 w-72 rounded-full bg-[#D4A437]/20 blur-3xl" />
-        <div aria-hidden="true" className="pointer-events-none absolute -bottom-24 right-10 h-64 w-64 rounded-full bg-[#B3001B]/20 blur-3xl" />
+        <div aria-hidden="true" className="pointer-events-none absolute -left-20 -top-20 h-72 w-72 rounded-full bg-[#e08a1f]/20 blur-3xl" />
+        <div aria-hidden="true" className="pointer-events-none absolute -bottom-24 right-10 h-64 w-64 rounded-full bg-[#a81f24]/20 blur-3xl" />
         <div className="relative mx-auto max-w-6xl px-5 py-14 text-center sm:px-8 sm:py-20">
-          <p className="text-[11px] font-semibold uppercase tracking-[0.35em] text-[#E6C26A]">The MWP Certificate Wall</p>
+          <p className="text-[11px] font-semibold uppercase tracking-[0.35em] text-[#f2b04a]">The MWP Certificate Wall</p>
           <h1 className="mx-auto mt-4 max-w-3xl text-[40px] font-semibold leading-[1.05] tracking-tight sm:text-6xl">
-            Trust you can <span className="font-normal italic text-[#E6C26A]" style={{ fontFamily: "Georgia, 'Times New Roman', serif" }}>see.</span>
+            Trust you can <span className="font-normal italic text-[#f2b04a]" style={{ fontFamily: "'Neulis', sans-serif" }}>see.</span>
           </h1>
           <p className="mx-auto mt-5 max-w-xl text-base leading-relaxed text-[#CDD4E6] sm:text-lg">
             We believe transparency is part of quality. Explore the standards, testing, and documentation behind the MWP collection.
@@ -93,7 +93,7 @@ export default async function CertificatesPage() {
           <ul className="mx-auto mt-9 flex max-w-4xl flex-wrap items-center justify-center gap-2.5">
             {TRUST_CLAIMS.map((p) => (
               <li key={p} className="inline-flex items-center gap-1.5 rounded-full border border-white/20 bg-white/10 px-4 py-2 text-[11px] font-medium tracking-wide text-[#E3E7F2] backdrop-blur-sm">
-                <IconCheck size={13} stroke={2.4} className="text-[#E6C26A]" /> {p}
+                <IconCheck size={13} stroke={2.4} className="text-[#f2b04a]" /> {p}
               </li>
             ))}
           </ul>
@@ -104,11 +104,11 @@ export default async function CertificatesPage() {
       <section className="mx-auto max-w-6xl px-5 py-14 sm:px-8 sm:py-20">
         <div className="mb-9 flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
           <div>
-            <p className="text-[11px] font-semibold uppercase tracking-[0.3em] text-[#A8741F]">Documents and standards</p>
+            <p className="text-[11px] font-semibold uppercase tracking-[0.3em] text-[#b45f10]">Documents and standards</p>
             <h2 className="mt-2 text-3xl font-semibold tracking-tight sm:text-4xl">What stands behind every bottle.</h2>
           </div>
           {certificates.length > 0 && (
-            <p className="inline-flex items-center gap-2 text-sm text-[#5A6275]"><IconFileCheck size={18} stroke={1.5} className="text-[#A8741F]" /> {certificates.length} items on the wall</p>
+            <p className="inline-flex items-center gap-2 text-sm text-[#5A6275]"><IconFileCheck size={18} stroke={1.5} className="text-[#b45f10]" /> {certificates.length} items on the wall</p>
           )}
         </div>
 
@@ -130,21 +130,21 @@ export default async function CertificatesPage() {
 
         <p className="mt-8 text-center text-[12px] leading-relaxed text-[#6B7388]">
           Some documents are still being collected and are marked &ldquo;coming soon&rdquo;. Questions about a specific document?{" "}
-          <Link href="/contact" className="text-[#A8741F] underline underline-offset-4">Contact us</Link>.
+          <Link href="/contact" className="text-[#b45f10] underline underline-offset-4">Contact us</Link>.
         </p>
       </section>
 
       {/* QR */}
       <section className="mx-auto max-w-6xl px-5 pb-16 sm:px-8 sm:pb-20">
         <div className="relative grid items-center gap-8 overflow-hidden rounded-[2rem] bg-gradient-to-br from-[#12213F] to-[#0B1530] p-8 text-white sm:p-12 lg:grid-cols-[1.3fr_1fr]">
-          <div aria-hidden="true" className="pointer-events-none absolute -right-16 -top-16 h-56 w-56 rounded-full bg-[#D4A437]/25 blur-3xl" />
+          <div aria-hidden="true" className="pointer-events-none absolute -right-16 -top-16 h-56 w-56 rounded-full bg-[#e08a1f]/25 blur-3xl" />
           <div className="relative">
-            <p className="text-[11px] font-semibold uppercase tracking-[0.3em] text-[#E6C26A]">Scan. Verify. Feel confident.</p>
+            <p className="text-[11px] font-semibold uppercase tracking-[0.3em] text-[#f2b04a]">Scan. Verify. Feel confident.</p>
             <h2 className="mt-3 text-3xl font-semibold leading-tight tracking-tight sm:text-4xl">Every package has a story behind it.</h2>
             <p className="mt-4 max-w-lg text-[15px] leading-relaxed text-[#CDD4E6]">
               Use the QR code on your MWP package to access product information, ingredient details, available testing documents, and the latest quality updates.
             </p>
-            <Link href="/contact" className="mt-6 inline-flex items-center gap-2 text-sm font-semibold text-[#E6C26A] underline underline-offset-4">
+            <Link href="/contact" className="mt-6 inline-flex items-center gap-2 text-sm font-semibold text-[#f2b04a] underline underline-offset-4">
               Questions about your bottle? <IconArrowRight size={15} />
             </Link>
           </div>

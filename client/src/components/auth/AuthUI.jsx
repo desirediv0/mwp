@@ -32,16 +32,16 @@ export function AuthShell({ eyebrow, title, subtitle, side, backHref, backLabel,
     <div className="mwp-auth-shell min-h-screen bg-[#FAF8F2] lg:grid lg:grid-cols-[minmax(0,5fr)_minmax(0,6fr)]">
       {/* Brand panel */}
       <aside className="relative hidden overflow-hidden bg-gradient-to-br from-[#0B1530] via-[#12213F] to-[#1B2D52] text-white lg:flex lg:flex-col lg:justify-between lg:p-12 xl:p-16">
-        <div aria-hidden="true" className="pointer-events-none absolute -right-24 -top-24 h-96 w-96 rounded-full bg-[#D4A437]/20 blur-3xl" />
-        <div aria-hidden="true" className="pointer-events-none absolute -bottom-32 -left-20 h-96 w-96 rounded-full bg-[#B3001B]/20 blur-3xl" />
-        <div aria-hidden="true" className="pointer-events-none absolute right-10 top-1/3 h-40 w-72 rotate-[-18deg] rounded-full border border-[#E6C26A]/20" />
+        <div aria-hidden="true" className="pointer-events-none absolute -right-24 -top-24 h-96 w-96 rounded-full bg-[#e08a1f]/20 blur-3xl" />
+        <div aria-hidden="true" className="pointer-events-none absolute -bottom-32 -left-20 h-96 w-96 rounded-full bg-[#a81f24]/20 blur-3xl" />
+        <div aria-hidden="true" className="pointer-events-none absolute right-10 top-1/3 h-40 w-72 rotate-[-18deg] rounded-full border border-[#f2b04a]/20" />
 
         <Link href="/" className="relative z-10 inline-block" aria-label="MWP Supplements home">
           <Image src="/mwp-logo-3.png" alt="MWP Supplements" width={200} height={71} className="h-16 w-auto" priority />
         </Link>
 
         <div className="relative z-10 max-w-md">
-          <p className="text-[11px] font-semibold uppercase tracking-[0.35em] text-[#E6C26A]">{side?.eyebrow || "Men · Women · Power"}</p>
+          <p className="text-[11px] font-semibold uppercase tracking-[0.35em] text-[#f2b04a]">{side?.eyebrow || "Men · Women · Power"}</p>
           <h2 className="mt-4 text-4xl font-semibold leading-[1.05] tracking-tight xl:text-5xl">
             {side?.headline || "Your routine, in one place."}
           </h2>
@@ -51,7 +51,7 @@ export function AuthShell({ eyebrow, title, subtitle, side, backHref, backLabel,
           <ul className="mt-8 space-y-3.5">
             {points.map(({ Icon, text }) => (
               <li key={text} className="flex items-center gap-3 text-sm text-[#E3E7F2]">
-                <span className="grid h-9 w-9 shrink-0 place-items-center rounded-full border border-[#E6C26A]/40 bg-white/5 text-[#E6C26A]">
+                <span className="grid h-9 w-9 shrink-0 place-items-center rounded-full border border-[#f2b04a]/40 bg-white/5 text-[#f2b04a]">
                   <Icon size={17} stroke={1.6} />
                 </span>
                 {text}
@@ -83,7 +83,7 @@ export function AuthShell({ eyebrow, title, subtitle, side, backHref, backLabel,
             )}
 
             <div className="rounded-[1.75rem] border border-[#E6DFC9] bg-white p-6 shadow-[0_30px_60px_-44px_#12213F88] sm:p-8">
-              {eyebrow && <p className="text-[11px] font-semibold uppercase tracking-[0.3em] text-[#A8741F]">{eyebrow}</p>}
+              {eyebrow && <p className="text-[11px] font-semibold uppercase tracking-[0.3em] text-[#b45f10]">{eyebrow}</p>}
               <h1 className="mt-2 text-[28px] font-semibold leading-tight tracking-tight text-[#12213F] sm:text-[32px]">{title}</h1>
               {subtitle && <p className="mt-2 text-[14px] leading-relaxed text-[#5A6275]">{subtitle}</p>}
               <div className="mt-6">{children}</div>
@@ -144,7 +144,7 @@ export function Field({ label, icon: Icon, error, hint, right, type = "text", cl
             Icon ? "pl-12" : "pl-4"
           } ${right ? "pr-12" : "pr-4"} ${
             error
-              ? "border-[#D8434F] bg-[#FFF8F8] focus:border-[#B3001B] focus:ring-4 focus:ring-[#B3001B]/10"
+              ? "border-[#D8434F] bg-[#FFF8F8] focus:border-[#a81f24] focus:ring-4 focus:ring-[#a81f24]/10"
               : "border-[#D9D3BF] focus:border-[#12213F] focus:ring-4 focus:ring-[#12213F]/10"
           } ${inputClassName}`}
           {...props}
@@ -152,7 +152,7 @@ export function Field({ label, icon: Icon, error, hint, right, type = "text", cl
         {right && <div className="absolute right-3 top-1/2 -translate-y-1/2">{right}</div>}
       </div>
       {error ? (
-        <p id={`${id}-error`} role="alert" className="mt-1.5 flex items-center gap-1.5 text-[12.5px] font-medium text-[#B3001B]">
+        <p id={`${id}-error`} role="alert" className="mt-1.5 flex items-center gap-1.5 text-[12.5px] font-medium text-[#a81f24]">
           <IconAlertCircle size={14} stroke={2} /> {error}
         </p>
       ) : hint ? (
@@ -198,7 +198,7 @@ export function SubmitButton({ loading, disabled, children, loadingText, classNa
       type="submit"
       disabled={loading || disabled}
       aria-busy={loading || undefined}
-      className={`flex h-[54px] w-full items-center justify-center gap-2.5 rounded-xl bg-[#12213F] text-[14px] font-semibold tracking-wide text-white shadow-[0_16px_30px_-18px_#12213F] transition-all hover:bg-[#B3001B] active:scale-[0.99] disabled:cursor-not-allowed disabled:bg-[#C9CDD8] disabled:shadow-none ${className}`}
+      className={`flex h-[54px] w-full items-center justify-center gap-2.5 rounded-xl bg-[#12213F] text-[14px] font-semibold tracking-wide text-white shadow-[0_16px_30px_-18px_#12213F] transition-all hover:bg-[#a81f24] active:scale-[0.99] disabled:cursor-not-allowed disabled:bg-[#C9CDD8] disabled:shadow-none ${className}`}
       {...props}
     >
       {loading ? (
@@ -226,7 +226,7 @@ export function PasswordStrength({ password }) {
   const checks = passwordChecks(password);
   const score = checks.filter((c) => c.ok).length;
   const label = ["", "Weak", "Fair", "Good", "Strong"][score];
-  const color = ["", "#D8434F", "#E08A1E", "#A8741F", "#1F8A4C"][score];
+  const color = ["", "#D8434F", "#E08A1E", "#b45f10", "#1F8A4C"][score];
   return (
     <div className="mt-3" aria-live="polite">
       <div className="flex items-center gap-3">

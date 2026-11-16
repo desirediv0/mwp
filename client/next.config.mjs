@@ -34,6 +34,7 @@ const nextConfig = {
             { source: "/fragrance-finder", destination: "/quiz", permanent: true },
             { source: "/corporate-gifting", destination: "/contact", permanent: true },
             { source: "/contact-us", destination: "/contact", permanent: true },
+            { source: "/wp-sitemap.xml", destination: "/sitemap.xml", permanent: true },
             // Canonical host is www. Turn this on (FORCE_WWW=true) only after the proxy's www -> non-www
             // redirect is removed, otherwise the two redirects point at each other.
             ...(process.env.FORCE_WWW === "true"

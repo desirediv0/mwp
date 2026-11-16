@@ -1,5 +1,5 @@
 /* MWP University article: navy / gold, comfortable reading width */
-.mwp-article { --a-navy: #12213f; --a-gold: #a8741f; --a-gold-soft: #fbf5e6; --a-line: #e9e4d6; --a-ink: #26314d; --a-muted: #5a6275; }
+.mwp-article { --a-navy: #12213f; --a-gold: #b45f10; --a-gold-soft: #fbf5e6; --a-line: #e9e4d6; --a-ink: #26314d; --a-muted: #5a6275; }
 .mwp-article-wrap { max-width: 760px; margin: 0 auto; padding: 0 20px; }
 .mwp-article-wrap-wide { max-width: 1040px; }
 
@@ -19,7 +19,7 @@
 .mwp-article-cover { width: 100%; aspect-ratio: 16 / 9; object-fit: cover; border-radius: 20px; border: 1px solid var(--a-line); margin-top: 32px; }
 
 .mwp-article-question { display: flex; gap: 14px; align-items: flex-start; margin-top: 32px; padding: 18px 20px; border-radius: 16px; background: var(--a-navy); color: #fff; }
-.mwp-article-question svg { flex-shrink: 0; color: #e6c26a; margin-top: 2px; }
+.mwp-article-question svg { flex-shrink: 0; color: #f2b04a; margin-top: 2px; }
 .mwp-article-question span { display: block; font-size: 11px; letter-spacing: .1em; text-transform: uppercase; color: #cdd4e6; }
 .mwp-article-question p { margin-top: 4px; font-size: 17px; line-height: 1.5; color: #fff; }
 
@@ -59,7 +59,7 @@
 
 .mwp-article-cta { margin-top: 34px; display: flex; justify-content: center; }
 .mwp-article-cta .mwp-button { background: var(--a-navy); color: #fff; padding: 14px 26px; border-radius: 999px; display: inline-flex; align-items: center; gap: 10px; }
-.mwp-article-cta .mwp-button:hover { background: #b3001b; }
+.mwp-article-cta .mwp-button:hover { background: #a81f24; }
 
 .mwp-article-related { margin-top: 56px; padding-top: 36px; border-top: 1px solid var(--a-line); }
 .mwp-article-related h2 { display: flex; align-items: center; gap: 8px; font-size: 22px; color: var(--a-navy); margin-bottom: 18px; }
@@ -87,7 +87,7 @@
 /* Lists */
 .mwp-article-body ul:not(.mwp-sources) { list-style: none; padding: 0; display: grid; gap: 8px; margin: 0 0 20px; }
 .mwp-article-body ul:not(.mwp-sources) > li { position: relative; padding: 10px 14px 10px 38px; margin: 0; border: 1px solid var(--a-line); border-radius: 12px; background: #fff; }
-.mwp-article-body ul:not(.mwp-sources) > li::before { content: ""; position: absolute; left: 14px; top: 17px; width: 12px; height: 12px; border-radius: 50%; background: radial-gradient(circle at 30% 30%, #f1d78f, #a8741f); }
+.mwp-article-body ul:not(.mwp-sources) > li::before { content: ""; position: absolute; left: 14px; top: 17px; width: 12px; height: 12px; border-radius: 50%; background: radial-gradient(circle at 30% 30%, #f1d78f, #b45f10); }
 
 /* CTA with a sentence */
 .mwp-article-cta { flex-direction: column; align-items: center; gap: 16px; text-align: center; padding: 26px 22px; border-radius: 20px; background: var(--a-gold-soft); border: 1px solid #ecdcae; }

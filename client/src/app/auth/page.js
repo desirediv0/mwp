@@ -93,7 +93,7 @@ function LoginForm({ redirect }) {
         disabled={submitting}
         onChange={(e) => { setPassword(e.target.value); setErrors((p) => ({ ...p, password: "" })); setFormError(""); }}
         error={errors.password}
-        labelRight={<Link href={`/forgot-password${email ? `?email=${encodeURIComponent(email.trim())}` : ""}`} className="font-medium text-[#A8741F] hover:underline">Forgot password?</Link>}
+        labelRight={<Link href={`/forgot-password${email ? `?email=${encodeURIComponent(email.trim())}` : ""}`} className="font-medium text-[#b45f10] hover:underline">Forgot password?</Link>}
       />
 
       <SubmitButton loading={submitting} loadingText="Signing in...">
@@ -214,9 +214,9 @@ function AuthForm() {
       }}
       footer={
         isLogin ? (
-          <>New to MWP? <button type="button" onClick={() => go("register")} className="font-semibold text-[#12213F] underline underline-offset-4 hover:text-[#B3001B]">Create an account</button></>
+          <>New to MWP? <button type="button" onClick={() => go("register")} className="font-semibold text-[#12213F] underline underline-offset-4 hover:text-[#a81f24]">Create an account</button></>
         ) : (
-          <>Already have an account? <button type="button" onClick={() => go("login")} className="font-semibold text-[#12213F] underline underline-offset-4 hover:text-[#B3001B]">Sign in</button></>
+          <>Already have an account? <button type="button" onClick={() => go("login")} className="font-semibold text-[#12213F] underline underline-offset-4 hover:text-[#a81f24]">Sign in</button></>
         )
       }
     >

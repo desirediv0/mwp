@@ -57,10 +57,10 @@ export default function PolicyLayout({ kicker, title, accent, intro, updated, hi
         </nav>
 
         <header className="mt-8 max-w-3xl">
-          <p className="text-[11px] font-bold uppercase tracking-[0.32em] text-[#8f6f3a] sm:text-xs">{kicker}</p>
+          <p className="text-[11px] font-bold uppercase tracking-[0.32em] text-[#8a4a14] sm:text-xs">{kicker}</p>
           <h1 className="mt-4 text-5xl font-bold leading-[1.02] tracking-tight sm:text-6xl lg:text-7xl">
             {title}
-            {accent && <span className="text-[#8f6f3a]"> {accent}</span>}
+            {accent && <span className="text-[#8a4a14]"> {accent}</span>}
           </h1>
           <p className="mt-6 text-lg leading-relaxed text-neutral-600 sm:text-xl">{intro}</p>
           {updated && <p className="mt-4 text-sm font-medium text-neutral-500">Last updated: {updated}</p>}

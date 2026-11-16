@@ -30,6 +30,7 @@ import {
   Video,
   BadgeCheck,
   ShieldCheck,
+  Bot,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { SafeRender } from "@/components/SafeRender";
@@ -275,7 +276,7 @@ export default function DashboardLayout() {
         secretAccess: false,
         fragranceQuiz: false,
       });
-    } else if (path.startsWith("/contact-management") || path.startsWith("/reviews-management") || path.startsWith("/faq-management")) {
+    } else if (path.startsWith("/contact-management") || path.startsWith("/advisor") || path.startsWith("/reviews-management") || path.startsWith("/faq-management")) {
       setOpenSections({
         products: false,
         orders: false,
@@ -592,6 +593,16 @@ export default function DashboardLayout() {
                       admin,
                       Resource.CONTACT,
                       Action.READ
+                    ),
+                  },
+                  {
+                    href: "/advisor",
+                    title: "AI Advisor (chat)",
+                    icon: <Bot className="h-3 w-3" />,
+                    hasPermission: hasPermissionFor(
+                      admin,
+                      Resource.SETTINGS,
+                      Action.UPDATE
                     ),
                   },
                   {
@@ -1029,6 +1040,16 @@ export default function DashboardLayout() {
                       admin,
                       Resource.CONTACT,
                       Action.READ
+                    ),
+                  },
+                  {
+                    href: "/advisor",
+                    title: "AI Advisor (chat)",
+                    icon: <Bot className="h-3 w-3" />,
+                    hasPermission: hasPermissionFor(
+                      admin,
+                      Resource.SETTINGS,
+                      Action.UPDATE
                     ),
                   },
                   {

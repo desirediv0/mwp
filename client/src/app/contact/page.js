@@ -92,12 +92,12 @@ export default function ContactPage() {
     <main className="bg-white text-[#12213F]">
       {/* Hero */}
       <section className="relative overflow-hidden bg-gradient-to-br from-[#0B1530] via-[#12213F] to-[#1B2D52] text-white">
-        <div aria-hidden="true" className="pointer-events-none absolute -right-20 -top-24 h-80 w-80 rounded-full bg-[#D4A437]/20 blur-3xl" />
-        <div aria-hidden="true" className="pointer-events-none absolute -bottom-28 left-1/3 h-72 w-72 rounded-full bg-[#B3001B]/20 blur-3xl" />
+        <div aria-hidden="true" className="pointer-events-none absolute -right-20 -top-24 h-80 w-80 rounded-full bg-[#e08a1f]/20 blur-3xl" />
+        <div aria-hidden="true" className="pointer-events-none absolute -bottom-28 left-1/3 h-72 w-72 rounded-full bg-[#a81f24]/20 blur-3xl" />
         <div className="relative mx-auto max-w-6xl px-5 pb-24 pt-12 sm:px-8 sm:pb-28 sm:pt-16">
-          <p className="text-[11px] font-semibold uppercase tracking-[0.35em] text-[#E6C26A]">Contact MWP</p>
+          <p className="text-[11px] font-semibold uppercase tracking-[0.35em] text-[#f2b04a]">Contact MWP</p>
           <h1 className="mt-4 max-w-2xl text-[38px] font-semibold leading-[1.05] tracking-tight sm:text-6xl">
-            Let&apos;s talk about <span className="font-normal italic text-[#E6C26A]" style={{ fontFamily: "Georgia, 'Times New Roman', serif" }}>your power.</span>
+            Let&apos;s talk about <span className="font-normal italic text-[#f2b04a]" style={{ fontFamily: "'Neulis', sans-serif" }}>your power.</span>
           </h1>
           <p className="mt-5 max-w-xl text-base leading-relaxed text-[#CDD4E6] sm:text-lg">
             Questions about an order, an ingredient or which formula fits you? Our US-based team replies by email during support hours.
@@ -117,17 +117,17 @@ export default function ContactPage() {
                   Thank you. We will reply to <strong className="text-[#12213F]">{sentTo}</strong> during support hours (Monday to Friday, 9 AM to 6 PM Pacific).
                 </p>
                 <div className="mt-6 flex flex-col items-center justify-center gap-3 sm:flex-row">
-                  <button type="button" onClick={() => setSentTo("")} className="rounded-full border border-[#12213F]/25 px-6 py-3 text-sm font-semibold transition-colors hover:border-[#A8741F] hover:text-[#A8741F]">
+                  <button type="button" onClick={() => setSentTo("")} className="rounded-full border border-[#12213F]/25 px-6 py-3 text-sm font-semibold transition-colors hover:border-[#b45f10] hover:text-[#b45f10]">
                     Send another message
                   </button>
-                  <Link href="/products" className="inline-flex items-center gap-2 rounded-full bg-[#12213F] px-6 py-3 text-sm font-semibold text-white transition-colors hover:bg-[#B3001B]">
+                  <Link href="/products" className="inline-flex items-center gap-2 rounded-full bg-[#12213F] px-6 py-3 text-sm font-semibold text-white transition-colors hover:bg-[#a81f24]">
                     Browse formulas <IconArrowRight size={16} />
                   </Link>
                 </div>
               </div>
             ) : (
               <>
-                <p className="text-[11px] font-semibold uppercase tracking-[0.3em] text-[#A8741F]">Send a message</p>
+                <p className="text-[11px] font-semibold uppercase tracking-[0.3em] text-[#b45f10]">Send a message</p>
                 <h2 className="mt-2 text-2xl font-semibold tracking-tight sm:text-3xl">Start a conversation</h2>
                 <p className="mt-1.5 text-sm text-[#5A6275]">Tell us what you need and we will send it to the right person.</p>
 
@@ -166,11 +166,11 @@ export default function ContactPage() {
                       aria-invalid={errorOf("message") ? "true" : undefined}
                       placeholder="Write your message here. For order questions, include your order number."
                       className={`w-full resize-y rounded-xl border bg-white px-4 py-3.5 text-[15px] leading-relaxed text-[#12213F] outline-none transition-all placeholder:text-[#8A90A3] disabled:bg-[#F3F4F7] ${
-                        errorOf("message") ? "border-[#D8434F] bg-[#FFF8F8] focus:ring-4 focus:ring-[#B3001B]/10" : "border-[#D9D3BF] focus:border-[#12213F] focus:ring-4 focus:ring-[#12213F]/10"
+                        errorOf("message") ? "border-[#D8434F] bg-[#FFF8F8] focus:ring-4 focus:ring-[#a81f24]/10" : "border-[#D9D3BF] focus:border-[#12213F] focus:ring-4 focus:ring-[#12213F]/10"
                       }`}
                     />
                     <div className="mt-1.5 flex items-start justify-between gap-3 text-[12.5px]">
-                      <span className="font-medium text-[#B3001B]">{errorOf("message")}</span>
+                      <span className="font-medium text-[#a81f24]">{errorOf("message")}</span>
                       <span className="shrink-0 text-[#6B7388]">{form.message.length}/{MAX_MESSAGE}</span>
                     </div>
                   </div>
@@ -195,8 +195,8 @@ export default function ContactPage() {
 
           <div className="grid content-start gap-6">
             <section className="relative overflow-hidden rounded-[1.75rem] bg-gradient-to-br from-[#12213F] to-[#0B1530] p-6 text-white sm:p-8">
-              <div aria-hidden="true" className="pointer-events-none absolute -right-14 -top-14 h-44 w-44 rounded-full bg-[#D4A437]/25 blur-3xl" />
-              <p className="relative text-[11px] font-semibold uppercase tracking-[0.3em] text-[#E6C26A]">Direct support</p>
+              <div aria-hidden="true" className="pointer-events-none absolute -right-14 -top-14 h-44 w-44 rounded-full bg-[#e08a1f]/25 blur-3xl" />
+              <p className="relative text-[11px] font-semibold uppercase tracking-[0.3em] text-[#f2b04a]">Direct support</p>
               <h2 className="relative mt-2 text-2xl font-semibold leading-tight tracking-tight">Prefer to reach us directly?</h2>
               <ul className="relative mt-5 divide-y divide-white/10 border-t border-white/10">
                 {[
@@ -207,7 +207,7 @@ export default function ContactPage() {
                 ].map(({ Icon, title, value, href }) => {
                   const inner = (
                     <>
-                      <span className="grid h-10 w-10 shrink-0 place-items-center rounded-full bg-[#D4A437] text-[#12213F]"><Icon size={18} stroke={1.8} /></span>
+                      <span className="grid h-10 w-10 shrink-0 place-items-center rounded-full bg-[#e08a1f] text-[#12213F]"><Icon size={18} stroke={1.8} /></span>
                       <span className="min-w-0">
                         <span className="block text-sm font-semibold">{title}</span>
                         <span className="block break-words text-[13px] text-[#CDD4E6]">{value}</span>
@@ -231,16 +231,16 @@ export default function ContactPage() {
                     key={title}
                     type="button"
                     onClick={() => pickPath(subject)}
-                    className={`group rounded-2xl border bg-white p-4 text-left transition-all hover:-translate-y-0.5 hover:border-[#D4A437] ${form.subject === subject ? "border-[#A8741F] ring-2 ring-[#D4A437]/30" : "border-[#E6DFC9]"}`}
+                    className={`group rounded-2xl border bg-white p-4 text-left transition-all hover:-translate-y-0.5 hover:border-[#e08a1f] ${form.subject === subject ? "border-[#b45f10] ring-2 ring-[#e08a1f]/30" : "border-[#E6DFC9]"}`}
                   >
-                    <span className="grid h-9 w-9 place-items-center rounded-xl bg-[#12213F] text-[#E6C26A]"><Icon size={18} stroke={1.6} /></span>
+                    <span className="grid h-9 w-9 place-items-center rounded-xl bg-[#12213F] text-[#f2b04a]"><Icon size={18} stroke={1.6} /></span>
                     <span className="mt-3 block text-[14px] font-semibold">{title}</span>
                     <span className="mt-0.5 block text-[12.5px] text-[#5A6275]">{text}</span>
                   </button>
                 ))}
               </div>
               <p className="mt-5 text-[13px] text-[#5A6275]">
-                Looking for quick answers? Visit the <Link href="/faqs" className="font-semibold text-[#A8741F] underline underline-offset-4">FAQs</Link>.
+                Looking for quick answers? Visit the <Link href="/faqs" className="font-semibold text-[#b45f10] underline underline-offset-4">FAQs</Link>.
               </p>
             </section>
           </div>

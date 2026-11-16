@@ -4,16 +4,16 @@
 @media (min-width: 640px) { .mwp-shop-wrap { padding-inline: 32px; } }
 
 .mwp-shop-hero { position: relative; overflow: hidden; background: linear-gradient(135deg, #0b1530 0%, #12213f 55%, #1b2d52 100%); color: #fff; padding: 44px 0 40px; }
-.mwp-shop-hero::before { content: ""; position: absolute; right: -90px; top: -110px; width: 340px; height: 340px; border-radius: 50%; background: radial-gradient(circle, #d4a43744, transparent 70%); }
-.mwp-shop-hero::after { content: ""; position: absolute; left: 18%; bottom: -150px; width: 300px; height: 300px; border-radius: 50%; background: radial-gradient(circle, #b3001b33, transparent 70%); }
+.mwp-shop-hero::before { content: ""; position: absolute; right: -90px; top: -110px; width: 340px; height: 340px; border-radius: 50%; background: radial-gradient(circle, #e08a1f44, transparent 70%); }
+.mwp-shop-hero::after { content: ""; position: absolute; left: 18%; bottom: -150px; width: 300px; height: 300px; border-radius: 50%; background: radial-gradient(circle, #a81f2433, transparent 70%); }
 .mwp-shop-hero > * { position: relative; z-index: 1; }
-.mwp-shop-kicker { font-size: 11px; font-weight: 600; letter-spacing: .32em; text-transform: uppercase; color: #e6c26a; }
-.mwp-shop-kicker.dark { color: #a8741f; }
+.mwp-shop-kicker { font-size: 11px; font-weight: 600; letter-spacing: .32em; text-transform: uppercase; color: #f2b04a; }
+.mwp-shop-kicker.dark { color: #b45f10; }
 .mwp-shop-hero h1 { margin-top: 12px; max-width: 720px; font-size: clamp(30px, 4.6vw, 52px); line-height: 1.06; letter-spacing: -.035em; font-weight: 600; color: #fff; }
 .mwp-shop-lead { margin-top: 14px; max-width: 600px; font-size: 16px; line-height: 1.65; color: #cdd4e6; }
 .mwp-shop-trust { display: flex; flex-wrap: wrap; gap: 10px; margin: 24px 0 0; padding: 0; list-style: none; }
 .mwp-shop-trust li { display: inline-flex; align-items: center; gap: 8px; padding: 8px 14px; border-radius: 999px; border: 1px solid #ffffff26; background: #ffffff14; color: #e3e7f2; font-size: 12.5px; }
-.mwp-shop-trust svg { color: #e6c26a; }
+.mwp-shop-trust svg { color: #f2b04a; }
 
 .mwp-shop-toolbar { position: sticky; top: 104px; z-index: 30; background: #faf8f2ee; backdrop-filter: blur(10px); border-bottom: 1px solid #e6dfc9; }
 .mwp-shop-toolbar-inner { display: flex; flex-direction: column; gap: 12px; padding-block: 12px; }
@@ -22,7 +22,7 @@
 .mwp-shop-pills::-webkit-scrollbar { display: none; }
 .mwp-shop-pills button { flex-shrink: 0; display: inline-flex; align-items: center; gap: 8px; min-height: 42px; padding: 0 16px; border: 1px solid #ddd6c0; border-radius: 999px; background: #fff; color: #26314d; font-size: 13.5px; font-weight: 500; transition: all .2s; }
 .mwp-shop-pills button span { display: inline-grid; place-items: center; min-width: 22px; height: 22px; padding: 0 6px; border-radius: 999px; background: #f3eedf; color: #5a6275; font-size: 11.5px; }
-.mwp-shop-pills button:hover { border-color: #a8741f; color: #a8741f; }
+.mwp-shop-pills button:hover { border-color: #b45f10; color: #b45f10; }
 .mwp-shop-pills button[aria-pressed="true"] { background: #12213f; border-color: #12213f; color: #fff; box-shadow: 0 10px 20px -14px #12213f; }
 .mwp-shop-pills button[aria-pressed="true"] span { background: #ffffff26; color: #fff; }
 .mwp-shop-controls { display: flex; gap: 10px; }
@@ -34,29 +34,34 @@
 .mwp-shop-search button { display: grid; place-items: center; width: 26px; height: 26px; border-radius: 50%; color: #5a6275; }
 .mwp-shop-search button:hover { background: #f3eedf; color: #12213f; }
 .mwp-shop-sort select { border: 0; outline: 0; background: transparent; color: #12213f; font-size: 14px; padding-right: 4px; cursor: pointer; }
-@media (min-width: 900px) { .mwp-shop-search { width: 260px; flex: none; } }
+@media (min-width: 900px) {
+  .mwp-shop-search { width: 220px; flex: none; }
+  /* desktop: category pills wrap onto a second line instead of being cut off; search and sort stay fully visible */
+  .mwp-shop-pills { flex: 1; min-width: 0; flex-wrap: wrap; overflow: visible; }
+  .mwp-shop-controls { flex-shrink: 0; }
+}
 
 .mwp-shop-body { padding-block: 26px 40px; }
 .mwp-shop-meta { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 18px; font-size: 14px; color: #4a5470; }
 .mwp-shop-meta strong { color: #12213f; }
 .mwp-shop-meta button { display: inline-flex; align-items: center; gap: 6px; min-height: 36px; padding: 0 14px; border-radius: 999px; border: 1px solid #ddd6c0; background: #fff; font-size: 12.5px; color: #12213f; }
-.mwp-shop-meta button:hover { border-color: #b3001b; color: #b3001b; }
+.mwp-shop-meta button:hover { border-color: #a81f24; color: #a81f24; }
 
 .mwp-shop-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
 @media (min-width: 640px) { .mwp-shop-grid { gap: 20px; } }
 @media (min-width: 900px) { .mwp-shop-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
 @media (min-width: 1200px) { .mwp-shop-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
 
-.mwp-shop-empty { display: flex; flex-direction: column; align-items: center; gap: 8px; padding: 56px 20px; border: 1px dashed #d9d3bf; border-radius: 24px; background: #fff; text-align: center; color: #a8741f; }
+.mwp-shop-empty { display: flex; flex-direction: column; align-items: center; gap: 8px; padding: 56px 20px; border: 1px dashed #d9d3bf; border-radius: 24px; background: #fff; text-align: center; color: #b45f10; }
 .mwp-shop-empty h2 { font-size: 22px; color: #12213f; }
 .mwp-shop-empty p { max-width: 360px; font-size: 14px; color: #5a6275; }
 .mwp-shop-empty button { margin-top: 10px; min-height: 46px; padding: 0 26px; border-radius: 999px; background: #12213f; color: #fff; font-size: 14px; font-weight: 600; }
-.mwp-shop-empty button:hover { background: #b3001b; }
+.mwp-shop-empty button:hover { background: #a81f24; }
 
 .mwp-shop-pagination { display: flex; align-items: center; justify-content: center; gap: 10px; margin-top: 36px; flex-wrap: wrap; }
 .mwp-shop-pagination ul { display: flex; gap: 6px; list-style: none; margin: 0; padding: 0; }
 .mwp-shop-pagination .num, .mwp-shop-pagination .btn { display: inline-flex; align-items: center; justify-content: center; gap: 6px; min-width: 42px; min-height: 42px; padding: 0 14px; border: 1px solid #ddd6c0; border-radius: 999px; background: #fff; color: #12213f; font-size: 13px; }
-.mwp-shop-pagination .num:hover, .mwp-shop-pagination .btn:not(.is-disabled):hover { border-color: #a8741f; color: #a8741f; }
+.mwp-shop-pagination .num:hover, .mwp-shop-pagination .btn:not(.is-disabled):hover { border-color: #b45f10; color: #b45f10; }
 .mwp-shop-pagination .num.is-current { background: #12213f; border-color: #12213f; color: #fff; }
 .mwp-shop-pagination .is-disabled { opacity: .4; }
 .mwp-shop-pagination .gap { min-width: 22px; text-align: center; color: #6b7388; }
@@ -69,8 +74,8 @@
 .mwp-shop-help-actions { display: flex; flex-wrap: wrap; gap: 10px; }
 .mwp-shop-help-actions a { display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-height: 48px; padding: 0 26px; border-radius: 999px; font-size: 14px; font-weight: 600; transition: all .2s; }
 .mwp-shop-help-actions .primary { background: #12213f; color: #fff; }
-.mwp-shop-help-actions .primary:hover { background: #b3001b; }
+.mwp-shop-help-actions .primary:hover { background: #a81f24; }
 .mwp-shop-help-actions .secondary { border: 1px solid #12213f33; color: #12213f; background: #fff; }
-.mwp-shop-help-actions .secondary:hover { border-color: #a8741f; color: #a8741f; }
+.mwp-shop-help-actions .secondary:hover { border-color: #b45f10; color: #b45f10; }
 
 @media (min-width: 1024px) { .mwp-shop-toolbar { top: 112px; } }

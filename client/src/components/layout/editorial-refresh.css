@@ -169,6 +169,6 @@
 }
 
 /* University: logo gold accent */
-.mwp-university { --editorial-accent: #A8741F; --editorial-soft: #fbf5e6; }
+.mwp-university { --editorial-accent: #b45f10; --editorial-soft: #fbf5e6; }
 .mwp-university .mwp-chip[aria-pressed="true"] { background: #12213F; border-color: #12213F; color: #fff; }
-.mwp-university .mwp-article-link:hover h3 { color: #A8741F; }
+.mwp-university .mwp-article-link:hover h3 { color: #b45f10; }

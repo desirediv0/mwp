@@ -21,7 +21,7 @@
 .mwp-compare-product-image { border-radius: 18px; }
 .mwp-compare-product button[aria-label^='Remove'] { width: 32px; height: 32px; top: -8px; right: -8px; color: #737373; }
 .mwp-compare-product button:not([aria-label]) { min-height: 44px; text-transform: none; letter-spacing: 0; border-radius: 11px; font-size: 12px; }
-.mwp-compare-product button:not([aria-label]):hover { background: #B3001B; }
+.mwp-compare-product button:not([aria-label]):hover { background: #a81f24; }
 .mwp-compare-table tr[id] { scroll-margin-top: 140px; }
 .mwp-compare-table tr[id] td { background: #f5f1e9; color: #20335f; text-transform: none; letter-spacing: .02em; font-size: 13px; padding: 13px 18px; }
 .mwp-compare-row:hover td { background: #fdfcf9; }
@@ -33,7 +33,7 @@
 .mwp-compare-welcome h1 span { color: #243a6c; }
 .mwp-compare-welcome p:not(.mwp-compare-eyebrow) { max-width: 420px; font-size: 15px; line-height: 1.75; color: #2e4989; }
 .mwp-compare-primary { display: inline-flex; min-height: 48px; align-items: center; justify-content: center; gap: 20px; background: #12213F; border-radius: 99px; padding: 12px 22px; color: #fff; font-size: 13px; margin-top: 26px; }
-.mwp-compare-primary:hover { background: #B3001B; }
+.mwp-compare-primary:hover { background: #a81f24; }
 .mwp-compare-note { display: block; font-size: 11px; color: #324f95; margin-top: 12px; }
 .mwp-compare-welcome-bottles { display: flex; gap: 12px; justify-content: center; align-items: center; padding-top: 16px; }
 .mwp-compare-welcome-bottles > div { display: flex; justify-content: center; align-items: center; flex: 1; min-width: 0; border-radius: 70px; height: 290px; border: 1px solid #ffffffb3; box-shadow: 0 15px 25px -22px #7d8598; }

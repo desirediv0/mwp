@@ -187,7 +187,7 @@ export const fireConfetti = {
             "#2563eb",
             "#10b981",
             "#f59e0b",
-            "#c9a227",
+            "#d9822b",
             "#8b5cf6",
             "#ec4899",
         ];
@@ -220,7 +220,7 @@ export const fireConfetti = {
             "#2563eb",
             "#10b981",
             "#f59e0b",
-            "#c9a227",
+            "#d9822b",
             "#8b5cf6",
             "#ec4899",
         ];

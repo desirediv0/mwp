@@ -125,7 +125,7 @@ export default function OrderDetailPage() {
               })}
               {order.orderBundles?.map((b) => (
                 <div key={b.id} className="mwp-item">
-                  <div className="mwp-thumb" style={{ display: "grid", placeItems: "center", color: "#a8741f" }}><IconShoppingBag size={24} stroke={1.4} /></div>
+                  <div className="mwp-thumb" style={{ display: "grid", placeItems: "center", color: "#b45f10" }}><IconShoppingBag size={24} stroke={1.4} /></div>
                   <div className="mwp-item-body">
                     <strong>{b.bundleName}</strong>
                     <p className="mwp-meta">{(b.selectedProducts || []).map((p) => p.name).join(", ")}</p>
@@ -156,7 +156,7 @@ export default function OrderDetailPage() {
                   <ul style={{ marginTop: 16, display: "grid", gap: 10, listStyle: "none", padding: 0 }}>
                     {order.tracking.updates.map((u, i) => (
                       <li key={i} className="mwp-meta" style={{ display: "flex", gap: 10 }}>
-                        <span style={{ width: 8, height: 8, marginTop: 6, borderRadius: "50%", background: "#a8741f", flex: "none" }} />
+                        <span style={{ width: 8, height: 8, marginTop: 6, borderRadius: "50%", background: "#b45f10", flex: "none" }} />
                         <span><b style={{ color: "#12213f" }}>{u.status}</b><br />{formatDate(u.createdAt)}</span>
                       </li>
                     ))}

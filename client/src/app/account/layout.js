@@ -28,7 +28,7 @@ export default function AccountLayout({ children }) {
   if (loading) {
     return (
       <div className="min-h-[60vh] flex items-center justify-center bg-[#FAF8F2]">
-        <IconLoader2 className="h-6 w-6 animate-spin text-[#A8741F]" stroke={1.5} />
+        <IconLoader2 className="h-6 w-6 animate-spin text-[#b45f10]" stroke={1.5} />
       </div>
     );
   }

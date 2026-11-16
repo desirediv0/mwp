@@ -65,9 +65,9 @@ export default function FAQsPage() {
         </nav>
 
         <header className="mt-8">
-          <p className="text-[11px] font-bold uppercase tracking-[0.32em] text-[#8f6f3a] sm:text-xs">A little help, right here</p>
+          <p className="text-[11px] font-bold uppercase tracking-[0.32em] text-[#8a4a14] sm:text-xs">A little help, right here</p>
           <h1 className="mt-4 text-5xl font-bold leading-[1.02] tracking-tight sm:text-6xl lg:text-7xl">
-            Frequently asked <span className="text-[#8f6f3a]">questions.</span>
+            Frequently asked <span className="text-[#8a4a14]">questions.</span>
           </h1>
           <p className="mt-6 max-w-2xl text-lg leading-relaxed text-neutral-600 sm:text-xl">
             Quick answers about our products, ordering, shipping and returns.
@@ -123,7 +123,7 @@ export default function FAQsPage() {
                         <IconPlus
                           aria-hidden="true"
                           size={22}
-                          className={`shrink-0 text-[#8f6f3a] transition-transform duration-200 ${open ? "rotate-45" : ""}`}
+                          className={`shrink-0 text-[#8a4a14] transition-transform duration-200 ${open ? "rotate-45" : ""}`}
                         />
                       </button>
                     </h2>
@@ -148,7 +148,7 @@ export default function FAQsPage() {
                     setSearchQuery("");
                     setActiveCategory("all");
                   }}
-                  className="mt-3 text-[16px] font-semibold text-[#8f6f3a] underline underline-offset-4"
+                  className="mt-3 text-[16px] font-semibold text-[#8a4a14] underline underline-offset-4"
                 >
                   View all questions
                 </button>

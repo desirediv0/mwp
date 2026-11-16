@@ -86,7 +86,7 @@ export default function AddressesPage() {
                 <div className="mwp-addr-actions">
                   {confirmId === a.id ? (
                     <>
-                      <button className="mwp-btn sm" style={{ background: "#b3001b" }} disabled={busyId === a.id} onClick={() => remove(a.id)}>Yes, delete</button>
+                      <button className="mwp-btn sm" style={{ background: "#a81f24" }} disabled={busyId === a.id} onClick={() => remove(a.id)}>Yes, delete</button>
                       <button className="mwp-btn ghost sm" onClick={() => setConfirmId(null)}>Keep it</button>
                     </>
                   ) : (

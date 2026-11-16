@@ -59,7 +59,7 @@ export default function ManageClient() {
             </>
           ) : info ? (
             <>
-              <div style={{ color: "#a8741f" }}><IconRepeat size={30} stroke={1.4} /></div>
+              <div style={{ color: "#b45f10" }}><IconRepeat size={30} stroke={1.4} /></div>
               <h1 className="mwp-set-title" style={{ fontSize: 24 }}>Cancel your subscription?</h1>
               <p className="mwp-set-sub">
                 <b>{info.product}</b>{info.quantity > 1 ? ` x ${info.quantity}` : ""}. Your next charge is on {fmt(info.nextBillingDate)}. If you cancel, you will not be charged again. Orders already placed are not affected. No fees.
@@ -73,7 +73,7 @@ export default function ManageClient() {
                   <textarea value={note} onChange={(e) => setNote(e.target.value)} maxLength={200} rows={3} />
                 </label>
               )}
-              <button className="mwp-btn block" style={{ background: "#b3001b" }} onClick={cancel} disabled={busy}>
+              <button className="mwp-btn block" style={{ background: "#a81f24" }} onClick={cancel} disabled={busy}>
                 {busy && <IconLoader2 size={16} className="animate-spin" />} Yes, cancel my subscription
               </button>
               <Link href="/account/subscriptions" className="mwp-btn ghost block">Keep it / manage in my account</Link>

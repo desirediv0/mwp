@@ -1,0 +1,132 @@
+[
+  {
+    "id": "beea0d78-d7c7-4503-89b1-4ce49bdaf495",
+    "question": "How do I place an order?",
+    "answer": "Choose your formula and pack size, add it to your cart and continue to checkout. Prices are in US dollars, and your shipping options and final total are shown before you pay.",
+    "category": "Orders & Shipping",
+    "order": 0,
+    "isPublished": true,
+    "createdAt": "2026-10-12T08:06:27.129Z",
+    "updatedAt": "2026-10-12T08:06:27.129Z"
+  },
+  {
+    "id": "1bed3cce-55d6-48b2-a615-77bf9b9c1ddd",
+    "question": "How long until my order ships?",
+    "answer": "Orders are processed within 24–48 hours, excluding weekends and holidays. During busy launches or promotions, dispatch can take up to 72 hours.",
+    "category": "Orders & Shipping",
+    "order": 1,
+    "isPublished": true,
+    "createdAt": "2026-10-12T08:06:27.201Z",
+    "updatedAt": "2026-10-12T08:06:27.201Z"
+  },
+  {
+    "id": "8c9dba68-9d47-41b3-b3b1-5894c0081185",
+    "question": "How can I track my order?",
+    "answer": "When your order ships we email you the carrier, your tracking number and a tracking link. You can also see your order status any time from Orders in your account.",
+    "category": "Orders & Shipping",
+    "order": 2,
+    "isPublished": true,
+    "createdAt": "2026-10-12T08:06:27.267Z",
+    "updatedAt": "2026-10-12T08:06:27.267Z"
+  },
+  {
+    "id": "49bdd96f-5723-42bc-b405-a87de4c7145b",
+    "question": "How much does shipping cost and how long does delivery take?",
+    "answer": "Delivery options, estimated delivery times and any shipping charge are calculated for your address and shown at checkout before you pay.",
+    "category": "Orders & Shipping",
+    "order": 3,
+    "isPublished": true,
+    "createdAt": "2026-10-12T08:06:27.332Z",
+    "updatedAt": "2026-10-12T08:06:27.332Z"
+  },
+  {
+    "id": "c8e93f92-fcba-4f2e-8316-bf265987e5bc",
+    "question": "How do I pay?",
+    "answer": "Payments are processed securely by Stripe at checkout. Your card details go straight to Stripe, and MWP never stores your full card number.",
+    "category": "Orders & Shipping",
+    "order": 4,
+    "isPublished": true,
+    "createdAt": "2026-10-12T08:06:27.397Z",
+    "updatedAt": "2026-10-12T08:06:27.397Z"
+  },
+  {
+    "id": "433621ab-f266-410d-a13e-910d4d99d738",
+    "question": "Where can I find ingredient information?",
+    "answer": "Every product page lists each ingredient with its dose and origin under “Inside the formula”. You can also open the ingredient details from the product page for a closer look.",
+    "category": "Products & Ingredients",
+    "order": 5,
+    "isPublished": true,
+    "createdAt": "2026-10-12T08:06:27.464Z",
+    "updatedAt": "2026-10-12T08:06:27.464Z"
+  },
+  {
+    "id": "97315927-d84f-43c6-90fd-064d4383cbe3",
+    "question": "How do I know my product is genuine?",
+    "answer": "Scan the QR code on your MWP pack to open its verification page and confirm the product.",
+    "category": "Products & Ingredients",
+    "order": 6,
+    "isPublished": true,
+    "createdAt": "2026-10-12T08:06:27.531Z",
+    "updatedAt": "2026-10-12T08:06:27.531Z"
+  },
+  {
+    "id": "8909a13d-5436-4deb-9cfe-a0c0753bc9ba",
+    "question": "Are MWP supplements third-party lab tested?",
+    "answer": "Yes. MWP formulas are third-party lab tested. Available testing and certification documents are published on our Certificate Wall.",
+    "category": "Products & Ingredients",
+    "order": 7,
+    "isPublished": true,
+    "createdAt": "2026-10-12T08:06:27.596Z",
+    "updatedAt": "2026-10-12T08:06:27.596Z"
+  },
+  {
+    "id": "85250dca-8219-48a0-839e-3ae1fb842734",
+    "question": "Should I talk to a doctor before taking MWP supplements?",
+    "answer": "Always follow the directions on the label. Talk to a healthcare professional first if you are pregnant or nursing, take medication or have a medical condition. These products are dietary supplements and are not intended to diagnose, treat, cure or prevent any disease.",
+    "category": "Products & Ingredients",
+    "order": 8,
+    "isPublished": true,
+    "createdAt": "2026-10-12T08:06:27.662Z",
+    "updatedAt": "2026-10-12T08:06:27.662Z"
+  },
+  {
+    "id": "6e0a9c7f-aaf1-432b-a2a2-9a623c53ef82",
+    "question": "What if my order arrives damaged or incorrect?",
+    "answer": "Record an unboxing video before opening the parcel and email it with your order number to support@mwpsupplements.com within 48 hours of delivery. If approved, we send a replacement as a priority.",
+    "category": "Returns & Support",
+    "order": 9,
+    "isPublished": true,
+    "createdAt": "2026-10-12T08:06:27.729Z",
+    "updatedAt": "2026-10-12T08:06:27.729Z"
+  },
+  {
+    "id": "cd723fb9-c85a-4d10-8ffe-a120f20e17f5",
+    "question": "Can I return an opened product?",
+    "answer": "For health and safety reasons, opened, unsealed or partially used supplement containers cannot be returned. See our Returns & Replacement Policy for the full details.",
+    "category": "Returns & Support",
+    "order": 10,
+    "isPublished": true,
+    "createdAt": "2026-10-12T08:06:27.794Z",
+    "updatedAt": "2026-10-12T08:06:27.794Z"
+  },
+  {
+    "id": "e940313b-97fa-417f-8c5b-dc777fc95ab6",
+    "question": "Can I cancel my order?",
+    "answer": "Yes, free of charge, as long as it has not been packed and shipped. Email support@mwpsupplements.com with your order number as soon as possible.",
+    "category": "Returns & Support",
+    "order": 11,
+    "isPublished": true,
+    "createdAt": "2026-10-12T08:06:27.860Z",
+    "updatedAt": "2026-10-12T08:06:27.860Z"
+  },
+  {
+    "id": "973c303a-c407-4884-bd15-b0cc5c191de1",
+    "question": "How do I contact support?",
+    "answer": "Email support@mwpsupplements.com or call 800-814-4477, Monday–Friday, 9:00 AM–6:00 PM. You can also use the contact form on our Contact page.",
+    "category": "Returns & Support",
+    "order": 12,
+    "isPublished": true,
+    "createdAt": "2026-10-12T08:06:27.925Z",
+    "updatedAt": "2026-11-16T08:33:27.768Z"
+  }
+]

@@ -42,7 +42,7 @@ export default function ResendVerificationPage() {
       side={{ headline: "Lost your code?", text: "No problem. We will send a new one and you can finish verifying in a minute." }}
       backHref="/auth?tab=login"
       backLabel="Back to sign in"
-      footer={<>Have a code already? <Link href="/verify-otp" className="font-semibold text-[#12213F] underline underline-offset-4 hover:text-[#B3001B]">Enter it here</Link></>}
+      footer={<>Have a code already? <Link href="/verify-otp" className="font-semibold text-[#12213F] underline underline-offset-4 hover:text-[#a81f24]">Enter it here</Link></>}
     >
       {sent ? (
         <div className="space-y-5">

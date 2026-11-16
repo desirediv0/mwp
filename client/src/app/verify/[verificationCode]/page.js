@@ -63,8 +63,8 @@ const STATUS = {
 
 const TONES = {
   ok: { bg: "#EAF6EE", border: "#BFE3CC", fg: "#1F6B3A", chip: "#1F6B3A" },
-  warn: { bg: "#FBF3DF", border: "#EADFC4", fg: "#7A4C05", chip: "#A8741F" },
-  bad: { bg: "#FBE8EA", border: "#F0C9CE", fg: "#B3001B", chip: "#B3001B" },
+  warn: { bg: "#FBF3DF", border: "#EADFC4", fg: "#7A4C05", chip: "#b45f10" },
+  bad: { bg: "#FBE8EA", border: "#F0C9CE", fg: "#a81f24", chip: "#a81f24" },
 };
 
 function Shell({ children }) {
@@ -95,9 +95,9 @@ function DocButton({ href, title, sub, icon: Icon }) {
       href={href}
       target="_blank"
       rel="noopener noreferrer"
-      className="flex items-center gap-4 rounded-2xl border border-[#E6DFC9] bg-[#FAF8F2] p-4 transition-colors hover:border-[#A8741F] hover:bg-white"
+      className="flex items-center gap-4 rounded-2xl border border-[#E6DFC9] bg-[#FAF8F2] p-4 transition-colors hover:border-[#b45f10] hover:bg-white"
     >
-      <span className="grid h-11 w-11 shrink-0 place-items-center rounded-xl bg-white text-[#A8741F] ring-1 ring-[#E6DFC9]">
+      <span className="grid h-11 w-11 shrink-0 place-items-center rounded-xl bg-white text-[#b45f10] ring-1 ring-[#E6DFC9]">
         <Icon size={22} stroke={1.5} />
       </span>
       <span className="min-w-0 flex-1">
@@ -119,7 +119,7 @@ function Ingredient({ ing }) {
       {ing.description && <p className="mt-1.5 text-[14px] leading-relaxed text-[#4A5470]">{ing.description}</p>}
       {ing.origin && (
         <p className="mt-2.5 inline-flex items-center gap-1.5 text-[12.5px] font-semibold text-[#5A6275]">
-          <IconMapPin size={14} className="text-[#A8741F]" /> Sourced from {ing.origin}
+          <IconMapPin size={14} className="text-[#b45f10]" /> Sourced from {ing.origin}
         </p>
       )}
     </li>
@@ -170,10 +170,10 @@ export default function VerifyPage() {
     return (
       <Shell>
         <Card className="text-center">
-          <IconAlertTriangle className="mx-auto mb-3 h-10 w-10 text-[#A8741F]" />
+          <IconAlertTriangle className="mx-auto mb-3 h-10 w-10 text-[#b45f10]" />
           <h1 className="text-2xl font-semibold">We could not check this code</h1>
           <p className="mx-auto mt-2 max-w-sm text-[15px] text-[#4A5470]">The verification service is not reachable right now. Check your connection and try again.</p>
-          <button onClick={load} className="mt-5 inline-flex min-h-12 items-center gap-2 rounded-full bg-[#12213F] px-6 text-[14px] font-semibold text-white hover:bg-[#B3001B]">
+          <button onClick={load} className="mt-5 inline-flex min-h-12 items-center gap-2 rounded-full bg-[#12213F] px-6 text-[14px] font-semibold text-white hover:bg-[#a81f24]">
             <IconRefresh size={17} /> Try again
           </button>
         </Card>
@@ -186,13 +186,13 @@ export default function VerifyPage() {
       <Shell>
         <Card className="text-center">
           <span className="mx-auto mb-4 grid h-16 w-16 place-items-center rounded-full bg-[#FBE8EA]">
-            <IconCircleX className="h-8 w-8 text-[#B3001B]" />
+            <IconCircleX className="h-8 w-8 text-[#a81f24]" />
           </span>
           <h1 className="text-2xl font-semibold">We could not find this code</h1>
           <p className="mx-auto mt-2 max-w-sm text-[15px] text-[#4A5470]">
             This code is not in our records. If you bought this product, it may not be a genuine MWP product. Please contact us and send us a photo of the bottle.
           </p>
-          <Link href="/contact" className="mt-5 inline-flex min-h-12 items-center gap-2 rounded-full bg-[#12213F] px-6 text-[14px] font-semibold text-white hover:bg-[#B3001B]">
+          <Link href="/contact" className="mt-5 inline-flex min-h-12 items-center gap-2 rounded-full bg-[#12213F] px-6 text-[14px] font-semibold text-white hover:bg-[#a81f24]">
             Contact us <IconArrowRight size={16} />
           </Link>
         </Card>
@@ -232,7 +232,7 @@ export default function VerifyPage() {
             <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-[#5A6275]">Verification code</p>
             <p className="font-mono text-[17px] font-bold tracking-wider">{data.verificationCode}</p>
           </div>
-          <button onClick={copy} className="inline-flex min-h-10 items-center gap-1.5 rounded-full border border-[#12213F]/20 bg-white px-4 text-[13px] font-semibold hover:border-[#A8741F]">
+          <button onClick={copy} className="inline-flex min-h-10 items-center gap-1.5 rounded-full border border-[#12213F]/20 bg-white px-4 text-[13px] font-semibold hover:border-[#b45f10]">
             {copied ? <IconCheck size={15} className="text-[#1F6B3A]" /> : <IconCopy size={15} />} {copied ? "Copied" : "Copy"}
           </button>
         </div>
@@ -251,23 +251,23 @@ export default function VerifyPage() {
         </div>
         <div className="p-5 sm:p-7">
           <h2 className="text-[28px] font-bold leading-tight tracking-tight sm:text-[34px]">{data.productName}</h2>
-          {data.tagline && <p className="mt-1.5 text-[16px] font-semibold text-[#A8741F]">{data.tagline}</p>}
+          {data.tagline && <p className="mt-1.5 text-[16px] font-semibold text-[#b45f10]">{data.tagline}</p>}
           {data.shortDescription && <p className="mt-3 text-[15.5px] leading-relaxed text-[#26314D]">{data.shortDescription}</p>}
 
           {data.features?.length > 0 && (
             <ul className="mt-4 flex flex-wrap gap-2">
               {data.features.map((f, i) => (
-                <li key={i} className="rounded-full border border-[#D4A437]/60 bg-[#FBF5E6] px-3.5 py-1.5 text-[13px] font-semibold text-[#7A4C05]">{f}</li>
+                <li key={i} className="rounded-full border border-[#e08a1f]/60 bg-[#FBF5E6] px-3.5 py-1.5 text-[13px] font-semibold text-[#7A4C05]">{f}</li>
               ))}
             </ul>
           )}
 
           {data.productSlug && (
             <div className="mt-5 flex flex-col gap-2.5 sm:flex-row">
-              <Link href={`/products/${data.productSlug}`} className="inline-flex min-h-12 items-center justify-center gap-2 rounded-full bg-[#12213F] px-6 text-[14.5px] font-semibold text-white transition-colors hover:bg-[#B3001B]">
+              <Link href={`/products/${data.productSlug}`} className="inline-flex min-h-12 items-center justify-center gap-2 rounded-full bg-[#12213F] px-6 text-[14.5px] font-semibold text-white transition-colors hover:bg-[#a81f24]">
                 Shop {data.productName} <IconArrowRight size={17} />
               </Link>
-              <Link href="/products" className="inline-flex min-h-12 items-center justify-center rounded-full border border-[#12213F]/20 px-6 text-[14.5px] font-semibold hover:border-[#A8741F] hover:text-[#A8741F]">
+              <Link href="/products" className="inline-flex min-h-12 items-center justify-center rounded-full border border-[#12213F]/20 px-6 text-[14.5px] font-semibold hover:border-[#b45f10] hover:text-[#b45f10]">
                 See all formulas
               </Link>
             </div>
@@ -295,7 +295,7 @@ export default function VerifyPage() {
         )}
         {badgeImg && (
           <div className="mt-4 flex items-center gap-3">
-            <span className="relative h-14 w-14 overflow-hidden rounded-full ring-2 ring-[#D4A437]">
+            <span className="relative h-14 w-14 overflow-hidden rounded-full ring-2 ring-[#e08a1f]">
               <Image src={badgeImg} alt={data.badgeType || "Quality badge"} fill sizes="56px" className="object-cover" />
             </span>
             {data.badgeType && <span className="text-[14px] font-semibold">{data.badgeType}</span>}
@@ -318,7 +318,7 @@ export default function VerifyPage() {
       {/* 5. What is inside */}
       {ingredients.length > 0 && (
         <Card className="mt-4">
-          <h2 className="flex items-center gap-2 text-[20px] font-bold"><IconLeaf size={22} className="text-[#A8741F]" /> What&apos;s inside</h2>
+          <h2 className="flex items-center gap-2 text-[20px] font-bold"><IconLeaf size={22} className="text-[#b45f10]" /> What&apos;s inside</h2>
           <p className="mt-1 text-[14px] leading-relaxed text-[#5A6275]">Each ingredient, the amount in a serving, and where it comes from.</p>
           <ul className="mt-4 grid gap-3">
             {ingredients.map((ing, i) => <Ingredient key={i} ing={ing} />)}

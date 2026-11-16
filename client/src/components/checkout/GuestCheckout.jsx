@@ -53,7 +53,7 @@ export default function GuestCheckout({ signInRedirect = "/checkout" }) {
   return (
     <div className="min-h-[70vh] bg-[#FAF8F2] px-4 py-14">
       <div className="mx-auto w-full max-w-md rounded-3xl border border-[#E6DFC9] bg-white p-6 shadow-[0_30px_60px_-44px_#12213F88] sm:p-8">
-        <p className="text-[11px] font-semibold uppercase tracking-[0.3em] text-[#A8741F]">Checkout</p>
+        <p className="text-[11px] font-semibold uppercase tracking-[0.3em] text-[#b45f10]">Checkout</p>
         <h1 className="mt-2 text-2xl font-semibold tracking-tight text-[#12213F]">
           {step === "details" ? "Who is this order for?" : "Check your email"}
         </h1>
@@ -63,10 +63,10 @@ export default function GuestCheckout({ signInRedirect = "/checkout" }) {
             : `We sent a 6 digit code to ${form.email}. This email already has an account, so we just need to confirm it is you.`}
         </p>
 
-        {info && !error && <p role="status" className="mt-4 rounded-xl border border-[#A8741F]/30 bg-[#FBF5E6] px-4 py-3 text-sm text-[#12213F]">{info}</p>}
+        {info && !error && <p role="status" className="mt-4 rounded-xl border border-[#b45f10]/30 bg-[#FBF5E6] px-4 py-3 text-sm text-[#12213F]">{info}</p>}
 
         {error && (
-          <p role="alert" className="mt-4 rounded-xl border border-[#B3001B]/30 bg-[#B3001B]/5 px-4 py-3 text-sm text-[#B3001B]">
+          <p role="alert" className="mt-4 rounded-xl border border-[#a81f24]/30 bg-[#a81f24]/5 px-4 py-3 text-sm text-[#a81f24]">
             {error}
           </p>
         )}
@@ -76,7 +76,7 @@ export default function GuestCheckout({ signInRedirect = "/checkout" }) {
             <input className={inputCls} placeholder="Full name" autoComplete="name" value={form.name} onChange={set("name")} />
             <input className={inputCls} type="email" placeholder="Email" autoComplete="email" required value={form.email} onChange={set("email")} />
             <input className={inputCls} type="tel" placeholder="US phone, e.g. (562) 524-3557" autoComplete="tel" value={form.phone} onChange={set("phone")} />
-            <button disabled={busy} className="flex min-h-[50px] w-full items-center justify-center gap-2 rounded-full bg-[#12213F] text-sm font-semibold text-white transition hover:bg-[#B3001B] disabled:opacity-60">
+            <button disabled={busy} className="flex min-h-[50px] w-full items-center justify-center gap-2 rounded-full bg-[#12213F] text-sm font-semibold text-white transition hover:bg-[#a81f24] disabled:opacity-60">
               {busy ? <Loader2 className="h-4 w-4 animate-spin" /> : null} Continue to checkout
             </button>
             <p className="text-center text-xs text-[#6B7388]">
@@ -98,7 +98,7 @@ export default function GuestCheckout({ signInRedirect = "/checkout" }) {
                 autoFocus
               />
             </div>
-            <button disabled={busy || code.length !== 6} className="flex min-h-[50px] w-full items-center justify-center gap-2 rounded-full bg-[#12213F] text-sm font-semibold text-white transition hover:bg-[#B3001B] disabled:opacity-60">
+            <button disabled={busy || code.length !== 6} className="flex min-h-[50px] w-full items-center justify-center gap-2 rounded-full bg-[#12213F] text-sm font-semibold text-white transition hover:bg-[#a81f24] disabled:opacity-60">
               {busy ? <Loader2 className="h-4 w-4 animate-spin" /> : null} Confirm and continue
             </button>
             <div className="flex justify-between text-xs text-[#6B7388]">
@@ -109,7 +109,7 @@ export default function GuestCheckout({ signInRedirect = "/checkout" }) {
         )}
 
         <p className="mt-5 flex items-center justify-center gap-2 text-xs text-[#6B7388]">
-          <ShieldCheck className="h-4 w-4 text-[#A8741F]" /> Secure payment with Stripe
+          <ShieldCheck className="h-4 w-4 text-[#b45f10]" /> Secure payment with Stripe
         </p>
       </div>
     </div>

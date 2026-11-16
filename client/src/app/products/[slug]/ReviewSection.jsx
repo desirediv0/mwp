@@ -108,8 +108,8 @@ export default function ReviewSection({ product }) {
             <button type="button" key={rating} onClick={() => handleRatingClick(rating)}>
               <IconStar
                 className="h-8 w-8 cursor-pointer transition-colors"
-                style={{ color: reviewForm.rating >= rating ? "#C9992F" : formErrors.rating ? "#fca5a5" : "#d1d5db" }}
-                fill={reviewForm.rating >= rating ? "#C9992F" : "none"}
+                style={{ color: reviewForm.rating >= rating ? "#d9822b" : formErrors.rating ? "#fca5a5" : "#d1d5db" }}
+                fill={reviewForm.rating >= rating ? "#d9822b" : "none"}
                 stroke={1.5}
               />
             </button>
@@ -173,7 +173,7 @@ export default function ReviewSection({ product }) {
               <h3 className="font-display text-lg" style={{ color: "#12213F" }}>Customer Reviews</h3>
               <div className="flex items-center">
                 <div className="flex mr-2">
-                  {[...Array(5)].map((_, i) => <IconStar key={i} className="h-4 w-4" style={{ color: i < Math.round(product.avgRating || 0) ? "#C9992F" : "#EAEAEA" }} fill={i < Math.round(product.avgRating || 0) ? "#C9992F" : "none"} stroke={0} />)}
+                  {[...Array(5)].map((_, i) => <IconStar key={i} className="h-4 w-4" style={{ color: i < Math.round(product.avgRating || 0) ? "#d9822b" : "#EAEAEA" }} fill={i < Math.round(product.avgRating || 0) ? "#d9822b" : "none"} stroke={0} />)}
                 </div>
                 <span className="text-[12px]" style={{ color: "#666666" }}>Based on {product.reviewCount} reviews</span>
               </div>
@@ -186,7 +186,7 @@ export default function ReviewSection({ product }) {
                     <div>
                       <p className="font-normal text-[14px]" style={{ color: "#12213F" }}>{review.user.name}<span className="ml-2 rounded-full bg-green-50 px-2 py-0.5 text-[10px] font-medium uppercase tracking-wider text-green-700">Verified purchase</span></p>
                       <div className="flex mt-1">
-                        {[...Array(5)].map((_, i) => <IconStar key={i} className="h-3.5 w-3.5" style={{ color: i < review.rating ? "#C9992F" : "#EAEAEA" }} fill={i < review.rating ? "#C9992F" : "none"} stroke={0} />)}
+                        {[...Array(5)].map((_, i) => <IconStar key={i} className="h-3.5 w-3.5" style={{ color: i < review.rating ? "#d9822b" : "#EAEAEA" }} fill={i < review.rating ? "#d9822b" : "none"} stroke={0} />)}
                       </div>
                     </div>
                     <span className="text-[12px]" style={{ color: "#666666" }}>{new Date(review.createdAt).toLocaleDateString()}</span>
@@ -197,7 +197,7 @@ export default function ReviewSection({ product }) {
 
                   {review.adminReply && (
                     <div className="mt-4 p-4" style={{ backgroundColor: "#FAFAFA", border: "1px solid #EAEAEA", borderRadius: "8px" }}>
-                      <p className="text-[11px] font-normal uppercase tracking-[0.15em]" style={{ color: "#C9992F" }}>Response from MWP SUPPLEMENTS:</p>
+                      <p className="text-[11px] font-normal uppercase tracking-[0.15em]" style={{ color: "#d9822b" }}>Response from MWP SUPPLEMENTS:</p>
                       <p className="mt-2 text-[13px] leading-relaxed font-light" style={{ color: "#666666" }}>{review.adminReply}</p>
                       {review.adminReplyDate && <p className="mt-2 text-[11px]" style={{ color: "#999999" }}>Replied on {new Date(review.adminReplyDate).toLocaleDateString()}</p>}
                     </div>
@@ -220,7 +220,7 @@ export default function ReviewSection({ product }) {
             ) : ReviewFormComponent()}
 
             {!canReview() && (
-              <div className="mt-4 p-3 flex items-center text-[12px]" style={{ backgroundColor: "#FAFAFA", border: "1px solid rgba(184,151,106,0.3)", color: "#C9992F", borderRadius: "8px" }}>
+              <div className="mt-4 p-3 flex items-center text-[12px]" style={{ backgroundColor: "#FAFAFA", border: "1px solid rgba(184,151,106,0.3)", color: "#d9822b", borderRadius: "8px" }}>
                 <IconAlertCircle className="h-4 w-4 mr-2 flex-shrink-0" stroke={1.5} />
                 You need to purchase this product to write a review
               </div>

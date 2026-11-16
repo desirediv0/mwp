@@ -1,0 +1,1323 @@
+{
+  "products": [
+    {
+      "id": "9acba3a5-0355-4d7b-80d4-efd1ffac3cd3",
+      "name": "RAPID BOOST",
+      "description": "<h2>Supports energy, focus and physical performance.*</h2><p>A men's formula with L-Arginine, Beet Root and Panax Ginseng, made to support energy, focus and physical performance.*</p>",
+      "slug": "rapid-boost",
+      "featured": true,
+      "productType": null,
+      "isActive": true,
+      "isDeleted": false,
+      "deletedAt": null,
+      "deletedBy": null,
+      "createdAt": "2026-09-21T11:38:56.529Z",
+      "updatedAt": "2026-11-16T08:33:26.038Z",
+      "hasVariants": true,
+      "primaryCategoryId": "8f0e7d34-6100-4c28-8579-dcbf1979168a",
+      "metaTitle": "RAPID BOOST | MWP Supplements",
+      "metaDescription": "Rapid Boost with L-Arginine, Beet Root and Panax Ginseng to support energy, focus and physical performance. 90 capsules.",
+      "keywords": "MWP Rapid Boost, men's supplement, energy, focus, physical performance, dietary supplement",
+      "tags": [
+        "Men's Performance"
+      ],
+      "topBrandIds": [],
+      "newBrandIds": [],
+      "hotBrandIds": [],
+      "ourProduct": true,
+      "visibility": "PUBLIC",
+      "gender": "UNISEX",
+      "fragranceNotes": null,
+      "feelings": null,
+      "occasions": null,
+      "behindThePerfume": null,
+      "shippingReturn": "Shipping availability and any charges are confirmed at checkout. Delivery estimates depend on your address. See our shipping and returns policies for details.",
+      "legalInfo": "<p>Manufactured in a cGMP-compliant facility registered with the U.S. FDA. Third-party lab tested. Vegan. Non-GMO. Made in the USA with globally sourced ingredients.</p><p>These statements have not been evaluated by the Food and Drug Administration. This product is not intended to diagnose, treat, cure or prevent any disease.</p>",
+      "lifestyleImage": null,
+      "lifestyleDescription": null,
+      "bestFor": "Men who want everyday support for energy, focus and physical performance",
+      "mainBenefits": "A men's formula with L-Arginine, Beet Root and Panax Ginseng, made to support energy, focus and physical performance.*",
+      "dosageForm": "Capsule",
+      "servingSize": "3 capsules daily",
+      "whenToTake": "With a meal",
+      "highlights": [
+        {
+          "text": "Supports Energy & Endurance*",
+          "title": "Energy & Endurance"
+        },
+        {
+          "text": "Supports Healthy Circulation*",
+          "title": "Healthy Circulation"
+        },
+        {
+          "text": "Supports Physical Performance*",
+          "title": "Physical Performance"
+        },
+        {
+          "text": "Supports Mental Focus*",
+          "title": "Mental Focus"
+        }
+      ],
+      "pageContent": {
+        "fdaNote": "These statements have not been evaluated by the Food and Drug Administration. This product is not intended to diagnose, treat, cure, or prevent any disease.",
+        "warning": "WARNING: For adults only. Consult a healthcare professional before use if you are pregnant, nursing, taking medication, or have a medical condition. Consult your doctor before use if you take blood pressure medication, nitrates or blood thinners. Discontinue use if any adverse reaction occurs. Keep out of reach of children. Do not exceed the recommended serving. Store in a cool, dry place. Do not use if safety seal is broken or missing.",
+        "suggestedUse": "As a dietary supplement, adults take 3 capsules daily with a meal, or as directed by a healthcare professional."
+      },
+      "brandId": null,
+      "ingredientItems": [
+        {
+          "id": "90a8e958-0bed-4743-84c9-4a16a89feab2",
+          "productId": "9acba3a5-0355-4d7b-80d4-efd1ffac3cd3",
+          "name": "L-Arginine",
+          "scientificName": null,
+          "type": null,
+          "keyBenefit": null,
+          "source": null,
+          "amount": "1,500 mg †",
+          "image": null,
+          "description": "Daily Value not established.",
+          "displayOrder": 0,
+          "createdAt": "2026-11-16T08:33:26.109Z",
+          "updatedAt": "2026-11-16T08:33:26.109Z"
+        },
+        {
+          "id": "711b407d-07f9-4abe-8baf-4a8deab6bcf9",
+          "productId": "9acba3a5-0355-4d7b-80d4-efd1ffac3cd3",
+          "name": "Epimedium Aerial Parts Extract (20% icariin)",
+          "scientificName": null,
+          "type": null,
+          "keyBenefit": null,
+          "source": null,
+          "amount": "300 mg †",
+          "image": null,
+          "description": "Daily Value not established.",
+          "displayOrder": 1,
+          "createdAt": "2026-11-16T08:33:26.145Z",
+          "updatedAt": "2026-11-16T08:33:26.145Z"
+        },
+        {
+          "id": "f88a5ce0-a196-4907-9494-a2b2b90334ff",
+          "productId": "9acba3a5-0355-4d7b-80d4-efd1ffac3cd3",
+          "name": "Panax Ginseng (Panax ginseng) Root Extract (4:1, 10% ginsenosides)",
+          "scientificName": null,
+          "type": null,
+          "keyBenefit": null,
+          "source": "South Korea",
+          "amount": "200 mg †",
+          "image": null,
+          "description": "Daily Value not established.",
+          "displayOrder": 2,
+          "createdAt": "2026-11-16T08:33:26.181Z",
+          "updatedAt": "2026-11-16T08:33:26.181Z"
+        },
+        {
+          "id": "b1db88b9-def6-4bc9-a681-79dc8331d98c",
+          "productId": "9acba3a5-0355-4d7b-80d4-efd1ffac3cd3",
+          "name": "French Maritime Pine (Pinus pinaster) Bark Extract (95% proanthocyanidins)",
+          "scientificName": null,
+          "type": null,
+          "keyBenefit": null,
+          "source": null,
+          "amount": "150 mg †",
+          "image": null,
+          "description": "Daily Value not established.",
+          "displayOrder": 3,
+          "createdAt": "2026-11-16T08:33:26.216Z",
+          "updatedAt": "2026-11-16T08:33:26.216Z"
+        },
+        {
+          "id": "7d26c2d7-380a-470b-b127-785587c52a61",
+          "productId": "9acba3a5-0355-4d7b-80d4-efd1ffac3cd3",
+          "name": "Saffron (Crocus sativus) Stigma Extract (5% crocin)",
+          "scientificName": null,
+          "type": null,
+          "keyBenefit": null,
+          "source": null,
+          "amount": "30 mg †",
+          "image": null,
+          "description": "Daily Value not established.",
+          "displayOrder": 4,
+          "createdAt": "2026-11-16T08:33:26.251Z",
+          "updatedAt": "2026-11-16T08:33:26.251Z"
+        }
+      ],
+      "variants": [
+        {
+          "subscriptionPrice": null,
+          "id": "bdeed54c-e977-41b7-a925-988156c79683",
+          "productId": "9acba3a5-0355-4d7b-80d4-efd1ffac3cd3",
+          "sku": "RAP-ME-900-6001593",
+          "price": "54.99",
+          "salePrice": "44.99",
+          "quantity": 250,
+          "isActive": true,
+          "createdAt": "2026-09-21T11:38:56.529Z",
+          "updatedAt": "2026-10-05T07:12:11.348Z",
+          "shippingLength": null,
+          "shippingBreadth": null,
+          "shippingHeight": null,
+          "shippingWeight": null,
+          "attributes": [
+            {
+              "id": "33ea5c42-c338-4b9d-ad75-4faca2744b2d",
+              "variantId": "bdeed54c-e977-41b7-a925-988156c79683",
+              "attributeValueId": "1ff5463a-636f-44ef-82ff-558b326ea268"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "5dc8ec98-f5bd-439b-a33f-bf9f3fe5fe18",
+      "name": "TITAN FORCE",
+      "description": "<h2>Power For Your Everyday.</h2><p>Titan Force is MWP’s Maximum Performance Formula for men, made to boost strength and support endurance, lean muscle and power. 60 capsules per bottle.</p>",
+      "slug": "titan-force",
+      "featured": true,
+      "productType": null,
+      "isActive": false,
+      "isDeleted": false,
+      "deletedAt": null,
+      "deletedBy": null,
+      "createdAt": "2026-10-05T06:56:24.624Z",
+      "updatedAt": "2026-11-16T08:33:27.684Z",
+      "hasVariants": true,
+      "primaryCategoryId": "6dc37d0c-25ed-47c9-828d-7ed6215ebd53",
+      "metaTitle": "TITAN FORCE | MWP Supplements",
+      "metaDescription": "Maximum Performance Formula. 60 capsules.",
+      "keywords": "MWP Titan Force, men's supplement, strength, endurance, lean muscle, power, dietary supplement",
+      "tags": [
+        "Workout & Gym Performance"
+      ],
+      "topBrandIds": [],
+      "newBrandIds": [],
+      "hotBrandIds": [],
+      "ourProduct": true,
+      "visibility": "PUBLIC",
+      "gender": "UNISEX",
+      "fragranceNotes": null,
+      "feelings": null,
+      "occasions": null,
+      "behindThePerfume": null,
+      "shippingReturn": "Shipping availability and any charges are confirmed at checkout. Delivery estimates depend on your address. See our shipping and returns policies for details.",
+      "legalInfo": "<p>Manufactured in a cGMP-compliant facility registered with the U.S. FDA. Third-party lab tested. Vegan. Non-GMO. Made in the USA with globally sourced ingredients.</p><p>These statements have not been evaluated by the Food and Drug Administration. This product is not intended to diagnose, treat, cure or prevent any disease.</p>",
+      "lifestyleImage": null,
+      "lifestyleDescription": null,
+      "bestFor": "Men focused on strength, endurance and power",
+      "mainBenefits": "Titan Force boosts strength and supports endurance, lean muscle and power.",
+      "dosageForm": "Capsule",
+      "servingSize": "Follow the directions on the product label",
+      "whenToTake": null,
+      "highlights": [
+        {
+          "text": "Boosts strength",
+          "title": "Strength"
+        },
+        {
+          "text": "Enhances endurance",
+          "title": "Endurance"
+        },
+        {
+          "text": "Supports lean muscle",
+          "title": "Lean Muscle"
+        },
+        {
+          "text": "Increases power",
+          "title": "Power"
+        }
+      ],
+      "pageContent": null,
+      "brandId": null,
+      "ingredientItems": [],
+      "variants": [
+        {
+          "subscriptionPrice": null,
+          "id": "3310385a-a6ac-4136-89c5-16bb2d166d95",
+          "productId": "5dc8ec98-f5bd-439b-a33f-bf9f3fe5fe18",
+          "sku": "MWP-TITAN-FORCE-60",
+          "price": "54.99",
+          "salePrice": "44.99",
+          "quantity": 250,
+          "isActive": true,
+          "createdAt": "2026-10-05T06:57:43.424Z",
+          "updatedAt": "2026-10-05T07:12:11.799Z",
+          "shippingLength": null,
+          "shippingBreadth": null,
+          "shippingHeight": null,
+          "shippingWeight": null,
+          "attributes": [
+            {
+              "id": "d697fd3f-3099-4bdf-88a8-e1278914797f",
+              "variantId": "3310385a-a6ac-4136-89c5-16bb2d166d95",
+              "attributeValueId": "89018891-20bd-4112-8278-32b701620931"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "bfdfa7fa-0b86-46d1-9518-1076b4147079",
+      "name": "DAILY VITALITY",
+      "description": "<h2>Foundational wellness for everyday resilience.</h2><p>A daily formula for men and women with CoQ10, KSM-66® Ashwagandha and Berberine, made to support cellular energy, heart health and antioxidant defense.*</p>",
+      "slug": "daily-vitality",
+      "featured": true,
+      "productType": null,
+      "isActive": true,
+      "isDeleted": false,
+      "deletedAt": null,
+      "deletedBy": null,
+      "createdAt": "2026-09-21T11:38:57.995Z",
+      "updatedAt": "2026-11-16T08:33:26.397Z",
+      "hasVariants": true,
+      "primaryCategoryId": "42c404fe-3a59-4333-9d4d-54d3545cc617",
+      "metaTitle": "Daily Vitality – Daily Wellness Capsules | MWP",
+      "metaDescription": "A daily formula for men and women with CoQ10, KSM-66® Ashwagandha and Berberine, made to support cellular energy, heart health and antioxidant defense.*",
+      "keywords": "MWP Daily Vitality, daily wellness, cellular energy, heart health, antioxidant support, dietary supplement",
+      "tags": [
+        "Daily Wellness"
+      ],
+      "topBrandIds": [],
+      "newBrandIds": [],
+      "hotBrandIds": [],
+      "ourProduct": true,
+      "visibility": "PUBLIC",
+      "gender": "UNISEX",
+      "fragranceNotes": null,
+      "feelings": null,
+      "occasions": null,
+      "behindThePerfume": null,
+      "shippingReturn": "Shipping availability and any charges are confirmed at checkout. Delivery estimates depend on your address. See our shipping and returns policies for details.",
+      "legalInfo": "<p>Manufactured in a cGMP-compliant facility registered with the U.S. FDA. Third-party lab tested. Vegan. Non-GMO. Made in the USA with globally sourced ingredients.</p><p>These statements have not been evaluated by the Food and Drug Administration. This product is not intended to diagnose, treat, cure or prevent any disease.</p>",
+      "lifestyleImage": null,
+      "lifestyleDescription": null,
+      "bestFor": "Anyone building a daily wellness routine",
+      "mainBenefits": "A daily formula for men and women with CoQ10, KSM-66® Ashwagandha and Berberine, made to support cellular energy, heart health and antioxidant defense.*",
+      "dosageForm": "Capsule",
+      "servingSize": "2 capsules daily",
+      "whenToTake": "With a meal",
+      "highlights": [
+        {
+          "text": "Supports Cellular Energy*",
+          "title": "Cellular Energy"
+        },
+        {
+          "text": "Provides Antioxidant Support*",
+          "title": "Antioxidant Support"
+        },
+        {
+          "text": "Supports Heart Health*",
+          "title": "Heart Health"
+        },
+        {
+          "text": "Supports Healthy Glucose Metabolism Within Normal Range*",
+          "title": "Glucose Metabolism"
+        }
+      ],
+      "pageContent": {
+        "fdaNote": "These statements have not been evaluated by the Food and Drug Administration. This product is not intended to diagnose, treat, cure, or prevent any disease.",
+        "warning": "WARNING: For adults only. Consult a healthcare professional before use if you are pregnant, nursing, taking medication, or have a medical condition. Consult your doctor before use if you take blood sugar, blood thinner or thyroid medication, or have liver or autoimmune conditions. Discontinue use if any adverse reaction occurs. Keep out of reach of children. Do not exceed the recommended serving. Store in a cool, dry place. Do not use if safety seal is broken or missing.",
+        "suggestedUse": "As a dietary supplement, adults take 2 capsules daily with a meal, or as directed by a healthcare professional."
+      },
+      "brandId": null,
+      "ingredientItems": [
+        {
+          "id": "fd77432f-927b-496a-8259-ed5313012ba5",
+          "productId": "bfdfa7fa-0b86-46d1-9518-1076b4147079",
+          "name": "Vitamin D (as cholecalciferol)",
+          "scientificName": null,
+          "type": null,
+          "keyBenefit": null,
+          "source": "USA",
+          "amount": "50 mcg (2,000 IU) · 250% DV",
+          "image": null,
+          "description": "250% of the Daily Value.",
+          "displayOrder": 0,
+          "createdAt": "2026-11-16T08:33:26.469Z",
+          "updatedAt": "2026-11-16T08:33:26.469Z"
+        },
+        {
+          "id": "535552d0-0e07-46b7-8d04-bc33a6a39555",
+          "productId": "bfdfa7fa-0b86-46d1-9518-1076b4147079",
+          "name": "Vitamin K (as menaquinone-7)",
+          "scientificName": null,
+          "type": null,
+          "keyBenefit": null,
+          "source": "Japan",
+          "amount": "100 mcg · 83% DV",
+          "image": null,
+          "description": "83% of the Daily Value.",
+          "displayOrder": 1,
+          "createdAt": "2026-11-16T08:33:26.506Z",
+          "updatedAt": "2026-11-16T08:33:26.506Z"
+        },
+        {
+          "id": "be9f3112-0b91-4b98-bfa6-f504b9c50043",
+          "productId": "bfdfa7fa-0b86-46d1-9518-1076b4147079",
+          "name": "Selenium (as L-selenomethionine)",
+          "scientificName": null,
+          "type": null,
+          "keyBenefit": null,
+          "source": null,
+          "amount": "100 mcg · 182% DV",
+          "image": null,
+          "description": "182% of the Daily Value.",
+          "displayOrder": 2,
+          "createdAt": "2026-11-16T08:33:26.541Z",
+          "updatedAt": "2026-11-16T08:33:26.541Z"
+        },
+        {
+          "id": "a9544d46-a7d0-4794-bddc-c21d61437414",
+          "productId": "bfdfa7fa-0b86-46d1-9518-1076b4147079",
+          "name": "Coenzyme Q10 (as ubiquinone)",
+          "scientificName": null,
+          "type": null,
+          "keyBenefit": null,
+          "source": "Japan",
+          "amount": "100 mg †",
+          "image": null,
+          "description": "Daily Value not established.",
+          "displayOrder": 3,
+          "createdAt": "2026-11-16T08:33:26.578Z",
+          "updatedAt": "2026-11-16T08:33:26.578Z"
+        },
+        {
+          "id": "1b0d2320-0153-4d82-b6a7-e168690f006d",
+          "productId": "bfdfa7fa-0b86-46d1-9518-1076b4147079",
+          "name": "KSM-66® Ashwagandha (Withania somnifera) Root Extract",
+          "scientificName": null,
+          "type": null,
+          "keyBenefit": null,
+          "source": "India",
+          "amount": "300 mg †",
+          "image": null,
+          "description": "Daily Value not established.",
+          "displayOrder": 4,
+          "createdAt": "2026-11-16T08:33:26.615Z",
+          "updatedAt": "2026-11-16T08:33:26.615Z"
+        },
+        {
+          "id": "42c589fd-6561-46bf-87a1-d6edd1e0bc1b",
+          "productId": "bfdfa7fa-0b86-46d1-9518-1076b4147079",
+          "name": "Berberine Phospholipid Complex (sunflower), providing 150 mg berberine",
+          "scientificName": null,
+          "type": null,
+          "keyBenefit": null,
+          "source": "Italy",
+          "amount": "300 mg †",
+          "image": null,
+          "description": "Daily Value not established.",
+          "displayOrder": 5,
+          "createdAt": "2026-11-16T08:33:26.652Z",
+          "updatedAt": "2026-11-16T08:33:26.652Z"
+        },
+        {
+          "id": "33d99ab7-6b0a-493b-8578-abcce2e52dd2",
+          "productId": "bfdfa7fa-0b86-46d1-9518-1076b4147079",
+          "name": "Quercetin Phospholipid Complex (sunflower), providing 50 mg quercetin",
+          "scientificName": null,
+          "type": null,
+          "keyBenefit": null,
+          "source": "Italy",
+          "amount": "100 mg †",
+          "image": null,
+          "description": "Daily Value not established.",
+          "displayOrder": 6,
+          "createdAt": "2026-11-16T08:33:26.690Z",
+          "updatedAt": "2026-11-16T08:33:26.690Z"
+        }
+      ],
+      "variants": [
+        {
+          "subscriptionPrice": null,
+          "id": "d6f5226e-73c1-4038-9eb1-c01d08befd4e",
+          "productId": "bfdfa7fa-0b86-46d1-9518-1076b4147079",
+          "sku": "DAI-DA-900-6001527",
+          "price": "39.99",
+          "salePrice": "29.99",
+          "quantity": 250,
+          "isActive": true,
+          "createdAt": "2026-09-21T11:38:57.995Z",
+          "updatedAt": "2026-10-05T07:12:11.668Z",
+          "shippingLength": null,
+          "shippingBreadth": null,
+          "shippingHeight": null,
+          "shippingWeight": null,
+          "attributes": [
+            {
+              "id": "a4e2dfe1-4bcf-489c-945f-629d858efd2f",
+              "variantId": "d6f5226e-73c1-4038-9eb1-c01d08befd4e",
+              "attributeValueId": "89018891-20bd-4112-8278-32b701620931"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "44359dc1-76c4-46c5-b8dd-317c057dbed0",
+      "name": "POWER MAX",
+      "description": "<h2>Train with purpose.</h2><p>A men's formula with L-Citrulline, Tongkat Ali, Ashwagandha and Panax Ginseng, made to support endurance, daily energy and healthy circulation.*</p>",
+      "slug": "power-max",
+      "featured": true,
+      "productType": null,
+      "isActive": true,
+      "isDeleted": false,
+      "deletedAt": null,
+      "deletedBy": null,
+      "createdAt": "2026-09-21T11:38:56.877Z",
+      "updatedAt": "2026-11-16T08:33:25.612Z",
+      "hasVariants": true,
+      "primaryCategoryId": "6dc37d0c-25ed-47c9-828d-7ed6215ebd53",
+      "metaTitle": "POWER MAX | MWP Supplements",
+      "metaDescription": "Power Max with L-Citrulline, Tongkat Ali and Ashwagandha to support endurance and healthy circulation. 90 capsules.",
+      "keywords": "MWP Power Max, men's supplement, endurance, daily energy, healthy circulation, dietary supplement",
+      "tags": [
+        "Workout & Gym Performance"
+      ],
+      "topBrandIds": [],
+      "newBrandIds": [],
+      "hotBrandIds": [],
+      "ourProduct": true,
+      "visibility": "PUBLIC",
+      "gender": "UNISEX",
+      "fragranceNotes": null,
+      "feelings": null,
+      "occasions": null,
+      "behindThePerfume": null,
+      "shippingReturn": "Shipping availability and any charges are confirmed at checkout. Delivery estimates depend on your address. See our shipping and returns policies for details.",
+      "legalInfo": "<p>Manufactured in a cGMP-compliant facility registered with the U.S. FDA. Third-party lab tested. Vegan. Non-GMO. Made in the USA with globally sourced ingredients.</p><p>These statements have not been evaluated by the Food and Drug Administration. This product is not intended to diagnose, treat, cure or prevent any disease.</p>",
+      "lifestyleImage": null,
+      "lifestyleDescription": null,
+      "bestFor": "Men who want everyday support for endurance, energy and circulation",
+      "mainBenefits": "A men's formula with L-Citrulline, Tongkat Ali, Ashwagandha and Panax Ginseng, made to support endurance, daily energy and healthy circulation.*",
+      "dosageForm": "Capsule",
+      "servingSize": "3 capsules daily",
+      "whenToTake": "With a meal",
+      "highlights": [
+        {
+          "text": "Supports Endurance*",
+          "title": "Endurance"
+        },
+        {
+          "text": "Supports Daily Energy*",
+          "title": "Daily Energy"
+        },
+        {
+          "text": "Supports Physical Performance*",
+          "title": "Physical Performance"
+        },
+        {
+          "text": "Supports Healthy Circulation*",
+          "title": "Healthy Circulation"
+        }
+      ],
+      "pageContent": {
+        "fdaNote": "These statements have not been evaluated by the Food and Drug Administration. This product is not intended to diagnose, treat, cure, or prevent any disease.",
+        "warning": "WARNING: For adults only. Consult a healthcare professional before use if you are pregnant, nursing, taking medication, or have a medical condition. Consult your doctor before use if you take blood pressure medication, nitrates or blood thinners, or have thyroid, liver or autoimmune conditions. Discontinue use if any adverse reaction occurs. Keep out of reach of children. Do not exceed the recommended serving. Store in a cool, dry place. Do not use if safety seal is broken or missing.",
+        "suggestedUse": "As a dietary supplement, adults take 3 capsules daily with a meal, or as directed by a healthcare professional."
+      },
+      "brandId": null,
+      "ingredientItems": [
+        {
+          "id": "e8254c7a-8789-4124-ba83-1199419fe9ea",
+          "productId": "44359dc1-76c4-46c5-b8dd-317c057dbed0",
+          "name": "Vitamin D (as cholecalciferol from lichen)",
+          "scientificName": null,
+          "type": null,
+          "keyBenefit": null,
+          "source": null,
+          "amount": "20 mcg (800 IU) · 100% DV",
+          "image": null,
+          "description": "100% of the Daily Value.",
+          "displayOrder": 0,
+          "createdAt": "2026-11-16T08:33:25.697Z",
+          "updatedAt": "2026-11-16T08:33:25.697Z"
+        },
+        {
+          "id": "9e1825f5-fe50-45f4-833c-948468674412",
+          "productId": "44359dc1-76c4-46c5-b8dd-317c057dbed0",
+          "name": "L-Citrulline",
+          "scientificName": null,
+          "type": null,
+          "keyBenefit": null,
+          "source": "USA",
+          "amount": "1,500 mg †",
+          "image": null,
+          "description": "Daily Value not established.",
+          "displayOrder": 1,
+          "createdAt": "2026-11-16T08:33:25.735Z",
+          "updatedAt": "2026-11-16T08:33:25.735Z"
+        },
+        {
+          "id": "85fc8e80-52a1-4f8f-af3f-925014f00012",
+          "productId": "44359dc1-76c4-46c5-b8dd-317c057dbed0",
+          "name": "Tongkat Ali (Eurycoma longifolia) Root Extract (100:1, 1% eurycomanone)",
+          "scientificName": null,
+          "type": null,
+          "keyBenefit": null,
+          "source": null,
+          "amount": "400 mg †",
+          "image": null,
+          "description": "Daily Value not established.",
+          "displayOrder": 2,
+          "createdAt": "2026-11-16T08:33:25.772Z",
+          "updatedAt": "2026-11-16T08:33:25.772Z"
+        },
+        {
+          "id": "3324c0c3-15af-45b9-b4d1-447f08d2e91f",
+          "productId": "44359dc1-76c4-46c5-b8dd-317c057dbed0",
+          "name": "Panax Ginseng (Panax ginseng) Root Extract (4:1, 10% ginsenosides)",
+          "scientificName": null,
+          "type": null,
+          "keyBenefit": null,
+          "source": null,
+          "amount": "250 mg †",
+          "image": null,
+          "description": "Daily Value not established.",
+          "displayOrder": 3,
+          "createdAt": "2026-11-16T08:33:25.809Z",
+          "updatedAt": "2026-11-16T08:33:25.809Z"
+        },
+        {
+          "id": "7f39a9e4-7a33-490b-b9c8-92b0694badcb",
+          "productId": "44359dc1-76c4-46c5-b8dd-317c057dbed0",
+          "name": "French Maritime Pine (Pinus pinaster) Bark Extract (95% proanthocyanidins)",
+          "scientificName": null,
+          "type": null,
+          "keyBenefit": null,
+          "source": "France",
+          "amount": "100 mg †",
+          "image": null,
+          "description": "Daily Value not established.",
+          "displayOrder": 4,
+          "createdAt": "2026-11-16T08:33:25.845Z",
+          "updatedAt": "2026-11-16T08:33:25.845Z"
+        },
+        {
+          "id": "a002aa16-800e-4156-b71e-ca617eb1af21",
+          "productId": "44359dc1-76c4-46c5-b8dd-317c057dbed0",
+          "name": "Saffron Stigma Extract (5% crocin)",
+          "scientificName": null,
+          "type": null,
+          "keyBenefit": null,
+          "source": null,
+          "amount": "30 mg †",
+          "image": null,
+          "description": "Daily Value not established.",
+          "displayOrder": 5,
+          "createdAt": "2026-11-16T08:33:25.882Z",
+          "updatedAt": "2026-11-16T08:33:25.882Z"
+        }
+      ],
+      "variants": [
+        {
+          "subscriptionPrice": null,
+          "id": "e7db463a-f7d7-469f-971f-83fece2156a0",
+          "productId": "44359dc1-76c4-46c5-b8dd-317c057dbed0",
+          "sku": "POW-WO-900-6001840",
+          "price": "49.99",
+          "salePrice": "39.99",
+          "quantity": 250,
+          "isActive": true,
+          "createdAt": "2026-09-21T11:38:56.877Z",
+          "updatedAt": "2026-10-05T07:12:11.476Z",
+          "shippingLength": null,
+          "shippingBreadth": null,
+          "shippingHeight": null,
+          "shippingWeight": null,
+          "attributes": [
+            {
+              "id": "99ca7af1-2fb3-40bd-b628-d99ef002c432",
+              "variantId": "e7db463a-f7d7-469f-971f-83fece2156a0",
+              "attributeValueId": "1ff5463a-636f-44ef-82ff-558b326ea268"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "525cf338-6358-40c5-8151-f38c3f881a09",
+      "name": "HER POWER",
+      "description": "<h2>Her wellness. Her way.</h2><p>A women's daily formula with Myo-Inositol, Shatavari and Magnesium, made to support daily wellness, a healthy stress response and normal energy metabolism.*</p>",
+      "slug": "her-power",
+      "featured": true,
+      "productType": null,
+      "isActive": true,
+      "isDeleted": false,
+      "deletedAt": null,
+      "deletedBy": null,
+      "createdAt": "2026-09-21T11:38:57.255Z",
+      "updatedAt": "2026-11-16T08:33:26.764Z",
+      "hasVariants": true,
+      "primaryCategoryId": "e2d78793-fb8f-4d9c-a133-8f891841a708",
+      "metaTitle": "Her Power – Women's Daily Wellness Capsules | MWP",
+      "metaDescription": "Her Power with Myo-Inositol, Shatavari and Magnesium to support women's daily wellness, stress response and energy metabolism. 90 capsules.",
+      "keywords": "MWP Her Power, women's supplement, daily wellness, stress response, energy metabolism, dietary supplement",
+      "tags": [
+        "Women's Wellness"
+      ],
+      "topBrandIds": [],
+      "newBrandIds": [],
+      "hotBrandIds": [],
+      "ourProduct": true,
+      "visibility": "PUBLIC",
+      "gender": "UNISEX",
+      "fragranceNotes": null,
+      "feelings": null,
+      "occasions": null,
+      "behindThePerfume": null,
+      "shippingReturn": "Shipping availability and any charges are confirmed at checkout. Delivery estimates depend on your address. See our shipping and returns policies for details.",
+      "legalInfo": "<p>Manufactured in a cGMP-compliant facility registered with the U.S. FDA. Third-party lab tested. Vegan. Non-GMO. Made in the USA with globally sourced ingredients.</p><p>These statements have not been evaluated by the Food and Drug Administration. This product is not intended to diagnose, treat, cure or prevent any disease.</p>",
+      "lifestyleImage": null,
+      "lifestyleDescription": null,
+      "bestFor": "Women who want everyday support for wellness, stress response and energy metabolism",
+      "mainBenefits": "A women's daily formula with Myo-Inositol, Shatavari and Magnesium, made to support daily wellness, a healthy stress response and normal energy metabolism.*",
+      "dosageForm": "Capsule",
+      "servingSize": "3 capsules daily",
+      "whenToTake": "With a meal",
+      "highlights": [
+        {
+          "text": "Supports Women's Daily Wellness*",
+          "title": "Daily Wellness"
+        },
+        {
+          "text": "Supports a Healthy Stress Response*",
+          "title": "Stress Response"
+        },
+        {
+          "text": "Supports Energy Metabolism*",
+          "title": "Energy Metabolism"
+        },
+        {
+          "text": "Supports Bone & Muscle Health*",
+          "title": "Bone & Muscle"
+        }
+      ],
+      "pageContent": {
+        "fdaNote": "These statements have not been evaluated by the Food and Drug Administration. This product is not intended to diagnose, treat, cure, or prevent any disease.",
+        "warning": "WARNING: For adults only. Consult a healthcare professional before use if you are pregnant, nursing, taking medication, or have a medical condition. Consult your doctor before use if you take blood sugar medication. Discontinue use if any adverse reaction occurs. Keep out of reach of children. Do not exceed the recommended serving. Store in a cool, dry place. Do not use if safety seal is broken or missing.",
+        "suggestedUse": "As a dietary supplement, adults take 3 capsules daily with a meal, or as directed by a healthcare professional."
+      },
+      "brandId": null,
+      "ingredientItems": [
+        {
+          "id": "1fd00e52-872f-4c21-b450-ecf054bc9d9d",
+          "productId": "525cf338-6358-40c5-8151-f38c3f881a09",
+          "name": "Vitamin D (as cholecalciferol from lichen)",
+          "scientificName": null,
+          "type": null,
+          "keyBenefit": null,
+          "source": "USA",
+          "amount": "50 mcg (2,000 IU) · 250% DV",
+          "image": null,
+          "description": "250% of the Daily Value.",
+          "displayOrder": 0,
+          "createdAt": "2026-11-16T08:33:26.894Z",
+          "updatedAt": "2026-11-16T08:33:26.894Z"
+        },
+        {
+          "id": "28a656de-85c2-4147-b776-ac2a1ff843cd",
+          "productId": "525cf338-6358-40c5-8151-f38c3f881a09",
+          "name": "Vitamin B6 (as pyridoxal-5'-phosphate)",
+          "scientificName": null,
+          "type": null,
+          "keyBenefit": null,
+          "source": "USA",
+          "amount": "13 mg · 765% DV",
+          "image": null,
+          "description": "765% of the Daily Value.",
+          "displayOrder": 1,
+          "createdAt": "2026-11-16T08:33:26.931Z",
+          "updatedAt": "2026-11-16T08:33:26.931Z"
+        },
+        {
+          "id": "cdab1fd4-7141-41c9-8570-bf10daad3319",
+          "productId": "525cf338-6358-40c5-8151-f38c3f881a09",
+          "name": "Magnesium (as magnesium glycinate)",
+          "scientificName": null,
+          "type": null,
+          "keyBenefit": null,
+          "source": "USA",
+          "amount": "28 mg · 7% DV",
+          "image": null,
+          "description": "7% of the Daily Value.",
+          "displayOrder": 2,
+          "createdAt": "2026-11-16T08:33:26.969Z",
+          "updatedAt": "2026-11-16T08:33:26.969Z"
+        },
+        {
+          "id": "358be754-0454-4e91-9a0a-62002495d498",
+          "productId": "525cf338-6358-40c5-8151-f38c3f881a09",
+          "name": "Zinc (as zinc bisglycinate)",
+          "scientificName": null,
+          "type": null,
+          "keyBenefit": null,
+          "source": "USA",
+          "amount": "3 mg · 27% DV",
+          "image": null,
+          "description": "27% of the Daily Value.",
+          "displayOrder": 3,
+          "createdAt": "2026-11-16T08:33:27.006Z",
+          "updatedAt": "2026-11-16T08:33:27.006Z"
+        },
+        {
+          "id": "1a35c35a-50ef-4936-a642-e61be0c17238",
+          "productId": "525cf338-6358-40c5-8151-f38c3f881a09",
+          "name": "Chromium (as chromium picolinate)",
+          "scientificName": null,
+          "type": null,
+          "keyBenefit": null,
+          "source": "USA",
+          "amount": "30 mcg · 86% DV",
+          "image": null,
+          "description": "86% of the Daily Value.",
+          "displayOrder": 4,
+          "createdAt": "2026-11-16T08:33:27.042Z",
+          "updatedAt": "2026-11-16T08:33:27.042Z"
+        },
+        {
+          "id": "199eac7f-2671-4a25-aa28-3e26d82cc14e",
+          "productId": "525cf338-6358-40c5-8151-f38c3f881a09",
+          "name": "Myo-Inositol",
+          "scientificName": null,
+          "type": null,
+          "keyBenefit": null,
+          "source": "USA",
+          "amount": "2,000 mg †",
+          "image": null,
+          "description": "Daily Value not established.",
+          "displayOrder": 5,
+          "createdAt": "2026-11-16T08:33:27.079Z",
+          "updatedAt": "2026-11-16T08:33:27.079Z"
+        },
+        {
+          "id": "3e83e354-7e87-47fc-8715-c654a1fd7c13",
+          "productId": "525cf338-6358-40c5-8151-f38c3f881a09",
+          "name": "D-Chiro-Inositol",
+          "scientificName": null,
+          "type": null,
+          "keyBenefit": null,
+          "source": "USA",
+          "amount": "50 mg †",
+          "image": null,
+          "description": "Daily Value not established.",
+          "displayOrder": 6,
+          "createdAt": "2026-11-16T08:33:27.116Z",
+          "updatedAt": "2026-11-16T08:33:27.116Z"
+        },
+        {
+          "id": "d912e71b-30fb-46d1-9643-f82666e3a0c3",
+          "productId": "525cf338-6358-40c5-8151-f38c3f881a09",
+          "name": "Shatavari (Asparagus racemosus) Root Extract (20% saponins)",
+          "scientificName": null,
+          "type": null,
+          "keyBenefit": null,
+          "source": "India",
+          "amount": "200 mg †",
+          "image": null,
+          "description": "Daily Value not established.",
+          "displayOrder": 7,
+          "createdAt": "2026-11-16T08:33:27.153Z",
+          "updatedAt": "2026-11-16T08:33:27.153Z"
+        }
+      ],
+      "variants": [
+        {
+          "subscriptionPrice": null,
+          "id": "36adac82-854b-438d-bd3a-f98f12917d42",
+          "productId": "525cf338-6358-40c5-8151-f38c3f881a09",
+          "sku": "HER-WO-900-6001297",
+          "price": "49.99",
+          "salePrice": "39.99",
+          "quantity": 250,
+          "isActive": true,
+          "createdAt": "2026-09-21T11:38:57.255Z",
+          "updatedAt": "2026-10-26T11:05:14.438Z",
+          "shippingLength": null,
+          "shippingBreadth": null,
+          "shippingHeight": null,
+          "shippingWeight": null,
+          "attributes": [
+            {
+              "id": "75ae402d-5658-4c46-8607-2df2b0145a92",
+              "variantId": "36adac82-854b-438d-bd3a-f98f12917d42",
+              "attributeValueId": "1ff5463a-636f-44ef-82ff-558b326ea268"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "verifications": [
+    {
+      "id": "f488cdc7-13ec-4d56-9441-403f6a806ec5",
+      "verificationCode": "MWP-2WFNS9XZ",
+      "productId": "44359dc1-76c4-46c5-b8dd-317c057dbed0",
+      "productName": "POWER MAX",
+      "productSlug": "power-max",
+      "productImage": null,
+      "batchNumber": null,
+      "lotNumber": null,
+      "manufacturingDate": null,
+      "expiryDate": null,
+      "authenticityStatus": "VERIFIED",
+      "status": "ACTIVE",
+      "tagline": "Train with purpose.",
+      "shortDescription": "A men's formula with L-Citrulline, Tongkat Ali, Ashwagandha and Panax Ginseng, made to support endurance, daily energy and healthy circulation.*",
+      "description": "Ingredient amounts reflect the provided product formulas. Countries listed are MWP procurement targets. \"Sourced From\" is published on customer-facing pages only after supplier/COA country-of-origin documentation confirms the source.",
+      "features": [
+        "90 Capsules",
+        "3 Capsules Daily",
+        "With a Meal"
+      ],
+      "coaUrl": null,
+      "certificateUrl": null,
+      "ingredients": [
+        {
+          "name": "Vitamin D (as cholecalciferol from lichen)",
+          "amount": "20 mcg (800 IU) · 100% DV",
+          "origin": "",
+          "description": "100% of the Daily Value."
+        },
+        {
+          "name": "L-Citrulline",
+          "amount": "1,500 mg †",
+          "origin": "USA",
+          "description": "Daily Value not established."
+        },
+        {
+          "name": "Tongkat Ali (Eurycoma longifolia) Root Extract (100:1, 1% eurycomanone)",
+          "amount": "400 mg †",
+          "origin": "",
+          "description": "Daily Value not established."
+        },
+        {
+          "name": "Panax Ginseng (Panax ginseng) Root Extract (4:1, 10% ginsenosides)",
+          "amount": "250 mg †",
+          "origin": "",
+          "description": "Daily Value not established."
+        },
+        {
+          "name": "French Maritime Pine (Pinus pinaster) Bark Extract (95% proanthocyanidins)",
+          "amount": "100 mg †",
+          "origin": "France",
+          "description": "Daily Value not established."
+        },
+        {
+          "name": "Saffron Stigma Extract (5% crocin)",
+          "amount": "30 mg †",
+          "origin": "",
+          "description": "Daily Value not established."
+        }
+      ],
+      "origin": "Formulated in the USA — Globally Sourced Ingredients",
+      "badgeType": "Third-Party Lab Tested",
+      "badgeImage": null,
+      "isActive": true,
+      "createdBy": null,
+      "updatedBy": null,
+      "createdAt": "2026-09-21T11:38:57.133Z",
+      "updatedAt": "2026-11-16T08:33:25.999Z"
+    },
+    {
+      "id": "228e3705-cd28-4217-aeb1-9431f0ad0ac3",
+      "verificationCode": "MWP-N4BZZQ5V",
+      "productId": "525cf338-6358-40c5-8151-f38c3f881a09",
+      "productName": "HER POWER",
+      "productSlug": "her-power",
+      "productImage": null,
+      "batchNumber": null,
+      "lotNumber": null,
+      "manufacturingDate": null,
+      "expiryDate": null,
+      "authenticityStatus": "VERIFIED",
+      "status": "ACTIVE",
+      "tagline": "Her wellness. Her way.",
+      "shortDescription": "A women's daily formula with Myo-Inositol, Shatavari and Magnesium, made to support daily wellness, a healthy stress response and normal energy metabolism.*",
+      "description": "Ingredient amounts reflect the provided product formulas. Countries listed are MWP procurement targets. \"Sourced From\" is published on customer-facing pages only after supplier/COA country-of-origin documentation confirms the source.",
+      "features": [
+        "90 Capsules",
+        "3 Capsules Daily",
+        "With a Meal"
+      ],
+      "coaUrl": null,
+      "certificateUrl": null,
+      "ingredients": [
+        {
+          "name": "Vitamin D (as cholecalciferol from lichen)",
+          "amount": "50 mcg (2,000 IU) · 250% DV",
+          "origin": "USA",
+          "description": "250% of the Daily Value."
+        },
+        {
+          "name": "Vitamin B6 (as pyridoxal-5'-phosphate)",
+          "amount": "13 mg · 765% DV",
+          "origin": "USA",
+          "description": "765% of the Daily Value."
+        },
+        {
+          "name": "Magnesium (as magnesium glycinate)",
+          "amount": "28 mg · 7% DV",
+          "origin": "USA",
+          "description": "7% of the Daily Value."
+        },
+        {
+          "name": "Zinc (as zinc bisglycinate)",
+          "amount": "3 mg · 27% DV",
+          "origin": "USA",
+          "description": "27% of the Daily Value."
+        },
+        {
+          "name": "Chromium (as chromium picolinate)",
+          "amount": "30 mcg · 86% DV",
+          "origin": "USA",
+          "description": "86% of the Daily Value."
+        },
+        {
+          "name": "Myo-Inositol",
+          "amount": "2,000 mg †",
+          "origin": "USA",
+          "description": "Daily Value not established."
+        },
+        {
+          "name": "D-Chiro-Inositol",
+          "amount": "50 mg †",
+          "origin": "USA",
+          "description": "Daily Value not established."
+        },
+        {
+          "name": "Shatavari (Asparagus racemosus) Root Extract (20% saponins)",
+          "amount": "200 mg †",
+          "origin": "India",
+          "description": "Daily Value not established."
+        }
+      ],
+      "origin": "Formulated in the USA — Globally Sourced Ingredients",
+      "badgeType": "Third-Party Lab Tested",
+      "badgeImage": null,
+      "isActive": true,
+      "createdBy": null,
+      "updatedBy": null,
+      "createdAt": "2026-09-21T11:38:57.512Z",
+      "updatedAt": "2026-11-16T08:33:27.529Z"
+    },
+    {
+      "id": "8432c90f-f345-4e85-bba7-a12c85145e80",
+      "verificationCode": "MWP-MEQ4DJ9D",
+      "productId": "5dc8ec98-f5bd-439b-a33f-bf9f3fe5fe18",
+      "productName": "TITAN FORCE",
+      "productSlug": "titan-force",
+      "productImage": "mwp/products/1791183384390-titan-force.webp",
+      "batchNumber": null,
+      "lotNumber": null,
+      "manufacturingDate": null,
+      "expiryDate": null,
+      "authenticityStatus": "VERIFIED",
+      "status": "ACTIVE",
+      "tagline": "Power For Your Everyday.",
+      "shortDescription": "Titan Force is MWP’s Maximum Performance Formula for men, made to boost strength and support endurance, lean muscle and power. 60 capsules per bottle.",
+      "description": "Power For Your Everyday.\n\nTitan Force is MWP’s Maximum Performance Formula for men, made to boost strength and support endurance, lean muscle and power. 60 capsules per bottle.",
+      "features": [
+        "60 Capsules"
+      ],
+      "coaUrl": null,
+      "certificateUrl": null,
+      "ingredients": [],
+      "origin": "Formulated in the USA — Globally Sourced Ingredients",
+      "badgeType": "Third-Party Lab Tested",
+      "badgeImage": null,
+      "isActive": true,
+      "createdBy": null,
+      "updatedBy": null,
+      "createdAt": "2026-10-27T06:47:06.692Z",
+      "updatedAt": "2026-10-27T06:59:35.623Z"
+    },
+    {
+      "id": "7dc530ef-4f19-4e24-a4d9-e34cfa72919c",
+      "verificationCode": "MWP-NH7HBJJ7",
+      "productId": "9acba3a5-0355-4d7b-80d4-efd1ffac3cd3",
+      "productName": "RAPID BOOST",
+      "productSlug": "rapid-boost",
+      "productImage": null,
+      "batchNumber": null,
+      "lotNumber": null,
+      "manufacturingDate": null,
+      "expiryDate": null,
+      "authenticityStatus": "VERIFIED",
+      "status": "ACTIVE",
+      "tagline": "Supports energy, focus and physical performance.*",
+      "shortDescription": "A men's formula with L-Arginine, Beet Root and Panax Ginseng, made to support energy, focus and physical performance.*",
+      "description": "Ingredient amounts reflect the provided product formulas. Countries listed are MWP procurement targets. \"Sourced From\" is published on customer-facing pages only after supplier/COA country-of-origin documentation confirms the source.",
+      "features": [
+        "90 Capsules",
+        "3 Capsules Daily",
+        "With a Meal"
+      ],
+      "coaUrl": null,
+      "certificateUrl": null,
+      "ingredients": [
+        {
+          "name": "L-Arginine",
+          "amount": "1,500 mg †",
+          "origin": "",
+          "description": "Daily Value not established."
+        },
+        {
+          "name": "Epimedium Aerial Parts Extract (20% icariin)",
+          "amount": "300 mg †",
+          "origin": "",
+          "description": "Daily Value not established."
+        },
+        {
+          "name": "Panax Ginseng (Panax ginseng) Root Extract (4:1, 10% ginsenosides)",
+          "amount": "200 mg †",
+          "origin": "South Korea",
+          "description": "Daily Value not established."
+        },
+        {
+          "name": "French Maritime Pine (Pinus pinaster) Bark Extract (95% proanthocyanidins)",
+          "amount": "150 mg †",
+          "origin": "",
+          "description": "Daily Value not established."
+        },
+        {
+          "name": "Saffron (Crocus sativus) Stigma Extract (5% crocin)",
+          "amount": "30 mg †",
+          "origin": "",
+          "description": "Daily Value not established."
+        }
+      ],
+      "origin": "Formulated in the USA — Globally Sourced Ingredients",
+      "badgeType": "Third-Party Lab Tested",
+      "badgeImage": null,
+      "isActive": true,
+      "createdBy": null,
+      "updatedBy": null,
+      "createdAt": "2026-09-21T11:38:56.771Z",
+      "updatedAt": "2026-11-16T08:33:26.359Z"
+    },
+    {
+      "id": "75ae1c01-d22f-49d8-90fd-05efa1080ac4",
+      "verificationCode": "MWP-EG7QNL9G",
+      "productId": "bfdfa7fa-0b86-46d1-9518-1076b4147079",
+      "productName": "DAILY VITALITY",
+      "productSlug": "daily-vitality",
+      "productImage": null,
+      "batchNumber": null,
+      "lotNumber": null,
+      "manufacturingDate": null,
+      "expiryDate": null,
+      "authenticityStatus": "VERIFIED",
+      "status": "ACTIVE",
+      "tagline": "Foundational wellness for everyday resilience.",
+      "shortDescription": "A daily formula for men and women with CoQ10, KSM-66® Ashwagandha and Berberine, made to support cellular energy, heart health and antioxidant defense.*",
+      "description": "Ingredient amounts reflect the provided product formulas. Countries listed are MWP procurement targets. \"Sourced From\" is published on customer-facing pages only after supplier/COA country-of-origin documentation confirms the source.",
+      "features": [
+        "60 Capsules",
+        "2 Capsules Daily",
+        "With a Meal"
+      ],
+      "coaUrl": null,
+      "certificateUrl": null,
+      "ingredients": [
+        {
+          "name": "Vitamin D (as cholecalciferol)",
+          "amount": "50 mcg (2,000 IU) · 250% DV",
+          "origin": "USA",
+          "description": "250% of the Daily Value."
+        },
+        {
+          "name": "Vitamin K (as menaquinone-7)",
+          "amount": "100 mcg · 83% DV",
+          "origin": "Japan",
+          "description": "83% of the Daily Value."
+        },
+        {
+          "name": "Selenium (as L-selenomethionine)",
+          "amount": "100 mcg · 182% DV",
+          "origin": "",
+          "description": "182% of the Daily Value."
+        },
+        {
+          "name": "Coenzyme Q10 (as ubiquinone)",
+          "amount": "100 mg †",
+          "origin": "Japan",
+          "description": "Daily Value not established."
+        },
+        {
+          "name": "KSM-66® Ashwagandha (Withania somnifera) Root Extract",
+          "amount": "300 mg †",
+          "origin": "India",
+          "description": "Daily Value not established."
+        },
+        {
+          "name": "Berberine Phospholipid Complex (sunflower), providing 150 mg berberine",
+          "amount": "300 mg †",
+          "origin": "Italy",
+          "description": "Daily Value not established."
+        },
+        {
+          "name": "Quercetin Phospholipid Complex (sunflower), providing 50 mg quercetin",
+          "amount": "100 mg †",
+          "origin": "Italy",
+          "description": "Daily Value not established."
+        }
+      ],
+      "origin": "Formulated in the USA — Globally Sourced Ingredients",
+      "badgeType": "Third-Party Lab Tested",
+      "badgeImage": null,
+      "isActive": true,
+      "createdBy": null,
+      "updatedBy": null,
+      "createdAt": "2026-09-21T11:38:58.264Z",
+      "updatedAt": "2026-11-16T08:33:26.727Z"
+    }
+  ],
+  "blogPosts": [
+    {
+      "id": "db1f691d-a6ca-4fce-a05e-110d7db75a38",
+      "slug": "saffron-mood-emotional-wellness-research",
+      "reviewedBy": null
+    },
+    {
+      "id": "beae723a-fac8-4ea7-8a76-63b57c0620b0",
+      "slug": "iron-vitamin-b12-energy-metabolism",
+      "reviewedBy": null
+    },
+    {
+      "id": "0d1ed681-ba29-4aa6-97fb-b60b265762e0",
+      "slug": "how-women-can-compare-wellness-supplement-formulas",
+      "reviewedBy": null
+    }
+  ],
+  "faqs": [
+    {
+      "id": "beea0d78-d7c7-4503-89b1-4ce49bdaf495",
+      "question": "How do I place an order?",
+      "answer": "Choose your formula and pack size, add it to your cart and continue to checkout. Prices are in US dollars, and your shipping options and final total are shown before you pay.",
+      "category": "Orders & Shipping",
+      "order": 0,
+      "isPublished": true,
+      "createdAt": "2026-10-12T08:06:27.129Z",
+      "updatedAt": "2026-10-12T08:06:27.129Z"
+    },
+    {
+      "id": "1bed3cce-55d6-48b2-a615-77bf9b9c1ddd",
+      "question": "How long until my order ships?",
+      "answer": "Orders are processed within 24–48 hours, excluding weekends and holidays. During busy launches or promotions, dispatch can take up to 72 hours.",
+      "category": "Orders & Shipping",
+      "order": 1,
+      "isPublished": true,
+      "createdAt": "2026-10-12T08:06:27.201Z",
+      "updatedAt": "2026-10-12T08:06:27.201Z"
+    },
+    {
+      "id": "8c9dba68-9d47-41b3-b3b1-5894c0081185",
+      "question": "How can I track my order?",
+      "answer": "When your order ships we email you the carrier, your tracking number and a tracking link. You can also see your order status any time from Orders in your account.",
+      "category": "Orders & Shipping",
+      "order": 2,
+      "isPublished": true,
+      "createdAt": "2026-10-12T08:06:27.267Z",
+      "updatedAt": "2026-10-12T08:06:27.267Z"
+    },
+    {
+      "id": "49bdd96f-5723-42bc-b405-a87de4c7145b",
+      "question": "How much does shipping cost and how long does delivery take?",
+      "answer": "Delivery options, estimated delivery times and any shipping charge are calculated for your address and shown at checkout before you pay.",
+      "category": "Orders & Shipping",
+      "order": 3,
+      "isPublished": true,
+      "createdAt": "2026-10-12T08:06:27.332Z",
+      "updatedAt": "2026-10-12T08:06:27.332Z"
+    },
+    {
+      "id": "c8e93f92-fcba-4f2e-8316-bf265987e5bc",
+      "question": "How do I pay?",
+      "answer": "Payments are processed securely by Stripe at checkout. Your card details go straight to Stripe, and MWP never stores your full card number.",
+      "category": "Orders & Shipping",
+      "order": 4,
+      "isPublished": true,
+      "createdAt": "2026-10-12T08:06:27.397Z",
+      "updatedAt": "2026-10-12T08:06:27.397Z"
+    },
+    {
+      "id": "433621ab-f266-410d-a13e-910d4d99d738",
+      "question": "Where can I find ingredient information?",
+      "answer": "Every product page lists each ingredient with its dose and origin under “Inside the formula”. You can also open the ingredient details from the product page for a closer look.",
+      "category": "Products & Ingredients",
+      "order": 5,
+      "isPublished": true,
+      "createdAt": "2026-10-12T08:06:27.464Z",
+      "updatedAt": "2026-10-12T08:06:27.464Z"
+    },
+    {
+      "id": "97315927-d84f-43c6-90fd-064d4383cbe3",
+      "question": "How do I know my product is genuine?",
+      "answer": "Scan the QR code on your MWP pack to open its verification page and confirm the product.",
+      "category": "Products & Ingredients",
+      "order": 6,
+      "isPublished": true,
+      "createdAt": "2026-10-12T08:06:27.531Z",
+      "updatedAt": "2026-10-12T08:06:27.531Z"
+    },
+    {
+      "id": "8909a13d-5436-4deb-9cfe-a0c0753bc9ba",
+      "question": "Are MWP supplements third-party lab tested?",
+      "answer": "Yes. MWP formulas are third-party lab tested. Available testing and certification documents are published on our Certificate Wall.",
+      "category": "Products & Ingredients",
+      "order": 7,
+      "isPublished": true,
+      "createdAt": "2026-10-12T08:06:27.596Z",
+      "updatedAt": "2026-10-12T08:06:27.596Z"
+    },
+    {
+      "id": "85250dca-8219-48a0-839e-3ae1fb842734",
+      "question": "Should I talk to a doctor before taking MWP supplements?",
+      "answer": "Always follow the directions on the label. Talk to a healthcare professional first if you are pregnant or nursing, take medication or have a medical condition. These products are dietary supplements and are not intended to diagnose, treat, cure or prevent any disease.",
+      "category": "Products & Ingredients",
+      "order": 8,
+      "isPublished": true,
+      "createdAt": "2026-10-12T08:06:27.662Z",
+      "updatedAt": "2026-10-12T08:06:27.662Z"
+    },
+    {
+      "id": "6e0a9c7f-aaf1-432b-a2a2-9a623c53ef82",
+      "question": "What if my order arrives damaged or incorrect?",
+      "answer": "Record an unboxing video before opening the parcel and email it with your order number to support@mwpsupplements.com within 48 hours of delivery. If approved, we send a replacement as a priority.",
+      "category": "Returns & Support",
+      "order": 9,
+      "isPublished": true,
+      "createdAt": "2026-10-12T08:06:27.729Z",
+      "updatedAt": "2026-10-12T08:06:27.729Z"
+    },
+    {
+      "id": "cd723fb9-c85a-4d10-8ffe-a120f20e17f5",
+      "question": "Can I return an opened product?",
+      "answer": "For health and safety reasons, opened, unsealed or partially used supplement containers cannot be returned. See our Returns & Replacement Policy for the full details.",
+      "category": "Returns & Support",
+      "order": 10,
+      "isPublished": true,
+      "createdAt": "2026-10-12T08:06:27.794Z",
+      "updatedAt": "2026-10-12T08:06:27.794Z"
+    },
+    {
+      "id": "e940313b-97fa-417f-8c5b-dc777fc95ab6",
+      "question": "Can I cancel my order?",
+      "answer": "Yes, free of charge, as long as it has not been packed and shipped. Email support@mwpsupplements.com with your order number as soon as possible.",
+      "category": "Returns & Support",
+      "order": 11,
+      "isPublished": true,
+      "createdAt": "2026-10-12T08:06:27.860Z",
+      "updatedAt": "2026-10-12T08:06:27.860Z"
+    },
+    {
+      "id": "973c303a-c407-4884-bd15-b0cc5c191de1",
+      "question": "How do I contact support?",
+      "answer": "Email support@mwpsupplements.com or call 800-814-4477, Monday–Friday, 9:00 AM–6:00 PM. You can also use the contact form on our Contact page.",
+      "category": "Returns & Support",
+      "order": 12,
+      "isPublished": true,
+      "createdAt": "2026-10-12T08:06:27.925Z",
+      "updatedAt": "2026-11-16T08:33:27.768Z"
+    }
+  ]
+}

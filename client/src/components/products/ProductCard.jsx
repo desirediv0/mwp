@@ -212,7 +212,7 @@ export const ProductCard = ({ product, viewMode = "grid" }) => {
   const Stars = ({ size = 13 }) => (
     <span className="inline-flex items-center gap-0.5" aria-hidden="true">
       {[1, 2, 3, 4, 5].map((i) => (
-        <Star key={i} className={cn("shrink-0", i <= Math.round(rating) ? "fill-[#D4A437] text-[#D4A437]" : "fill-[#E6E8EE] text-[#E6E8EE]")} style={{ width: size, height: size }} />
+        <Star key={i} className={cn("shrink-0", i <= Math.round(rating) ? "fill-[#e08a1f] text-[#e08a1f]" : "fill-[#E6E8EE] text-[#E6E8EE]")} style={{ width: size, height: size }} />
       ))}
     </span>
   );
@@ -235,7 +235,7 @@ export const ProductCard = ({ product, viewMode = "grid" }) => {
       disabled={!showPrice || isAddingToCart || isOutOfStock}
       className={cn(
         "inline-flex min-h-[46px] items-center justify-center gap-2 rounded-full px-5 text-[13px] font-semibold transition-all active:scale-[0.98]",
-        addedToCart ? "bg-[#1F8A4C] text-white" : "bg-[#12213F] text-white hover:bg-[#B3001B]",
+        addedToCart ? "bg-[#1F8A4C] text-white" : "bg-[#12213F] text-white hover:bg-[#a81f24]",
         "disabled:cursor-not-allowed disabled:bg-[#C9CDD8] disabled:text-white",
         className
       )}
@@ -262,7 +262,7 @@ export const ProductCard = ({ product, viewMode = "grid" }) => {
       title={label}
       className={cn(
         "grid h-10 w-10 place-items-center rounded-full border bg-white/95 shadow-sm backdrop-blur transition-all hover:scale-105 sm:h-9 sm:w-9",
-        active ? "border-[#B3001B] text-[#B3001B]" : "border-black/[0.06] text-[#4A5470] hover:text-[#12213F]"
+        active ? "border-[#a81f24] text-[#a81f24]" : "border-black/[0.06] text-[#4A5470] hover:text-[#12213F]"
       )}
     >
       {children}
@@ -272,13 +272,13 @@ export const ProductCard = ({ product, viewMode = "grid" }) => {
   const Badges = () => (
     <div className="pointer-events-none absolute left-3 top-3 z-20 flex flex-col items-start gap-1.5">
       {showCompare && discountPercent > 0 && (
-        <span className="rounded-full bg-[#B3001B] px-3 py-1 text-[11px] font-semibold tracking-wide text-white shadow-sm">Save {discountPercent}%</span>
+        <span className="rounded-full bg-[#a81f24] px-3 py-1 text-[11px] font-semibold tracking-wide text-white shadow-sm">Save {discountPercent}%</span>
       )}
       {showFlashSaleBadge && (
-        <span className="rounded-full bg-[#12213F] px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.12em] text-[#E6C26A] shadow-sm">Flash sale</span>
+        <span className="rounded-full bg-[#12213F] px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.12em] text-[#f2b04a] shadow-sm">Flash sale</span>
       )}
       {product.featured && !discountPercent && !showFlashSaleBadge && (
-        <span className="rounded-full bg-white/95 px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.14em] text-[#A8741F] shadow-sm ring-1 ring-[#EADFC4]">Best seller</span>
+        <span className="rounded-full bg-white/95 px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.14em] text-[#b45f10] shadow-sm ring-1 ring-[#EADFC4]">Best seller</span>
       )}
     </div>
   );
@@ -316,7 +316,7 @@ export const ProductCard = ({ product, viewMode = "grid" }) => {
   if (isList) {
     return (
       <article
-        className="group relative flex overflow-hidden rounded-3xl border border-[#E6DFC9] bg-white transition-all duration-300 hover:border-[#D4A437] hover:shadow-[0_26px_50px_-36px_#12213F88]"
+        className="group relative flex overflow-hidden rounded-3xl border border-[#E6DFC9] bg-white transition-all duration-300 hover:border-[#e08a1f] hover:shadow-[0_26px_50px_-36px_#12213F88]"
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
       >
@@ -327,7 +327,7 @@ export const ProductCard = ({ product, viewMode = "grid" }) => {
         <div className="flex min-w-0 flex-1 flex-col justify-between gap-3 p-4 sm:p-6">
           <div>
             {categoryName && <span className="text-[11px] font-semibold uppercase tracking-[0.16em]" style={{ color: tone.accent }}>{categoryName}</span>}
-            <Link href={productHref}><h3 className="mt-1 text-[18px] font-semibold leading-snug text-[#12213F] hover:text-[#A8741F]">{product.name}</h3></Link>
+            <Link href={productHref}><h3 className="mt-1 text-[18px] font-semibold leading-snug text-[#12213F] hover:text-[#b45f10]">{product.name}</h3></Link>
             {tagline && <p className="mt-1 text-[13.5px] text-[#4A5470]">{tagline}</p>}
             {hasReviews && <div className="mt-2 flex items-center gap-1.5"><Stars /><span className="text-[12px] text-[#4A5470]">{rating.toFixed(1)} ({reviewCount})</span></div>}
           </div>
@@ -344,7 +344,7 @@ export const ProductCard = ({ product, viewMode = "grid" }) => {
   /* ── GRID MODE ── */
   return (
     <article
-      className="group relative flex h-full flex-col overflow-hidden rounded-[1.25rem] border border-[#E6DFC9] bg-white transition-all duration-300 hover:-translate-y-1 hover:border-[#D4A437] hover:shadow-[0_28px_44px_-30px_#12213F99]"
+      className="group relative flex h-full flex-col overflow-hidden rounded-[1.25rem] border border-[#E6DFC9] bg-white transition-all duration-300 hover:-translate-y-1 hover:border-[#e08a1f] hover:shadow-[0_28px_44px_-30px_#12213F99]"
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
@@ -362,7 +362,7 @@ export const ProductCard = ({ product, viewMode = "grid" }) => {
 
       <div className="flex flex-1 flex-col gap-1 px-3.5 pb-3.5 pt-3 sm:px-4 sm:pb-4">
         <Link href={productHref} className="block">
-          <h3 className="line-clamp-2 text-[15px] font-semibold leading-snug tracking-tight text-[#12213F] transition-colors group-hover:text-[#A8741F] sm:text-[16px]">{product.name}</h3>
+          <h3 className="line-clamp-2 text-[15px] font-semibold leading-snug tracking-tight text-[#12213F] transition-colors group-hover:text-[#b45f10] sm:text-[16px]">{product.name}</h3>
         </Link>
         {tagline && <p className="line-clamp-1 text-[12.5px] text-[#5A6275]">{tagline}</p>}
         {hasReviews && (
@@ -383,7 +383,7 @@ export const ProductCard = ({ product, viewMode = "grid" }) => {
               title={addedToCart ? "Added to bag" : "Add to bag"}
               className={cn(
                 "grid h-11 w-11 shrink-0 place-items-center rounded-full text-white transition-all active:scale-95",
-                addedToCart ? "bg-[#1F8A4C]" : "bg-[#12213F] hover:bg-[#B3001B]",
+                addedToCart ? "bg-[#1F8A4C]" : "bg-[#12213F] hover:bg-[#a81f24]",
                 "disabled:cursor-not-allowed disabled:bg-[#C9CDD8]"
               )}
             >

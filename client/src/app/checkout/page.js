@@ -390,7 +390,7 @@ export default function CheckoutPage() {
                     </Link>
                     <div className="flex flex-wrap items-end justify-between gap-4">
                         <h1 className="text-4xl sm:text-5xl font-semibold tracking-tight text-white">Checkout</h1>
-                        <p className="inline-flex items-center gap-2 text-[12px] text-[#CDD4E6]"><Lock className="h-3.5 w-3.5 text-[#E6C26A]" /> Secure and encrypted with Stripe</p>
+                        <p className="inline-flex items-center gap-2 text-[12px] text-[#CDD4E6]"><Lock className="h-3.5 w-3.5 text-[#f2b04a]" /> Secure and encrypted with Stripe</p>
                     </div>
                 </div>
             </section>

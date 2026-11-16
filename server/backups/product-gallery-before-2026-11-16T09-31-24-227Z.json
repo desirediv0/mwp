@@ -1,0 +1,94 @@
+[
+  {
+    "id": "9acba3a5-0355-4d7b-80d4-efd1ffac3cd3",
+    "slug": "rapid-boost",
+    "name": "RAPID BOOST",
+    "images": [
+      {
+        "id": "26bd5645-8e60-4849-a5a4-774a94f047fc",
+        "productId": "9acba3a5-0355-4d7b-80d4-efd1ffac3cd3",
+        "url": "mwp/products/2026-10-05T06-44-00-046Z-rapid-boost.webp",
+        "alt": "RAPID BOOST™ bottle",
+        "isPrimary": true,
+        "order": 0,
+        "createdAt": "2026-10-05T06:44:01.590Z",
+        "updatedAt": "2026-10-05T06:44:01.590Z"
+      }
+    ],
+    "variants": [
+      {
+        "id": "bdeed54c-e977-41b7-a925-988156c79683",
+        "images": []
+      }
+    ]
+  },
+  {
+    "id": "525cf338-6358-40c5-8151-f38c3f881a09",
+    "slug": "her-power",
+    "name": "HER POWER",
+    "images": [
+      {
+        "id": "4e44b548-faa7-4da3-9d42-040c17f7ae39",
+        "productId": "525cf338-6358-40c5-8151-f38c3f881a09",
+        "url": "mwp/products/2026-10-05T06-44-00-046Z-her-power.webp",
+        "alt": "HER POWER™ bottle",
+        "isPrimary": true,
+        "order": 0,
+        "createdAt": "2026-10-05T06:44:01.977Z",
+        "updatedAt": "2026-10-05T06:44:01.977Z"
+      }
+    ],
+    "variants": [
+      {
+        "id": "36adac82-854b-438d-bd3a-f98f12917d42",
+        "images": []
+      }
+    ]
+  },
+  {
+    "id": "44359dc1-76c4-46c5-b8dd-317c057dbed0",
+    "slug": "power-max",
+    "name": "POWER MAX",
+    "images": [
+      {
+        "id": "27976f09-9a3b-42a3-9dde-9150d278ffac",
+        "productId": "44359dc1-76c4-46c5-b8dd-317c057dbed0",
+        "url": "mwp/products/2026-10-05T06-44-00-046Z-power-max.webp",
+        "alt": "POWER MAX™ bottle",
+        "isPrimary": true,
+        "order": 0,
+        "createdAt": "2026-10-05T06:44:01.658Z",
+        "updatedAt": "2026-10-05T06:44:01.658Z"
+      }
+    ],
+    "variants": [
+      {
+        "id": "e7db463a-f7d7-469f-971f-83fece2156a0",
+        "images": []
+      }
+    ]
+  },
+  {
+    "id": "bfdfa7fa-0b86-46d1-9518-1076b4147079",
+    "slug": "daily-vitality",
+    "name": "DAILY VITALITY",
+    "images": [
+      {
+        "id": "14f4bd7a-a330-4a1d-a1e3-cf03fa6bf11a",
+        "productId": "bfdfa7fa-0b86-46d1-9518-1076b4147079",
+        "url": "mwp/products/2026-10-05T06-44-00-046Z-daily-vitality.webp",
+        "alt": "DAILY VITALITY™ bottle",
+        "isPrimary": true,
+        "order": 0,
+        "createdAt": "2026-10-05T06:44:02.116Z",
+        "updatedAt": "2026-10-05T06:44:02.116Z"
+      }
+    ],
+    "variants": [
+      {
+        "id": "d6f5226e-73c1-4038-9eb1-c01d08befd4e",
+        "images": []
+      }
+    ]
+  }
+]

@@ -29,7 +29,7 @@ function Capsule() {
   return (
     <span
       aria-hidden="true"
-      className="mx-[0.45em] inline-block h-[0.42em] w-[0.95em] shrink-0 -rotate-[24deg] rounded-full bg-[linear-gradient(90deg,#c9a227_0_50%,#f7f1e6_50%_100%)] shadow-[inset_0_-0.05em_0.08em_rgba(0,0,0,0.3),0_0_0.6em_rgba(201,162,39,0.35)] align-middle"
+      className="mx-[0.45em] inline-block h-[0.42em] w-[0.95em] shrink-0 -rotate-[24deg] rounded-full bg-[linear-gradient(90deg,#d9822b_0_50%,#f7f1e6_50%_100%)] shadow-[inset_0_-0.05em_0.08em_rgba(0,0,0,0.3),0_0_0.6em_rgba(201,162,39,0.35)] align-middle"
     />
   );
 }
@@ -113,7 +113,7 @@ export default function MwpScrollMarquee() {
             velocityFactor={velocityFactor}
             active={animate}
             paused={paused}
-            separator={<span className="mx-5 inline-block h-1 w-1 rounded-full bg-[#c9a227]" />}
+            separator={<span className="mx-5 inline-block h-1 w-1 rounded-full bg-[#d9822b]" />}
             className="text-[11px] uppercase tracking-[0.24em] text-white/55 sm:text-xs"
           />
         </motion.div>

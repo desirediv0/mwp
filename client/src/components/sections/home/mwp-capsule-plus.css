@@ -5,7 +5,7 @@
 .mwp-cplus {
   --mcp-navy: #14224a;
   --mcp-muted: #5c6680;
-  --mcp-gold: #c9962e;
+  --mcp-gold: #d9822b;
   --mcp-gold-hi: #f2d27a;
   --mcp-mist: #f4f6fa;
   --mcp-line: #e6e9f0;
@@ -92,7 +92,7 @@
 .mwp-cplus__line--power > span {
   animation-delay: 1.55s;
   color: transparent;
-  background: linear-gradient(180deg, #e9c46a 0%, #c9962e 55%, #8f6516 100%);
+  background: linear-gradient(180deg, #e9c46a 0%, #d9822b 55%, #8f6516 100%);
   -webkit-background-clip: text;
   background-clip: text;
 }
@@ -333,7 +333,7 @@
 .mwp-cplus__half--l {
   left: 0;
   border-radius: 999px 0 0 999px;
-  background-image: linear-gradient(180deg, #fff7dc 0%, #f2d27a 16%, #d9ae4e 34%, #c9962e 50%, #a57620 68%, #7c5714 84%, #c79a3e 100%);
+  background-image: linear-gradient(180deg, #fff7dc 0%, #f2d27a 16%, #d9ae4e 34%, #d9822b 50%, #a57620 68%, #7c5714 84%, #c79a3e 100%);
   animation:
     mcp-in-left 1.3s 0.2s var(--mcp-ease) both,
     mcp-roll 6s 2.4s ease-in-out infinite;
@@ -556,7 +556,7 @@
 .mwp-cplus__line--power > span[data-beat] {
   background-image:
     linear-gradient(110deg, transparent 40%, rgb(255 250 230 / 0.95) 50%, transparent 60%),
-    linear-gradient(180deg, #e9c46a 0%, #c9962e 55%, #8f6516 100%);
+    linear-gradient(180deg, #e9c46a 0%, #d9822b 55%, #8f6516 100%);
   background-size:
     260% 100%,
     100% 100%;

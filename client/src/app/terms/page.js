@@ -9,7 +9,7 @@ export const metadata = {
     "The terms that apply when you use mwpsupplements.com and buy MWP Supplements products: orders, payments, supplement use and more.",
 };
 
-const link = "font-semibold text-[#8f6f3a] underline underline-offset-4";
+const link = "font-semibold text-[#8a4a14] underline underline-offset-4";
 
 const sections = [
   {

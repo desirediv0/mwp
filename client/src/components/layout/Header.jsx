@@ -85,7 +85,7 @@ function FormulaMenuCard({ item, active, onClick }) {
       href={item.href}
       onClick={onClick}
       aria-current={active ? "page" : undefined}
-      className={cn("group flex min-h-[96px] items-center gap-3 rounded-2xl border bg-white p-3 transition-colors sm:gap-4", active ? "border-[#A8741F]" : "border-neutral-200 hover:border-[#A8741F]")}
+      className={cn("group flex min-h-[96px] items-center gap-3 rounded-2xl border bg-white p-3 transition-colors sm:gap-4", active ? "border-[#b45f10]" : "border-neutral-200 hover:border-[#b45f10]")}
     >
       <span className="relative h-[72px] w-10 shrink-0 sm:w-12">
         <Image src={item.image || `/products/cutouts/${item.slug}.webp`} alt={item.name || item.slug} fill sizes="48px" className="object-contain" />
@@ -94,7 +94,7 @@ function FormulaMenuCard({ item, active, onClick }) {
         <span className="block text-[12px] leading-5 text-neutral-900 sm:text-sm">{item.label.replace(/^MWP /, "")}</span>
         <span className="mt-1 block text-[10px] leading-4 text-neutral-500 sm:text-[11px]">{item.tag}</span>
       </span>
-      <IconArrowUpRight className="hidden h-4 w-4 shrink-0 text-neutral-400 transition-colors group-hover:text-[#A8741F] sm:block" stroke={1.5} />
+      <IconArrowUpRight className="hidden h-4 w-4 shrink-0 text-neutral-400 transition-colors group-hover:text-[#b45f10] sm:block" stroke={1.5} />
     </Link>
   );
 }
@@ -185,7 +185,7 @@ export function Navbar() {
         <div className="h-8 overflow-hidden bg-white border-b border-neutral-100">
           <div className="max-w-[1440px] mx-auto px-5 sm:px-8 flex items-center justify-center lg:justify-between h-8 gap-6 text-[9px] sm:text-[10px] text-neutral-500">
             <span className="flex min-w-0 items-center gap-2 tracking-[0.08em]">
-              <span className="h-1 w-1 shrink-0 rounded-full bg-[#A8741F]" />
+              <span className="h-1 w-1 shrink-0 rounded-full bg-[#b45f10]" />
               <span className="sm:hidden">Every dose shown. One everyday routine.</span>
               <span className="hidden sm:block truncate">{ANNOUNCEMENTS[0]}</span>
             </span>
@@ -252,7 +252,7 @@ export function Navbar() {
                       className="absolute left-0 top-full mt-4 flex max-h-[calc(100dvh-144px)] w-[720px] max-w-[90vw] flex-col bg-white border border-neutral-200 rounded-3xl shadow-[0_24px_60px_-24px_rgba(20,35,28,0.24)] overflow-hidden z-[70]"
                     >
                       <div className="flex shrink-0 items-center justify-between gap-6 px-6 py-5 border-b border-neutral-100">
-                        <div><span className="text-[9px] uppercase tracking-[0.2em] text-[#A8741F]">
+                        <div><span className="text-[9px] uppercase tracking-[0.2em] text-[#b45f10]">
                           {t("allProducts")}
                         </span>
                         <p className="mt-1.5 text-xl tracking-tight">Find your everyday formula.</p></div>
@@ -291,7 +291,7 @@ export function Navbar() {
                   >
                     {label || t(labelKey)}
                     {active && (
-                      <span className="absolute bottom-1 left-2.5 right-2.5 h-px bg-[#A8741F]" />
+                      <span className="absolute bottom-1 left-2.5 right-2.5 h-px bg-[#b45f10]" />
                     )}
                   </Link>
                 );
@@ -329,19 +329,6 @@ export function Navbar() {
                   </Link>
                 )}
               </ClientOnly>
-
-              <Link
-                href="/compare"
-                className="hidden xl:flex relative items-center justify-center w-9 h-9 text-neutral-600 hover:text-neutral-950 hover:bg-neutral-100 transition-colors rounded-full"
-                aria-label="Compare"
-              >
-                <IconGitCompare className="h-4.5 w-4.5 sm:h-5 sm:w-5" stroke={2} />
-                {compareCount > 0 && (
-                  <span className="absolute -top-1 -right-1 bg-neutral-900 text-white text-[10px] font-bold min-w-[18px] h-[18px] flex items-center justify-center px-1 ring-2 ring-white rounded-full">
-                    {compareCount}
-                  </span>
-                )}
-              </Link>
 
               <Link
                 href="/wishlist"
@@ -575,7 +562,7 @@ function SearchDialog({ open, onOpenChange, categories }) {
                         >
                           <span className="relative h-11 w-9 shrink-0"><Image src={getImg(p)} alt={p.name} fill sizes="36px" className="object-contain" /></span>
                           <span className="min-w-0 flex-1 truncate text-sm text-neutral-900">{highlight(clean(p.name))}</span>
-                          {price && <span className="shrink-0 text-xs text-[#A8741F]">{price}</span>}
+                          {price && <span className="shrink-0 text-xs text-[#b45f10]">{price}</span>}
                           <IconArrowRight className="h-3.5 w-3.5 shrink-0 text-neutral-400" />
                         </button>
                       </li>
@@ -683,7 +670,7 @@ function MobileMenu({
                 <Link
                   href="/wishlist"
                   onClick={onClose}
-                  className="flex items-center justify-center gap-1.5 py-2 px-2 bg-white border border-neutral-200 rounded-lg text-[11px] font-semibold text-neutral-700 hover:text-[#A8741F] hover:bg-white transition-colors"
+                  className="flex items-center justify-center gap-1.5 py-2 px-2 bg-white border border-neutral-200 rounded-lg text-[11px] font-semibold text-neutral-700 hover:text-[#b45f10] hover:bg-white transition-colors"
                 >
                   <IconHeart className="h-3.5 w-3.5 text-neutral-400" />
                   <span>Wishlist</span>
@@ -691,7 +678,7 @@ function MobileMenu({
                 <Link
                   href="/compare"
                   onClick={onClose}
-                  className="flex items-center justify-center gap-1.5 py-2 px-2 bg-white border border-neutral-200 rounded-lg text-[11px] font-semibold text-neutral-700 hover:text-[#A8741F] hover:bg-white transition-colors relative"
+                  className="flex items-center justify-center gap-1.5 py-2 px-2 bg-white border border-neutral-200 rounded-lg text-[11px] font-semibold text-neutral-700 hover:text-[#b45f10] hover:bg-white transition-colors relative"
                 >
                   <IconGitCompare className="h-3.5 w-3.5 text-neutral-400" />
                   <span>Compare</span>
@@ -801,7 +788,7 @@ function MobileMenu({
                     >
                       <div className="flex items-center gap-2.5">
                         {Icon && (
-                          <Icon className="h-4 w-4 text-[#A8741F]" stroke={2} />
+                          <Icon className="h-4 w-4 text-[#b45f10]" stroke={2} />
                         )}
                         <span>{label || t(labelKey)}</span>
                       </div>
@@ -821,7 +808,7 @@ function MobileMenu({
                     <Link
                       href="/categories"
                       onClick={onClose}
-                      className="text-[10px] uppercase font-bold text-neutral-500 hover:text-[#A8741F] inline-flex items-center gap-0.5"
+                      className="text-[10px] uppercase font-bold text-neutral-500 hover:text-[#b45f10] inline-flex items-center gap-0.5"
                     >
                       {t("viewAll")} <IconArrowUpRight className="h-3 w-3" />
                     </Link>
@@ -879,7 +866,7 @@ function MobileMenu({
                   <IconBrandFacebook className="h-4 w-4" />
                 </a>
                 <span className="text-neutral-300">|</span>
-                <span className="text-[10px] text-[#A8741F] font-semibold inline-flex items-center gap-1">
+                <span className="text-[10px] text-[#b45f10] font-semibold inline-flex items-center gap-1">
                   <IconShieldCheck className="h-3.5 w-3.5" /> 100% Lab Tested
                 </span>
               </div>

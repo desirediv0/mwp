@@ -1,859 +1,250 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import Link from "next/link";
-import Image from "next/image";
-import { AnimatePresence, motion } from "framer-motion";
-import { fetchApi, formatCurrency, cn } from "@/lib/utils";
-import {
-  CORE_PRODUCTS,
-  QUIZ_GOALS,
-  getProductImage,
-} from "@/lib/mwp-content";
-import { useLanguage } from "@/lib/language-context";
-import {
-  IconMessageChatbot,
-  IconSend,
-  IconX,
-  IconSparkles,
-  IconRotateClockwise,
-  IconArrowRight,
-  IconCheck,
-} from "@tabler/icons-react";
+import { useCallback, useEffect, useRef, useState } from "react";
+import { IconMessageChatbot, IconX, IconSend, IconRotateClockwise, IconLoader2 } from "@tabler/icons-react";
+import { fetchApi } from "@/lib/utils";
+import { SITE_CONTACT } from "@/lib/siteContact";
 
-const CHAT_KEY = "mwp-advisor-chat-v1";
-const PROFILE_KEY = "mwp-advisor-profile-v1";
+// The website chat assistant. Answers come from Claude through our own server (/api/advisor/chat):
+// the API key never reaches the browser, and every chat is saved so the team can review it.
 
-const COPY = {
-  en: {
-    welcomeTitle: "Welcome to MWP Advisor™",
-    welcome:
-      "Hi! I'm your personal wellness assistant. Answer 2 quick questions and I'll match you with the exact formula — or ask me anything about ingredients, quality, or shipping.",
-    pickGoal: "What's your main goal?",
-    followUp: {
-      "mens-performance":
-        "Great choice. What matters most for your performance?",
-      energy: "Got it. Where do you need the most support?",
-      "womens-wellness": "Lovely. What focus should we prioritize?",
-      "daily-health": "Perfect. What's your daily priority?",
-    },
-    prefs: {
-      "mens-performance|daily": {
-        label: "Everyday long-term vitality",
-        key: "ultra-pro",
-      },
-      "mens-performance|strength": {
-        label: "Herbal strength & stamina",
-        key: "power-max",
-      },
-      "mens-performance|fast": {
-        label: "Fast, on-demand action",
-        key: "rapid-boost",
-      },
-      "energy|fast": { label: "Quick energy boost", key: "rapid-boost" },
-      "energy|focus": { label: "Energy + mental focus", key: "her-energy" },
-      "energy|daily": { label: "All-day wellness energy", key: "daily-vitality" },
-      "womens-wellness|balance": {
-        label: "Hormonal balance & cycle",
-        key: "her-power",
-      },
-      "womens-wellness|energy": {
-        label: "Energy & focus for her",
-        key: "her-energy",
-      },
-      "daily-health|complete": {
-        label: "Complete daily multivitamin power",
-        key: "daily-vitality",
-      },
-      "daily-health|energy": {
-        label: "Daily energy & stamina",
-        key: "her-energy",
-      },
-    },
-    matched: "Based on your answers, here's your match:",
-    keyBenefits: "Key benefits",
-    signature: "Signature actives",
-    viewProduct: "View product",
-    shopNow: "Shop now",
-    alsoConsider: "Also consider",
-    askMore: "Ask me anything else…",
-    retake: "Start over",
-    online: "Online · replies instantly",
-    step: "Guided match",
-    freeChat: "Free chat",
-    savedNote: "Chat saved on this device",
-    quick: {
-      compare: "Compare men's products",
-      quality: "How does testing work?",
-      ingredients: "Explain key ingredients",
-      shipping: "Shipping & returns?",
-    },
-    close: "Close",
-    open: "Ask MWP Advisor",
-  },
-  es: {
-    welcomeTitle: "Bienvenido a Asesor MWP™",
-    welcome:
-      "¡Hola! Soy tu asistente de bienestar. Responde 2 preguntas rápidas y te recomendaré la fórmula ideal — o pregúntame sobre ingredientes, calidad o envíos.",
-    pickGoal: "¿Cuál es tu objetivo principal?",
-    followUp: {
-      "mens-performance":
-        "Buena elección. ¿Qué importa más en tu rendimiento?",
-      energy: "Entendido. ¿Dónde necesitas más apoyo?",
-      "womens-wellness": "Genial. ¿Qué debemos priorizar?",
-      "daily-health": "Perfecto. ¿Cuál es tu prioridad diaria?",
-    },
-    prefs: {
-      "mens-performance|daily": {
-        label: "Vitalidad diaria a largo plazo",
-        key: "ultra-pro",
-      },
-      "mens-performance|strength": {
-        label: "Fuerza y resistencia herbal",
-        key: "power-max",
-      },
-      "mens-performance|fast": {
-        label: "Acción rápida bajo demanda",
-        key: "rapid-boost",
-      },
-      "energy|fast": { label: "Energía rápida", key: "rapid-boost" },
-      "energy|focus": { label: "Energía + enfoque", key: "her-energy" },
-      "energy|daily": { label: "Energía diaria integral", key: "daily-vitality" },
-      "womens-wellness|balance": {
-        label: "Equilibrio hormonal y ciclo",
-        key: "her-power",
-      },
-      "womens-wellness|energy": {
-        label: "Energía y enfoque para ella",
-        key: "her-energy",
-      },
-      "daily-health|complete": {
-        label: "Bienestar diario completo",
-        key: "daily-vitality",
-      },
-      "daily-health|energy": {
-        label: "Energía y vitalidad diaria",
-        key: "her-energy",
-      },
-    },
-    matched: "Según tus respuestas, esta es tu fórmula:",
-    keyBenefits: "Beneficios clave",
-    signature: "Activos signature",
-    viewProduct: "Ver producto",
-    shopNow: "Comprar",
-    alsoConsider: "También considera",
-    askMore: "Pregúntame algo más…",
-    retake: "Empezar de nuevo",
-    online: "En línea · responde al instante",
-    step: "Recomendación guiada",
-    freeChat: "Chat libre",
-    savedNote: "Chat guardado en este dispositivo",
-    quick: {
-      compare: "Compara productos masculinos",
-      quality: "¿Cómo son las pruebas?",
-      ingredients: "Explica ingredientes clave",
-      shipping: "¿Envíos y devoluciones?",
-    },
-    close: "Cerrar",
-    open: "Preguntar al Asesor MWP",
-  },
-};
+const SID_KEY = "mwp_advisor_sid";
+const QUICK = ["Which product is right for me?", "How do I take Power Max?", "Shipping and returns", "Are your products FDA approved?"];
 
-const PREF_KEYS = {
-  "mens-performance": ["daily", "strength", "fast"],
-  energy: ["fast", "focus", "daily"],
-  "womens-wellness": ["balance", "energy"],
-  "daily-health": ["complete", "energy"],
-};
+const newSid = () => (typeof crypto !== "undefined" && crypto.randomUUID ? crypto.randomUUID() : `${Date.now()}-${Math.random().toString(16).slice(2)}-${Math.random().toString(16).slice(2)}`);
 
-function welcomeMsg(copy) {
-  return {
-    id: "w",
-    role: "advisor",
-    title: copy.welcomeTitle,
-    text: copy.welcome,
-    choices: QUIZ_GOALS.map((g) => ({
-      id: g.id,
-      kind: "goal",
-      label:
-        g.id === "mens-performance"
-          ? "Men's Performance"
-          : g.id === "energy"
-            ? "Energy"
-            : g.id === "womens-wellness"
-              ? "Women's Wellness"
-              : "Daily Health",
-    })),
-    links: [],
-  };
+function getSid() {
+  try {
+    let s = localStorage.getItem(SID_KEY);
+    if (!s || !/^[A-Za-z0-9-]{16,64}$/.test(s)) {
+      s = newSid();
+      localStorage.setItem(SID_KEY, s);
+    }
+    return s;
+  } catch {
+    return newSid();
+  }
 }
 
-function goalMsg(copy, goalId, lang) {
-  const goal = QUIZ_GOALS.find((g) => g.id === goalId);
-  const labelMap = {
-    "mens-performance": lang === "es" ? "Rendimiento Masculino" : "Men's Performance",
-    energy: lang === "es" ? "Energía" : "Energy",
-    "womens-wellness": lang === "es" ? "Bienestar Femenino" : "Women's Wellness",
-    "daily-health": lang === "es" ? "Salud Diaria" : "Daily Health",
-  };
-  const prefIds = PREF_KEYS[goalId] || [];
-  const choices = prefIds.map((p) => {
-    const meta = copy.prefs[`${goalId}|${p}`];
-    return { id: p, kind: "pref", label: meta?.label || p };
-  });
-  return {
-    id: `goal-${goalId}-${Date.now()}`,
-    role: "advisor",
-    text: copy.followUp[goalId] || copy.pickGoal,
-    meta: { goalId, goalLabel: labelMap[goalId] || goal?.id },
-    choices,
-    links: [],
-  };
-}
-
-function absImg(raw) {
-  if (!raw) return "/placeholder.jpg";
-  if (raw.startsWith("http") || raw.startsWith("/")) return raw;
-  return `https://desirediv-storage.blr1.digitaloceanspaces.com/${raw}`;
-}
-
-function findApi(core, products) {
-  if (!core || !products?.length) return null;
+// Turns links to our own site into normal links and keeps line breaks and "-" lists
+function Message({ text }) {
+  const parts = String(text).split(/(https?:\/\/[^\s)]+)/g);
   return (
-    products.find((p) => {
-      const hay = `${p.name || ""} ${p.slug || ""}`
-        .toLowerCase()
-        .replace(/[™®]/g, "");
-      return core.match.some((m) => hay.includes(m));
-    }) || null
+    <p className="whitespace-pre-line text-[14px] leading-relaxed">
+      {parts.map((p, i) =>
+        /^https?:\/\//.test(p) ? (
+          <a key={i} href={p.replace(/^https?:\/\/(www\.)?mwpsupplements\.com/, "")} className="font-semibold underline underline-offset-2" target={/mwpsupplements\.com/.test(p) ? undefined : "_blank"} rel="noopener noreferrer">
+            {p.replace(/^https?:\/\/(www\.)?/, "")}
+          </a>
+        ) : (
+          p
+        )
+      )}
+    </p>
   );
 }
 
-function recommendMsg(copy, goalId, prefId, products) {
-  const meta = copy.prefs[`${goalId}|${prefId}`];
-  const key = meta?.key || QUIZ_GOALS.find((g) => g.id === goalId)?.productKeys?.[0];
-  const core = CORE_PRODUCTS.find((c) => c.key === key) || CORE_PRODUCTS[0];
-  const api = findApi(core, products);
-  const goal = QUIZ_GOALS.find((g) => g.id === goalId);
-  const altKeys = (goal?.productKeys || []).filter((k) => k !== core.key).slice(0, 2);
-  const alts = altKeys
-    .map((k) => {
-      const c = CORE_PRODUCTS.find((x) => x.key === k);
-      const a = findApi(c, products);
-      return c ? { core: c, api: a } : null;
-    })
-    .filter(Boolean);
-
-  return {
-    id: `rec-${core.key}-${Date.now()}`,
-    role: "advisor",
-    text: copy.matched,
-    recommend: {
-      core,
-      api,
-      price: api?.basePrice ?? api?.price ?? null,
-      image: absImg(getProductImage(api)),
-    },
-    alts: alts.map((a) => ({
-      key: a.core.key,
-      name: a.core.name,
-      slug: a.api?.slug || null,
-    })),
-    choices: [
-      { id: "more", kind: "free", label: copy.askMore },
-      { id: "retake", kind: "retake", label: copy.retake },
-    ],
-    links: [
-      api?.slug
-        ? { label: copy.viewProduct, href: `/products/${api.slug}`, primary: true }
-        : { label: copy.shopNow, href: "/products", primary: true },
-    ],
-  };
-}
-
-function matchKeyword(text) {
-  const q = text.toLowerCase();
-  for (const core of CORE_PRODUCTS) {
-    if (core.match.some((m) => q.includes(m))) return core;
-  }
-  return null;
-}
-
-function buildFreeReply(text, products, lang) {
-  const q = text.toLowerCase().trim();
-  if (!q) return { text: "Ask me about formulas, ingredients, quality…", links: [] };
-
-  const core = matchKeyword(q);
-
-  if (core) {
-    const apiP = findApi(core, products);
-    return {
-      text: `${core.name} — ${core.headline}. ${core.focus} Benefits: ${core.benefits
-        .slice(0, 5)
-        .join(", ")}. Signature: ${core.signature}.`,
-      links: [
-        apiP?.slug
-          ? { label: "View product", href: `/products/${apiP.slug}`, primary: true }
-          : { label: "All products", href: "/products", primary: true },
-        { label: "Ingredients", href: "/ingredients" },
-      ],
-    };
-  }
-
-  if (/compare|compara|difference|diferencia/.test(q)) {
-    return {
-      text:
-        lang === "es"
-          ? "Ultra Pro = vitalidad diaria. Power Max = fuerza herbal. Rapid Boost = acción rápida. Elige tu prioridad y te recomiendo una."
-          : "Ultra Pro = everyday vitality. Power Max = herbal strength. Rapid Boost = fast on-demand. Tell me which goal matters most and I'll pick one.",
-      links: [
-        { label: "Compare tools", href: "/compare" },
-        { label: "All products", href: "/products" },
-      ],
-    };
-  }
-
-  if (/test|lab|quality|coa|certificate|certific|gmp|heavy metal|microb|pureza|calidad/.test(q)) {
-    return {
-      text:
-        lang === "es"
-          ? "Cada lote es GMP y pasa laboratorio independiente: COA, metales pesados y microbiología. Abre el Muro de Certificados."
-          : "Every batch is GMP-manufactured and third-party lab tested: COA, heavy metals and microbial screening. Open the Certificate Wall for proof documents.",
-      links: [
-        { label: "Certificate Wall", href: "/certificates", primary: true },
-        { label: "Why MWP", href: "/why-us" },
-      ],
-    };
-  }
-
-  if (/women|her power|her energy|mujer|femen|cycle|hormon/.test(q)) {
-    return {
-      text:
-        lang === "es"
-          ? "HER POWER™ apoya equilibrio hormonal y ciclo. HER ENERGY™ es energía y enfoque diarios. ¿Balance o energía?"
-          : "HER POWER™ supports hormonal wellness, cycle and balance. HER ENERGY™ is daily energy, focus and stamina. Balance → Her Power; energy → Her Energy.",
-      links: [
-        { label: "Her Power", href: "/products?search=her%20power", primary: true },
-        { label: "Her Energy", href: "/products?search=her%20energy" },
-        { label: "Find Your Formula", href: "/quiz" },
-      ],
-    };
-  }
-
-  if (/men|testosterone|stamina|performance|libido|hombre|rendimiento/.test(q)) {
-    return {
-      text:
-        lang === "es"
-          ? "Línea masculina: ULTRA PRO™ (vitalidad diaria), POWER MAX™ (fuerza herbal), RAPID BOOST™ (acción rápida)."
-          : "Men's line: ULTRA PRO™ (daily vitality), POWER MAX™ (herbal strength), RAPID BOOST™ (fast action). Everyday → Ultra Pro. Strength → Power Max. On-demand → Rapid Boost.",
-      links: [
-        { label: "Find Your Formula", href: "/quiz", primary: true },
-        { label: "Compare men's", href: "/compare" },
-      ],
-    };
-  }
-
-  if (/ingredient|ashwagandha|shilajit|tongkat|maca|ingrediente/.test(q)) {
-    return {
-      text:
-        lang === "es"
-          ? "Cada fórmula usa activos nombrados (KSM-66, PrimaVie Shilajit, Tongkat Ali LJ100…). Abre la biblioteca de ingredientes."
-          : "Named actives (KSM-66, PrimaVie Shilajit, Tongkat Ali LJ100, Citrulline Malate…) each have a clear role — open the ingredient library.",
-      links: [
-        { label: "MWP Ingredients", href: "/ingredients", primary: true },
-        { label: "MWP University", href: "/university" },
-      ],
-    };
-  }
-
-  if (/price|cost|shipping|return|refund|precio|envio|devol/.test(q)) {
-    return {
-      text:
-        lang === "es"
-          ? "Precios y stock en vivo en la página del producto. Envío gratis en pedidos cualificados; devoluciones según la política."
-          : "Live pricing and stock come from the product page. Free shipping on qualifying orders; returns follow our Return Policy.",
-      links: [
-        { label: "Return Policy", href: "/return-policy", primary: true },
-        { label: "Contact support", href: "/contact" },
-      ],
-    };
-  }
-
-  return {
-    text:
-      lang === "es"
-        ? "Puedo recomendar fórmulas, explicar ingredientes, comparar productos y hablar de calidad. Prueba: ¿cuál fórmula es para mí?"
-        : "I can recommend formulas, explain ingredients, compare products, and walk through quality & testing. Or start the guided match above.",
-    links: [
-      { label: "Find Your Formula", href: "/quiz", primary: true },
-      { label: "All products", href: "/products" },
-    ],
-  };
-}
-
-function loadJson(key) {
-  try {
-    const raw = localStorage.getItem(key);
-    return raw ? JSON.parse(raw) : null;
-  } catch {
-    return null;
-  }
-}
-
-function saveJson(key, val) {
-  try {
-    localStorage.setItem(key, JSON.stringify(val));
-  } catch {}
+function Avatar() {
+  return (
+    <span className="mb-0.5 grid h-7 w-7 shrink-0 place-items-center rounded-full bg-gradient-to-br from-[#E2B64D] to-[#b45f10] text-[#12213F]">
+      <IconMessageChatbot size={15} stroke={2} />
+    </span>
+  );
 }
 
 export default function MwpAdvisor() {
-  const { t, lang } = useLanguage();
-  const copy = COPY[lang] || COPY.en;
   const [open, setOpen] = useState(false);
-  const [products, setProducts] = useState([]);
+  const [cfg, setCfg] = useState(null); // { enabled, greeting, disclaimer }
+  const [sid, setSid] = useState("");
+  const [messages, setMessages] = useState([]);
   const [input, setInput] = useState("");
-  const [thinking, setThinking] = useState(false);
-  const [hydrated, setHydrated] = useState(false);
-  const [messages, setMessages] = useState(() => [welcomeMsg(COPY.en)]);
-  const [profile, setProfile] = useState({ goal: null, pref: null });
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState("");
   const listRef = useRef(null);
   const inputRef = useRef(null);
-  const restored = useRef(false);
+  const loaded = useRef(false);
 
+  // load settings and the earlier chat of this browser the first time the window opens
   useEffect(() => {
-    setHydrated(true);
-    fetchApi("/public/products?limit=50")
-      .then((res) => setProducts(res?.data?.products || []))
+    if (!open || loaded.current) return;
+    loaded.current = true;
+    const id = getSid();
+    setSid(id);
+    fetchApi("/advisor/config")
+      .then((r) => setCfg(r.data))
+      .catch(() => setCfg({ enabled: false }));
+    fetchApi(`/advisor/history?sessionId=${id}`)
+      .then((r) => setMessages((r.data?.messages || []).map((m) => ({ role: m.role, text: m.content }))))
       .catch(() => {});
-  }, []);
-
-  useEffect(() => {
-    if (!hydrated || restored.current) return;
-    restored.current = true;
-    const saved = loadJson(CHAT_KEY);
-    const prof = loadJson(PROFILE_KEY);
-    if (prof) setProfile(prof);
-    if (saved?.messages?.length) {
-      setMessages(saved.messages);
-    }
-  }, [hydrated, lang]);
-
-  useEffect(() => {
-    if (!hydrated) return;
-    saveJson(CHAT_KEY, { messages, updatedAt: Date.now() });
-  }, [messages, hydrated]);
-
-  useEffect(() => {
-    if (!hydrated) return;
-    saveJson(PROFILE_KEY, profile);
-  }, [profile, hydrated]);
-
-  useEffect(() => {
-    if (open) {
-      setTimeout(() => inputRef.current?.focus(), 150);
-    }
   }, [open]);
 
   useEffect(() => {
+    if (open) setTimeout(() => inputRef.current?.focus(), 150);
+  }, [open, cfg]);
+
+  useEffect(() => {
     const el = listRef.current;
-    if (!el) return;
-    el.scrollTo({ top: el.scrollHeight, behavior: "smooth" });
-  }, [messages, thinking, open]);
+    if (el) el.scrollTo({ top: el.scrollHeight, behavior: "smooth" });
+  }, [messages, busy, open]);
 
-  const pushMsg = useCallback((msg) => {
-    setMessages((m) => [...m, msg]);
-  }, []);
+  useEffect(() => {
+    if (!open) return;
+    const onKey = (e) => e.key === "Escape" && setOpen(false);
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [open]);
 
-  const retake = useCallback(() => {
-    setProfile({ goal: null, pref: null });
-    setMessages([welcomeMsg(copy)]);
-  }, [copy]);
-
-  const handleChoice = async (choice) => {
-    if (choice.kind === "retake") {
-      retake();
-      return;
-    }
-    if (choice.kind === "free") {
-      setTimeout(() => inputRef.current?.focus(), 80);
-      return;
-    }
-
-    pushMsg({
-      id: `u-${Date.now()}`,
-      role: "user",
-      text: choice.label,
-      links: [],
-    });
-    setThinking(true);
-    await new Promise((r) => setTimeout(r, 420));
-
-    if (choice.kind === "goal") {
-      setProfile({ goal: choice.id, pref: null });
-      pushMsg(goalMsg(copy, choice.id, lang));
-    } else if (choice.kind === "pref") {
-      const goalId =
-        profile.goal ||
-        messages.find((m) => m.meta?.goalId)?.meta?.goalId ||
-        "daily-health";
-      setProfile((p) => ({ ...p, pref: choice.id, goal: goalId }));
-      pushMsg(recommendMsg(copy, goalId, choice.id, products));
-    }
-    setThinking(false);
-  };
-
-  const send = async (raw) => {
-    const text = (raw ?? input).trim();
-    if (!text) return;
-    setInput("");
-    pushMsg({ id: `u-${Date.now()}`, role: "user", text, links: [] });
-    setThinking(true);
-    await new Promise((r) => setTimeout(r, 380));
-    const reply = buildFreeReply(text, products, lang);
-    pushMsg({
-      id: `a-${Date.now()}`,
-      role: "advisor",
-      ...reply,
-      choices: [],
-    });
-    setThinking(false);
-  };
-
-  const quickPrompts = useMemo(
-    () => [
-      copy.quick.compare,
-      copy.quick.quality,
-      copy.quick.ingredients,
-      copy.quick.shipping,
-    ],
-    [copy]
+  const send = useCallback(
+    async (raw) => {
+      const text = String(raw ?? input).trim();
+      if (!text || busy) return;
+      setInput("");
+      setError("");
+      setMessages((m) => [...m, { role: "user", text }]);
+      setBusy(true);
+      try {
+        const r = await fetchApi("/advisor/chat", {
+          method: "POST",
+          credentials: "include",
+          body: JSON.stringify({ sessionId: sid, message: text, pageUrl: typeof window !== "undefined" ? window.location.href : "" }),
+        });
+        setMessages((m) => [...m, { role: "assistant", text: r.data.reply }]);
+      } catch (e) {
+        setError(e.message || "Something went wrong. Please try again.");
+      } finally {
+        setBusy(false);
+      }
+    },
+    [input, busy, sid]
   );
 
-  const showQuick =
-    messages.length <= 1 ||
-    messages[messages.length - 1]?.recommend;
+  const restart = () => {
+    const id = newSid();
+    try {
+      localStorage.setItem(SID_KEY, id);
+    } catch {}
+    setSid(id);
+    setMessages([]);
+    setError("");
+  };
+
+  const offline = cfg && !cfg.enabled;
+  const greeting = cfg?.greeting || "Hi, I'm the MWP Advisor, an AI assistant. How can I help?";
 
   return (
-    <>
-      <div className={`fixed z-[60] flex flex-col gap-3 pointer-events-none sm:inset-auto sm:bottom-6 sm:right-6 sm:items-end ${open ? "inset-x-0 bottom-0 items-stretch" : "right-4 bottom-[max(16px,env(safe-area-inset-bottom))] items-end"}`}>
-        <AnimatePresence>
-          {open && (
-            <motion.div
-              initial={{ opacity: 0, y: 32 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: 24 }}
-              transition={{ duration: 0.28, ease: [0.22, 1, 0.36, 1] }}
-              className="pointer-events-auto w-full sm:w-[min(94vw,400px)] h-[min(86dvh,720px)] sm:h-[min(78vh,620px)] bg-[#0A0A0C] border border-white/12 sm:rounded-t-2xl sm:rounded-b-2xl rounded-t-[28px] shadow-[0_-8px_60px_rgba(0,0,0,0.75),0_28px_80px_rgba(0,0,0,0.55)] flex flex-col overflow-hidden sm:mx-auto sm:ml-auto"
-              role="dialog"
-              aria-label={t("advisorTitle")}
-            >
-              {/* Header */}
-              <div className="relative shrink-0 px-4 py-3.5 border-b border-white/10 bg-gradient-to-r from-[#16161A] via-[#101014] to-[#0A0A0C]">
-                <div
-                  className="absolute inset-x-0 top-0 h-[2px] bg-gradient-to-r from-[color:var(--gold)] via-[color:var(--gold-light)] to-transparent"
-                  aria-hidden
-                />
-                <div className="flex items-center justify-between gap-3">
-                  <div className="flex items-center gap-3 min-w-0">
-                    <span className="relative w-10 h-10 rounded-xl bg-white/10 border border-white/15 flex items-center justify-center text-white shrink-0">
-                      <IconMessageChatbot className="h-5.5 w-5.5" stroke={2} />
-                      <span className="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 bg-emerald-400 rounded-full ring-2 ring-[#101014]" />
-                    </span>
-                    <div className="min-w-0">
-                      <p className="font-extrabold text-[13.5px] text-white truncate tracking-tight">
-                        {t("advisorTitle")}
-                      </p>
-                      <p className="text-[10.5px] text-emerald-400/90 font-medium truncate">
-                        {copy.online}
-                      </p>
-                    </div>
-                  </div>
-                  <div className="flex items-center gap-1 shrink-0">
-                    <button
-                      type="button"
-                      onClick={retake}
-                      className="p-2 text-white/45 hover:text-white hover:bg-white/10 rounded-lg transition-colors"
-                      aria-label={copy.retake}
-                      title={copy.retake}
-                    >
-                      <IconRotateClockwise className="h-4 w-4" stroke={2} />
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => setOpen(false)}
-                      className="p-2 text-white/50 hover:text-white hover:bg-white/10 rounded-lg transition-colors"
-                      aria-label="Close advisor"
-                    >
-                      <IconX className="h-4.5 w-4.5" stroke={2.25} />
-                    </button>
-                  </div>
-                </div>
+    <div className={`fixed z-[60] pointer-events-none ${open ? "inset-0 sm:inset-auto sm:bottom-6 sm:right-6" : "bottom-[max(16px,env(safe-area-inset-bottom))] right-4 sm:bottom-6 sm:right-6"}`}>
+      {open ? (
+        <section
+          role="dialog"
+          aria-label="MWP Advisor chat"
+          className="pointer-events-auto flex h-full w-full flex-col overflow-hidden bg-[#F6F1E4] shadow-[0_30px_80px_-20px_rgba(18,33,63,0.6)] sm:h-[min(82vh,660px)] sm:w-[410px] sm:rounded-3xl sm:border sm:border-[#D9CFAE]"
+        >
+          <header className="flex items-center justify-between gap-3 border-b-4 border-[#C9972B] bg-gradient-to-br from-[#12213F] via-[#1B3158] to-[#12213F] px-4 py-4 text-white">
+            <div className="flex min-w-0 items-center gap-3">
+              <span className="relative grid h-11 w-11 shrink-0 place-items-center rounded-full bg-gradient-to-br from-[#E2B64D] to-[#b45f10] text-[#12213F] shadow-lg">
+                <IconMessageChatbot size={22} stroke={1.8} />
+                <span className="absolute -bottom-0.5 -right-0.5 h-2.5 w-2.5 rounded-full bg-emerald-400 ring-2 ring-[#12213F]" />
+              </span>
+              <div className="min-w-0">
+                <p className="truncate text-[15px] font-semibold">MWP Advisor</p>
+                <p className="truncate text-[11.5px] text-white/75"><span className="mr-1 inline-block h-1.5 w-1.5 rounded-full bg-emerald-400" />Online · AI assistant, not a doctor</p>
               </div>
+            </div>
+            <div className="flex items-center gap-1">
+              <button onClick={restart} className="grid h-9 w-9 place-items-center rounded-lg text-white/70 hover:bg-white/10 hover:text-white" aria-label="Start a new chat" title="New chat">
+                <IconRotateClockwise size={18} />
+              </button>
+              <button onClick={() => setOpen(false)} className="grid h-9 w-9 place-items-center rounded-lg text-white/70 hover:bg-white/10 hover:text-white" aria-label="Close chat">
+                <IconX size={20} />
+              </button>
+            </div>
+          </header>
 
-              {/* Messages */}
-              <div
-                ref={listRef}
-                className="flex-1 overflow-y-auto overscroll-contain px-3.5 py-4 space-y-3 bg-[#0A0A0C]"
-              >
-                {messages.map((m) => (
-                  <div
-                    key={m.id}
-                    className={cn(
-                      "flex",
-                      m.role === "user" ? "justify-end" : "justify-start"
-                    )}
-                  >
-                    <div
-                      className={cn(
-                        "max-w-[92%] rounded-2xl",
-                        m.role === "user"
-                          ? "bg-white text-black rounded-br-md px-3.5 py-2.5"
-                          : "bg-white/[0.05] border border-white/10 text-white/90 rounded-bl-md px-3.5 py-3 w-full max-w-[96%]"
-                      )}
-                    >
-                      {m.role === "advisor" && (
-                        <span className="inline-flex items-center gap-1 text-[9px] uppercase tracking-[0.18em] font-bold text-[color:var(--gold)] mb-1.5">
-                          <IconSparkles className="h-3 w-3" /> Advisor
-                        </span>
-                      )}
-
-                      {m.title && (
-                        <p className="font-extrabold text-[14px] text-white mb-1 tracking-tight">
-                          {m.title}
-                        </p>
-                      )}
-
-                      <p className="text-[13px] leading-relaxed whitespace-pre-line">
-                        {m.text}
-                      </p>
-
-                      {/* Recommendation card */}
-                      {m.recommend && (
-                        <div className="mt-3 rounded-xl border border-white/12 bg-gradient-to-br from-[#141418] to-[#0E0E12] overflow-hidden">
-                          <div className="flex gap-3 p-3">
-                            <div className="relative w-16 h-16 shrink-0 rounded-lg bg-white/[0.04] border border-white/10 overflow-hidden">
-                              <Image
-                                src={m.recommend.image}
-                                alt={m.recommend.core.name}
-                                fill
-                                sizes="64px"
-                                className="object-contain p-1"
-                              />
-                            </div>
-                            <div className="min-w-0 flex-1">
-                              <p className="text-[10px] uppercase tracking-[0.16em] text-[color:var(--gold)] font-bold mb-0.5">
-                                {copy.step}
-                              </p>
-                              <p className="text-[13px] font-extrabold text-white leading-tight">
-                                {m.recommend.core.name}
-                              </p>
-                              <p className="text-[11px] text-white/50 mt-0.5">
-                                {m.recommend.core.headline}
-                              </p>
-                              {m.recommend.price != null && (
-                                <p className="text-[13px] font-bold text-emerald-400 mt-1">
-                                  {formatCurrency(m.recommend.price)}
-                                </p>
-                              )}
-                            </div>
-                          </div>
-                          <div className="px-3 pb-2">
-                            <p className="text-[10px] uppercase tracking-wider text-white/35 font-bold mb-1">
-                              {copy.keyBenefits}
-                            </p>
-                            <div className="flex flex-wrap gap-1">
-                              {m.recommend.core.benefits.slice(0, 5).map((b) => (
-                                <span
-                                  key={b}
-                                  className="inline-flex items-center gap-0.5 px-1.5 py-0.5 text-[9.5px] font-semibold bg-white/[0.06] border border-white/10 rounded text-white/70"
-                                >
-                                  <IconCheck className="h-2.5 w-2.5 text-emerald-400" />
-                                  {b}
-                                </span>
-                              ))}
-                            </div>
-                            <p className="text-[10.5px] text-white/45 mt-2">
-                              <span className="font-bold text-white/60">
-                                {copy.signature}:
-                              </span>{" "}
-                              {m.recommend.core.signature}
-                            </p>
-                          </div>
-                        </div>
-                      )}
-
-                      {/* Also consider */}
-                      {m.alts?.length > 0 && (
-                        <div className="mt-2.5">
-                          <p className="text-[10px] uppercase tracking-wider text-white/35 font-bold mb-1.5">
-                            {copy.alsoConsider}
-                          </p>
-                          <div className="flex flex-wrap gap-1.5">
-                            {m.alts.map((a) => (
-                              <Link
-                                key={a.key}
-                                href={a.slug ? `/products/${a.slug}` : "/products"}
-                                onClick={() => setOpen(false)}
-                                className="px-2.5 py-1.5 text-[10.5px] font-bold bg-white/[0.06] hover:bg-white hover:text-black border border-white/15 rounded-lg transition-colors text-white/80"
-                              >
-                                {a.name}
-                              </Link>
-                            ))}
-                          </div>
-                        </div>
-                      )}
-
-                      {/* Choice buttons (guided) */}
-                      {m.choices?.length > 0 && (
-                        <div className="mt-3 flex flex-col gap-1.5">
-                          {m.choices.map((c) => (
-                            <button
-                              key={c.id + c.label}
-                              type="button"
-                              onClick={() => handleChoice(c)}
-                              className={
-                                c.kind === "retake" || c.kind === "free"
-                                  ? "w-full flex items-center justify-between gap-2 px-3 py-2.5 text-[12px] font-bold text-white/70 bg-white/[0.04] border border-white/10 rounded-xl hover:bg-white/[0.08] hover:text-white transition-colors text-left"
-                                  : "w-full flex items-center justify-between gap-2 px-3 py-3 text-[12.5px] font-bold text-white bg-white/[0.06] border border-white/15 hover:bg-white hover:text-black hover:border-white rounded-xl transition-all text-left group"
-                              }
-                            >
-                              <span>{c.label}</span>
-                              <IconArrowRight className="h-4 w-4 opacity-50 group-hover:opacity-100 shrink-0" />
-                            </button>
-                          ))}
-                        </div>
-                      )}
-
-                      {/* Static links */}
-                      {m.links?.length > 0 && (
-                        <div className="flex flex-wrap gap-1.5 mt-2.5">
-                          {m.links.map((l) => (
-                            <Link
-                              key={l.href + l.label}
-                              href={l.href || "#"}
-                              onClick={() => setOpen(false)}
-                              className={cn(
-                                "px-2.5 py-1.5 text-[10px] font-bold uppercase tracking-wider rounded-lg transition-colors border",
-                                l.primary
-                                  ? "bg-neutral-900 hover:bg-white hover:text-black text-white border-white/20"
-                                  : "bg-white/10 hover:bg-white hover:text-black border-white/15 text-white"
-                              )}
-                            >
-                              {l.label}
-                            </Link>
-                          ))}
-                        </div>
-                      )}
+          <div ref={listRef} className="flex-1 space-y-3.5 overflow-y-auto overscroll-contain px-3.5 py-4">
+            {!cfg ? (
+              <div className="grid place-items-center py-10 text-[#b45f10]"><IconLoader2 className="animate-spin" /></div>
+            ) : offline ? (
+              <div className="rounded-2xl border border-[#E6DFC9] bg-white p-4 text-[14px] leading-relaxed text-[#26314D]">
+                The chat assistant is not available right now. Our team is happy to help:
+                <br />
+                <a className="font-semibold underline" href={`mailto:${SITE_CONTACT.email}`}>{SITE_CONTACT.email}</a>
+                <br />
+                <a className="font-semibold underline" href={SITE_CONTACT.phoneHref}>{SITE_CONTACT.phone}</a>
+              </div>
+            ) : (
+              <>
+                <div className="flex items-end gap-2"><Avatar /><div className="max-w-[85%] rounded-2xl rounded-bl-md border border-[#E6DFC9] bg-white px-4 py-3 text-[#26314D] shadow-sm"><Message text={greeting} /></div></div>
+                {messages.map((m, i) => (
+                  <div key={i} className={m.role === "user" ? "flex justify-end" : "flex items-end gap-2"}>
+                    {m.role !== "user" && <Avatar />}
+                    <div className={`max-w-[85%] px-4 py-3 shadow-sm ${m.role === "user" ? "rounded-2xl rounded-br-md bg-gradient-to-br from-[#12213F] to-[#24407A] text-white" : "rounded-2xl rounded-bl-md border border-[#E6DFC9] bg-white text-[#26314D]"}`}>
+                      <Message text={m.text} />
                     </div>
                   </div>
                 ))}
-
-                {thinking && (
-                  <div className="flex justify-start">
-                    <div className="bg-white/[0.05] border border-white/10 rounded-2xl rounded-bl-md px-4 py-3 flex gap-1.5 items-center">
-                      {[0, 1, 2].map((i) => (
-                        <span
-                          key={i}
-                          className="w-1.5 h-1.5 rounded-full bg-white/60 animate-bounce"
-                          style={{ animationDelay: `${i * 0.12}s` }}
-                        />
-                      ))}
+                {busy && (
+                  <div className="flex items-end gap-2">
+                    <Avatar />
+                    <div className="flex items-center gap-1.5 rounded-2xl rounded-bl-md border border-[#E6DFC9] bg-white px-4 py-3.5" aria-label="The advisor is typing">
+                      {[0, 1, 2].map((d) => <span key={d} className="h-2 w-2 animate-bounce rounded-full bg-[#b45f10]" style={{ animationDelay: `${d * 140}ms` }} />)}
                     </div>
                   </div>
                 )}
-              </div>
+                {error && <p role="alert" className="rounded-xl border border-[#a81f24]/30 bg-[#a81f24]/5 px-3 py-2 text-[13px] text-[#a81f24]">{error}</p>}
+              </>
+            )}
+          </div>
 
-              {/* Quick prompts */}
-              {showQuick && (
-                <div className="shrink-0 px-3 pt-2 pb-1 flex gap-1.5 overflow-x-auto no-scrollbar border-t border-white/[0.08] bg-black/20">
-                  {quickPrompts.map((p) => (
-                    <button
-                      key={p}
-                      type="button"
-                      onClick={() => send(p)}
-                      className="shrink-0 px-3 py-2 text-[11px] font-semibold text-white/70 bg-white/[0.05] border border-white/10 rounded-full hover:text-white hover:border-white/30 transition-colors"
-                    >
-                      {p}
-                    </button>
-                  ))}
-                </div>
-              )}
+          {!offline && cfg && messages.length === 0 && (
+            <div className="flex gap-2 overflow-x-auto px-3 pb-2" style={{ scrollbarWidth: "none" }}>
+              {QUICK.map((q) => (
+                <button key={q} onClick={() => send(q)} disabled={busy} className="shrink-0 rounded-full border border-[#C9972B]/60 bg-white px-3.5 py-2 text-[12.5px] font-semibold text-[#12213F] shadow-sm hover:bg-[#12213F] hover:text-white disabled:opacity-50">
+                  {q}
+                </button>
+              ))}
+            </div>
+          )}
 
-              {/* Input */}
-              <form
-                onSubmit={(e) => {
-                  e.preventDefault();
-                  send();
-                }}
-                className="shrink-0 p-3 flex gap-2 border-t border-white/10 bg-[#08080A]"
-              >
+          {!offline && (
+            <form
+              onSubmit={(e) => {
+                e.preventDefault();
+                send();
+              }}
+              className="border-t border-[#E6DFC9] bg-white p-3"
+            >
+              <div className="flex gap-2">
                 <input
                   ref={inputRef}
                   value={input}
                   onChange={(e) => setInput(e.target.value)}
-                  placeholder={copy.askMore}
-                  enterKeyHint="send"
-                  className="flex-1 h-11 px-4 bg-white/[0.06] border border-white/12 rounded-xl text-[13.5px] text-white placeholder:text-white/35 focus:outline-none focus:border-white/40 focus:bg-white/[0.08] transition-colors min-w-0"
-                  aria-label="Message MWP Advisor"
+                  maxLength={600}
+                  placeholder="Ask about our products..."
+                  aria-label="Your message"
+                  disabled={!cfg || busy}
+                  className="h-11 min-w-0 flex-1 rounded-xl border border-[#DDD6C0] bg-white px-4 text-[14.5px] text-[#12213F] outline-none focus:border-[#12213F] focus:ring-4 focus:ring-[#12213F]/10"
                 />
-                <button
-                  type="submit"
-                  className="w-11 h-11 shrink-0 bg-neutral-900 hover:bg-neutral-800 text-white rounded-xl flex items-center justify-center transition-colors disabled:opacity-40 active:scale-95"
-                  disabled={!input.trim() || thinking}
-                  aria-label={t("send")}
-                >
-                  <IconSend className="h-5 w-5" stroke={2.25} />
+                <button type="submit" disabled={!cfg || busy || !input.trim()} aria-label="Send" className="grid h-11 w-11 shrink-0 place-items-center rounded-xl bg-gradient-to-br from-[#E2B64D] to-[#b45f10] text-[#12213F] shadow hover:brightness-110 disabled:opacity-40">
+                  <IconSend size={19} />
                 </button>
-              </form>
-
-              <p className="sr-only">{copy.savedNote}</p>
-            </motion.div>
+              </div>
+              <p className="mt-2 text-[11px] leading-snug text-[#6B7388]">{cfg?.disclaimer || "Chats are saved so our team can improve support. Please do not share personal health details."}</p>
+            </form>
           )}
-        </AnimatePresence>
-
-        {/* FAB */}
-        <div className={`${open ? "hidden" : "sm:hidden"} pointer-events-auto`}>
-          <button
-            type="button"
-            onClick={() => setOpen((v) => !v)}
-            className="w-auto px-4 flex items-center justify-center gap-2.5 h-12 bg-neutral-900 hover:bg-[#12213F] text-white rounded-full border border-white/15 shadow-[0_10px_28px_-6px_rgba(0,0,0,0.5)] active:scale-[0.98] transition-all"
-            aria-label={open ? copy.close : copy.open}
-            aria-expanded={open}
-          >
-            {open ? (
-              <IconX className="h-5 w-5" stroke={2.25} />
-            ) : (
-              <span className="relative flex items-center justify-center w-6 h-6 rounded-full bg-white/15">
-                <IconMessageChatbot className="h-4.5 w-4.5" stroke={2.25} />
-                <span className="absolute -top-0.5 -right-0.5 w-2 h-2 bg-emerald-400 rounded-full ring-2 ring-neutral-900" />
-              </span>
-            )}
-            <span className="text-[11px] font-black uppercase tracking-[0.14em] leading-none">
-              {open ? copy.close : copy.open}
-            </span>
-          </button>
-        </div>
-
+        </section>
+      ) : (
         <button
-          type="button"
-          onClick={() => setOpen((v) => !v)}
-          className={`${open ? "hidden" : "hidden sm:flex"} pointer-events-auto group items-center gap-2.5 h-11 pl-3 pr-4 bg-neutral-900 hover:bg-[#12213F] text-white rounded-full border border-white/15 shadow-[0_10px_28px_-6px_rgba(0,0,0,0.5)] focus:outline-none focus-visible:ring-2 focus-visible:ring-white/40 focus-visible:ring-offset-2 focus-visible:ring-offset-black transition-all active:scale-95 self-end`}
-          aria-label={open ? copy.close : copy.open}
-          aria-expanded={open}
+          onClick={() => setOpen(true)}
+          className="pointer-events-auto inline-flex items-center gap-2.5 rounded-full border-2 border-[#C9972B] bg-gradient-to-br from-[#12213F] to-[#24407A] px-5 py-3.5 text-[12px] font-bold uppercase tracking-[0.12em] text-white shadow-[0_16px_34px_-14px_rgba(18,33,63,0.9)] transition-transform hover:-translate-y-0.5 hover:bg-[#a81f24]"
+          aria-label="Open the MWP Advisor chat"
         >
-          {open ? (
-            <IconX className="h-5 w-5" stroke={2.25} />
-          ) : (
-            <span className="relative flex items-center justify-center w-6 h-6 rounded-full bg-white/15">
-              <IconMessageChatbot className="h-4.5 w-4.5" stroke={2.25} />
-              <span className="absolute -top-0.5 -right-0.5 w-2 h-2 bg-emerald-400 rounded-full ring-2 ring-neutral-900" />
-            </span>
-          )}
-          <span className="text-[11px] font-black uppercase tracking-[0.14em] leading-none">
-            {open ? copy.close : copy.open}
+          <span className="relative">
+            <IconMessageChatbot size={20} stroke={1.8} />
+            <span className="absolute -right-1 -top-1 h-2 w-2 rounded-full bg-emerald-400" />
           </span>
+          Ask MWP Advisor
         </button>
-      </div>
-    </>
+      )}
+    </div>
   );
 }

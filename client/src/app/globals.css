@@ -64,7 +64,7 @@ html body *::after {
     --mwp-ink: #12213F;
     --mwp-cream: #ffffff;
     --mwp-cream-deep: #ffffff;
-    --mwp-gold: #A8741F;
+    --mwp-gold: #b45f10;
     --mwp-muted: #656561;
     --mwp-line: #e6ded2;
     --background: 0 0% 100%;
@@ -97,22 +97,22 @@ html body *::after {
     --brand-white: #FFFFFF;
     --brand-gray: #F4F4F5;
     --brand-silver: #E2E8F0;
-    --brand-gold: #C9A227;
+    --brand-gold: #d9822b;
     --brand-gold-light: #E5C56A;
     --brand-gold-dark: #8B6914;
     --brand-heading: #0B1530;
     --brand-paragraph: #52525B;
     --brand-success: #10B981;
-    --brand-error: #C9A227;
+    --brand-error: #d9822b;
 
     --noir: #0B1530;
     --noir-soft: #18181B;
     --ivory: #FAFAFA;
     --ivory-deep: #F4F4F5;
-    --gold: #C9A227;
+    --gold: #d9822b;
     --gold-light: #E5C56A;
     --gold-dark: #8B6914;
-    --mwp-red: #C9A227;
+    --mwp-red: #d9822b;
     --stone: #71717A;
     --line: #E4E4E7;
   }

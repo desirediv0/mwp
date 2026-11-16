@@ -21,7 +21,7 @@ export const otpRateLimiter = rateLimit({
         } catch (_) { }
 
         // 2) Otherwise use IPv6-safe builtin key generator
-        return ipKeyGenerator(req);
+        return ipKeyGenerator(req.ip || "");
     },
 });
 
@@ -41,7 +41,7 @@ export const verificationRateLimiter = rateLimit({
     max: 30,
     standardHeaders: true,
     legacyHeaders: false,
-    keyGenerator: (req) => ipKeyGenerator(req),
+    keyGenerator: (req) => ipKeyGenerator(req.ip || ""),
     message: {
         success: false,
         verified: false,

@@ -113,7 +113,7 @@ const CartItem = React.memo(
                     <div className="flex-1 min-w-0 flex flex-col justify-between">
                         <div>
                             <Link href={productHref} className="group">
-                                <h3 className="text-[15px] sm:text-[17px] font-semibold text-[#12213F] leading-snug group-hover:text-[#A8741F] transition-colors line-clamp-1">
+                                <h3 className="text-[15px] sm:text-[17px] font-semibold text-[#12213F] leading-snug group-hover:text-[#b45f10] transition-colors line-clamp-1">
                                     {productName}
                                 </h3>
                             </Link>
@@ -468,12 +468,12 @@ export default function CartPage() {
                         <div className="mwp-ship-meter w-full sm:w-[340px]">
                             {cart.freeShippingThreshold > 0 ? (
                                 totals.subtotal >= cart.freeShippingThreshold ? (
-                                    <p className="text-sm"><strong className="text-[#E6C26A]">You unlocked free shipping.</strong> Nice choice.</p>
+                                    <p className="text-sm"><strong className="text-[#f2b04a]">You unlocked free shipping.</strong> Nice choice.</p>
                                 ) : (
-                                    <p className="text-sm">Add <strong className="text-[#E6C26A]">{formatCurrency(cart.freeShippingThreshold - totals.subtotal)}</strong> more for free shipping</p>
+                                    <p className="text-sm">Add <strong className="text-[#f2b04a]">{formatCurrency(cart.freeShippingThreshold - totals.subtotal)}</strong> more for free shipping</p>
                                 )
                             ) : (
-                                <p className="text-sm">Live <strong className="text-[#E6C26A]">USPS, UPS and FedEx</strong> rates at checkout</p>
+                                <p className="text-sm">Live <strong className="text-[#f2b04a]">USPS, UPS and FedEx</strong> rates at checkout</p>
                             )}
                             {cart.freeShippingThreshold > 0 && (
                                 <div className="mwp-ship-bar" role="progressbar" aria-valuemin={0} aria-valuemax={100} aria-valuenow={Math.min(100, Math.round((totals.subtotal / cart.freeShippingThreshold) * 100))}>
@@ -514,7 +514,7 @@ export default function CartPage() {
                         <div className="bg-white border border-[#E6DFC9] rounded-2xl overflow-hidden">
                             <div className="flex items-center justify-between px-5 sm:px-6 py-4 border-b border-[#EEE8D6] bg-[#FAF8F2]">
                                 <h2 className="text-[12px] uppercase tracking-[0.18em] font-semibold text-[#12213F]">Items in your bag</h2>
-                                <button onClick={handleClearCart} disabled={loading} className="inline-flex items-center gap-1.5 text-[11px] uppercase tracking-widest font-medium text-neutral-600 hover:text-[#B3001B] transition-colors">
+                                <button onClick={handleClearCart} disabled={loading} className="inline-flex items-center gap-1.5 text-[11px] uppercase tracking-widest font-medium text-neutral-600 hover:text-[#a81f24] transition-colors">
                                     <Trash2 className="h-3 w-3" /> Clear
                                 </button>
                             </div>
