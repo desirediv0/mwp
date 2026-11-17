@@ -49,6 +49,7 @@ import adminPaymentGatewayRoutes from "./routes/admin.payment-gateway.routes.js"
 import adminShippingRoutes from "./routes/admin.shipping.routes.js";
 import subscriptionRoutes from "./routes/subscription.routes.js";
 import { publicRouter as advisorPublicRoutes, adminRouter as advisorAdminRoutes } from "./routes/advisor.routes.js";
+import { publicRouter as wholesalePublicRoutes, adminRouter as wholesaleAdminRoutes } from "./routes/wholesale.routes.js";
 import adminSubscriptionRoutes from "./routes/admin.subscription.routes.js";
 import adminQuickBooksRoutes from "./routes/admin.quickbooks.routes.js";
 import adminTrackingRoutes, { publicTrackingRouter } from "./routes/tracking.routes.js";
@@ -175,6 +176,8 @@ app.use("/api/admin/shipping", adminShippingRoutes);
 app.use("/api/subscriptions", subscriptionRoutes);
 app.use("/api/advisor", advisorPublicRoutes);
 app.use("/api/admin/advisor", advisorAdminRoutes);
+app.use("/api/wholesale", wholesalePublicRoutes);
+app.use("/api/admin/wholesale", wholesaleAdminRoutes);
 app.use("/api/admin/subscriptions", adminSubscriptionRoutes);
 app.use("/api/admin/quickbooks", adminQuickBooksRoutes);
 app.use("/api/admin/tracking", adminTrackingRoutes);

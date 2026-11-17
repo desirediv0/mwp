@@ -55,6 +55,7 @@ import QuickBooksSettingsPage from "./pages/QuickBooksSettingsPage";
 import TrackingSettingsPage from "./pages/TrackingSettingsPage";
 import SubscriptionsPage from "./pages/SubscriptionsPage";
 import AdvisorPage from "./pages/AdvisorPage";
+import WholesalePage from "./pages/WholesalePage";
 import EmailMarketingPage from "./pages/EmailMarketingPage";
 import AdminHelpPage from "./pages/AdminHelpPage";
 import SettingsPage from "./pages/SettingsPage";
@@ -418,6 +419,18 @@ const App = () => {
               }
             />
 
+
+            <Route
+              path="wholesale"
+              element={
+                <ProtectedRoute
+                  resource={Resource.SETTINGS}
+                  action={Action.UPDATE}
+                >
+                  <WholesalePage />
+                </ProtectedRoute>
+              }
+            />
 
             <Route
               path="advisor"

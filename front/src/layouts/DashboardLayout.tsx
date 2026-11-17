@@ -31,6 +31,7 @@ import {
   BadgeCheck,
   ShieldCheck,
   Bot,
+  Store,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { SafeRender } from "@/components/SafeRender";
@@ -276,7 +277,7 @@ export default function DashboardLayout() {
         secretAccess: false,
         fragranceQuiz: false,
       });
-    } else if (path.startsWith("/contact-management") || path.startsWith("/advisor") || path.startsWith("/reviews-management") || path.startsWith("/faq-management")) {
+    } else if (path.startsWith("/contact-management") || path.startsWith("/advisor") || path.startsWith("/wholesale") || path.startsWith("/reviews-management") || path.startsWith("/faq-management")) {
       setOpenSections({
         products: false,
         orders: false,
@@ -599,6 +600,16 @@ export default function DashboardLayout() {
                     href: "/advisor",
                     title: "AI Advisor (chat)",
                     icon: <Bot className="h-3 w-3" />,
+                    hasPermission: hasPermissionFor(
+                      admin,
+                      Resource.SETTINGS,
+                      Action.UPDATE
+                    ),
+                  },
+                  {
+                    href: "/wholesale",
+                    title: "Wholesale",
+                    icon: <Store className="h-3 w-3" />,
                     hasPermission: hasPermissionFor(
                       admin,
                       Resource.SETTINGS,
@@ -1046,6 +1057,16 @@ export default function DashboardLayout() {
                     href: "/advisor",
                     title: "AI Advisor (chat)",
                     icon: <Bot className="h-3 w-3" />,
+                    hasPermission: hasPermissionFor(
+                      admin,
+                      Resource.SETTINGS,
+                      Action.UPDATE
+                    ),
+                  },
+                  {
+                    href: "/wholesale",
+                    title: "Wholesale",
+                    icon: <Store className="h-3 w-3" />,
                     hasPermission: hasPermissionFor(
                       admin,
                       Resource.SETTINGS,

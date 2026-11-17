@@ -5,6 +5,7 @@ import { Footer } from "@/components/layout/Footer";
 import { CompareTray } from "@/components/products/CompareTray";
 import { AuthModal } from "@/components/ui/AuthModal";
 import MwpAdvisor from "@/components/ui/MwpAdvisor";
+import { usePathname } from "next/navigation";
 
 // The maintenance page is a standalone full-screen experience — no site
 // header/footer/chrome should wrap it while maintenance mode is active.
@@ -12,7 +13,9 @@ import MwpAdvisor from "@/components/ui/MwpAdvisor";
 // x-maintenance-active header) because middleware serves it via a rewrite,
 // so the browser URL stays "/" and usePathname() can't detect it client-side.
 export function SiteChrome({ children, isMaintenance }) {
-  if (isMaintenance) {
+  const pathname = usePathname();
+  // the wholesale dashboard has its own header and cart sheet; it is not linked from the store menu
+  if (isMaintenance || pathname?.startsWith("/wholesale/order")) {
     return children;
   }
 
