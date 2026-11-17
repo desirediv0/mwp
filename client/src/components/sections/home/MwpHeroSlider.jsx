@@ -3,7 +3,6 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import localFont from "next/font/local";
 import { IconArrowRight, IconChevronLeft, IconChevronRight, IconLock, IconMapPin, IconPackage, IconRotate360, IconTruck } from "@tabler/icons-react";
 import { useLanguage } from "@/lib/language-context";
 import { INGREDIENT_LIBRARY } from "@/lib/ingredient-library";
@@ -11,16 +10,6 @@ import "./mwp-hero-slider.css";
 
 // Home hero slider built from the client's three hero references (homepage hero, 3D banner, slider).
 // Bottles are the new 8-angle renders in /public/hero/bottles (Power Max, Rapid Boost, Her Power).
-
-// Bundled locally so the build never depends on reaching Google Fonts.
-const display = localFont({
-  src: [
-    { path: "../../../app/fonts/playfair/PlayfairDisplay-latin.woff2", style: "normal", weight: "700 900" },
-    { path: "../../../app/fonts/playfair/PlayfairDisplay-latin-italic.woff2", style: "italic", weight: "700 900" },
-  ],
-  variable: "--mhs-display",
-  display: "swap",
-});
 
 const SLIDE_MS = 6500;
 const WIPE_MS = 950;
@@ -383,7 +372,7 @@ export default function MwpHeroSlider() {
   return (
     <section
       ref={rootRef}
-      className={`mhs ${display.variable}`}
+      className="mhs"
       aria-roledescription="carousel"
       aria-label="MWP Supplements"
       data-theme={SLIDES[current].dark ? "dark" : "light"}

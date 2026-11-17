@@ -22,8 +22,9 @@
 /* The storefront forces regular weight on all text; this hero follows the references' heavier weights. */
 .mhs .mhs-h,
 .mhs .mhs-h * {
-  font-family: var(--mhs-display), Georgia, serif;
+  font-family: 'Neulis', sans-serif;
   font-weight: 800 !important;
+  font-style: normal !important;
 }
 .mhs .mhs-tag,
 .mhs .mhs-btn,
@@ -681,7 +682,7 @@
 }
 .mhs-tabs {
   display: grid;
-  grid-template-columns: repeat(5, minmax(0, 1fr));
+  grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: 12px;
   width: min(600px, 100%);
 }
@@ -984,12 +985,25 @@
   }
 }
 
-/* Desktop: the whole slide (headline, text, buttons, bottles) fits in one screen without scrolling */
+
+/* Desktop: the whole hero (copy, bottles, tabs, arrows) fits in one screen; nothing overlaps the controls row */
 @media (min-width: 981px) {
-  .mhs-slide { min-height: 0; height: clamp(500px, calc(100svh - 150px), 720px); }
-  .mhs-inner { padding: 24px 5vw 84px; }
-  .mhs-h { font-size: clamp(34px, min(4.2vw, 7.4svh), 64px); margin-top: 10px; }
-  .mhs-sub { margin-top: 12px; font-size: clamp(15px, min(1.35vw, 2.4svh), 19px); line-height: 1.5; }
-  .mhs-btns { margin-top: 20px; }
-  .mhs-btn { min-height: 50px; }
+  .mhs-slide { min-height: 0; height: clamp(520px, calc(100svh - 112px), 740px); }
+  .mhs-inner { padding: 18px 5vw 100px; }
+  .mhs-h { font-size: clamp(30px, min(3.8vw, 6svh), 58px); line-height: 1.06; margin-top: 8px; letter-spacing: -0.02em; }
+  .mhs-sub { margin-top: 10px; font-size: clamp(14px, min(1.25vw, 2.2svh), 18px); line-height: 1.45; }
+  .mhs-rows { margin-top: 12px; }
+  .mhs-row { min-height: 0; padding: 7px 0; }
+  .mhs-row b { font-size: 17px; }
+  .mhs-row small { font-size: 13px; }
+  .mhs-btns { margin-top: 14px; }
+  .mhs-btn { min-height: 48px; padding: 0 24px; font-size: 15px; }
+  .mhs-fda { margin-top: 10px; font-size: 10.5px; line-height: 1.4; }
+  .mhs-ui { bottom: 16px; }
+  .mhs-tabs { width: min(520px, 100%); }
+  .mhs-arrow { width: 46px; height: 46px; }
+}
+@media (min-width: 981px) and (max-height: 800px) {
+  .mhs-row small { display: none; }
+  .mhs-row { min-height: 0; padding: 9px 0; }
 }
