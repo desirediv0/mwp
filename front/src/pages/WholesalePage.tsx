@@ -41,7 +41,8 @@ const Pill = ({ v }: { v: string }) => <Badge className={`${STATUS_COLOR[v] || "
 /* ---------------------------------- page ---------------------------------- */
 
 export default function WholesalePage() {
-  const [tab, setTab] = useState<"orders" | "products" | "settings">("orders");
+  const [tab, setTab] = useState<"orders" | "buyers" | "products" | "settings">("orders");
+  const [pending, setPending] = useState(0);
   return (
     <div className="space-y-6">
       <div className="flex flex-wrap items-center justify-between gap-3">
@@ -51,12 +52,16 @@ export default function WholesalePage() {
         </div>
         <div className="flex gap-2">
           <Button variant={tab === "orders" ? "default" : "outline"} onClick={() => setTab("orders")}>Orders and payments</Button>
-                    <Button variant={tab === "products" ? "default" : "outline"} onClick={() => setTab("products")}>Products and prices</Button>
+                    <Button variant={tab === "buyers" ? "default" : "outline"} onClick={() => setTab("buyers")}>
+            Buyers {pending > 0 && <Badge className="ml-2 bg-red-600 hover:bg-red-600">{pending}</Badge>}
+          </Button>
+          <Button variant={tab === "products" ? "default" : "outline"} onClick={() => setTab("products")}>Products and prices</Button>
           <Button variant={tab === "settings" ? "default" : "outline"} onClick={() => setTab("settings")}>Link and settings</Button>
         </div>
       </div>
       {tab === "orders" && <OrdersTab />}
-            {tab === "products" && <ProductsTab />}
+            {tab === "buyers" && <BuyersTab onPending={setPending} />}
+      {tab === "products" && <ProductsTab />}
       {tab === "settings" && <SettingsTab />}
     </div>
   );
@@ -169,6 +174,16 @@ function OrderDialog({ order, onClose, onSaved }: { order: Order; onClose: () =>
       setSaving(false);
     }
   };
+  const printSlip = () => {
+    const esc = (t: string) => String(t ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c] as string));
+    const rows = order.items.map((i) => `<tr><td>${esc(i.productName)}<br><small>${esc(i.packLabel)} - ${esc(i.contains)}</small></td><td style="text-align:center">${i.qty}</td></tr>`).join("");
+    const w = window.open("", "_blank", "noopener,width=800,height=900");
+    if (!w) return toast.error("Allow pop-ups to print");
+    w.document.write(`<html><head><title>Packing slip ${esc(order.orderNumber)}</title><style>body{font-family:Arial,sans-serif;padding:32px;color:#111}table{width:100%;border-collapse:collapse;margin-top:16px}td,th{border-bottom:1px solid #ccc;padding:8px;text-align:left}small{color:#555}</style></head><body><h2>MWP Supplements: packing slip</h2><p><b>Order ${esc(order.orderNumber)}</b> &middot; ${esc(when(order.createdAt))}</p><p><b>Ship to</b><br>${esc(order.buyer.business)}<br>${esc(order.buyer.name)} &middot; ${esc(order.buyer.phone)}<br>${esc(order.shippingAddress)}</p><table><tr><th>Item</th><th style="text-align:center">Boxes</th></tr>${rows}</table><p style="margin-top:16px"><b>Total boxes: ${order.totalBoxes}</b></p></body></html>`);
+    w.document.close();
+    w.focus();
+    w.print();
+  };
   const refund = async () => {
     setSaving(true);
     try {
@@ -220,7 +235,7 @@ function OrderDialog({ order, onClose, onSaved }: { order: Order; onClose: () =>
         </div>
         <DialogFooter className="gap-2 sm:justify-between">
           {paid ? <Button variant="destructive" onClick={() => setConfirmRefund(true)} disabled={saving}>Refund in full</Button> : <span />}
-          <div className="flex gap-2"><Button variant="outline" onClick={onClose}>Close</Button><Button onClick={save} disabled={saving}>{saving && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}Save order</Button></div>
+          <div className="flex gap-2"><Button variant="outline" onClick={printSlip}>Print packing slip</Button><Button variant="outline" onClick={onClose}>Close</Button><Button onClick={save} disabled={saving}>{saving && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}Save order</Button></div>
         </DialogFooter>
         <Dialog open={confirmRefund} onOpenChange={setConfirmRefund}>
           <DialogContent>
@@ -230,6 +245,150 @@ function OrderDialog({ order, onClose, onSaved }: { order: Order; onClose: () =>
         </Dialog>
       </DialogContent>
     </Dialog>
+  );
+}
+
+/* ---------------------------------- buyers ---------------------------------- */
+
+interface Buyer {
+  id: string; business: string; contact: string; email: string; phone: string; businessType: string; ein?: string | null; address: string;
+  notes?: string | null; status: "pending" | "approved" | "rejected" | "suspended"; adminNote?: string | null; hasAccount: boolean;
+  approvedAt?: string | null; createdAt: string; orderCount: number;
+}
+const BUYER_COLOR: Record<string, string> = { pending: "bg-amber-100 text-amber-800", approved: "bg-green-100 text-green-800", rejected: "bg-red-100 text-red-800", suspended: "bg-slate-200 text-slate-700" };
+
+function BuyersTab({ onPending }: { onPending: (n: number) => void }) {
+  const [rows, setRows] = useState<Buyer[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [status, setStatus] = useState("");
+  const [search, setSearch] = useState("");
+  const [open, setOpen] = useState<Buyer | null>(null);
+  const [note, setNote] = useState("");
+  const [adding, setAdding] = useState(false);
+  const [draft, setDraft] = useState({ business: "", contact: "", email: "", phone: "", address: "" });
+  const [saving, setSaving] = useState(false);
+
+  const load = useCallback(async () => {
+    setLoading(true);
+    try {
+      const r = await api.get(`${BASE}/buyers`, { params: { status: status || undefined, search: search || undefined } });
+      setRows(r.data.data.buyers);
+      onPending(r.data.data.pending);
+    } catch (e) {
+      toast.error(errMsg(e, "Could not load buyers"));
+    } finally {
+      setLoading(false);
+    }
+  }, [status, search, onPending]);
+  useEffect(() => { load(); }, [load]);
+
+  const act = async (b: Buyer, action: "approve" | "reject" | "suspend") => {
+    try {
+      const r = await api.post(`${BASE}/buyers/${b.id}/${action}`);
+      toast.success(r.data.message);
+      setOpen(null);
+      load();
+    } catch (e) {
+      toast.error(errMsg(e, "Could not complete the action"));
+    }
+  };
+  const addBuyer = async () => {
+    setSaving(true);
+    try {
+      await api.post(`${BASE}/buyers`, draft);
+      toast.success("Buyer added and emailed");
+      setAdding(false);
+      setDraft({ business: "", contact: "", email: "", phone: "", address: "" });
+      load();
+    } catch (e) {
+      toast.error(errMsg(e, "Could not add the buyer"));
+    } finally {
+      setSaving(false);
+    }
+  };
+  const saveNote = async (b: Buyer) => {
+    try {
+      await api.patch(`${BASE}/buyers/${b.id}`, { adminNote: note });
+      toast.success("Note saved");
+      load();
+    } catch (e) {
+      toast.error(errMsg(e, "Could not save"));
+    }
+  };
+
+  return (
+    <>
+      <Card>
+        <CardHeader>
+          <div className="flex flex-wrap items-start justify-between gap-3">
+            <div>
+              <CardTitle>Wholesale buyers</CardTitle>
+              <CardDescription>Only approved buyers can see wholesale prices and order. A buyer signs in to their store account at the wholesale link and sends a request, or you add them here by email. Normal customers never see wholesale prices.</CardDescription>
+            </div>
+            <Button onClick={() => setAdding(true)}><Plus className="mr-2 h-4 w-4" /> Add buyer</Button>
+          </div>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="flex flex-wrap gap-3">
+            <div className="relative w-full max-w-xs"><Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" /><Input className="pl-8" placeholder="Business, name or email" value={search} onChange={(e) => setSearch(e.target.value)} /></div>
+            <select className={`${selectCls} w-44`} value={status} onChange={(e) => setStatus(e.target.value)}>
+              <option value="">All</option>{["pending", "approved", "rejected", "suspended"].map((s) => <option key={s} value={s}>{s}</option>)}
+            </select>
+          </div>
+          <div className="overflow-x-auto">
+            <Table>
+              <TableHeader><TableRow><TableHead>Business</TableHead><TableHead>Contact</TableHead><TableHead>Status</TableHead><TableHead>Orders</TableHead><TableHead>Requested</TableHead></TableRow></TableHeader>
+              <TableBody>
+                {loading ? <TableRow><TableCell colSpan={5} className="py-10 text-center"><Loader2 className="mx-auto h-5 w-5 animate-spin" /></TableCell></TableRow>
+                  : rows.length === 0 ? <TableRow><TableCell colSpan={5} className="py-10 text-center text-muted-foreground">No wholesale buyers yet. Add one, or share the wholesale link.</TableCell></TableRow>
+                  : rows.map((b) => (
+                    <TableRow key={b.id} className="cursor-pointer" onClick={() => { setOpen(b); setNote(b.adminNote || ""); }}>
+                      <TableCell className="font-medium">{b.business}<div className="text-xs text-muted-foreground">{b.businessType}</div></TableCell>
+                      <TableCell>{b.contact}<div className="text-xs text-muted-foreground">{b.email}</div></TableCell>
+                      <TableCell><Badge className={`${BUYER_COLOR[b.status]} hover:${BUYER_COLOR[b.status]}`}>{b.status}</Badge></TableCell>
+                      <TableCell>{b.orderCount}</TableCell>
+                      <TableCell>{when(b.createdAt)}</TableCell>
+                    </TableRow>
+                  ))}
+              </TableBody>
+            </Table>
+          </div>
+        </CardContent>
+      </Card>
+
+      <Dialog open={adding} onOpenChange={(o) => !o && setAdding(false)}>
+        <DialogContent>
+          <DialogHeader><DialogTitle>Add a wholesale buyer</DialogTitle><DialogDescription>They are approved right away. We email them; they sign in (or create an account) on the store with this exact email and see wholesale prices.</DialogDescription></DialogHeader>
+          <div className="grid gap-3">
+            {([["business", "Business name *"], ["contact", "Contact person *"], ["email", "Email * (their store account email)"], ["phone", "Phone"], ["address", "Business address"]] as [keyof typeof draft, string][]).map(([k, label]) => (
+              <div className="space-y-1" key={k}><Label>{label}</Label><Input value={draft[k]} onChange={(e) => setDraft({ ...draft, [k]: e.target.value })} type={k === "email" ? "email" : "text"} /></div>
+            ))}
+          </div>
+          <DialogFooter><Button variant="outline" onClick={() => setAdding(false)}>Cancel</Button><Button onClick={addBuyer} disabled={saving || !draft.business || !draft.contact || !draft.email}>{saving && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}Add buyer</Button></DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={!!open} onOpenChange={(o) => !o && setOpen(null)}>
+        <DialogContent className="max-h-[90vh] max-w-xl overflow-y-auto">
+          {open && (
+            <>
+              <DialogHeader><DialogTitle>{open.business}</DialogTitle><DialogDescription>Requested {when(open.createdAt)} · <span className="capitalize">{open.status}</span> · {open.hasAccount ? "has signed in to a store account" : "has not signed in yet"}</DialogDescription></DialogHeader>
+              <dl className="grid gap-x-6 gap-y-2 text-sm sm:grid-cols-2">
+                {([["Contact", open.contact], ["Email", open.email], ["Phone", open.phone], ["Business type", open.businessType], ["EIN / Tax ID", open.ein || "-"], ["Orders", String(open.orderCount)]] as [string, string][]).map(([k, v]) => (<div key={k}><dt className="text-muted-foreground">{k}</dt><dd className="font-medium">{v}</dd></div>))}
+                <div className="sm:col-span-2"><dt className="text-muted-foreground">Business address</dt><dd className="font-medium">{open.address}</dd></div>
+                {open.notes && <div className="sm:col-span-2"><dt className="text-muted-foreground">Their note</dt><dd>{open.notes}</dd></div>}
+              </dl>
+              <div className="space-y-1"><Label>Internal note</Label><Textarea rows={2} value={note} onChange={(e) => setNote(e.target.value)} /><Button size="sm" variant="outline" onClick={() => saveNote(open)}>Save note</Button></div>
+              <DialogFooter className="gap-2">
+                {open.status !== "approved" && <Button onClick={() => act(open, "approve")}>Approve</Button>}
+                {open.status === "pending" && <Button variant="destructive" onClick={() => act(open, "reject")}>Reject</Button>}
+                {open.status === "approved" && <Button variant="destructive" onClick={() => act(open, "suspend")}>Suspend access</Button>}
+              </DialogFooter>
+            </>
+          )}
+        </DialogContent>
+      </Dialog>
+    </>
   );
 }
 
@@ -261,11 +420,12 @@ function SettingsTab() {
         <CardHeader><CardTitle>How wholesale works</CardTitle></CardHeader>
         <CardContent>
           <ol className="list-decimal space-y-2 pl-5 text-sm leading-relaxed">
-            <li><b>Set prices.</b> In the Products and prices tab, turn wholesale on for a product and set its box prices (separate from the store price).</li>
-            <li><b>Share the private link</b> with your wholesale buyers (not shown anywhere on the store): <span className="font-mono">{link}</span>
+            <li><b>Set prices.</b> In Products and prices, turn wholesale on for a product and set its box prices (separate from the store price).</li>
+            <li><b>Give your wholesale buyer the private link</b> (it is not shown anywhere on the store): <span className="font-mono">{link}</span>
               <Button size="sm" variant="outline" className="ml-2" onClick={() => { navigator.clipboard?.writeText(link); toast.success("Link copied"); }}><Copy className="mr-1 h-3 w-3" /> Copy</Button></li>
-            <li><b>Buyers order and pay by card on Stripe.</b> They can sign in (the order then shows in their account) or buy as a guest. A page is never marked paid until Stripe confirms the full amount, and a double click never charges twice.</li>
-            <li><b>You ship.</b> Open the order here, add the carrier and tracking number and mark it shipped. The buyer gets an email.</li>
+            <li><b>They sign in or create a store account</b> (email must be verified) and send a short request about their business. Or skip that: in the Buyers tab press <b>Add buyer</b> and enter their email. Either way you approve them in <b>Buyers</b>. Until then they, and every normal customer, see no wholesale prices.</li>
+            <li><b>They order and pay by card on Stripe.</b> The order is marked paid only after Stripe confirms the full amount, and a double click never charges twice. Their orders also show in their store account.</li>
+            <li><b>You ship.</b> Open the order in Orders and payments, check the address, print the packing slip, add carrier and tracking number and mark it shipped. The buyer gets an email. To refund, use &quot;Refund in full&quot; on the order.</li>
           </ol>
         </CardContent>
       </Card>

@@ -39,8 +39,80 @@ const getAttempt = () => {
   }
 };
 
+const AUTH_LINK = "/auth?redirect=%2Fwholesale";
+
+function Gate({ access, info, onSent }) {
+  const [f, setF] = useState({ business: "", contact: info?.name || "", phone: "", businessType: "Retail store", ein: "", address: "", notes: "" });
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState("");
+  const set = (k) => (e) => setF((x) => ({ ...x, [k]: e.target.value }));
+
+  async function submit(e) {
+    e.preventDefault();
+    setBusy(true);
+    setError("");
+    try {
+      await wsFetch("/request", { method: "POST", body: f });
+      onSent();
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  const box = (title, text, actions) => (
+    <div className="wp-login">
+      <div className="wp-loginCard">
+        <span className="wp-eyebrow">Wholesale partners</span>
+        <h1>{title}</h1>
+        <p>{text}</p>
+        {actions}
+      </div>
+    </div>
+  );
+
+  if (access === "signin")
+    return box("Wholesale buyers only", "This page is for approved MWP wholesale buyers. Sign in to your account, or create one, to continue.", (
+      <>
+        <a className="wp-add wp-linkBtn" href={AUTH_LINK}>Sign in</a>
+        <a className="wp-ghost wp-linkBtn" href={AUTH_LINK}>Create an account</a>
+      </>
+    ));
+  if (access === "verify") return box("Please verify your email", "Verify your email address first (we sent you a code when you signed up), then come back to this page.", <a className="wp-add wp-linkBtn" href="/account">Go to my account</a>);
+  if (access === "pending") return box("Your request is being reviewed", "Thank you. The MWP team is reviewing your wholesale request and will email you as soon as you are approved.", null);
+  if (access === "rejected") return box("Wholesale access was not approved", "We could not approve this account for wholesale. Please contact the MWP team if you think this is a mistake.", null);
+  if (access === "suspended") return box("Wholesale access is paused", "Wholesale ordering is paused for this account. Please contact the MWP team.", null);
+
+  return (
+    <div className="wp-login">
+      <form className="wp-loginCard wp-requestCard" onSubmit={submit}>
+        <span className="wp-eyebrow">Wholesale partners</span>
+        <h1>Request wholesale access</h1>
+        <p>Tell us about your business. The MWP team reviews every request, and you can order as soon as you are approved.</p>
+        <label>Business name *<input value={f.business} onChange={set("business")} required maxLength={140} autoComplete="organization" /></label>
+        <label>Your name *<input value={f.contact} onChange={set("contact")} required maxLength={100} autoComplete="name" /></label>
+        <label>Phone *<input type="tel" value={f.phone} onChange={set("phone")} required maxLength={40} autoComplete="tel" placeholder="(310) 724-8851" /></label>
+        <label>Business type
+          <select value={f.businessType} onChange={set("businessType")}>
+            <option>Retail store</option><option>Gym / fitness center</option><option>Pharmacy</option><option>Online store</option><option>Distributor</option><option>Other</option>
+          </select>
+        </label>
+        <label>EIN / Tax ID (optional)<input value={f.ein} onChange={set("ein")} maxLength={40} placeholder="XX-XXXXXXX" /></label>
+        <label>Business address *<input value={f.address} onChange={set("address")} required maxLength={300} placeholder="Street, City, State, ZIP" autoComplete="street-address" /></label>
+        <label>Anything else we should know? (optional)<input value={f.notes} onChange={set("notes")} maxLength={500} /></label>
+        {error && <p className="wp-error" role="alert">{error}</p>}
+        <button className="wp-add" type="submit" disabled={busy}>{busy ? "Sending..." : "Send request"}</button>
+      </form>
+    </div>
+  );
+}
+
 export default function Portal() {
-  const [boot, setBoot] = useState("loading"); // loading | off | ready | error
+  const [boot, setBoot] = useState("loading"); // loading | off | gate | ready | error
+  const [access, setAccess] = useState("");
+  const [reqInfo, setReqInfo] = useState(null);
+  const [buyer, setBuyer] = useState(null);
   const [minBoxes, setMinBoxes] = useState(4);
   const [shipping, setShipping] = useState(0);
   const [user, setUser] = useState(null);
@@ -59,7 +131,7 @@ export default function Portal() {
   const [done, setDone] = useState(null);
   const [orders, setOrders] = useState(null);
   const [confirming, setConfirming] = useState(false);
-  const [f, setF] = useState({ business: "", name: "", email: "", phone: "", street: "", city: "", state: "", postalCode: "", note: "" });
+  const [f, setF] = useState({ phone: "", street: "", city: "", state: "", postalCode: "", note: "" });
   const toastTimer = useRef(null);
   const cartLoaded = useRef(false);
 
@@ -73,6 +145,13 @@ export default function Portal() {
     try {
       const d = await wsFetch("/catalog");
       if (!d.enabled) return setBoot("off");
+      setUser(d.user || null);
+      setAccess(d.access);
+      if (d.access !== "approved") {
+        setReqInfo(d.request || null);
+        return setBoot("gate");
+      }
+      setBuyer(d.buyer || null);
       setProducts(d.products || []);
       setMinBoxes(d.minBoxes || 4);
       setShipping(Number(d.shipping) || 0);
@@ -85,10 +164,10 @@ export default function Portal() {
   }, []);
   useEffect(() => { load(); }, [load]);
 
-  // signed-in customers get their name and email filled in
+  // the business phone on the approved account is the default
   useEffect(() => {
-    if (user) setF((x) => ({ ...x, name: x.name || user.name || "", email: x.email || user.email || "" }));
-  }, [user]);
+    if (buyer?.phone && buyer.phone !== "-") setF((x) => ({ ...x, phone: x.phone || buyer.phone }));
+  }, [buyer]);
 
   // the cart is remembered in this browser
   useEffect(() => {
@@ -272,15 +351,8 @@ export default function Portal() {
         <form onSubmit={pay} className="wp-form">
           <h2>Checkout</h2>
           <button type="button" className="wp-back" onClick={() => setStep("cart")}>← Back to cart</button>
-          {user ? (
-            <div className="wp-acct">Signed in as <b>{user.email}</b>. This order will show in your account.</div>
-          ) : (
-            <div className="wp-acct">Ordering as a guest. <a href="/auth?redirect=%2Fwholesale">Sign in or create an account</a> to keep this order in your account.</div>
-          )}
-          <label>Business name *<input value={f.business} onChange={set("business")} required maxLength={140} autoComplete="organization" /></label>
-          <label>Your name *<input value={f.name} onChange={set("name")} required maxLength={100} autoComplete="name" /></label>
-          <label>Email *<input type="email" value={f.email} onChange={set("email")} required maxLength={200} autoComplete="email" /></label>
-          <label>Phone *<input type="tel" value={f.phone} onChange={set("phone")} required maxLength={40} autoComplete="tel" placeholder="(310) 724-8851" /></label>
+          <div className="wp-acct">Ordering as <b>{buyer?.business}</b> ({user?.email}). This order will show in your account.</div>
+          <label>Phone for the carrier *<input type="tel" value={f.phone} onChange={set("phone")} required maxLength={40} autoComplete="tel" placeholder="(310) 724-8851" /></label>
           <label>Shipping street address *<input value={f.street} onChange={set("street")} required maxLength={150} autoComplete="street-address" /></label>
           <div className="wp-two">
             <label>City *<input value={f.city} onChange={set("city")} required maxLength={80} autoComplete="address-level2" /></label>
@@ -312,11 +384,7 @@ export default function Portal() {
         <nav className="wp-nav" aria-label="Wholesale"><span>Wholesale Portal</span></nav>
         {boot === "ready" && (
           <div className="wp-hdRight">
-            {user ? (
-              <button type="button" className={`wp-navBtn ${view === "orders" ? "on" : ""}`} onClick={() => (view === "orders" ? setView("shop") : openOrders())}>{view === "orders" ? "Shop" : "My orders"}</button>
-            ) : (
-              <a className="wp-navBtn" href="/auth?redirect=%2Fwholesale">Sign in</a>
-            )}
+            <button type="button" className={`wp-navBtn ${view === "orders" ? "on" : ""}`} onClick={() => (view === "orders" ? setView("shop") : openOrders())}>{view === "orders" ? "Shop" : "My orders"}</button>
             <button className="wp-cartBtn" type="button" onClick={openSheet} aria-label="Open cart">
               <BagIcon /> Cart <b>{totalBoxes}</b>
             </button>
@@ -327,6 +395,7 @@ export default function Portal() {
   );
 
   if (boot === "loading") return <div className="wp-root">{header}<div className="wp-boot">Loading...</div></div>;
+  if (boot === "gate") return <div className="wp-root">{header}<Gate access={access} info={reqInfo} onSent={() => setAccess("pending")} /></div>;
   if (boot === "off" || boot === "error")
     return (
       <div className="wp-root">
@@ -353,7 +422,7 @@ export default function Portal() {
             <p>Order <b>{done?.orderNumber}</b>{done?.totalBoxes ? `: ${done.totalBoxes} boxes, ${money(done.total)} paid` : ""}. We emailed you the details, and we will email your tracking number as soon as it ships.</p>
             <div className="wp-doneBtns">
               <button className="wp-add wp-addAuto" type="button" onClick={() => setView("shop")}>Place another order</button>
-              {user && <button className="wp-ghost" type="button" onClick={openOrders}>View my orders</button>}
+              <button className="wp-ghost" type="button" onClick={openOrders}>View my orders</button>
             </div>
           </div>
         </section>
@@ -383,7 +452,7 @@ export default function Portal() {
               <div>
                 <span className="wp-eyebrow">Wholesale Partners</span>
                 <h1>Wholesale <em>Order</em> Dashboard</h1>
-                <p>{user ? <>Signed in as <b>{user.name || user.email}</b></> : <>Order as a guest or <a className="wp-inline" href="/auth?redirect=%2Fwholesale">sign in</a></>}</p>
+                <p>Account: <b>{buyer?.business}</b></p>
               </div>
               <div className="wp-facts" aria-label="Order terms">
                 <div><b>{minBoxes} boxes</b><span>Minimum order</span></div>

@@ -7,12 +7,12 @@ import { ApiResponsive } from "../utils/ApiResponsive.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
 import { getFileUrl } from "../utils/deleteFromS3.js";
 import { getStripeContext } from "../utils/stripe.js";
-import { validateUsAddress } from "../utils/usValidation.js";
+import { validateUsAddress, normalizeUsPhone } from "../utils/usValidation.js";
 import sendEmail from "../utils/sendEmail.js";
 import { getFromEmail } from "../utils/storeConfig.js";
 
-// Wholesale: the MWP team gives wholesale buyers a private link. Buyers see the box prices set in Admin > Wholesale,
-// fill in their business details (signed in or as a guest) and pay by card on Stripe. Money rules:
+// Wholesale: only store accounts the MWP team has approved as wholesale buyers can see the box prices set in Admin > Wholesale
+// and order. They pay by card on Stripe. Money rules:
 //  - prices and totals are always recomputed here, never taken from the browser
 //  - one checkout attempt = one order (attemptId), and an open Stripe page is reused, so a double click never charges twice
 //  - the order becomes "paid" only from Stripe (webhook / return page), after the amount is checked
@@ -25,6 +25,7 @@ const money = (n) => `$${num(n).toFixed(2)}`;
 const CTRL = new RegExp("[\\u0000-\\u001f\\u007f]", "g");
 const clean = (v, max) => String(v ?? "").replace(CTRL, " ").trim().slice(0, max);
 const esc = (s) => String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+const wholesaleLink = () => `${(process.env.FRONTEND_URL || "https://www.mwpsupplements.com").split(",")[0].replace(/\/$/, "")}/wholesale`;
 const adminEmail = () => process.env.WHOLESALE_ADMIN_EMAIL || getFromEmail();
 
 // emails never block or break a request
@@ -44,12 +45,32 @@ async function optionalUser(req) {
     const token = req.cookies?.accessToken || req.headers?.authorization?.replace("Bearer ", "");
     if (!token) return null;
     const decoded = jwt.verify(token, process.env.ACCESS_JWT_SECRET);
-    const u = await prisma.user.findUnique({ where: { id: decoded.id }, select: { id: true, name: true, email: true, isActive: true } });
+    const u = await prisma.user.findUnique({ where: { id: decoded.id }, select: { id: true, name: true, email: true, isActive: true, otpVerified: true } });
     return u && u.isActive !== false ? u : null;
   } catch {
     return null;
   }
 }
+
+// Wholesale access = a store account (signed in, email verified) that the MWP team has approved as a wholesale buyer.
+// Normal customers never see wholesale prices.
+async function accessFor(user) {
+  if (!user) return { access: "signin" };
+  if (user.otpVerified === false) return { access: "verify" };
+  const email = String(user.email || "").toLowerCase();
+  let partner = await prisma.wholesalePartner.findFirst({ where: { OR: [{ userId: user.id }, { email }] } });
+  if (!partner) return { access: "request" };
+  if (partner.userId !== user.id) partner = await prisma.wholesalePartner.update({ where: { id: partner.id }, data: { userId: user.id, lastLoginAt: new Date() } });
+  if (partner.status === "approved") return { access: "approved", partner };
+  return { access: partner.status, partner }; // pending | rejected | suspended
+}
+
+const requireBuyer = async (req) => {
+  const user = await optionalUser(req);
+  const a = await accessFor(user);
+  if (a.access !== "approved") throw new ApiError(403, "Your account is not approved for wholesale ordering.");
+  return { user, partner: a.partner };
+};
 
 /* ------------------------------ limits ------------------------------ */
 
@@ -71,8 +92,13 @@ const TONES = {
 const toneFor = (slug) => TONES[slug] || ["#F6F1E4", "#E6DFC9"];
 
 export const catalog = asyncHandler(async (req, res) => {
-  const [settings, user] = await Promise.all([getSettings(), optionalUser(req)]);
+  const settings = await getSettings();
   if (!settings.isEnabled) return ok(res, { enabled: false });
+  const user = await optionalUser(req);
+  const a = await accessFor(user);
+  const me = user ? { name: user.name, email: user.email } : null;
+  if (a.access !== "approved") return ok(res, { enabled: true, access: a.access, user: me, request: a.access === "request" ? { name: user?.name || "", email: user?.email || "" } : null });
+
   const products = await prisma.product.findMany({
     where: { isDeleted: false, isActive: true, wholesaleEnabled: true, wholesalePacks: { some: { isActive: true } } },
     orderBy: { name: "asc" },
@@ -84,9 +110,11 @@ export const catalog = asyncHandler(async (req, res) => {
   });
   ok(res, {
     enabled: true,
+    access: "approved",
     minBoxes: settings.minBoxes,
     shipping: num(settings.shippingFlat),
-    user: user ? { name: user.name, email: user.email } : null,
+    user: me,
+    buyer: { business: a.partner.business, contact: a.partner.contact, phone: a.partner.phone },
     products: products.map((p) => {
       const [mid, edge] = toneFor(p.slug);
       return {
@@ -97,6 +125,25 @@ export const catalog = asyncHandler(async (req, res) => {
       };
     }),
   });
+});
+
+// A signed-in, email-verified customer asks the MWP team for wholesale access.
+export const requestAccess = asyncHandler(async (req, res) => {
+  const user = await optionalUser(req);
+  const a = await accessFor(user);
+  if (a.access === "signin") throw new ApiError(401, "Please sign in first.");
+  if (a.access === "verify") throw new ApiError(403, "Please verify your email address first.");
+  if (a.access !== "request") return ok(res, { access: a.access }, "Request already received");
+  const b = req.body || {};
+  const f = { business: clean(b.business, 140), contact: clean(b.contact, 100), phone: clean(b.phone, 40), businessType: clean(b.businessType, 60) || "Retail store", ein: clean(b.ein, 40) || null, address: clean(b.address, 300), notes: clean(b.notes, 1000) || null };
+  if (!f.business || !f.contact || !f.address) throw new ApiError(400, "Please enter your business name, your name and your business address.");
+  if (!normalizeUsPhone(f.phone)) throw new ApiError(400, "Enter a valid US phone number, like (310) 724-8851.");
+  const email = String(user.email).toLowerCase();
+  await prisma.wholesalePartner.create({ data: { ...f, email, userId: user.id, status: "pending" } });
+  const rows = [["Business", f.business], ["Contact", f.contact], ["Email", email], ["Phone", f.phone], ["Type", f.businessType], ["EIN / Tax ID", f.ein || "-"], ["Address", f.address]];
+  await mail(adminEmail(), `Wholesale access request: ${f.business}`, `<h2>New wholesale access request</h2><table cellpadding="6">${rows.map(([k, v]) => `<tr><td><b>${esc(k)}</b></td><td>${esc(v)}</td></tr>`).join("")}</table><p>Review it in Admin > Wholesale > Buyers.</p>`);
+  await mail(email, "We received your MWP wholesale request", `<p>Hi ${esc(f.contact)}, thank you. Our team will review your request and email you as soon as your wholesale access is approved.</p>`);
+  ok(res, { access: "pending" }, "Request received", 201);
 });
 
 /* ------------------------------ checkout (Stripe) ------------------------------ */
@@ -116,6 +163,8 @@ const closeSession = async (stripe, id) => {
 export const checkout = asyncHandler(async (req, res) => {
   const settings = await getSettings();
   if (!settings.isEnabled) throw new ApiError(403, "Wholesale ordering is not available right now.");
+  // only an approved wholesale account may check out (never a guest or a normal customer)
+  const { user, partner } = await requireBuyer(req);
   const b = req.body || {};
   const attemptId = String(b.attemptId || "");
   if (!/^[A-Za-z0-9-]{16,64}$/.test(attemptId)) throw new ApiError(400, "Please refresh the page and try again.");
@@ -149,16 +198,8 @@ export const checkout = asyncHandler(async (req, res) => {
   const shippingCost = num(settings.shippingFlat);
   const total = Math.round((subtotal + shippingCost) * 100) / 100;
 
-  // buyer details
-  const user = await optionalUser(req);
-  const buyer = {
-    business: clean(b.business, 140),
-    name: clean(b.name, 100),
-    email: clean(b.email || user?.email, 200).toLowerCase(),
-    phone: clean(b.phone, 40),
-  };
-  if (!buyer.business || !buyer.name) throw new ApiError(400, "Please enter your business name and your name.");
-  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(buyer.email)) throw new ApiError(400, "Please enter a valid email.");
+  // buyer details (access was already checked above)
+  const buyer = { business: partner.business, name: partner.contact, email: String(user.email).toLowerCase(), phone: clean(b.phone, 40) || partner.phone };
   const addr = validateUsAddress({ street: b.street, city: b.city, state: b.state, postalCode: b.postalCode, phone: buyer.phone, country: "US" });
   if (addr.errors) throw new ApiError(400, Object.values(addr.errors)[0]);
   const a = addr.value;
@@ -170,14 +211,14 @@ export const checkout = asyncHandler(async (req, res) => {
   if (!base) throw new ApiError(500, "Site URL is not configured");
 
   const orderData = {
-    userId: user?.id || null, buyerName: buyer.name, buyerEmail: buyer.email, buyerPhone: a.phone, business: buyer.business,
+    userId: user.id, partnerId: partner.id, buyerName: buyer.name, buyerEmail: buyer.email, buyerPhone: a.phone, business: buyer.business,
     subtotal, shippingCost, total, totalBoxes, shippingAddress, customerNote: note,
   };
 
   // one attempt = one order
   let order = await prisma.wholesaleOrder.findUnique({ where: { attemptId } });
   if (order && order.paymentStatus === "paid") return ok(res, { paid: true, orderNumber: order.orderNumber });
-  if (order && order.userId && user?.id !== order.userId) throw new ApiError(409, "Please refresh the page and try again.");
+  if (order && order.userId && user.id !== order.userId) throw new ApiError(409, "Please refresh the page and try again.");
 
   if (order) {
     // reuse the open Stripe page when nothing changed (double click, reopened tab)
@@ -290,15 +331,65 @@ const publicOrder = (o) => ({
   items: o.items.map((i) => ({ productName: i.productName, packLabel: i.packLabel, contains: i.contains, qty: i.qty, unitPrice: num(i.unitPrice), lineTotal: num(i.lineTotal) })),
 });
 
-// signed-in customers see their paid wholesale orders (also listed in their account)
+// approved buyers see their paid wholesale orders (also listed in their account)
 export const myOrders = asyncHandler(async (req, res) => {
   const user = await optionalUser(req);
   if (!user) throw new ApiError(401, "Please sign in to see your wholesale orders.");
   const orders = await prisma.wholesaleOrder.findMany({
-    where: { paymentStatus: { in: ["paid", "refunded"] }, OR: [{ userId: user.id }, { buyerEmail: String(user.email || "").toLowerCase() }] },
+    where: { paymentStatus: { in: ["paid", "refunded"] }, userId: user.id },
     orderBy: { createdAt: "desc" }, take: 50, include: { items: true },
   });
   ok(res, { orders: orders.map(publicOrder) });
+});
+
+/* ------------------------------ admin: buyers (who may order wholesale) ------------------------------ */
+
+const buyerRow = (p) => ({
+  id: p.id, business: p.business, contact: p.contact, email: p.email, phone: p.phone, businessType: p.businessType, ein: p.ein, address: p.address,
+  notes: p.notes, status: p.status, adminNote: p.adminNote, hasAccount: !!p.userId, approvedAt: p.approvedAt, createdAt: p.createdAt, orderCount: p._count?.orders ?? 0,
+});
+
+export const adminBuyers = asyncHandler(async (req, res) => {
+  const status = ["pending", "approved", "rejected", "suspended"].includes(req.query.status) ? req.query.status : undefined;
+  const search = clean(req.query.search, 80);
+  const where = {
+    ...(status ? { status } : {}),
+    ...(search ? { OR: [{ business: { contains: search, mode: "insensitive" } }, { email: { contains: search, mode: "insensitive" } }, { contact: { contains: search, mode: "insensitive" } }] } : {}),
+  };
+  const [rows, pending] = await Promise.all([
+    prisma.wholesalePartner.findMany({ where, orderBy: { createdAt: "desc" }, take: 200, include: { _count: { select: { orders: true } } } }),
+    prisma.wholesalePartner.count({ where: { status: "pending" } }),
+  ]);
+  ok(res, { buyers: rows.map(buyerRow), pending });
+});
+
+// The team adds a wholesale buyer by email. They sign in with that email on the store and get access straight away.
+export const adminAddBuyer = asyncHandler(async (req, res) => {
+  const b = req.body || {};
+  const f = { business: clean(b.business, 140), contact: clean(b.contact, 100), email: clean(b.email, 200).toLowerCase(), phone: clean(b.phone, 40) || "-", address: clean(b.address, 300) || "-", businessType: clean(b.businessType, 60) || "Wholesale buyer" };
+  if (!f.business || !f.contact || !f.email) throw new ApiError(400, "Business name, contact name and email are required.");
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(f.email)) throw new ApiError(400, "Please enter a valid email.");
+  if (await prisma.wholesalePartner.findUnique({ where: { email: f.email } })) throw new ApiError(409, "A buyer with this email already exists. Find them in the list and approve them.");
+  const buyer = await prisma.wholesalePartner.create({ data: { ...f, status: "approved", approvedAt: new Date() }, include: { _count: { select: { orders: true } } } });
+  await mail(f.email, "You can now order MWP wholesale", `<p>Hi ${esc(f.contact)}, your MWP wholesale access is ready.</p><p>Create or sign in to your account with <b>${esc(f.email)}</b> at <a href="${wholesaleLink()}">${wholesaleLink()}</a> and you will see your wholesale prices.</p>`);
+  ok(res, { buyer: buyerRow(buyer) }, "Buyer added", 201);
+});
+
+export const adminBuyerAction = asyncHandler(async (req, res) => {
+  const buyer = await prisma.wholesalePartner.findUnique({ where: { id: req.params.id } });
+  if (!buyer) throw new ApiError(404, "Buyer not found");
+  const next = { approve: "approved", reject: "rejected", suspend: "suspended" }[req.params.action];
+  if (!next) throw new ApiError(400, "Unknown action");
+  await prisma.wholesalePartner.update({ where: { id: buyer.id }, data: { status: next, approvedAt: next === "approved" ? buyer.approvedAt || new Date() : buyer.approvedAt } });
+  if (next === "approved" && buyer.status !== "approved") {
+    await mail(buyer.email, "Your MWP wholesale access is approved", `<p>Hi ${esc(buyer.contact)}, you are approved for MWP wholesale ordering.</p><p>Sign in to your account with <b>${esc(buyer.email)}</b> at <a href="${wholesaleLink()}">${wholesaleLink()}</a> to see your wholesale prices and order.</p>`);
+  }
+  ok(res, {}, next === "approved" ? "Buyer approved" : next === "rejected" ? "Request rejected" : "Buyer suspended");
+});
+
+export const adminBuyerNote = asyncHandler(async (req, res) => {
+  await prisma.wholesalePartner.update({ where: { id: req.params.id }, data: { adminNote: clean(req.body?.adminNote, 1000) || null } });
+  ok(res, {}, "Saved");
 });
 
 /* ------------------------------ admin: settings + products ------------------------------ */

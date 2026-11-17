@@ -2183,6 +2183,7 @@ model WholesalePack {
 
 model WholesalePartner {
   id              String           @id @default(uuid())
+  userId          String? // the store account that owns this wholesale access (set when they first sign in)
   business        String
   contact         String
   email           String           @unique
@@ -2208,6 +2209,7 @@ model WholesalePartner {
   orders          WholesaleOrder[]
 
   @@index([status])
+  @@index([userId])
 }
 
 model WholesaleOrder {
