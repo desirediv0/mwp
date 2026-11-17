@@ -1,11 +1,6 @@
-import Portal from "./Portal";
-import "./portal.css";
+import { redirect } from "next/navigation";
 
-export const metadata = {
-  title: { absolute: "Wholesale Order Dashboard | MWP Supplements" },
-  robots: { index: false, follow: false },
-};
-
-export default function WholesaleOrderPage() {
-  return <Portal />;
+// older link: the dashboard now lives at /wholesale
+export default function WholesaleOrderRedirect() {
+  redirect("/wholesale");
 }

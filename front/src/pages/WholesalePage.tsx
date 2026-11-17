@@ -232,6 +232,9 @@ function PartnersTab({ onPending }: { onPending: (n: number) => void }) {
   const [open, setOpen] = useState<Partner | null>(null);
   const [code, setCode] = useState<{ business: string; code: string } | null>(null);
   const [note, setNote] = useState("");
+  const [adding, setAdding] = useState(false);
+  const [draft, setDraft] = useState({ business: "", contact: "", email: "", phone: "", address: "" });
+  const [creating, setCreating] = useState(false);
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -259,6 +262,21 @@ function PartnersTab({ onPending }: { onPending: (n: number) => void }) {
     }
   };
 
+  const createPartner = async () => {
+    setCreating(true);
+    try {
+      const r = await api.post(`${BASE}/partners`, draft);
+      setAdding(false);
+      setCode({ business: draft.business, code: r.data.data.code });
+      setDraft({ business: "", contact: "", email: "", phone: "", address: "" });
+      load();
+    } catch (e) {
+      toast.error(errMsg(e, "Could not add the partner"));
+    } finally {
+      setCreating(false);
+    }
+  };
+
   const viewCertificate = async (p: Partner) => {
     try {
       const r = await api.get(`${BASE}/partners/${p.id}/certificate`, { responseType: "blob" });
@@ -281,8 +299,9 @@ function PartnersTab({ onPending }: { onPending: (n: number) => void }) {
   return (
     <>
       <Card>
-        <CardHeader><CardTitle>Wholesale partners</CardTitle>
-          <CardDescription>Applications arrive here. Approve a business to create its private access code; the code is emailed to the partner and shown to you once. Only a scrambled copy is stored.</CardDescription></CardHeader>
+        <CardHeader><div className="flex flex-wrap items-start justify-between gap-3"><div><CardTitle>Wholesale partners</CardTitle>
+          <CardDescription>Add each wholesale buyer here. You get a private access code (shown once; only a scrambled copy is stored). Give the buyer the link <b>https://www.mwpsupplements.com/wholesale</b> (use your store address) and their code. They sign in with their email and code, and order from there.</CardDescription></div>
+          <Button onClick={() => setAdding(true)}><Plus className="mr-2 h-4 w-4" /> Add partner</Button></div></CardHeader>
         <CardContent className="space-y-4">
           <div className="flex flex-wrap gap-3">
             <div className="relative w-full max-w-xs"><Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" /><Input className="pl-8" placeholder="Business, name or email" value={search} onChange={(e) => setSearch(e.target.value)} /></div>
@@ -312,6 +331,18 @@ function PartnersTab({ onPending }: { onPending: (n: number) => void }) {
         </CardContent>
       </Card>
 
+      <Dialog open={adding} onOpenChange={(o) => !o && setAdding(false)}>
+        <DialogContent>
+          <DialogHeader><DialogTitle>Add a wholesale partner</DialogTitle><DialogDescription>They can sign in right away with this email and the access code you get next.</DialogDescription></DialogHeader>
+          <div className="grid gap-3">
+            {([["business", "Business name *"], ["contact", "Contact person *"], ["email", "Email *"], ["phone", "Phone"], ["address", "Shipping address * (street, city, state, ZIP)"]] as [keyof typeof draft, string][]).map(([k, label]) => (
+              <div className="space-y-1" key={k}><Label>{label}</Label><Input value={draft[k]} onChange={(e) => setDraft({ ...draft, [k]: e.target.value })} type={k === "email" ? "email" : "text"} /></div>
+            ))}
+          </div>
+          <DialogFooter><Button variant="outline" onClick={() => setAdding(false)}>Cancel</Button><Button onClick={createPartner} disabled={creating || !draft.business || !draft.contact || !draft.email || !draft.address}>{creating && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}Add and create code</Button></DialogFooter>
+        </DialogContent>
+      </Dialog>
+
       <Dialog open={!!open} onOpenChange={(o) => !o && setOpen(null)}>
         <DialogContent className="max-h-[90vh] max-w-2xl overflow-y-auto">
           {open && (
@@ -327,7 +358,7 @@ function PartnersTab({ onPending }: { onPending: (n: number) => void }) {
               {open.hasCertificate && <Button variant="outline" className="w-fit" onClick={() => viewCertificate(open)}><FileText className="mr-2 h-4 w-4" /> View resale certificate</Button>}
               <div className="space-y-1"><Label>Internal note</Label><Textarea rows={2} value={note} onChange={(e) => setNote(e.target.value)} /><Button size="sm" variant="outline" onClick={() => saveNote(open)}>Save note</Button></div>
               <DialogFooter className="gap-2">
-                {open.status !== "approved" && <Button onClick={() => act(open, "approve")}>Approve and create access code</Button>}
+                {open.status !== "approved" && <Button onClick={() => act(open, "approve")}>Activate and create access code</Button>}
                 {open.status === "approved" && <Button variant="outline" onClick={() => act(open, "reset-code")}>Create new access code</Button>}
                 {open.status === "approved" && <Button variant="destructive" onClick={() => act(open, "suspend")}>Suspend</Button>}
                 {open.status === "pending" && <Button variant="destructive" onClick={() => act(open, "reject")}>Reject</Button>}
@@ -339,7 +370,7 @@ function PartnersTab({ onPending }: { onPending: (n: number) => void }) {
 
       <Dialog open={!!code} onOpenChange={(o) => !o && setCode(null)}>
         <DialogContent>
-          <DialogHeader><DialogTitle>Access code for {code?.business}</DialogTitle><DialogDescription>It was emailed to the partner. This is the only time you can see it; if it is lost, create a new one.</DialogDescription></DialogHeader>
+          <DialogHeader><DialogTitle>Access code for {code?.business}</DialogTitle><DialogDescription>Give this code to the partner with the wholesale link. This is the only time you can see it; if it is lost, create a new one.</DialogDescription></DialogHeader>
           <div className="flex items-center gap-2 rounded-md border bg-muted p-3 font-mono text-lg tracking-wider">
             <span className="flex-1 break-all">{code?.code}</span>
             <Button size="icon" variant="outline" onClick={() => { navigator.clipboard?.writeText(code?.code || ""); toast.success("Copied"); }}><Copy className="h-4 w-4" /></Button>

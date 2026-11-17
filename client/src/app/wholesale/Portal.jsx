@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { wsFetch, money } from "../wholesale-api";
+import { wsFetch, money } from "./wholesale-api";
 
 const PackIcon = ({ type }) =>
   type === "bottle" ? (
@@ -49,7 +49,7 @@ function SignIn({ onDone }) {
         <label>Access code<input type="password" value={code} onChange={(e) => setCode(e.target.value)} required autoComplete="current-password" maxLength={60} placeholder="MWP-XXXX-XXXX-XXXX-XXXX" /></label>
         {error && <p className="wp-error" role="alert">{error}</p>}
         <button className="wp-add" type="submit" disabled={busy}>{busy ? "Signing in..." : "Sign in"}</button>
-        <a className="wp-link" href="/wholesale#apply">Not a partner yet? Apply for wholesale</a>
+        <p className="wp-note">Need access? Contact the MWP team for your wholesale code.</p>
       </form>
     </div>
   );

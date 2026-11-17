@@ -15,7 +15,7 @@ import { usePathname } from "next/navigation";
 export function SiteChrome({ children, isMaintenance }) {
   const pathname = usePathname();
   // the wholesale dashboard has its own header and cart sheet; it is not linked from the store menu
-  if (isMaintenance || pathname?.startsWith("/wholesale/order")) {
+  if (isMaintenance || pathname?.startsWith("/wholesale")) {
     return children;
   }
 
