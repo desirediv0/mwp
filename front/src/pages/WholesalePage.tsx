@@ -25,11 +25,11 @@ interface Order {
   id: string; orderNumber: string; status: string; paymentStatus: string; paymentNote?: string | null; invoiceNumber?: string | null;
   paidAt?: string | null; paymentIntentId?: string | null; hasAccount: boolean;
   totalBoxes: number; subtotal: number; shippingCost: number; total: number; shippingAddress: string; customerNote?: string | null;
-  carrier?: string | null; trackingNumber?: string | null; adminNote?: string | null; createdAt: string;
+  carrier?: string | null; trackingNumber?: string | null; trackingUrl?: string | null; labelUrl?: string | null; labelBoughtAt?: string | null; shipmentError?: string | null; adminNote?: string | null; createdAt: string;
   buyer: { business: string; name: string; email: string; phone: string };
   items: OrderItem[];
 }
-interface Pack { id?: string; type: "bottle" | "blister"; label: string; contains: string; detail: string; unit: string; units: number; price: number | string; isActive: boolean }
+interface Pack { id?: string; type: "bottle" | "blister"; label: string; contains: string; detail: string; unit: string; units: number; boxWeightLb?: number | string | null; price: number | string; isActive: boolean }
 interface WProduct { id: string; name: string; slug: string; isActive: boolean; wholesaleEnabled: boolean; image: string | null; packs: Pack[] }
 
 const STATUS_COLOR: Record<string, string> = {
@@ -159,6 +159,54 @@ function OrderDialog({ order, onClose, onSaved }: { order: Order; onClose: () =>
   const [f, setF] = useState({ status: order.status, carrier: order.carrier || "", trackingNumber: order.trackingNumber || "", invoiceNumber: order.invoiceNumber || "", adminNote: order.adminNote || "" });
   const [saving, setSaving] = useState(false);
   const [confirmRefund, setConfirmRefund] = useState(false);
+  const [ship, setShip] = useState<{ configured: boolean; message: string | null; weightLb: string; lengthIn: string; widthIn: string; heightIn: string } | null>(null);
+  const [rates, setRates] = useState<{ id: string; carrier: string; service: string; cost: number; days: number | null }[]>([]);
+  const [rateId, setRateId] = useState("");
+  const [shipBusy, setShipBusy] = useState(false);
+  const [cur, setCur] = useState<Order>(order);
+  useEffect(() => {
+    if (order.paymentStatus !== "paid" || order.labelUrl) return;
+    api.get(`${BASE}/orders/${order.id}/shipping`).then((r) => { const d = r.data.data; setShip({ configured: d.configured, message: d.message, weightLb: String(d.suggested.weightLb), lengthIn: String(d.suggested.lengthIn), widthIn: String(d.suggested.widthIn), heightIn: String(d.suggested.heightIn) }); }).catch(() => {});
+  }, [order.id, order.paymentStatus, order.labelUrl]);
+  const getRates = async () => {
+    if (!ship) return;
+    setShipBusy(true);
+    try {
+      const r = await api.post(`${BASE}/orders/${order.id}/rates`, { weightLb: Number(ship.weightLb), lengthIn: Number(ship.lengthIn), widthIn: Number(ship.widthIn), heightIn: Number(ship.heightIn) });
+      setRates(r.data.data.rates);
+      setRateId(r.data.data.rates[0]?.id || "");
+    } catch (e) {
+      toast.error(errMsg(e, "Could not get shipping rates"));
+    } finally {
+      setShipBusy(false);
+    }
+  };
+  const buyLabel = async () => {
+    setShipBusy(true);
+    try {
+      const r = await api.post(`${BASE}/orders/${order.id}/label`, { rateId });
+      toast.success(r.data.message);
+      setCur(r.data.data.order);
+      onSaved(r.data.data.order);
+    } catch (e) {
+      toast.error(errMsg(e, "Could not buy the label"));
+    } finally {
+      setShipBusy(false);
+    }
+  };
+  const voidLabel = async () => {
+    setShipBusy(true);
+    try {
+      const r = await api.post(`${BASE}/orders/${order.id}/label/void`);
+      toast.success(r.data.message);
+      setCur(r.data.data.order);
+      onSaved(r.data.data.order);
+    } catch (e) {
+      toast.error(errMsg(e, "Could not cancel the label"));
+    } finally {
+      setShipBusy(false);
+    }
+  };
   const set = (k: string, v: string) => setF((x) => ({ ...x, [k]: v }));
   const paid = order.paymentStatus === "paid";
 
@@ -222,6 +270,48 @@ function OrderDialog({ order, onClose, onSaved }: { order: Order; onClose: () =>
           <p className="text-sm"><b>Ship to:</b> {order.shippingAddress}</p>
           {order.customerNote && <p className="text-sm"><b>Buyer note:</b> {order.customerNote}</p>}
           {order.adminNote?.includes("CHECK PAYMENT") && <p className="rounded-md bg-red-50 p-2 text-sm text-red-800">{order.adminNote}</p>}
+
+          {paid && (
+            <div className="space-y-3 rounded-lg border p-3">
+              <p className="font-medium">Shipping label</p>
+              {cur.labelUrl ? (
+                <div className="space-y-2 text-sm">
+                  <p>Carrier: <b>{cur.carrier}</b> · Tracking: <b>{cur.trackingNumber}</b></p>
+                  <div className="flex flex-wrap gap-2">
+                    <Button size="sm" onClick={() => window.open(cur.labelUrl as string, "_blank", "noopener")}>Print label</Button>
+                    {cur.trackingUrl && <Button size="sm" variant="outline" onClick={() => window.open(cur.trackingUrl as string, "_blank", "noopener")}>Track package</Button>}
+                    {cur.status !== "delivered" && <Button size="sm" variant="outline" onClick={voidLabel} disabled={shipBusy}>Cancel label</Button>}
+                  </div>
+                </div>
+              ) : !ship ? (
+                <Loader2 className="h-4 w-4 animate-spin" />
+              ) : !ship.configured ? (
+                <p className="text-sm text-muted-foreground">{ship.message} You can still enter a carrier and tracking number by hand below.</p>
+              ) : (
+                <div className="space-y-3">
+                  <p className="text-xs text-muted-foreground">Check the parcel size and weight (it is suggested from the box weights), then get rates and buy the label. The buyer is emailed the tracking number and the order becomes &quot;shipped&quot;.</p>
+                  <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+                    {([["weightLb", "Weight (lb)"], ["lengthIn", "Length (in)"], ["widthIn", "Width (in)"], ["heightIn", "Height (in)"]] as const).map(([k, l]) => (
+                      <div className="space-y-1" key={k}><Label>{l}</Label><Input type="number" min="0" step="0.1" value={ship[k]} onChange={(e) => setShip({ ...ship, [k]: e.target.value })} /></div>
+                    ))}
+                  </div>
+                  <Button size="sm" variant="outline" onClick={getRates} disabled={shipBusy}>{shipBusy && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}Get shipping rates</Button>
+                  {rates.length > 0 && (
+                    <div className="space-y-2">
+                      {rates.map((x) => (
+                        <label key={x.id} className="flex cursor-pointer items-center justify-between gap-3 rounded-md border p-2 text-sm">
+                          <span className="flex items-center gap-2"><input type="radio" name="rate" checked={rateId === x.id} onChange={() => setRateId(x.id)} /> {x.carrier} {x.service}{x.days ? ` · ${x.days} day${x.days > 1 ? "s" : ""}` : ""}</span>
+                          <b>{money(x.cost)}</b>
+                        </label>
+                      ))}
+                      <Button onClick={buyLabel} disabled={shipBusy || !rateId}>{shipBusy && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}Buy label and mark shipped</Button>
+                    </div>
+                  )}
+                </div>
+              )}
+              {cur.shipmentError && cur.shipmentError !== "buying" && <p className="text-xs text-red-700">Last shipping problem: {cur.shipmentError}</p>}
+            </div>
+          )}
 
           <div className="grid gap-4 sm:grid-cols-2">
             <div className="space-y-1"><Label>Order status</Label>
@@ -536,6 +626,7 @@ function ProductDialog({ product, onClose, onSaved }: { product: WProduct; onClo
               <div className="space-y-1"><Label>Price per box (USD)</Label><Input type="number" min="0" step="0.01" value={p.price} onChange={(e) => patch(i, "price", e.target.value)} /></div>
               <div className="space-y-1 sm:col-span-3"><Label>Detail line</Label><Input value={p.detail} onChange={(e) => patch(i, "detail", e.target.value)} placeholder="90 capsules per bottle" /></div>
               <div className="space-y-1"><Label>Items in box</Label><Input type="number" min="1" value={p.units} onChange={(e) => patch(i, "units", e.target.value)} /></div>
+              <div className="space-y-1"><Label>Box weight (lb)</Label><Input type="number" min="0" step="0.1" value={p.boxWeightLb ?? ""} onChange={(e) => patch(i, "boxWeightLb", e.target.value)} placeholder="for shipping" /></div>
               <div className="space-y-1"><Label>Item name</Label><Input value={p.unit} onChange={(e) => patch(i, "unit", e.target.value)} placeholder="bottle" /></div>
               <div className="flex items-end justify-between gap-2"><label className="flex items-center gap-2 text-sm"><Switch checked={p.isActive} onCheckedChange={(v) => patch(i, "isActive", v)} /> Active</label>
                 <Button size="icon" variant="ghost" onClick={() => setPacks((ps) => ps.filter((_, j) => j !== i))} aria-label="Remove pack"><Trash2 className="h-4 w-4" /></Button></div>

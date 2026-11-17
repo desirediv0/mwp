@@ -7,6 +7,7 @@ import { ApiResponsive } from "../utils/ApiResponsive.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
 import { getFileUrl } from "../utils/deleteFromS3.js";
 import { getStripeContext } from "../utils/stripe.js";
+import { getEasyPostContext, toEasyPostAddress, originAddress, createShipment, getShipment, buyShipmentRate, refundShipment, normalizeRates } from "../utils/easypost.js";
 import { validateUsAddress, normalizeUsPhone } from "../utils/usValidation.js";
 import sendEmail from "../utils/sendEmail.js";
 import { getFromEmail } from "../utils/storeConfig.js";
@@ -75,7 +76,7 @@ const requireBuyer = async (req) => {
 /* ------------------------------ limits ------------------------------ */
 
 const limiter = (windowMs, max, message) =>
-  rateLimit({ windowMs, max, standardHeaders: true, legacyHeaders: false, keyGenerator: (req) => ipKeyGenerator(req.ip || ""), message: { success: false, message } });
+  rateLimit({ windowMs, max, standardHeaders: true, legacyHeaders: false, keyGenerator: (req) => ipKeyGenerator(req.ip || ""), skip: () => process.env.DISABLE_WHOLESALE_RATE_LIMITS === "true", message: { success: false, message } });
 export const catalogLimiter = limiter(60 * 1000, 60, "Too many requests. Please wait a moment.");
 export const checkoutLimiter = limiter(60 * 60 * 1000, 30, "Too many checkout attempts. Please wait a few minutes.");
 
@@ -212,7 +213,7 @@ export const checkout = asyncHandler(async (req, res) => {
 
   const orderData = {
     userId: user.id, partnerId: partner.id, buyerName: buyer.name, buyerEmail: buyer.email, buyerPhone: a.phone, business: buyer.business,
-    subtotal, shippingCost, total, totalBoxes, shippingAddress, customerNote: note,
+    subtotal, shippingCost, total, totalBoxes, shippingAddress, shipStreet: a.street, shipCity: a.city, shipState: a.state, shipZip: a.postalCode, customerNote: note,
   };
 
   // one attempt = one order
@@ -424,7 +425,7 @@ export const adminProducts = asyncHandler(async (req, res) => {
     products: products.map((p) => ({
       id: p.id, name: p.name, slug: p.slug, isActive: p.isActive, wholesaleEnabled: p.wholesaleEnabled,
       image: p.images[0]?.url ? getFileUrl(p.images[0].url) : null,
-      packs: p.wholesalePacks.map((k) => ({ id: k.id, type: k.type, label: k.label, contains: k.contains, detail: k.detail, unit: k.unit, units: k.units, price: num(k.price), isActive: k.isActive })),
+      packs: p.wholesalePacks.map((k) => ({ id: k.id, type: k.type, label: k.label, contains: k.contains, detail: k.detail, unit: k.unit, units: k.units, boxWeightLb: k.boxWeightLb == null ? null : num(k.boxWeightLb), price: num(k.price), isActive: k.isActive })),
     })),
   });
 });
@@ -443,7 +444,9 @@ export const adminSaveProduct = asyncHandler(async (req, res) => {
     if (!label) throw new ApiError(400, "Every pack needs a name.");
     if (!(price > 0) || price > 100000) throw new ApiError(400, `Enter a price for "${label}".`);
     if (!Number.isInteger(units) || units < 1 || units > 10000) throw new ApiError(400, `Enter how many items are in "${label}".`);
-    return { id: typeof k.id === "string" ? k.id : null, type, label, contains: clean(k.contains, 80), detail: clean(k.detail, 120), unit: clean(k.unit, 20) || (type === "bottle" ? "bottle" : "pack"), units, price: Math.round(price * 100) / 100, isActive: k.isActive !== false, order: i };
+    const w = k.boxWeightLb === "" || k.boxWeightLb == null ? null : Number(k.boxWeightLb);
+    if (w !== null && !(w > 0 && w <= 150)) throw new ApiError(400, `Box weight for "${label}" must be between 0.1 and 150 lb.`);
+    return { id: typeof k.id === "string" ? k.id : null, boxWeightLb: w, type, label, contains: clean(k.contains, 80), detail: clean(k.detail, 120), unit: clean(k.unit, 20) || (type === "bottle" ? "bottle" : "pack"), units, price: Math.round(price * 100) / 100, isActive: k.isActive !== false, order: i };
   });
   if (enabled && !packs.some((k) => k.isActive)) throw new ApiError(400, "Add at least one active pack before turning wholesale on.");
 
@@ -466,7 +469,7 @@ const adminOrderRow = (o) => ({
   id: o.id, orderNumber: o.orderNumber, status: o.status, paymentStatus: o.paymentStatus, paymentNote: o.paymentNote, invoiceNumber: o.invoiceNumber,
   paidAt: o.paidAt, paymentIntentId: o.paymentIntentId, hasAccount: !!o.userId,
   totalBoxes: o.totalBoxes, subtotal: num(o.subtotal), shippingCost: num(o.shippingCost), total: num(o.total), shippingAddress: o.shippingAddress,
-  customerNote: o.customerNote, carrier: o.carrier, trackingNumber: o.trackingNumber, adminNote: o.adminNote, createdAt: o.createdAt,
+  customerNote: o.customerNote, carrier: o.carrier, trackingNumber: o.trackingNumber, trackingUrl: o.trackingUrl, labelUrl: o.labelUrl, labelBoughtAt: o.labelBoughtAt, shipmentError: o.shipmentError, adminNote: o.adminNote, createdAt: o.createdAt,
   buyer: { business: o.business, name: o.buyerName, email: o.buyerEmail, phone: o.buyerPhone },
   items: o.items?.map((i) => ({ id: i.id, productName: i.productName, packLabel: i.packLabel, contains: i.contains, detail: i.detail, qty: i.qty, unitPrice: num(i.unitPrice), lineTotal: num(i.lineTotal) })),
 });
@@ -524,4 +527,107 @@ export const adminRefundOrder = asyncHandler(async (req, res) => {
   const updated = await prisma.wholesaleOrder.update({ where: { id: order.id }, data: { paymentStatus: "refunded", status: "cancelled" }, include: { items: true } });
   await mail(order.buyerEmail, `Refund for wholesale order ${order.orderNumber}`, `<p>Hi ${esc(order.buyerName)}, we refunded ${money(order.total)} to your card for order ${esc(order.orderNumber)}. It can take 5 to 10 business days to show on your statement.</p>`);
   ok(res, { order: adminOrderRow(updated) }, "Refund sent");
+});
+
+/* ------------------------------ admin: shipping labels (EasyPost, same account as store orders) ------------------------------ */
+
+const shippable = async (id) => {
+  const order = await prisma.wholesaleOrder.findUnique({ where: { id }, include: { items: true } });
+  if (!order) throw new ApiError(404, "Order not found");
+  if (order.paymentStatus !== "paid") throw new ApiError(400, "This order has not been paid yet.");
+  if (order.status === "cancelled") throw new ApiError(400, "This order is cancelled.");
+  return order;
+};
+
+// suggested parcel: boxes x box weight (or items x default item weight) + packaging
+async function suggestParcel(order, settings) {
+  const packs = await prisma.wholesalePack.findMany({ where: { id: { in: order.items.map((i) => i.packId).filter(Boolean) } }, select: { id: true, units: true, boxWeightLb: true } });
+  const byId = new Map(packs.map((p) => [p.id, p]));
+  let lb = Number(settings.packagingWeightLb || 0);
+  for (const i of order.items) {
+    const p = byId.get(i.packId);
+    const perBox = p?.boxWeightLb != null ? num(p.boxWeightLb) : (p?.units || 1) * Number(settings.defaultWeightLb || 0.5);
+    lb += perBox * i.qty;
+  }
+  return { weightLb: Math.max(0.1, Math.round(lb * 10) / 10), lengthIn: Number(settings.defaultLengthIn) || 12, widthIn: Number(settings.defaultWidthIn) || 10, heightIn: Number(settings.defaultHeightIn) || 8 };
+}
+
+export const adminShipInfo = asyncHandler(async (req, res) => {
+  const order = await shippable(req.params.id);
+  let configured = true;
+  let suggested = { weightLb: 1, lengthIn: 12, widthIn: 10, heightIn: 8 };
+  let message = null;
+  try {
+    const { settings } = await getEasyPostContext();
+    originAddress(settings);
+    suggested = await suggestParcel(order, settings);
+  } catch (e) {
+    configured = false;
+    message = e.message;
+  }
+  ok(res, { configured, message, suggested });
+});
+
+export const adminShipRates = asyncHandler(async (req, res) => {
+  const order = await shippable(req.params.id);
+  if (order.labelUrl) throw new ApiError(409, "This order already has a shipping label.");
+  const b = req.body || {};
+  const weightLb = Number(b.weightLb), L = Number(b.lengthIn), W = Number(b.widthIn), H = Number(b.heightIn);
+  if (!(weightLb >= 0.1 && weightLb <= 150)) throw new ApiError(400, "Weight must be between 0.1 and 150 lb.");
+  for (const [n, v] of [["Length", L], ["Width", W], ["Height", H]]) if (!(v >= 1 && v <= 108)) throw new ApiError(400, `${n} must be between 1 and 108 inches.`);
+  const { settings, apiKey } = await getEasyPostContext();
+  const shipment = await createShipment(apiKey, {
+    to: toEasyPostAddress({ name: order.buyerName, company: order.business, street: order.shipStreet, city: order.shipCity, state: order.shipState, postalCode: order.shipZip, phone: order.buyerPhone, email: order.buyerEmail }),
+    from: originAddress(settings),
+    parcel: { length: L, width: W, height: H, weight: Math.round(weightLb * 16 * 10) / 10 },
+  });
+  const rates = normalizeRates(shipment, settings);
+  if (!rates.length) throw new ApiError(400, "No carrier can deliver this parcel to that address.");
+  await prisma.wholesaleOrder.update({ where: { id: order.id }, data: { shipmentId: shipment.id, shipmentError: null } });
+  ok(res, { rates });
+});
+
+export const adminBuyLabel = asyncHandler(async (req, res) => {
+  const order = await shippable(req.params.id);
+  const rateId = String(req.body?.rateId || "");
+  if (!order.shipmentId || !rateId) throw new ApiError(400, "Get shipping rates first, then choose one.");
+  // claim the purchase so a double click can never buy two labels
+  const claim = await prisma.wholesaleOrder.updateMany({ where: { id: order.id, labelUrl: null, OR: [{ shipmentError: null }, { shipmentError: { not: "buying" } }] }, data: { shipmentError: "buying" } });
+  if (claim.count !== 1) throw new ApiError(409, "A label is already being bought or exists for this order.");
+  try {
+    const { settings, apiKey } = await getEasyPostContext();
+    const shipment = await getShipment(apiKey, order.shipmentId);
+    if (!normalizeRates(shipment, settings).some((x) => x.id === rateId)) throw new ApiError(400, "That rate is not available any more. Please get rates again.");
+    const bought = await buyShipmentRate(apiKey, order.shipmentId, rateId);
+    const sel = bought.selected_rate || {};
+    const updated = await prisma.wholesaleOrder.update({
+      where: { id: order.id },
+      data: {
+        carrier: `${sel.carrier || ""} ${sel.service || ""}`.trim() || null,
+        trackingNumber: bought.tracking_code || bought.tracker?.tracking_code || null,
+        trackingUrl: bought.tracker?.public_url || null,
+        labelUrl: bought.postage_label?.label_url || null,
+        labelBoughtAt: new Date(),
+        shipmentError: null,
+        status: "shipped",
+      },
+      include: { items: true },
+    });
+    await mail(order.buyerEmail, `Your wholesale order ${order.orderNumber} has shipped`, `<p>Hi ${esc(order.buyerName)}, your order has shipped.</p><p>Carrier: <b>${esc(updated.carrier || "-")}</b><br>Tracking number: <b>${esc(updated.trackingNumber || "-")}</b></p>${updated.trackingUrl ? `<p><a href="${esc(updated.trackingUrl)}">Track your package</a></p>` : ""}`);
+    ok(res, { order: adminOrderRow(updated) }, "Label bought. The buyer was emailed the tracking number.");
+  } catch (e) {
+    await prisma.wholesaleOrder.update({ where: { id: order.id }, data: { shipmentError: String(e.message || "Label failed").slice(0, 300) } });
+    throw e;
+  }
+});
+
+// cancels the label while the package has not been scanned yet (the carrier refunds the postage)
+export const adminVoidLabel = asyncHandler(async (req, res) => {
+  const order = await shippable(req.params.id);
+  if (!order.shipmentId || !order.labelUrl) throw new ApiError(400, "This order has no label.");
+  if (order.status === "delivered") throw new ApiError(409, "This order was already delivered.");
+  const { apiKey } = await getEasyPostContext({ requireEnabled: false });
+  await refundShipment(apiKey, order.shipmentId);
+  const updated = await prisma.wholesaleOrder.update({ where: { id: order.id }, data: { labelUrl: null, trackingNumber: null, trackingUrl: null, carrier: null, shipmentId: null, labelBoughtAt: null, shipmentError: null, status: "received" }, include: { items: true } });
+  ok(res, { order: adminOrderRow(updated) }, "Label cancelled. The carrier will refund the postage.");
 });

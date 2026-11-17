@@ -2163,20 +2163,21 @@ model AdvisorMessage {
 
 // A wholesale pack of a product (e.g. "Bottle Box: 6 bottles", "Blister Box: 24 blisters") with its own price per box.
 model WholesalePack {
-  id        String   @id @default(uuid())
-  productId String
-  type      String // "bottle" | "blister"
-  label     String // "Bottle Box"
-  contains  String // "6 bottles per box"
-  detail    String   @default("") // "90 capsules per bottle"
-  unit      String   @default("bottle") // bottle | pack | blister
-  units     Int      @default(1) // items in one box (used for the per-item price)
-  price     Decimal  @db.Decimal(10, 2)
-  order     Int      @default(0)
-  isActive  Boolean  @default(true)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  id          String   @id @default(uuid())
+  productId   String
+  type        String // "bottle" | "blister"
+  label       String // "Bottle Box"
+  contains    String // "6 bottles per box"
+  detail      String   @default("") // "90 capsules per bottle"
+  unit        String   @default("bottle") // bottle | pack | blister
+  units       Int      @default(1) // items in one box (used for the per-item price)
+  boxWeightLb Decimal? @db.Decimal(8, 2) // weight of one full box, used to suggest the parcel weight when shipping
+  price       Decimal  @db.Decimal(10, 2)
+  order       Int      @default(0)
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  product     Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
 
   @@index([productId, order])
 }
@@ -2213,34 +2214,43 @@ model WholesalePartner {
 }
 
 model WholesaleOrder {
-  id              String   @id @default(uuid())
-  orderNumber     String   @unique
-  attemptId       String?  @unique // one checkout attempt = one order, so a double click never makes two orders
+  id              String               @id @default(uuid())
+  orderNumber     String               @unique
+  attemptId       String?              @unique // one checkout attempt = one order, so a double click never makes two orders
   userId          String? // signed-in customer (shows in their account); empty for guests
   partnerId       String? // legacy (access-code partners); not used any more
-  buyerName       String   @default("")
-  buyerEmail      String   @default("")
-  buyerPhone      String   @default("")
-  business        String   @default("")
-  status          String   @default("pending_payment") // pending_payment | received | shipped | delivered | cancelled
-  paymentStatus   String   @default("unpaid") // unpaid | paid | refunded
+  buyerName       String               @default("")
+  buyerEmail      String               @default("")
+  buyerPhone      String               @default("")
+  business        String               @default("")
+  status          String               @default("pending_payment") // pending_payment | received | shipped | delivered | cancelled
+  paymentStatus   String               @default("unpaid") // unpaid | paid | refunded
   paymentNote     String?
   invoiceNumber   String?
-  stripeSessionId String?  @unique
+  stripeSessionId String?              @unique
   paymentIntentId String?
   paidAt          DateTime?
-  subtotal        Decimal  @db.Decimal(12, 2)
-  shippingCost    Decimal  @default(0) @db.Decimal(12, 2)
-  total           Decimal  @db.Decimal(12, 2)
+  subtotal        Decimal              @db.Decimal(12, 2)
+  shippingCost    Decimal              @default(0) @db.Decimal(12, 2)
+  total           Decimal              @db.Decimal(12, 2)
   totalBoxes      Int
   shippingAddress String
+  shipStreet      String               @default("")
+  shipCity        String               @default("")
+  shipState       String               @default("")
+  shipZip         String               @default("")
+  trackingUrl     String?
+  labelUrl        String?
+  shipmentId      String?
+  labelBoughtAt   DateTime?
+  shipmentError   String?
   customerNote    String?
   carrier         String?
   trackingNumber  String?
   adminNote       String?
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
-  partner         WholesalePartner? @relation(fields: [partnerId], references: [id])
+  createdAt       DateTime             @default(now())
+  updatedAt       DateTime             @updatedAt
+  partner         WholesalePartner?    @relation(fields: [partnerId], references: [id])
   items           WholesaleOrderItem[]
 
   @@index([userId, createdAt])

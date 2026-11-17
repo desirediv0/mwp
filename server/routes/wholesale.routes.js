@@ -22,4 +22,8 @@ adminRouter.get("/products", isAdmin, w.adminProducts);
 adminRouter.put("/products/:id", isAdmin, w.adminSaveProduct);
 adminRouter.get("/orders", isAdmin, w.adminOrders);
 adminRouter.patch("/orders/:id", isAdmin, w.adminUpdateOrder);
+adminRouter.get("/orders/:id/shipping", isAdmin, w.adminShipInfo);
+adminRouter.post("/orders/:id/rates", isAdmin, w.adminShipRates);
+adminRouter.post("/orders/:id/label", isAdmin, w.adminBuyLabel);
+adminRouter.post("/orders/:id/label/void", isAdmin, w.adminVoidLabel);
 adminRouter.post("/orders/:id/refund", isAdmin, w.adminRefundOrder);
