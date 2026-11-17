@@ -3,6 +3,8 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { wsFetch, money } from "./wholesale-api";
 
+const US_STATES = ["AL", "AK", "AZ", "AR", "CA", "CO", "CT", "DE", "DC", "FL", "GA", "HI", "ID", "IL", "IN", "IA", "KS", "KY", "LA", "ME", "MD", "MA", "MI", "MN", "MS", "MO", "MT", "NE", "NV", "NH", "NJ", "NM", "NY", "NC", "ND", "OH", "OK", "OR", "PA", "RI", "SC", "SD", "TN", "TX", "UT", "VT", "VA", "WA", "WV", "WI", "WY"];
+
 const PackIcon = ({ type }) =>
   type === "bottle" ? (
     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#B45F10" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><rect x="7" y="7" width="10" height="14" rx="2" /><path d="M9 7V4h6v3" /><path d="M7 12h10" /></svg>
@@ -12,111 +14,126 @@ const PackIcon = ({ type }) =>
 const BagIcon = ({ size = 18 }) => (
   <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M6 7h12l-1 13H7L6 7z" /><path d="M9 7a3 3 0 0 1 6 0" /></svg>
 );
+const LockIcon = () => (
+  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><rect x="5" y="11" width="14" height="9" rx="2" /><path d="M8 11V8a4 4 0 0 1 8 0v3" /></svg>
+);
 
 const clampQty = (n) => Math.max(1, Math.min(999, parseInt(n, 10) || 1));
 const when = (d) => new Date(d).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
-const STATUS = { received: "Received", invoiced: "Invoiced", shipped: "Shipped", delivered: "Delivered", cancelled: "Cancelled" };
-const PAY = { unpaid: "Unpaid", invoiced: "Invoice sent", paid: "Paid", refunded: "Refunded" };
+const STATUS = { received: "Received", shipped: "Shipped", delivered: "Delivered", cancelled: "Cancelled" };
+const PAY = { paid: "Paid", refunded: "Refunded", unpaid: "Unpaid" };
+const newId = () => (typeof crypto !== "undefined" && crypto.randomUUID ? crypto.randomUUID() : `${Date.now()}-${Math.random().toString(16).slice(2)}-${Math.random().toString(16).slice(2)}`);
 
-/* ------------------------------ sign in ------------------------------ */
-
-function SignIn({ onDone }) {
-  const [email, setEmail] = useState("");
-  const [code, setCode] = useState("");
-  const [busy, setBusy] = useState(false);
-  const [error, setError] = useState("");
-
-  async function submit(e) {
-    e.preventDefault();
-    setBusy(true);
-    setError("");
-    try {
-      onDone(await wsFetch("/login", { method: "POST", body: { email, code } }));
-    } catch (err) {
-      setError(err.message);
-    } finally {
-      setBusy(false);
+const ATTEMPT_KEY = "mwp_ws_attempt";
+const CART_KEY = "mwp_ws_cart";
+const getAttempt = () => {
+  try {
+    let a = localStorage.getItem(ATTEMPT_KEY);
+    if (!a || !/^[A-Za-z0-9-]{16,64}$/.test(a)) {
+      a = newId();
+      localStorage.setItem(ATTEMPT_KEY, a);
     }
+    return a;
+  } catch {
+    return newId();
   }
-
-  return (
-    <div className="wp-login">
-      <form className="wp-loginCard" onSubmit={submit}>
-        <span className="wp-eyebrow">Wholesale partners</span>
-        <h1>Wholesale sign in</h1>
-        <p>Use the email you applied with and the private access code we emailed you.</p>
-        <label>Email<input type="email" value={email} onChange={(e) => setEmail(e.target.value)} required autoComplete="username" maxLength={200} /></label>
-        <label>Access code<input type="password" value={code} onChange={(e) => setCode(e.target.value)} required autoComplete="current-password" maxLength={60} placeholder="MWP-XXXX-XXXX-XXXX-XXXX" /></label>
-        {error && <p className="wp-error" role="alert">{error}</p>}
-        <button className="wp-add" type="submit" disabled={busy}>{busy ? "Signing in..." : "Sign in"}</button>
-        <p className="wp-note">Need access? Contact the MWP team for your wholesale code.</p>
-      </form>
-    </div>
-  );
-}
-
-/* ------------------------------ portal ------------------------------ */
+};
 
 export default function Portal() {
-  const [boot, setBoot] = useState("loading"); // loading | out | in
-  const [partner, setPartner] = useState(null);
+  const [boot, setBoot] = useState("loading"); // loading | off | ready | error
   const [minBoxes, setMinBoxes] = useState(4);
+  const [shipping, setShipping] = useState(0);
+  const [user, setUser] = useState(null);
   const [products, setProducts] = useState([]);
-  const [loadError, setLoadError] = useState("");
+  const [bootError, setBootError] = useState("");
   const [filter, setFilter] = useState("all");
   const [view, setView] = useState("shop"); // shop | orders | done
   const [sel, setSel] = useState({});
   const [qty, setQty] = useState({});
   const [cart, setCart] = useState({}); // packId -> boxes
   const [sheet, setSheet] = useState(false);
+  const [step, setStep] = useState("cart"); // cart | details
   const [toast, setToast] = useState("");
-  const [placing, setPlacing] = useState(false);
-  const [placeError, setPlaceError] = useState("");
+  const [paying, setPaying] = useState(false);
+  const [payError, setPayError] = useState("");
   const [done, setDone] = useState(null);
   const [orders, setOrders] = useState(null);
+  const [confirming, setConfirming] = useState(false);
+  const [f, setF] = useState({ business: "", name: "", email: "", phone: "", street: "", city: "", state: "", postalCode: "", note: "" });
   const toastTimer = useRef(null);
+  const cartLoaded = useRef(false);
 
-  const loadCatalog = useCallback(async () => {
+  const say = (msg) => {
+    setToast(msg);
+    clearTimeout(toastTimer.current);
+    toastTimer.current = setTimeout(() => setToast(""), 2400);
+  };
+
+  const load = useCallback(async () => {
     try {
-      const data = await wsFetch("/catalog");
-      setProducts(data.products || []);
-      setMinBoxes(data.minBoxes || 4);
-      setLoadError("");
+      const d = await wsFetch("/catalog");
+      if (!d.enabled) return setBoot("off");
+      setProducts(d.products || []);
+      setMinBoxes(d.minBoxes || 4);
+      setShipping(Number(d.shipping) || 0);
+      setUser(d.user || null);
+      setBoot("ready");
     } catch (e) {
-      if (e.status === 401) setBoot("out");
-      else setLoadError(e.message);
+      setBootError(e.message);
+      setBoot("error");
     }
   }, []);
+  useEffect(() => { load(); }, [load]);
 
+  // signed-in customers get their name and email filled in
   useEffect(() => {
-    wsFetch("/me")
-      .then((d) => {
-        setPartner(d.partner);
-        setMinBoxes(d.minBoxes || 4);
-        setBoot("in");
-      })
-      .catch(() => setBoot("out"));
-  }, []);
+    if (user) setF((x) => ({ ...x, name: x.name || user.name || "", email: x.email || user.email || "" }));
+  }, [user]);
 
+  // the cart is remembered in this browser
   useEffect(() => {
-    if (boot === "in") loadCatalog();
-  }, [boot, loadCatalog]);
-
-  // the cart is remembered in this browser, per partner
-  const cartKey = partner ? `mwp_ws_cart_${partner.id}` : null;
-  useEffect(() => {
-    if (!cartKey) return;
     try {
-      const saved = JSON.parse(localStorage.getItem(cartKey) || "{}");
+      const saved = JSON.parse(localStorage.getItem(CART_KEY) || "{}");
       if (saved && typeof saved === "object") setCart(saved);
     } catch {}
-  }, [cartKey]);
+    cartLoaded.current = true;
+  }, []);
   useEffect(() => {
-    if (!cartKey) return;
+    if (!cartLoaded.current) return;
     try {
-      localStorage.setItem(cartKey, JSON.stringify(cart));
+      localStorage.setItem(CART_KEY, JSON.stringify(cart));
     } catch {}
-  }, [cart, cartKey]);
+  }, [cart]);
+
+  // coming back from Stripe
+  useEffect(() => {
+    const q = new URLSearchParams(window.location.search);
+    if (q.get("canceled")) {
+      say("Payment was cancelled. Your cart is saved.");
+      window.history.replaceState({}, "", "/wholesale");
+    }
+    const sid = q.get("session_id");
+    if (q.get("paid") && sid) {
+      setConfirming(true);
+      window.history.replaceState({}, "", "/wholesale");
+      wsFetch("/confirm", { method: "POST", body: { sessionId: sid } })
+        .then((d) => {
+          if (d.paid) {
+            setDone(d.order);
+            setView("done");
+            setCart({});
+            try {
+              localStorage.removeItem(ATTEMPT_KEY);
+              localStorage.removeItem(CART_KEY);
+            } catch {}
+          } else {
+            say("We have not received the payment yet. If you were charged, your order will appear shortly.");
+          }
+        })
+        .catch((e) => say(e.message))
+        .finally(() => setConfirming(false));
+    }
+  }, []);
 
   useEffect(() => {
     if (!sheet) return;
@@ -134,22 +151,13 @@ export default function Portal() {
     products.forEach((p) => p.packs.forEach((k) => (m[k.id] = { product: p, pack: k })));
     return m;
   }, [products]);
-
-  const lines = useMemo(
-    () => Object.entries(cart).filter(([id, n]) => n > 0 && packIndex[id]).map(([id, n]) => ({ id, n, ...packIndex[id] })),
-    [cart, packIndex]
-  );
+  const lines = useMemo(() => Object.entries(cart).filter(([id, n]) => n > 0 && packIndex[id]).map(([id, n]) => ({ id, n, ...packIndex[id] })), [cart, packIndex]);
   const totalBoxes = lines.reduce((a, l) => a + l.n, 0);
   const bottleBoxes = lines.filter((l) => l.pack.type === "bottle").reduce((a, l) => a + l.n, 0);
   const blisterBoxes = totalBoxes - bottleBoxes;
   const subtotal = lines.reduce((a, l) => a + l.n * l.pack.price, 0);
+  const total = subtotal + (lines.length ? shipping : 0);
   const met = totalBoxes >= minBoxes;
-
-  const say = (msg) => {
-    setToast(msg);
-    clearTimeout(toastTimer.current);
-    toastTimer.current = setTimeout(() => setToast(""), 2200);
-  };
 
   const add = (p) => {
     const packId = sel[p.id] || p.packs[0].id;
@@ -159,7 +167,6 @@ export default function Portal() {
     const k = p.packs.find((x) => x.id === packId);
     say(`Added ${n} × ${p.name} ${k.label}`);
   };
-
   const setLine = (id, n) =>
     setCart((c) => {
       const next = { ...c };
@@ -167,24 +174,35 @@ export default function Portal() {
       else next[id] = Math.min(999, n);
       return next;
     });
+  const openSheet = () => {
+    setStep("cart");
+    setPayError("");
+    setSheet(true);
+  };
 
-  async function place() {
-    setPlacing(true);
-    setPlaceError("");
+  async function pay(e) {
+    e.preventDefault();
+    if (paying) return;
+    setPaying(true);
+    setPayError("");
     try {
-      const data = await wsFetch("/orders", { method: "POST", body: { items: lines.map((l) => ({ packId: l.id, qty: l.n })) } });
-      setDone(data.order);
-      setCart({});
-      setSheet(false);
-      setView("done");
-      setOrders(null);
-      window.scrollTo(0, 0);
-    } catch (e) {
-      setPlaceError(e.message);
-      if (e.status === 409) loadCatalog();
-      if (e.status === 401) setBoot("out");
-    } finally {
-      setPlacing(false);
+      const d = await wsFetch("/checkout", { method: "POST", body: { attemptId: getAttempt(), items: lines.map((l) => ({ packId: l.id, qty: l.n })), ...f } });
+      if (d.paid) {
+        setDone({ orderNumber: d.orderNumber });
+        setView("done");
+        setSheet(false);
+        setCart({});
+        try {
+          localStorage.removeItem(ATTEMPT_KEY);
+        } catch {}
+        return;
+      }
+      if (!d.url) throw new Error("We could not open the payment page. Please try again.");
+      window.location.href = d.url; // Stripe's own secure payment page
+    } catch (err) {
+      setPayError(err.message);
+      if (err.status === 409) load();
+      setPaying(false);
     }
   }
 
@@ -192,23 +210,11 @@ export default function Portal() {
     setView("orders");
     window.scrollTo(0, 0);
     try {
-      const data = await wsFetch("/orders");
-      setOrders(data.orders || []);
-    } catch (e) {
-      if (e.status === 401) setBoot("out");
+      const d = await wsFetch("/orders");
+      setOrders(d.orders || []);
+    } catch {
       setOrders([]);
     }
-  }
-
-  async function signOut() {
-    try {
-      await wsFetch("/logout", { method: "POST" });
-    } catch {}
-    setBoot("out");
-    setPartner(null);
-    setProducts([]);
-    setCart({});
-    setView("shop");
   }
 
   const counts = {
@@ -216,80 +222,138 @@ export default function Portal() {
     bottle: products.filter((p) => p.packs.some((k) => k.type === "bottle")).length,
     blister: products.filter((p) => p.packs.some((k) => k.type === "blister")).length,
   };
+  const set = (k) => (e) => setF((x) => ({ ...x, [k]: e.target.value }));
+
+  const totals = (
+    <>
+      <div className="wp-sum"><span>Bottle boxes</span><b>{bottleBoxes}</b></div>
+      <div className="wp-sum"><span>Blister boxes</span><b>{blisterBoxes}</b></div>
+      <div className="wp-sum"><span>Boxes subtotal</span><b>{money(subtotal)}</b></div>
+      <div className="wp-sum"><span>Shipping</span><b>{shipping > 0 ? money(shipping) : "Free"}</b></div>
+      <div className="wp-total"><span>Total</span><span>{money(total)}</span></div>
+    </>
+  );
 
   const cartPanel = (
     <>
-      <h2>Your Cart <small>{lines.length ? `${lines.length} item${lines.length > 1 ? "s" : ""}` : ""}</small></h2>
-      {lines.length === 0 ? (
-        <div className="wp-empty">Your cart is empty.<br />Add boxes from the products.</div>
+      {step === "cart" ? (
+        <>
+          <h2>Your Cart <small>{lines.length ? `${lines.length} item${lines.length > 1 ? "s" : ""}` : ""}</small></h2>
+          {lines.length === 0 ? (
+            <div className="wp-empty">Your cart is empty.<br />Add boxes from the products.</div>
+          ) : (
+            lines.map((l) => (
+              <div className="wp-item" key={l.id}>
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                {l.product.image && <img src={l.product.image} alt="" />}
+                <div className="wp-t">
+                  <b>{l.product.name}</b>
+                  <small>{l.pack.label} · {l.pack.contains}</small>
+                  <br />
+                  <small>{l.n} × {money(l.pack.price)} = <b className="wp-lineTotal">{money(l.n * l.pack.price)}</b></small>
+                </div>
+                <div className="wp-step wp-stepSm">
+                  <button type="button" onClick={() => setLine(l.id, l.n - 1)} aria-label="Remove one box">−</button>
+                  <input inputMode="numeric" value={l.n} onChange={(e) => setLine(l.id, parseInt(e.target.value, 10) || 0)} aria-label="Boxes" />
+                  <button type="button" onClick={() => setLine(l.id, l.n + 1)} aria-label="Add one box">+</button>
+                </div>
+                <button className="wp-rm" type="button" onClick={() => setLine(l.id, 0)} aria-label={`Remove ${l.product.name} ${l.pack.label}`}>
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18" /></svg>
+                </button>
+              </div>
+            ))
+          )}
+          {totals}
+          <div className="wp-prog"><i className={met ? "full" : ""} style={{ width: `${Math.min(100, (totalBoxes / minBoxes) * 100)}%` }} /></div>
+          <div className="wp-note">{met ? `Minimum order reached ✓ (${minBoxes} boxes)` : `Add ${minBoxes - totalBoxes} more box${minBoxes - totalBoxes > 1 ? "es" : ""}. The minimum order is ${minBoxes} boxes.`}</div>
+          <button className="wp-place" type="button" disabled={!met} onClick={() => setStep("details")}>Checkout</button>
+        </>
       ) : (
-        lines.map((l) => (
-          <div className="wp-item" key={l.id}>
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            {l.product.image && <img src={l.product.image} alt="" />}
-            <div className="wp-t">
-              <b>{l.product.name}</b>
-              <small>{l.pack.label} · {l.pack.contains}</small>
-              <br />
-              <small>{l.n} × {money(l.pack.price)} = <b className="wp-lineTotal">{money(l.n * l.pack.price)}</b></small>
-            </div>
-            <div className="wp-step wp-stepSm">
-              <button type="button" onClick={() => setLine(l.id, l.n - 1)} aria-label="Remove one box">−</button>
-              <input inputMode="numeric" value={l.n} onChange={(e) => setLine(l.id, parseInt(e.target.value, 10) || 0)} aria-label="Boxes" />
-              <button type="button" onClick={() => setLine(l.id, l.n + 1)} aria-label="Add one box">+</button>
-            </div>
-            <button className="wp-rm" type="button" onClick={() => setLine(l.id, 0)} aria-label={`Remove ${l.product.name} ${l.pack.label}`}>
-              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18" /></svg>
-            </button>
+        <form onSubmit={pay} className="wp-form">
+          <h2>Checkout</h2>
+          <button type="button" className="wp-back" onClick={() => setStep("cart")}>← Back to cart</button>
+          {user ? (
+            <div className="wp-acct">Signed in as <b>{user.email}</b>. This order will show in your account.</div>
+          ) : (
+            <div className="wp-acct">Ordering as a guest. <a href="/auth?redirect=%2Fwholesale">Sign in or create an account</a> to keep this order in your account.</div>
+          )}
+          <label>Business name *<input value={f.business} onChange={set("business")} required maxLength={140} autoComplete="organization" /></label>
+          <label>Your name *<input value={f.name} onChange={set("name")} required maxLength={100} autoComplete="name" /></label>
+          <label>Email *<input type="email" value={f.email} onChange={set("email")} required maxLength={200} autoComplete="email" /></label>
+          <label>Phone *<input type="tel" value={f.phone} onChange={set("phone")} required maxLength={40} autoComplete="tel" placeholder="(310) 724-8851" /></label>
+          <label>Shipping street address *<input value={f.street} onChange={set("street")} required maxLength={150} autoComplete="street-address" /></label>
+          <div className="wp-two">
+            <label>City *<input value={f.city} onChange={set("city")} required maxLength={80} autoComplete="address-level2" /></label>
+            <label>State *
+              <select value={f.state} onChange={set("state")} required autoComplete="address-level1">
+                <option value="">Select</option>
+                {US_STATES.map((s) => <option key={s}>{s}</option>)}
+              </select>
+            </label>
           </div>
-        ))
+          <label>ZIP code *<input value={f.postalCode} onChange={set("postalCode")} required maxLength={10} inputMode="numeric" autoComplete="postal-code" /></label>
+          <label>Note for the MWP team (optional)<input value={f.note} onChange={set("note")} maxLength={500} /></label>
+          {totals}
+          {payError && <p className="wp-error" role="alert">{payError}</p>}
+          <button className="wp-place" type="submit" disabled={paying || !met || !lines.length}>{paying ? "Opening secure payment..." : <><LockIcon /> Pay {money(total)} securely</>}</button>
+          <div className="wp-note">You will pay by card on Stripe's secure page. We never see or store your card details. If you cancel, your cart stays saved.</div>
+        </form>
       )}
-      <div className="wp-sum"><span>Bottle boxes</span><b>{bottleBoxes}</b></div>
-      <div className="wp-sum"><span>Blister boxes</span><b>{blisterBoxes}</b></div>
-      <div className="wp-total"><span>Subtotal</span><span>{money(subtotal)}</span></div>
-      <div className="wp-prog"><i className={met ? "full" : ""} style={{ width: `${Math.min(100, (totalBoxes / minBoxes) * 100)}%` }} /></div>
-      <div className="wp-note">{met ? `Minimum order reached ✓ (${minBoxes} boxes)` : `Add ${minBoxes - totalBoxes} more box${minBoxes - totalBoxes > 1 ? "es" : ""}. The minimum order is ${minBoxes} boxes.`}</div>
-      {placeError && <p className="wp-error" role="alert">{placeError}</p>}
-      <button className="wp-place" type="button" disabled={!met || placing} onClick={place}>{placing ? "Placing order..." : "Place Wholesale Order"}</button>
-      <div className="wp-note">Shipping is added on your invoice. Your tracking number is emailed when the order ships.</div>
     </>
   );
 
   /* ---------------- render ---------------- */
 
-  if (boot === "loading") return <div className="wp-root"><div className="wp-boot">Loading...</div></div>;
+  const header = (
+    <header className="wp-header">
+      <div className="wp-hd">
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <a href="/"><img src="/mwp-logo-3.png" alt="MWP Supplements" /></a>
+        <nav className="wp-nav" aria-label="Wholesale"><span>Wholesale Portal</span></nav>
+        {boot === "ready" && (
+          <div className="wp-hdRight">
+            {user ? (
+              <button type="button" className={`wp-navBtn ${view === "orders" ? "on" : ""}`} onClick={() => (view === "orders" ? setView("shop") : openOrders())}>{view === "orders" ? "Shop" : "My orders"}</button>
+            ) : (
+              <a className="wp-navBtn" href="/auth?redirect=%2Fwholesale">Sign in</a>
+            )}
+            <button className="wp-cartBtn" type="button" onClick={openSheet} aria-label="Open cart">
+              <BagIcon /> Cart <b>{totalBoxes}</b>
+            </button>
+          </div>
+        )}
+      </div>
+    </header>
+  );
+
+  if (boot === "loading") return <div className="wp-root">{header}<div className="wp-boot">Loading...</div></div>;
+  if (boot === "off" || boot === "error")
+    return (
+      <div className="wp-root">
+        {header}
+        <div className="wp-boot">
+          <h2>{boot === "off" ? "Wholesale ordering is not available right now." : "We could not load the wholesale page."}</h2>
+          <p>{boot === "off" ? "Please contact the MWP team." : bootError}</p>
+        </div>
+      </div>
+    );
 
   return (
     <div className="wp-root">
-      <header className="wp-header">
-        <div className="wp-hd">
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <a href="/"><img src="/mwp-logo-3.png" alt="MWP Supplements" /></a>
-          <nav className="wp-nav" aria-label="Wholesale"><span>Wholesale Portal</span></nav>
-          {boot === "in" && (
-            <div className="wp-hdRight">
-              <button type="button" className={`wp-navBtn ${view === "orders" ? "on" : ""}`} onClick={() => (view === "orders" ? setView("shop") : openOrders())}>{view === "orders" ? "Shop" : "My orders"}</button>
-              <button type="button" className="wp-navBtn" onClick={signOut}>Sign out</button>
-              <button className="wp-cartBtn" type="button" onClick={() => setSheet(true)} aria-label="Open cart">
-                <BagIcon /> Cart <b>{totalBoxes}</b>
-              </button>
-            </div>
-          )}
-        </div>
-      </header>
+      {header}
 
-      {boot === "out" ? (
-        <SignIn onDone={(d) => { setPartner(d.partner); setMinBoxes(d.minBoxes || 4); setBoot("in"); }} />
+      {confirming ? (
+        <div className="wp-boot">Confirming your payment...</div>
       ) : view === "done" ? (
         <section className="wp-wrap">
           <div className="wp-done" role="status">
             <span className="wp-okc"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M5 12l5 5 9-10" /></svg></span>
-            <span className="wp-eyebrow">Order received</span>
+            <span className="wp-eyebrow">Payment received</span>
             <h2>Thank you for your order.</h2>
-            <p>Order <b>{done?.orderNumber}</b>: {done?.totalBoxes} boxes, {money(done?.subtotal)} before shipping. We will email your invoice shortly, and your tracking number as soon as it ships.</p>
+            <p>Order <b>{done?.orderNumber}</b>{done?.totalBoxes ? `: ${done.totalBoxes} boxes, ${money(done.total)} paid` : ""}. We emailed you the details, and we will email your tracking number as soon as it ships.</p>
             <div className="wp-doneBtns">
               <button className="wp-add wp-addAuto" type="button" onClick={() => setView("shop")}>Place another order</button>
-              <button className="wp-ghost" type="button" onClick={openOrders}>View my orders</button>
+              {user && <button className="wp-ghost" type="button" onClick={openOrders}>View my orders</button>}
             </div>
           </div>
         </section>
@@ -302,16 +366,11 @@ export default function Portal() {
                 <article className="wp-order" key={o.id}>
                   <div className="wp-orderHead">
                     <div><b>{o.orderNumber}</b><small>{when(o.createdAt)} · {o.totalBoxes} boxes</small></div>
-                    <div className="wp-badges"><span className={`wp-pill s-${o.status}`}>{STATUS[o.status]}</span><span className={`wp-pill p-${o.paymentStatus}`}>{PAY[o.paymentStatus]}</span></div>
+                    <div className="wp-badges"><span className={`wp-pill s-${o.status}`}>{STATUS[o.status] || o.status}</span><span className={`wp-pill p-${o.paymentStatus}`}>{PAY[o.paymentStatus]}</span></div>
                   </div>
-                  <ul>
-                    {o.items.map((i, idx) => (<li key={idx}><span>{i.productName} · {i.packLabel} <small>({i.contains})</small></span><span>{i.qty} × {money(i.unitPrice)} = {money(i.lineTotal)}</span></li>))}
-                  </ul>
-                  <div className="wp-orderFoot">
-                    <span>Subtotal {money(o.subtotal)} · Shipping {o.shippingCost ? money(o.shippingCost) : "added on invoice"}</span>
-                    <b>Total {money(o.total)}</b>
-                  </div>
-                  {(o.trackingNumber || o.invoiceNumber) && <div className="wp-note">{o.invoiceNumber && <>Invoice {o.invoiceNumber}. </>}{o.trackingNumber && <>Tracking: {o.carrier ? `${o.carrier} ` : ""}{o.trackingNumber}</>}</div>}
+                  <ul>{o.items.map((i, idx) => (<li key={idx}><span>{i.productName} · {i.packLabel} <small>({i.contains})</small></span><span>{i.qty} × {money(i.unitPrice)} = {money(i.lineTotal)}</span></li>))}</ul>
+                  <div className="wp-orderFoot"><span>Boxes {money(o.subtotal)} · Shipping {o.shippingCost ? money(o.shippingCost) : "Free"}</span><b>Total {money(o.total)}</b></div>
+                  {o.trackingNumber && <div className="wp-note">Tracking: {o.carrier ? `${o.carrier} ` : ""}{o.trackingNumber}</div>}
                 </article>
               ))}
             </div>
@@ -324,12 +383,12 @@ export default function Portal() {
               <div>
                 <span className="wp-eyebrow">Wholesale Partners</span>
                 <h1>Wholesale <em>Order</em> Dashboard</h1>
-                <p>Account: <b>{partner?.business}</b></p>
+                <p>{user ? <>Signed in as <b>{user.name || user.email}</b></> : <>Order as a guest or <a className="wp-inline" href="/auth?redirect=%2Fwholesale">sign in</a></>}</p>
               </div>
               <div className="wp-facts" aria-label="Order terms">
                 <div><b>{minBoxes} boxes</b><span>Minimum order</span></div>
                 <div><b>Mix &amp; match</b><span>Any product, any pack</span></div>
-                <div><b>Invoice</b><span>Sent with every order</span></div>
+                <div><b>Secure card payment</b><span>Pay on Stripe at checkout</span></div>
               </div>
             </div>
           </section>
@@ -337,8 +396,8 @@ export default function Portal() {
           <main className="wp-wrap">
             <div className="wp-tools">
               <div className="wp-tabs" role="group" aria-label="Filter by pack">
-                {[["all", "All"], ["bottle", "Bottle Boxes"], ["blister", "Blister Boxes"]].map(([f, label]) => (
-                  <button key={f} className="wp-tab" type="button" aria-pressed={filter === f} onClick={() => setFilter(f)}>{label} <i>{counts[f]}</i></button>
+                {[["all", "All"], ["bottle", "Bottle Boxes"], ["blister", "Blister Boxes"]].map(([k, label]) => (
+                  <button key={k} className="wp-tab" type="button" aria-pressed={filter === k} onClick={() => setFilter(k)}>{label} <i>{counts[k]}</i></button>
                 ))}
               </div>
               <span className="wp-showing">Showing {products.filter((p) => p.packs.some((k) => filter === "all" || k.type === filter)).length} products</span>
@@ -346,7 +405,7 @@ export default function Portal() {
 
             <div className="wp-layout">
               <section className="wp-grid" aria-label="Products">
-                {loadError && <p className="wp-error">{loadError}</p>}
+                {products.length === 0 && <div className="wp-empty">No wholesale products are available yet.</div>}
                 {products.map((p) => {
                   const packs = p.packs.filter((k) => filter === "all" || k.type === filter);
                   if (!packs.length) return null;

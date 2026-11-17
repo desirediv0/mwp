@@ -5,6 +5,7 @@ import { useAuth } from "@/lib/auth-context";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { fetchApi, formatCurrency, formatDate } from "@/lib/utils";
+import { wsFetch } from "@/app/wholesale/wholesale-api";
 import { IconLoader2, IconChevronLeft, IconChevronRight, IconShoppingBag, IconArrowRight } from "@tabler/icons-react";
 
 const label = (s) => String(s || "").charAt(0) + String(s || "").slice(1).toLowerCase();
@@ -18,6 +19,13 @@ export default function OrdersPage() {
   const [loadingOrders, setLoadingOrders] = useState(true);
   const [error, setError] = useState("");
   const page = parseInt(searchParams.get("page"), 10) || 1;
+  const [wholesale, setWholesale] = useState([]);
+
+  // wholesale orders placed with this account are listed in their own section
+  useEffect(() => {
+    if (!isAuthenticated) return;
+    wsFetch("/orders").then((d) => setWholesale(d.orders || [])).catch(() => {});
+  }, [isAuthenticated]);
 
   useEffect(() => {
     if (!isAuthenticated) return;
@@ -43,7 +51,7 @@ export default function OrdersPage() {
     <div className="mwp-set-stack">
       {error && <p className="mwp-alert" role="alert">{error}</p>}
 
-      {!error && orders.length === 0 ? (
+      {!error && orders.length === 0 && wholesale.length === 0 ? (
         <div className="mwp-empty">
           <IconShoppingBag size={34} stroke={1.3} />
           <h3>No orders yet</h3>
@@ -63,6 +71,25 @@ export default function OrdersPage() {
                 <b>{formatCurrency(o.total)}</b>
               </div>
             </Link>
+          ))}
+        </div>
+      )}
+
+      {wholesale.length > 0 && (
+        <div className="mwp-set-card">
+          <h3 style={{ margin: "0 0 10px", fontSize: 16 }}>Wholesale orders</h3>
+          {wholesale.map((o) => (
+            <div key={o.id} className="mwp-order" style={{ cursor: "default" }}>
+              <div className="mwp-order-top">
+                <strong>Order #{o.orderNumber}</strong>
+                <span className={`mwp-chip s-${String(o.status).toUpperCase()}`}>{label(o.status)}</span>
+              </div>
+              <div className="mwp-order-bot">
+                <span>{formatDate(o.createdAt)} &middot; {o.totalBoxes} boxes &middot; {o.items.map((i) => `${i.productName} x${i.qty}`).join(", ")}</span>
+                <b>{formatCurrency(o.total)}</b>
+              </div>
+              {o.trackingNumber && <span style={{ fontSize: 12, color: "#6b7388" }}>Tracking: {o.carrier ? `${o.carrier} ` : ""}{o.trackingNumber}</span>}
+            </div>
           ))}
         </div>
       )}

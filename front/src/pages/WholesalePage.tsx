@@ -8,7 +8,7 @@ import { Badge } from "@/components/ui/badge";
 import { Textarea } from "@/components/ui/textarea";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Loader2, Store, Search, Copy, Plus, Trash2, FileText } from "lucide-react";
+import { Loader2, Store, Search, Copy, Plus, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 import api from "@/api/api";
 
@@ -20,58 +20,51 @@ const errMsg = (e: any, fallback: string) => e?.response?.data?.message || fallb
 
 /* ---------------------------------- types ---------------------------------- */
 
-interface Partner {
-  id: string; business: string; contact: string; email: string; phone: string; businessType: string; ein?: string | null;
-  address: string; volume?: string | null; interested?: string | null; notes?: string | null; status: "pending" | "approved" | "rejected" | "suspended";
-  codeHint?: string | null; hasCertificate: boolean; certificateName?: string | null; adminNote?: string | null;
-  approvedAt?: string | null; lastLoginAt?: string | null; createdAt: string; orderCount?: number;
-}
 interface OrderItem { id: string; productName: string; packLabel: string; contains: string; detail: string; qty: number; unitPrice: number; lineTotal: number }
 interface Order {
   id: string; orderNumber: string; status: string; paymentStatus: string; paymentNote?: string | null; invoiceNumber?: string | null;
+  paidAt?: string | null; paymentIntentId?: string | null; hasAccount: boolean;
   totalBoxes: number; subtotal: number; shippingCost: number; total: number; shippingAddress: string; customerNote?: string | null;
   carrier?: string | null; trackingNumber?: string | null; adminNote?: string | null; createdAt: string;
-  partner?: { id: string; business: string; contact: string; email: string; phone: string };
+  buyer: { business: string; name: string; email: string; phone: string };
   items: OrderItem[];
 }
 interface Pack { id?: string; type: "bottle" | "blister"; label: string; contains: string; detail: string; unit: string; units: number; price: number | string; isActive: boolean }
 interface WProduct { id: string; name: string; slug: string; isActive: boolean; wholesaleEnabled: boolean; image: string | null; packs: Pack[] }
 
 const STATUS_COLOR: Record<string, string> = {
-  pending: "bg-amber-100 text-amber-800", approved: "bg-green-100 text-green-800", rejected: "bg-red-100 text-red-800", suspended: "bg-slate-200 text-slate-700",
-  received: "bg-amber-100 text-amber-800", invoiced: "bg-blue-100 text-blue-800", shipped: "bg-green-100 text-green-800", delivered: "bg-green-100 text-green-800", cancelled: "bg-red-100 text-red-800",
+  pending_payment: "bg-slate-200 text-slate-700", received: "bg-amber-100 text-amber-800", shipped: "bg-blue-100 text-blue-800", delivered: "bg-green-100 text-green-800", cancelled: "bg-red-100 text-red-800",
   unpaid: "bg-red-100 text-red-800", paid: "bg-green-100 text-green-800", refunded: "bg-slate-200 text-slate-700",
 };
-const Pill = ({ v }: { v: string }) => <Badge className={`${STATUS_COLOR[v] || ""} hover:${STATUS_COLOR[v] || ""} capitalize`}>{v}</Badge>;
+const Pill = ({ v }: { v: string }) => <Badge className={`${STATUS_COLOR[v] || ""} hover:${STATUS_COLOR[v] || ""}`}>{v === "received" ? "paid, to ship" : v === "pending_payment" ? "awaiting payment" : v}</Badge>;
 
 /* ---------------------------------- page ---------------------------------- */
 
 export default function WholesalePage() {
-  const [tab, setTab] = useState<"orders" | "partners" | "products">("orders");
-  const [pending, setPending] = useState(0);
+  const [tab, setTab] = useState<"orders" | "products" | "settings">("orders");
   return (
     <div className="space-y-6">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
           <h1 className="flex items-center gap-2 text-2xl font-semibold"><Store className="h-6 w-6" /> Wholesale</h1>
-          <p className="text-sm text-muted-foreground">Approved business partners order by the box at wholesale prices. Their orders and payments are kept separate from store orders.</p>
+          <p className="text-sm text-muted-foreground">Wholesale buyers order by the box at the prices you set here and pay by card on Stripe. Their orders and payments are kept separate from store orders.</p>
         </div>
         <div className="flex gap-2">
           <Button variant={tab === "orders" ? "default" : "outline"} onClick={() => setTab("orders")}>Orders and payments</Button>
-          <Button variant={tab === "partners" ? "default" : "outline"} onClick={() => setTab("partners")}>
-            Partners {pending > 0 && <Badge className="ml-2 bg-red-600 hover:bg-red-600">{pending}</Badge>}
-          </Button>
-          <Button variant={tab === "products" ? "default" : "outline"} onClick={() => setTab("products")}>Products and prices</Button>
+                    <Button variant={tab === "products" ? "default" : "outline"} onClick={() => setTab("products")}>Products and prices</Button>
+          <Button variant={tab === "settings" ? "default" : "outline"} onClick={() => setTab("settings")}>Link and settings</Button>
         </div>
       </div>
       {tab === "orders" && <OrdersTab />}
-      {tab === "partners" && <PartnersTab onPending={setPending} />}
-      {tab === "products" && <ProductsTab />}
+            {tab === "products" && <ProductsTab />}
+      {tab === "settings" && <SettingsTab />}
     </div>
   );
 }
 
 /* ---------------------------------- orders ---------------------------------- */
+
+const STATUS_LABEL: Record<string, string> = { pending_payment: "awaiting payment", received: "paid, to ship", shipped: "shipped", delivered: "delivered", cancelled: "cancelled" };
 
 function OrdersTab() {
   const [orders, setOrders] = useState<Order[]>([]);
@@ -81,7 +74,7 @@ function OrdersTab() {
   const [status, setStatus] = useState("");
   const [pay, setPay] = useState("");
   const [search, setSearch] = useState("");
-  const [summary, setSummary] = useState({ awaitingPayment: 0, openOrders: 0 });
+  const [summary, setSummary] = useState({ paidTotal: 0, toShip: 0 });
   const [open, setOpen] = useState<Order | null>(null);
 
   const load = useCallback(async () => {
@@ -102,8 +95,8 @@ function OrdersTab() {
   return (
     <>
       <div className="grid gap-4 sm:grid-cols-2">
-        <Card><CardContent className="pt-6"><p className="text-sm text-muted-foreground">Open orders (not shipped yet)</p><p className="text-3xl font-semibold">{summary.openOrders}</p></CardContent></Card>
-        <Card><CardContent className="pt-6"><p className="text-sm text-muted-foreground">Waiting for payment</p><p className="text-3xl font-semibold">{money(summary.awaitingPayment)}</p></CardContent></Card>
+        <Card><CardContent className="pt-6"><p className="text-sm text-muted-foreground">Paid orders waiting to ship</p><p className="text-3xl font-semibold">{summary.toShip}</p></CardContent></Card>
+        <Card><CardContent className="pt-6"><p className="text-sm text-muted-foreground">Total paid (all wholesale orders)</p><p className="text-3xl font-semibold">{money(summary.paidTotal)}</p></CardContent></Card>
       </div>
       <Card>
         <CardContent className="space-y-4 pt-6">
@@ -112,13 +105,13 @@ function OrdersTab() {
               <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
               <Input className="pl-8" placeholder="Order number, business or email" value={search} onChange={(e) => { setSearch(e.target.value); setPage(1); }} />
             </div>
-            <select className={`${selectCls} w-44`} value={status} onChange={(e) => { setStatus(e.target.value); setPage(1); }}>
-              <option value="">All order statuses</option>
-              {["received", "invoiced", "shipped", "delivered", "cancelled"].map((s) => <option key={s} value={s}>{s}</option>)}
+            <select className={`${selectCls} w-48`} value={status} onChange={(e) => { setStatus(e.target.value); setPage(1); }}>
+              <option value="">All paid orders</option>
+              {Object.entries(STATUS_LABEL).map(([v, l]) => <option key={v} value={v}>{l}</option>)}
             </select>
             <select className={`${selectCls} w-44`} value={pay} onChange={(e) => { setPay(e.target.value); setPage(1); }}>
-              <option value="">All payment statuses</option>
-              {["unpaid", "invoiced", "paid", "refunded"].map((s) => <option key={s} value={s}>{s}</option>)}
+              <option value="">All payments</option>
+              {["paid", "refunded", "unpaid"].map((s) => <option key={s} value={s}>{s}</option>)}
             </select>
           </div>
           <div className="overflow-x-auto">
@@ -132,7 +125,7 @@ function OrdersTab() {
                 ) : orders.map((o) => (
                   <TableRow key={o.id} className="cursor-pointer" onClick={() => setOpen(o)}>
                     <TableCell className="font-medium">{o.orderNumber}</TableCell>
-                    <TableCell><div>{o.partner?.business}</div><div className="text-xs text-muted-foreground">{o.partner?.email}</div></TableCell>
+                    <TableCell><div>{o.buyer.business}</div><div className="text-xs text-muted-foreground">{o.buyer.email}{o.hasAccount ? " · has account" : " · guest"}</div></TableCell>
                     <TableCell>{o.totalBoxes}</TableCell>
                     <TableCell>{money(o.total)}</TableCell>
                     <TableCell><Pill v={o.status} /></TableCell>
@@ -158,22 +151,33 @@ function OrdersTab() {
 }
 
 function OrderDialog({ order, onClose, onSaved }: { order: Order; onClose: () => void; onSaved: (o: Order) => void }) {
-  const [f, setF] = useState({
-    status: order.status, paymentStatus: order.paymentStatus, paymentNote: order.paymentNote || "", invoiceNumber: order.invoiceNumber || "",
-    shippingCost: String(order.shippingCost ?? 0), carrier: order.carrier || "", trackingNumber: order.trackingNumber || "", adminNote: order.adminNote || "",
-  });
+  const [f, setF] = useState({ status: order.status, carrier: order.carrier || "", trackingNumber: order.trackingNumber || "", invoiceNumber: order.invoiceNumber || "", adminNote: order.adminNote || "" });
   const [saving, setSaving] = useState(false);
+  const [confirmRefund, setConfirmRefund] = useState(false);
   const set = (k: string, v: string) => setF((x) => ({ ...x, [k]: v }));
-  const total = Number(order.subtotal) + (Number(f.shippingCost) || 0);
+  const paid = order.paymentStatus === "paid";
 
   const save = async () => {
     setSaving(true);
     try {
-      const r = await api.patch(`${BASE}/orders/${order.id}`, { ...f, shippingCost: Number(f.shippingCost) || 0 });
+      const r = await api.patch(`${BASE}/orders/${order.id}`, f);
       toast.success("Order updated");
       onSaved(r.data.data.order);
     } catch (e) {
       toast.error(errMsg(e, "Could not save"));
+    } finally {
+      setSaving(false);
+    }
+  };
+  const refund = async () => {
+    setSaving(true);
+    try {
+      const r = await api.post(`${BASE}/orders/${order.id}/refund`);
+      toast.success("Refund sent to the customer's card");
+      setConfirmRefund(false);
+      onSaved(r.data.data.order);
+    } catch (e) {
+      toast.error(errMsg(e, "Refund failed"));
     } finally {
       setSaving(false);
     }
@@ -184,7 +188,7 @@ function OrderDialog({ order, onClose, onSaved }: { order: Order; onClose: () =>
       <DialogContent className="max-h-[90vh] max-w-3xl overflow-y-auto">
         <DialogHeader>
           <DialogTitle>Order {order.orderNumber}</DialogTitle>
-          <DialogDescription>{order.partner?.business} · {order.partner?.contact} · {order.partner?.email} · {order.partner?.phone} · placed {when(order.createdAt)}</DialogDescription>
+          <DialogDescription>{order.buyer.business} · {order.buyer.name} · {order.buyer.email} · {order.buyer.phone} · {order.hasAccount ? "has a store account" : "guest"} · placed {when(order.createdAt)}</DialogDescription>
         </DialogHeader>
         <div className="space-y-4">
           <div className="overflow-x-auto rounded-md border">
@@ -194,191 +198,89 @@ function OrderDialog({ order, onClose, onSaved }: { order: Order; onClose: () =>
                 {order.items.map((i) => (
                   <TableRow key={i.id}><TableCell>{i.productName}</TableCell><TableCell>{i.packLabel}<div className="text-xs text-muted-foreground">{i.contains}</div></TableCell><TableCell>{i.qty}</TableCell><TableCell>{money(i.unitPrice)}</TableCell><TableCell className="text-right">{money(i.lineTotal)}</TableCell></TableRow>
                 ))}
+                <TableRow><TableCell colSpan={4} className="text-right">Shipping</TableCell><TableCell className="text-right">{money(order.shippingCost)}</TableCell></TableRow>
+                <TableRow><TableCell colSpan={4} className="text-right font-semibold">Total</TableCell><TableCell className="text-right font-semibold">{money(order.total)}</TableCell></TableRow>
               </TableBody>
             </Table>
           </div>
+          <div className="flex flex-wrap items-center gap-2 text-sm"><Pill v={order.paymentStatus} /> <span className="text-muted-foreground">{paid ? `Paid by card on Stripe${order.paidAt ? ` on ${when(order.paidAt)}` : ""}${order.paymentIntentId ? ` · ${order.paymentIntentId}` : ""}` : order.paymentStatus === "refunded" ? "Refunded to the customer's card" : "Not paid. The customer has not finished paying on Stripe."}</span></div>
           <p className="text-sm"><b>Ship to:</b> {order.shippingAddress}</p>
-          {order.customerNote && <p className="text-sm"><b>Partner note:</b> {order.customerNote}</p>}
+          {order.customerNote && <p className="text-sm"><b>Buyer note:</b> {order.customerNote}</p>}
+          {order.adminNote?.includes("CHECK PAYMENT") && <p className="rounded-md bg-red-50 p-2 text-sm text-red-800">{order.adminNote}</p>}
 
           <div className="grid gap-4 sm:grid-cols-2">
             <div className="space-y-1"><Label>Order status</Label>
-              <select className={selectCls} value={f.status} onChange={(e) => set("status", e.target.value)}>{["received", "invoiced", "shipped", "delivered", "cancelled"].map((s) => <option key={s} value={s}>{s}</option>)}</select>
-              <p className="text-xs text-muted-foreground">Choosing &quot;shipped&quot; emails the partner the carrier and tracking number.</p></div>
-            <div className="space-y-1"><Label>Payment status</Label>
-              <select className={selectCls} value={f.paymentStatus} onChange={(e) => set("paymentStatus", e.target.value)}>{["unpaid", "invoiced", "paid", "refunded"].map((s) => <option key={s} value={s}>{s}</option>)}</select>
-              <p className="text-xs text-muted-foreground">Choosing &quot;invoiced&quot; emails the partner the total and invoice number.</p></div>
-            <div className="space-y-1"><Label>Shipping cost (USD)</Label><Input type="number" min="0" step="0.01" value={f.shippingCost} onChange={(e) => set("shippingCost", e.target.value)} />
-              <p className="text-xs text-muted-foreground">Order total: <b>{money(total)}</b> (boxes {money(order.subtotal)} + shipping)</p></div>
-            <div className="space-y-1"><Label>Invoice number</Label><Input value={f.invoiceNumber} onChange={(e) => set("invoiceNumber", e.target.value)} /></div>
-            <div className="space-y-1"><Label>Payment note (how/when they paid)</Label><Input value={f.paymentNote} onChange={(e) => set("paymentNote", e.target.value)} /></div>
+              <select className={selectCls} value={f.status} onChange={(e) => set("status", e.target.value)}>{Object.entries(STATUS_LABEL).map(([v, l]) => <option key={v} value={v}>{l}</option>)}</select>
+              <p className="text-xs text-muted-foreground">Choosing &quot;shipped&quot; emails the buyer the carrier and tracking number.</p></div>
+            <div className="space-y-1"><Label>Invoice / receipt number (optional)</Label><Input value={f.invoiceNumber} onChange={(e) => set("invoiceNumber", e.target.value)} /></div>
             <div className="space-y-1"><Label>Carrier</Label><Input value={f.carrier} onChange={(e) => set("carrier", e.target.value)} placeholder="USPS, UPS, FedEx" /></div>
-            <div className="space-y-1 sm:col-span-2"><Label>Tracking number</Label><Input value={f.trackingNumber} onChange={(e) => set("trackingNumber", e.target.value)} /></div>
-            <div className="space-y-1 sm:col-span-2"><Label>Internal note (never shown to the partner)</Label><Textarea rows={2} value={f.adminNote} onChange={(e) => set("adminNote", e.target.value)} /></div>
+            <div className="space-y-1"><Label>Tracking number</Label><Input value={f.trackingNumber} onChange={(e) => set("trackingNumber", e.target.value)} /></div>
+            <div className="space-y-1 sm:col-span-2"><Label>Internal note (never shown to the buyer)</Label><Textarea rows={2} value={f.adminNote} onChange={(e) => set("adminNote", e.target.value)} /></div>
           </div>
         </div>
-        <DialogFooter><Button variant="outline" onClick={onClose}>Close</Button><Button onClick={save} disabled={saving}>{saving && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}Save order</Button></DialogFooter>
+        <DialogFooter className="gap-2 sm:justify-between">
+          {paid ? <Button variant="destructive" onClick={() => setConfirmRefund(true)} disabled={saving}>Refund in full</Button> : <span />}
+          <div className="flex gap-2"><Button variant="outline" onClick={onClose}>Close</Button><Button onClick={save} disabled={saving}>{saving && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}Save order</Button></div>
+        </DialogFooter>
+        <Dialog open={confirmRefund} onOpenChange={setConfirmRefund}>
+          <DialogContent>
+            <DialogHeader><DialogTitle>Refund {money(order.total)}?</DialogTitle><DialogDescription>The full amount goes back to the buyer&apos;s card through Stripe and the order is cancelled. This cannot be undone.</DialogDescription></DialogHeader>
+            <DialogFooter><Button variant="outline" onClick={() => setConfirmRefund(false)}>Keep the order</Button><Button variant="destructive" onClick={refund} disabled={saving}>Refund</Button></DialogFooter>
+          </DialogContent>
+        </Dialog>
       </DialogContent>
     </Dialog>
   );
 }
 
-/* ---------------------------------- partners ---------------------------------- */
+/* ---------------------------------- settings ---------------------------------- */
 
-function PartnersTab({ onPending }: { onPending: (n: number) => void }) {
-  const [rows, setRows] = useState<Partner[]>([]);
-  const [loading, setLoading] = useState(false);
-  const [status, setStatus] = useState("");
-  const [search, setSearch] = useState("");
-  const [open, setOpen] = useState<Partner | null>(null);
-  const [code, setCode] = useState<{ business: string; code: string } | null>(null);
-  const [note, setNote] = useState("");
-  const [adding, setAdding] = useState(false);
-  const [draft, setDraft] = useState({ business: "", contact: "", email: "", phone: "", address: "" });
-  const [creating, setCreating] = useState(false);
-
-  const load = useCallback(async () => {
-    setLoading(true);
+function SettingsTab() {
+  const [s, setS] = useState<{ isEnabled: boolean; minBoxes: number | string; shippingFlat: number | string } | null>(null);
+  const [saving, setSaving] = useState(false);
+  useEffect(() => {
+    api.get(`${BASE}/settings`).then((r) => setS(r.data.data.settings)).catch((e) => toast.error(errMsg(e, "Could not load settings")));
+  }, []);
+  const link = "https://www.mwpsupplements.com/wholesale";
+  const save = async () => {
+    if (!s) return;
+    setSaving(true);
     try {
-      const r = await api.get(`${BASE}/partners`, { params: { status: status || undefined, search: search || undefined } });
-      setRows(r.data.data.partners);
-      onPending(r.data.data.pending);
-    } catch (e) {
-      toast.error(errMsg(e, "Could not load partners"));
-    } finally {
-      setLoading(false);
-    }
-  }, [status, search, onPending]);
-  useEffect(() => { load(); }, [load]);
-
-  const act = async (p: Partner, action: "approve" | "reject" | "suspend" | "reset-code") => {
-    try {
-      const r = await api.post(`${BASE}/partners/${p.id}/${action}`);
-      if (r.data.data.code) setCode({ business: p.business, code: r.data.data.code });
-      else toast.success(r.data.message);
-      setOpen(null);
-      load();
-    } catch (e) {
-      toast.error(errMsg(e, "Could not complete the action"));
-    }
-  };
-
-  const createPartner = async () => {
-    setCreating(true);
-    try {
-      const r = await api.post(`${BASE}/partners`, draft);
-      setAdding(false);
-      setCode({ business: draft.business, code: r.data.data.code });
-      setDraft({ business: "", contact: "", email: "", phone: "", address: "" });
-      load();
-    } catch (e) {
-      toast.error(errMsg(e, "Could not add the partner"));
-    } finally {
-      setCreating(false);
-    }
-  };
-
-  const viewCertificate = async (p: Partner) => {
-    try {
-      const r = await api.get(`${BASE}/partners/${p.id}/certificate`, { responseType: "blob" });
-      window.open(URL.createObjectURL(r.data), "_blank", "noopener");
-    } catch (e) {
-      toast.error(errMsg(e, "Could not open the certificate"));
-    }
-  };
-
-  const saveNote = async (p: Partner) => {
-    try {
-      await api.patch(`${BASE}/partners/${p.id}`, { adminNote: note });
-      toast.success("Note saved");
-      load();
+      await api.put(`${BASE}/settings`, { isEnabled: s.isEnabled, minBoxes: Number(s.minBoxes), shippingFlat: Number(s.shippingFlat) });
+      toast.success("Wholesale settings saved");
     } catch (e) {
       toast.error(errMsg(e, "Could not save"));
+    } finally {
+      setSaving(false);
     }
   };
-
+  if (!s) return <Loader2 className="h-5 w-5 animate-spin" />;
   return (
-    <>
+    <div className="space-y-6">
       <Card>
-        <CardHeader><div className="flex flex-wrap items-start justify-between gap-3"><div><CardTitle>Wholesale partners</CardTitle>
-          <CardDescription>Add each wholesale buyer here. You get a private access code (shown once; only a scrambled copy is stored). Give the buyer the link <b>https://www.mwpsupplements.com/wholesale</b> (use your store address) and their code. They sign in with their email and code, and order from there.</CardDescription></div>
-          <Button onClick={() => setAdding(true)}><Plus className="mr-2 h-4 w-4" /> Add partner</Button></div></CardHeader>
-        <CardContent className="space-y-4">
-          <div className="flex flex-wrap gap-3">
-            <div className="relative w-full max-w-xs"><Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" /><Input className="pl-8" placeholder="Business, name or email" value={search} onChange={(e) => setSearch(e.target.value)} /></div>
-            <select className={`${selectCls} w-44`} value={status} onChange={(e) => setStatus(e.target.value)}>
-              <option value="">All</option>{["pending", "approved", "rejected", "suspended"].map((s) => <option key={s} value={s}>{s}</option>)}
-            </select>
-          </div>
-          <div className="overflow-x-auto">
-            <Table>
-              <TableHeader><TableRow><TableHead>Business</TableHead><TableHead>Contact</TableHead><TableHead>Status</TableHead><TableHead>Orders</TableHead><TableHead>Applied</TableHead><TableHead>Last sign-in</TableHead></TableRow></TableHeader>
-              <TableBody>
-                {loading ? <TableRow><TableCell colSpan={6} className="py-10 text-center"><Loader2 className="mx-auto h-5 w-5 animate-spin" /></TableCell></TableRow>
-                  : rows.length === 0 ? <TableRow><TableCell colSpan={6} className="py-10 text-center text-muted-foreground">No partners yet</TableCell></TableRow>
-                  : rows.map((p) => (
-                    <TableRow key={p.id} className="cursor-pointer" onClick={() => { setOpen(p); setNote(p.adminNote || ""); }}>
-                      <TableCell className="font-medium">{p.business}<div className="text-xs text-muted-foreground">{p.businessType}</div></TableCell>
-                      <TableCell>{p.contact}<div className="text-xs text-muted-foreground">{p.email}</div></TableCell>
-                      <TableCell><Pill v={p.status} /></TableCell>
-                      <TableCell>{p.orderCount ?? 0}</TableCell>
-                      <TableCell>{when(p.createdAt)}</TableCell>
-                      <TableCell>{when(p.lastLoginAt)}</TableCell>
-                    </TableRow>
-                  ))}
-              </TableBody>
-            </Table>
-          </div>
+        <CardHeader><CardTitle>How wholesale works</CardTitle></CardHeader>
+        <CardContent>
+          <ol className="list-decimal space-y-2 pl-5 text-sm leading-relaxed">
+            <li><b>Set prices.</b> In the Products and prices tab, turn wholesale on for a product and set its box prices (separate from the store price).</li>
+            <li><b>Share the private link</b> with your wholesale buyers (not shown anywhere on the store): <span className="font-mono">{link}</span>
+              <Button size="sm" variant="outline" className="ml-2" onClick={() => { navigator.clipboard?.writeText(link); toast.success("Link copied"); }}><Copy className="mr-1 h-3 w-3" /> Copy</Button></li>
+            <li><b>Buyers order and pay by card on Stripe.</b> They can sign in (the order then shows in their account) or buy as a guest. A page is never marked paid until Stripe confirms the full amount, and a double click never charges twice.</li>
+            <li><b>You ship.</b> Open the order here, add the carrier and tracking number and mark it shipped. The buyer gets an email.</li>
+          </ol>
         </CardContent>
       </Card>
-
-      <Dialog open={adding} onOpenChange={(o) => !o && setAdding(false)}>
-        <DialogContent>
-          <DialogHeader><DialogTitle>Add a wholesale partner</DialogTitle><DialogDescription>They can sign in right away with this email and the access code you get next.</DialogDescription></DialogHeader>
-          <div className="grid gap-3">
-            {([["business", "Business name *"], ["contact", "Contact person *"], ["email", "Email *"], ["phone", "Phone"], ["address", "Shipping address * (street, city, state, ZIP)"]] as [keyof typeof draft, string][]).map(([k, label]) => (
-              <div className="space-y-1" key={k}><Label>{label}</Label><Input value={draft[k]} onChange={(e) => setDraft({ ...draft, [k]: e.target.value })} type={k === "email" ? "email" : "text"} /></div>
-            ))}
+      <Card>
+        <CardHeader><CardTitle>Settings</CardTitle><CardDescription>If the link ever leaks, switch the page off here.</CardDescription></CardHeader>
+        <CardContent className="space-y-5">
+          <div className="flex items-center gap-3"><Switch checked={s.isEnabled} onCheckedChange={(v) => setS({ ...s, isEnabled: v })} /><Label>{s.isEnabled ? "Wholesale page is ON" : "Wholesale page is OFF (buyers see a not-available message)"}</Label></div>
+          <div className="grid gap-4 sm:grid-cols-2">
+            <div className="space-y-1"><Label>Minimum boxes per order</Label><Input type="number" min="1" value={s.minBoxes} onChange={(e) => setS({ ...s, minBoxes: e.target.value })} /></div>
+            <div className="space-y-1"><Label>Shipping added to each order (USD, 0 = free)</Label><Input type="number" min="0" step="0.01" value={s.shippingFlat} onChange={(e) => setS({ ...s, shippingFlat: e.target.value })} /></div>
           </div>
-          <DialogFooter><Button variant="outline" onClick={() => setAdding(false)}>Cancel</Button><Button onClick={createPartner} disabled={creating || !draft.business || !draft.contact || !draft.email || !draft.address}>{creating && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}Add and create code</Button></DialogFooter>
-        </DialogContent>
-      </Dialog>
-
-      <Dialog open={!!open} onOpenChange={(o) => !o && setOpen(null)}>
-        <DialogContent className="max-h-[90vh] max-w-2xl overflow-y-auto">
-          {open && (
-            <>
-              <DialogHeader><DialogTitle>{open.business}</DialogTitle><DialogDescription>Applied {when(open.createdAt)} · <span className="capitalize">{open.status}</span>{open.codeHint ? ` · code ends in ${open.codeHint}` : ""}</DialogDescription></DialogHeader>
-              <dl className="grid gap-x-6 gap-y-2 text-sm sm:grid-cols-2">
-                {([["Contact", open.contact], ["Email", open.email], ["Phone", open.phone], ["Business type", open.businessType], ["EIN / Tax ID", open.ein || "-"], ["Expected volume", open.volume || "-"], ["Interested in", open.interested || "-"]] as [string, string][]).map(([k, v]) => (
-                  <div key={k}><dt className="text-muted-foreground">{k}</dt><dd className="font-medium">{v}</dd></div>
-                ))}
-                <div className="sm:col-span-2"><dt className="text-muted-foreground">Shipping address</dt><dd className="font-medium">{open.address}</dd></div>
-                {open.notes && <div className="sm:col-span-2"><dt className="text-muted-foreground">Their note</dt><dd>{open.notes}</dd></div>}
-              </dl>
-              {open.hasCertificate && <Button variant="outline" className="w-fit" onClick={() => viewCertificate(open)}><FileText className="mr-2 h-4 w-4" /> View resale certificate</Button>}
-              <div className="space-y-1"><Label>Internal note</Label><Textarea rows={2} value={note} onChange={(e) => setNote(e.target.value)} /><Button size="sm" variant="outline" onClick={() => saveNote(open)}>Save note</Button></div>
-              <DialogFooter className="gap-2">
-                {open.status !== "approved" && <Button onClick={() => act(open, "approve")}>Activate and create access code</Button>}
-                {open.status === "approved" && <Button variant="outline" onClick={() => act(open, "reset-code")}>Create new access code</Button>}
-                {open.status === "approved" && <Button variant="destructive" onClick={() => act(open, "suspend")}>Suspend</Button>}
-                {open.status === "pending" && <Button variant="destructive" onClick={() => act(open, "reject")}>Reject</Button>}
-              </DialogFooter>
-            </>
-          )}
-        </DialogContent>
-      </Dialog>
-
-      <Dialog open={!!code} onOpenChange={(o) => !o && setCode(null)}>
-        <DialogContent>
-          <DialogHeader><DialogTitle>Access code for {code?.business}</DialogTitle><DialogDescription>Give this code to the partner with the wholesale link. This is the only time you can see it; if it is lost, create a new one.</DialogDescription></DialogHeader>
-          <div className="flex items-center gap-2 rounded-md border bg-muted p-3 font-mono text-lg tracking-wider">
-            <span className="flex-1 break-all">{code?.code}</span>
-            <Button size="icon" variant="outline" onClick={() => { navigator.clipboard?.writeText(code?.code || ""); toast.success("Copied"); }}><Copy className="h-4 w-4" /></Button>
-          </div>
-          <DialogFooter><Button onClick={() => setCode(null)}>Done</Button></DialogFooter>
-        </DialogContent>
-      </Dialog>
-    </>
+          <Button onClick={save} disabled={saving}>{saving && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}Save settings</Button>
+        </CardContent>
+      </Card>
+    </div>
   );
 }
 
@@ -393,7 +295,6 @@ function ProductsTab() {
   const [products, setProducts] = useState<WProduct[]>([]);
   const [loading, setLoading] = useState(false);
   const [edit, setEdit] = useState<WProduct | null>(null);
-  const [minBoxes, setMinBoxes] = useState(4);
   const [search, setSearch] = useState("");
 
   const load = useCallback(async () => {
@@ -401,7 +302,6 @@ function ProductsTab() {
     try {
       const r = await api.get(`${BASE}/products`);
       setProducts(r.data.data.products);
-      setMinBoxes(r.data.data.minBoxes);
     } catch (e) {
       toast.error(errMsg(e, "Could not load products"));
     } finally {
@@ -416,7 +316,7 @@ function ProductsTab() {
     <>
       <Card>
         <CardHeader><CardTitle>Products and wholesale prices</CardTitle>
-          <CardDescription>Turn wholesale on for any product and set its own box prices (separate from the store price). Minimum order is {minBoxes} boxes (set with WHOLESALE_MIN_BOXES). Only approved partners can ever see these prices.</CardDescription></CardHeader>
+          <CardDescription>Turn wholesale on for any product and set its own box prices (separate from the store price). Buyers only see these prices on your private wholesale link.</CardDescription></CardHeader>
         <CardContent className="space-y-4">
           <div className="relative w-full max-w-xs"><Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" /><Input className="pl-8" placeholder="Find a product" value={search} onChange={(e) => setSearch(e.target.value)} /></div>
           <div className="overflow-x-auto">
@@ -465,7 +365,7 @@ function ProductDialog({ product, onClose, onSaved }: { product: WProduct; onClo
     <Dialog open onOpenChange={(o) => !o && onClose()}>
       <DialogContent className="max-h-[90vh] max-w-3xl overflow-y-auto">
         <DialogHeader><DialogTitle>{product.name}: wholesale</DialogTitle><DialogDescription>Prices are per box. The per-item price shown to partners is calculated from &quot;items in box&quot;.</DialogDescription></DialogHeader>
-        <div className="flex items-center gap-3"><Switch checked={enabled} onCheckedChange={setEnabled} /><Label>{enabled ? "On: approved partners can order this product" : "Off: not shown to partners"}</Label></div>
+        <div className="flex items-center gap-3"><Switch checked={enabled} onCheckedChange={setEnabled} /><Label>{enabled ? "On: buyers on the wholesale link can order this product" : "Off: not shown on the wholesale page"}</Label></div>
         <div className="space-y-3">
           {packs.map((p, i) => (
             <div key={i} className="grid gap-3 rounded-lg border p-3 sm:grid-cols-6">

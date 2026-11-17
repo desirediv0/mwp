@@ -106,3 +106,16 @@
 .wp-link{font-size:13px;color:var(--goldTxt);text-align:center;font-weight:600}
 @media(max-width:1100px){.wp-cartDesk{display:none}}
 @media(max-width:640px){.wp-nav{display:none}.wp-hd{padding:10px 14px;gap:10px}.wp-hd img{height:40px}.wp-hdRight{margin-left:auto}.wp-navBtn{padding:8px}.wp-wrap{padding:20px 14px 70px}.wp-done{padding:24px}}
+.wp-cartDesk{max-height:calc(100vh - 100px);overflow-y:auto}
+.wp-navBtn{text-decoration:none;display:inline-flex;align-items:center}
+.wp-boot h2{margin:0 0 8px;color:var(--ink);font-size:24px}.wp-boot p{margin:0}
+.wp-inline{color:var(--goldTxt);font-weight:600;text-decoration:underline}
+.wp-form{display:flex;flex-direction:column;gap:12px}
+.wp-form label{display:flex;flex-direction:column;gap:5px;font-size:12.5px;font-weight:600;color:#26314d}
+.wp-form input,.wp-form select{height:44px;border:1.5px solid #DDD6C0;border-radius:11px;padding:0 12px;font-size:15px;font-weight:400;background:#fff;width:100%;font-family:inherit;color:var(--ink)}
+.wp-form input:focus,.wp-form select:focus{outline:none;border-color:var(--navy);box-shadow:0 0 0 4px #12213f1a}
+.wp-two{display:grid;grid-template-columns:1.4fr 1fr;gap:10px}
+.wp-back{align-self:flex-start;border:0;background:none;color:var(--goldTxt);font-weight:600;font-size:13px;cursor:pointer;padding:0}
+.wp-acct{font-size:12.5px;line-height:1.5;color:var(--muted);background:#FBF7EC;border:1px solid var(--line);border-radius:12px;padding:10px 12px}
+.wp-acct a{color:var(--goldTxt);font-weight:600;text-decoration:underline}
+.wp-place{display:inline-flex;align-items:center;justify-content:center;gap:8px}

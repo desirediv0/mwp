@@ -14,6 +14,7 @@ import { resolveSelectedRate, autoBookLabel, voidLabelForOrder } from "../utils/
 import { getStripeContext, mapStripeCardMethod, refundStripePayment } from "../utils/stripe.js";
 import { validateUsAddress } from "../utils/usValidation.js";
 import { fulfillSubscriptionSession } from "../utils/subscriptions.js";
+import { fulfillWholesaleSession } from "./wholesale.controller.js";
 
 // -----------------------------------------------------------------------------
 // Payments run on Stripe (Checkout Sessions, USD only). Keys are saved by the admin
@@ -328,8 +329,10 @@ export const stripeWebhook = async (req, res) => {
   try {
     if (event.type === "checkout.session.completed" || event.type === "checkout.session.async_payment_succeeded") {
       if (event.data.object.metadata?.kind === "subscription") await fulfillSubscriptionSession(event.data.object);
+      else if (event.data.object.metadata?.kind === "wholesale") await fulfillWholesaleSession(event.data.object);
       else await fulfillStripeSession(event.data.object);
     } else if (event.type === "checkout.session.expired") {
+      if (event.data.object.metadata?.kind === "wholesale") return res.json({ received: true });
       await prisma.stripePayment.updateMany({
         where: { sessionId: event.data.object.id, orderId: null, status: "PENDING" },
         data: { status: "FAILED", failureReason: "Checkout session expired" },
