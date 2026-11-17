@@ -6,7 +6,9 @@
 // import MwpParticleHero from "@/components/sections/home/MwpParticleHero";
 // Reference capsule hero (straight build of the client's HTML) — kept for rollback. Re-enable this import and <MwpCapsuleHero /> below.
 // import MwpCapsuleHero from "@/components/sections/home/MwpCapsuleHero";
-import MwpCapsuleHeroPlus from "@/components/sections/home/MwpCapsuleHeroPlus";
+// Interactive capsule hero — kept for rollback. Re-enable this import and <MwpCapsuleHeroPlus /> below.
+// import MwpCapsuleHeroPlus from "@/components/sections/home/MwpCapsuleHeroPlus";
+import MwpHeroSlider from "@/components/sections/home/MwpHeroSlider";
 import MwpProductShowcase from "@/components/sections/home/MwpProductShowcase";
 import TrustStrip from "@/components/sections/home/TrustStrip";
 
@@ -26,7 +28,8 @@ export default function Home() {
       {/* <MwpOrbitHero /> */}
       {/* <MwpParticleHero /> */}
       {/* <MwpCapsuleHero /> */}
-      <MwpCapsuleHeroPlus />
+      {/* <MwpCapsuleHeroPlus /> */}
+      <MwpHeroSlider />
       <TrustStrip />
       <MwpProductShowcase />
     </>
