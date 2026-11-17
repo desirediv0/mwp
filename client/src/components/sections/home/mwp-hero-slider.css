@@ -106,12 +106,9 @@
   background: radial-gradient(circle at 74% 50%, #2c3b66 0%, #1e2b52 45%, #14213d 100%);
 }
 .mhs-s3 {
-  background: radial-gradient(circle at 72% 50%, #e7b9a3 0%, #eecbb9 40%, #f3dccf 75%, #f5e4da 100%);
-}
-.mhs-s4 {
   background: radial-gradient(circle at 74% 46%, #dce0c6 0%, #e6e7d3 40%, #efecdf 75%, #f2eee2 100%);
 }
-.mhs-s5 {
+.mhs-s4 {
   background: radial-gradient(circle at 72% 50%, #e6ae5a 0%, #ebc07f 40%, #f0d3a6 75%, #f3e1c3 100%);
 }
 
@@ -375,17 +372,13 @@
 }
 .mhs-s3 .mhs-tag,
 .mhs-s3 .mhs-h em {
-  color: #8a3f22;
+  color: #4e6a2e;
 }
 .mhs-s4 .mhs-tag,
 .mhs-s4 .mhs-h em {
-  color: #4e6a2e;
-}
-.mhs-s5 .mhs-tag,
-.mhs-s5 .mhs-h em {
   color: #7a3d06;
 }
-.mhs-s5 .mhs-sub {
+.mhs-s4 .mhs-sub {
   color: var(--navy);
 }
 
@@ -989,4 +982,14 @@
     animation-iteration-count: 1 !important;
     transition: none !important;
   }
+}
+
+/* Desktop: the whole slide (headline, text, buttons, bottles) fits in one screen without scrolling */
+@media (min-width: 981px) {
+  .mhs-slide { min-height: 0; height: clamp(500px, calc(100svh - 150px), 720px); }
+  .mhs-inner { padding: 24px 5vw 84px; }
+  .mhs-h { font-size: clamp(34px, min(4.2vw, 7.4svh), 64px); margin-top: 10px; }
+  .mhs-sub { margin-top: 12px; font-size: clamp(15px, min(1.35vw, 2.4svh), 19px); line-height: 1.5; }
+  .mhs-btns { margin-top: 20px; }
+  .mhs-btn { min-height: 50px; }
 }

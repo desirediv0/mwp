@@ -78,7 +78,6 @@ const INGREDIENTS = [
 const SLIDES = [
   { key: "daily", label: "Daily", aria: "Daily supplements" },
   { key: "him", label: "For Him", aria: "For him", dark: true },
-  { key: "her", label: "For Her", aria: "For her" },
   { key: "ingredients", label: "Ingredients", aria: "Ingredients" },
   { key: "proof", label: "Proof", aria: "Proof" },
 ];
@@ -525,55 +524,8 @@ export default function MwpHeroSlider() {
             </div>
           </article>
 
-          {/* 3 — For Her (slider reference, rose) */}
+          {/* 3 — Ingredients (3D banner + slider references) */}
           <article {...slideProps(2)}>
-            <div className="mhs-inner">
-              <div className="mhs-text">
-                <p className="mhs-tag mhs-a">For her</p>
-                <h2 className="mhs-h mhs-a" style={{ "--d": "0.06s" }}>
-                  Her wellness. <em>Her way.</em>
-                </h2>
-                <p className="mhs-sub mhs-a" style={{ "--d": "0.12s" }}>
-                  {BOTTLES["her-power"].name}, the daily women&apos;s wellness formula. 90 capsules.
-                </p>
-                <ul className="mhs-checks">
-                  {BOTTLES["her-power"].benefits.map((benefit, i) => (
-                    <li key={benefit} className="mhs-a" style={{ "--d": `${0.18 + i * 0.06}s` }}>
-                      <Check /> {benefit}
-                    </li>
-                  ))}
-                </ul>
-                <div className="mhs-btns mhs-a" style={{ "--d": "0.44s" }}>
-                  <Link href="/products/her-power" className="mhs-btn">
-                    Shop Her Power <Arrow />
-                  </Link>
-                  <Link href="/quiz" className="mhs-btn mhs-btn--line">
-                    {t("findYourFormula")}
-                  </Link>
-                </div>
-                <p className="mhs-fda mhs-a" style={{ "--d": "0.5s" }}>
-                  {FDA_NOTE}
-                </p>
-              </div>
-              <div className="mhs-vis" aria-hidden="true">
-                <div className="mhs-tilt">
-                  <div className="mhs-glow" />
-                  <Turntable
-                    slug="her-power"
-                    active={current === 2}
-                    warm={warm}
-                    reduceMotion={reduceMotion}
-                    onDragChange={setDragging}
-                    delay={0.26}
-                    style={{ "--x": "50%", "--h": "94%", "--b": "1%", "--z": "40px" }}
-                  />
-                </div>
-              </div>
-            </div>
-          </article>
-
-          {/* 4 — Ingredients (3D banner + slider references) */}
-          <article {...slideProps(3)}>
             <div className="mhs-inner">
               <div className="mhs-text">
                 <p className="mhs-tag mhs-a">Traceable by design</p>
@@ -613,8 +565,8 @@ export default function MwpHeroSlider() {
             </div>
           </article>
 
-          {/* 5 — Proof (3D banner + slider references) */}
-          <article {...slideProps(4)}>
+          {/* 4 — Proof (3D banner + slider references) */}
+          <article {...slideProps(3)}>
             <div className="mhs-inner">
               <div className="mhs-text">
                 <p className="mhs-tag mhs-a">Our promise</p>
