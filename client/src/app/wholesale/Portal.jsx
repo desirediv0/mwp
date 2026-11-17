@@ -368,7 +368,7 @@ export default function Portal() {
           {totals}
           {payError && <p className="wp-error" role="alert">{payError}</p>}
           <button className="wp-place" type="submit" disabled={paying || !met || !lines.length}>{paying ? "Opening secure payment..." : <><LockIcon /> Pay {money(total)} securely</>}</button>
-          <div className="wp-note">You will pay by card on Stripe's secure page. We never see or store your card details. If you cancel, your cart stays saved.</div>
+          <div className="wp-note">You will pay by card on Stripe&apos;s secure page. We never see or store your card details. If you cancel, your cart stays saved.</div>
         </form>
       )}
     </>
