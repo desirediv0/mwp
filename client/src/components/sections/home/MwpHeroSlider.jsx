@@ -11,7 +11,7 @@ import "./mwp-hero-slider.css";
 // Home hero slider built from the client's three hero references (homepage hero, 3D banner, slider).
 // Bottles are the new 8-angle renders in /public/hero/bottles (Power Max, Rapid Boost, Her Power).
 
-const SLIDE_MS = 6500;
+const SLIDE_MS = 3500;
 const WIPE_MS = 950;
 const ANGLES = 8;
 const frameSrc = (slug, n) => `/hero/bottles/${slug}/${String(n + 1).padStart(2, "0")}.webp`;
